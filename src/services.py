@@ -1,31 +1,59 @@
 from __future__ import annotations
 
 import json
+import re
+import time
 from pathlib import Path
 from typing import Any
 
 import requests
 
 USER_AGENT = "Mozilla/5.0 (compatible; TelegramNewsAgent/2.0)"
+PERSIAN_RE = re.compile(r"[\u0600-\u06FF]")
+
+
+def has_persian(text: str) -> bool:
+    return bool(PERSIAN_RE.search(text or ""))
+
+
+def _google_translate(text: str, session=requests) -> str:
+    response = session.get(
+        "https://translate.googleapis.com/translate_a/single",
+        params={"client": "gtx", "sl": "auto", "tl": "fa", "dt": "t", "q": text},
+        headers={"User-Agent": USER_AGENT},
+        timeout=20,
+    )
+    response.raise_for_status()
+    payload = response.json()
+    return "".join(part[0] for part in payload[0] if part and part[0]).strip()
+
+
+def _mymemory_translate(text: str, session=requests) -> str:
+    response = session.get(
+        "https://api.mymemory.translated.net/get",
+        params={"q": text, "langpair": "en|fa"},
+        headers={"User-Agent": USER_AGENT},
+        timeout=20,
+    )
+    response.raise_for_status()
+    payload = response.json()
+    return str((payload.get("responseData") or {}).get("translatedText") or "").strip()
 
 
 def translate_to_fa(text: str, session=requests) -> str:
     text = (text or "").strip()
     if not text:
+        return ""
+    if has_persian(text):
         return text
-    try:
-        response = session.get(
-            "https://translate.googleapis.com/translate_a/single",
-            params={"client": "gtx", "sl": "auto", "tl": "fa", "dt": "t", "q": text},
-            headers={"User-Agent": USER_AGENT},
-            timeout=20,
-        )
-        response.raise_for_status()
-        payload = response.json()
-        translated = "".join(part[0] for part in payload[0] if part and part[0]).strip()
-        return translated or text
-    except Exception:
-        return text
+    for translator in (_google_translate, _mymemory_translate):
+        try:
+            translated = translator(text, session=session)
+            if translated and translated != text and has_persian(translated):
+                return translated
+        except Exception:
+            continue
+    return ""
 
 
 def split_message(text: str, max_len: int = 3900) -> list[str]:
@@ -65,6 +93,7 @@ def send_telegram(text: str, bot_token: str, chat_id: str, session=requests) -> 
         data = response.json()
         if not data.get("ok", False):
             raise RuntimeError(f"Telegram rejected message: {data}")
+        time.sleep(3.2)
 
 
 def load_state(path: str | Path = "state.json") -> dict[str, Any]:
