@@ -12,22 +12,39 @@ CAR_SOURCE_NAME = "ماشین۳"
 CHANNEL_URL = "https://t.me/bikhabaar"
 USER_AGENT = "Mozilla/5.0 (compatible; TelegramNewsAgent/2.0)"
 
+# Curated high-volume / high-liquidity models commonly traded in Iran. Each entry
+# is only posted when a matching live row exists on the source page.
 TARGET_MODELS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("پراید ۱۵۱", ("پراید 151", "سایپا 151")),
     ("پژو ۲۰۷ دنده‌ای", ("پژو 207 دنده‌ای (برقی)", "پژو 207 دنده‌ای (هیدرولیک)", "پژو 207 دنده‌ای")),
-    ("پژو ۲۰۷ اتومات", ("پژو 207 اتوماتیک",)),
+    ("پژو ۲۰۷ اتومات", ("پژو 207 اتوماتیک", "پژو 207 اتومات")),
+    ("پژو ۲۰۷ TU3", ("پژو 207 TU3", "207 TU3")),
     ("دنا پلاس توربو اتومات", ("دنا پلاس اتوماتیک", "دنا پلاس توربو اتوماتیک")),
     ("دنا پلاس ۶ دنده", ("دنا پلاس MT6", "دنا پلاس 6 دنده")),
     ("تارا V1", ("تارا دستی V1", "تارا V1")),
     ("تارا V4 اتومات", ("تارا اتوماتیک V4", "تارا V4")),
     ("سورن پلاس", ("سورن پلاس TU5P", "سورن پلاس XU7P", "سورن پلاس")),
+    ("سورن پلاس دوگانه‌سوز", ("سورن پلاس دوگانه سوز", "سورن دوگانه")),
     ("رانا پلاس", ("رانا پلاس",)),
     ("شاهین G", ("شاهین G",)),
     ("شاهین اتومات", ("شاهین اتومات", "شاهین اتوماتیک")),
+    ("شاهین پلاس", ("شاهین پلاس",)),
+    ("کوییک S", ("کوییک S", "کوییک اس")),
     ("کوییک GX", ("کوییک GX",)),
+    ("کوییک GXR", ("کوییک GXR",)),
     ("ساینا S", ("ساینا S",)),
-    ("اطلس G", ("اطلس G",)),
-    ("سهند S", ("سهند S",)),
-    ("پژو پارس XU7P", ("پژو پارس XU7P", "پژو پارس")),
+    ("ساینا GX", ("ساینا GX", "ساینا دوگانه GX")),
+    ("اطلس G", ("اطلس G", "اطلس")),
+    ("سهند S", ("سهند S", "سهند")),
+    ("ری‌را", ("ری را", "ری‌را", "ریرا")),
+    ("هایما S5", ("هایما S5",)),
+    ("هایما S7", ("هایما S7",)),
+    ("هایما 8S", ("هایما 8S", "هایما S8")),
+    ("فیدلیتی پرایم", ("فیدلیتی پرایم", "فیدلیتی 5 نفره", "فیدلیتی 7 نفره")),
+    ("دیگنیتی پرایم", ("دیگنیتی پرایم", "دیگنیتی")),
+    ("آریزو ۵", ("آریزو 5", "آریزو5")),
+    ("ام‌وی‌ام X22 Pro", ("X22 Pro", "X22 پرو", "ام وی ام X22")),
+    ("آریسان ۲", ("آریسان 2", "آریسان")),
 )
 
 PERSIAN_TO_ASCII = str.maketrans("۰۱۲۳۴۵۶۷۸۹٬", "0123456789,")
@@ -110,9 +127,9 @@ def _change_line(current: int, previous: int | None) -> str:
 
 def format_car_prices(prices: list[CarPrice], previous: dict[str, int] | None = None) -> str:
     previous = previous or {}
-    lines = ["🚗 <b>قیمت روز خودرو | بازار آزاد</b>", ""]
+    lines = ["🚗 <b>قیمت روز خودرو | بازار آزاد</b>"]
     for item in prices:
-        lines.append(f"• <b>{escape(item.name)}</b>: {item.market_toman:,} تومان{_change_line(item.market_toman, previous.get(item.name))}")
+        lines += ["", f"▫️ <b>{escape(item.name)}</b>: {item.market_toman:,} تومان{_change_line(item.market_toman, previous.get(item.name))}"]
     lines += [
         "",
         f'📌 <a href="{CAR_PRICE_URL}">منبع: {CAR_SOURCE_NAME}</a>',
