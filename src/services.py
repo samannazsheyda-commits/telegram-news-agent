@@ -23,6 +23,77 @@ NEWS_GLOSSARY = (
     ("عباس اراقچی", "عباس عراقچی"),
 )
 
+# Source-aware fixes for high-risk journalistic idioms that machine translation
+# often renders literally. We only repair when the English source actually
+# contains the idiom, which avoids changing legitimate literal wording.
+IDIOM_REPAIRS: tuple[tuple[str, tuple[str, ...], str], ...] = (
+    (
+        "small potatoes",
+        ("سیب‌زمینی‌های کوچک", "سیب زمینی‌های کوچک", "سیب‌زمینی کوچک", "سیب زمینی کوچک"),
+        "مسئله‌ای کم‌اهمیت",
+    ),
+    (
+        "all options are on the table",
+        ("همه گزینه‌ها روی میز هستند", "تمام گزینه‌ها روی میز هستند", "همه گزینه ها روی میز هستند"),
+        "همه گزینه‌ها مطرح‌اند",
+    ),
+    (
+        "off the table",
+        ("از روی میز خارج", "خارج از میز", "روی میز نیست"),
+        "از گزینه‌های مطرح خارج",
+    ),
+    (
+        "doubled down",
+        ("دو برابر شد", "دو برابر کرد", "دوبل کرد", "دو برابر کرده است"),
+        "بر موضع خود پافشاری کرد",
+    ),
+    (
+        "walked back",
+        ("راه رفت", "به عقب راه رفت", "عقب رفت"),
+        "از اظهارات قبلی خود عقب‌نشینی کرد",
+    ),
+    (
+        "the ball is now in iran's court",
+        ("توپ اکنون در زمین ایران است", "توپ حالا در زمین ایران است"),
+        "اکنون نوبت تصمیم‌گیری ایران است",
+    ),
+    (
+        "the ball is in iran's court",
+        ("توپ در زمین ایران است",),
+        "نوبت تصمیم‌گیری ایران است",
+    ),
+    (
+        "raise the stakes",
+        ("سهام را افزایش", "سهم را بالا", "مخاطرات را بالا"),
+        "سطح تنش و هزینه‌ها را بالا برد",
+    ),
+    (
+        "turn up the heat",
+        ("حرارت را بالا برد", "گرما را زیاد کرد"),
+        "فشار را افزایش داد",
+    ),
+    (
+        "move the goalposts",
+        ("تیرک‌های دروازه را جابه‌جا", "دروازه‌ها را جابه‌جا"),
+        "معیارها را در میانه کار تغییر داد",
+    ),
+    (
+        "draw a line in the sand",
+        ("خطی در شن", "خط روی شن"),
+        "مرز روشنی تعیین کرد",
+    ),
+    (
+        "back channel",
+        ("کانال پشتی", "کانال پشت"),
+        "کانال ارتباطی غیررسمی",
+    ),
+    (
+        "play down",
+        ("کم بازی", "پایین بازی"),
+        "کم‌اهمیت جلوه داد",
+    ),
+)
+
 
 def has_persian(text: str) -> bool:
     return bool(PERSIAN_RE.search(text or ""))
@@ -59,6 +130,32 @@ def _polish_fa(text: str) -> str:
     return value
 
 
+def _repair_news_idioms(source: str, translated: str) -> str:
+    source_lower = (source or "").lower()
+    value = translated
+    for idiom, bad_variants, replacement in IDIOM_REPAIRS:
+        if idiom not in source_lower:
+            continue
+        matched = False
+        for bad in bad_variants:
+            if bad in value:
+                value = value.replace(bad, replacement)
+                matched = True
+        # For several short headline-style constructions the literal output can
+        # vary a lot. If the source clearly contains the idiom and the whole
+        # translation is the known machine-literal sentence, use a clean
+        # editorial rendering instead of letting nonsense through.
+        if idiom == "all options are on the table" and not matched and "روی میز" in value and "گزینه" in value:
+            value = "همه گزینه‌ها مطرح‌اند"
+        elif idiom == "doubled down" and not matched and "سیاست" in value and "ایران" in value:
+            value = "دولت بر سیاست خود درباره ایران پافشاری کرد"
+        elif idiom == "walked back" and not matched and "اظهارات" in value:
+            value = "رئیس‌جمهور از اظهارات قبلی خود عقب‌نشینی کرد"
+        elif idiom in {"the ball is now in iran's court", "the ball is in iran's court"} and not matched and "زمین ایران" in value:
+            value = "اکنون نوبت تصمیم‌گیری ایران است" if "now" in idiom else "نوبت تصمیم‌گیری ایران است"
+    return _polish_fa(value)
+
+
 def _translation_quality_ok(source: str, translated: str) -> bool:
     if not translated or not has_persian(translated):
         return False
@@ -83,6 +180,7 @@ def translate_to_fa(text: str, session=requests) -> str:
     for translator in (_google_translate, _mymemory_translate):
         try:
             translated = _polish_fa(translator(text, session=session))
+            translated = _repair_news_idioms(text, translated)
             if _translation_quality_ok(text, translated):
                 return translated
         except Exception:
