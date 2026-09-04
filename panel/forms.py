@@ -11,7 +11,7 @@ class LoginForm(FlaskForm):
 
 
 class ReviewEditForm(FlaskForm):
-    title_fa = StringField("تیتر فارسی", validators=[DataRequired(), Length(max=600)])
+    title_fa = StringField("تیتر فارسی", validators=[Optional(), Length(max=600)])
     body_fa = TextAreaField("متن فارسی", validators=[Optional(), Length(max=3500)])
     publish = SubmitField("تأیید و انتشار فوری")
     reject = SubmitField("رد نهایی")
