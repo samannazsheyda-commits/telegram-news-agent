@@ -16,10 +16,22 @@ TGJU_OVERVIEW = "https://gem.tgju.org/widget/get/market-overview"
 GOOGLE_NEWS_BASE = "https://news.google.com/rss/search"
 USER_AGENT = "Mozilla/5.0 (compatible; TelegramNewsAgent/2.0)"
 
+IRAN_NEWS_QUERY = "Iran (war OR Israel OR Trump OR Hormuz OR nuclear OR sanctions OR talks OR attack OR missile OR drone OR tanker OR shipping OR ceasefire)"
+
 NEWS_QUERIES: tuple[tuple[str, str, str], ...] = (
-    ("Axios", 'Iran (war OR Israel OR Trump OR Hormuz OR nuclear OR sanctions OR talks) source:Axios', "en"),
-    ("Al Jazeera", 'Iran (war OR Israel OR Trump OR Hormuz OR nuclear OR sanctions OR talks) source:"Al Jazeera"', "en"),
+    ("Axios", f'{IRAN_NEWS_QUERY} source:Axios', "en"),
+    ("Al Jazeera", f'{IRAN_NEWS_QUERY} source:"Al Jazeera"', "en"),
     ("Channel 14", 'Iran site:now14.co.il', "en"),
+    ("Reuters", f'{IRAN_NEWS_QUERY} source:Reuters', "en"),
+    ("Associated Press", f'{IRAN_NEWS_QUERY} source:"Associated Press"', "en"),
+    ("BBC News", f'{IRAN_NEWS_QUERY} source:"BBC News"', "en"),
+    ("CNN", f'{IRAN_NEWS_QUERY} source:CNN', "en"),
+    ("Financial Times", f'{IRAN_NEWS_QUERY} source:"Financial Times"', "en"),
+    ("The New York Times", f'{IRAN_NEWS_QUERY} source:"The New York Times"', "en"),
+    ("France 24", f'{IRAN_NEWS_QUERY} source:"France 24"', "en"),
+    ("DW", f'{IRAN_NEWS_QUERY} source:DW', "en"),
+    ("Times of Israel", f'{IRAN_NEWS_QUERY} source:"The Times of Israel"', "en"),
+    ("Haaretz", f'{IRAN_NEWS_QUERY} source:Haaretz', "en"),
     ("Marco Rubio", '"Marco Rubio" Iran', "en"),
     ("Mohammad Bagher Ghalibaf", '("Mohammad Bagher Ghalibaf" OR قالیباف) (Iran OR ایران)', "en"),
     ("Scott Bessent", '"Scott Bessent" Iran', "en"),
