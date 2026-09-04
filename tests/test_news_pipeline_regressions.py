@@ -52,6 +52,26 @@ def test_trusted_factual_iran_report_is_not_dropped_for_missing_keyword(tmp_path
     assert "nyt-intel" in main.load_state(state_path)["news_seen"]
 
 
+def test_trusted_iran_report_with_cautious_language_is_not_overfiltered(tmp_path, monkeypatch):
+    state_path = tmp_path / "state.json"
+    _state(state_path)
+    item = NewsItem(
+        "reuters-cautious",
+        "Reuters",
+        "Iran may consider new proposal after US talks",
+        "Iranian officials are reviewing a new proposal following talks with the United States.",
+        "https://news/reuters-cautious",
+        "Fri, 04 Sep 2026 18:32:00 GMT",
+    )
+    sent = []
+    _wire(monkeypatch, state_path, [item], sent)
+
+    assert main.run(datetime(2026, 9, 4, 19, 0, tzinfo=timezone.utc)) == 0
+    news = [text for text in sent if "لینک منبع خبر" in text]
+    assert len(news) == 1
+    assert "reuters-cautious" in main.load_state(state_path)["news_seen"]
+
+
 def test_recent_pre_midnight_story_is_not_dropped_after_tehran_midnight(tmp_path, monkeypatch):
     state_path = tmp_path / "state.json"
     _state(state_path)
