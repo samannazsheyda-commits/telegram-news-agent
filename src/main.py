@@ -49,6 +49,15 @@ MAJOR_EVENT_TERMS = (
     "شورای امنیت", "آژانس بین‌المللی انرژی اتمی", "شورای حکام", "قطعنامه", "ارجاع پرونده",
     "هسته‌ای", "اورانیوم", "غنی‌سازی", "هرمز", "نفتکش",
 )
+TRUSTED_NEWS_SOURCES = {
+    "Axios", "Al Jazeera", "Al Arabiya", "Channel 14", "KAN 11", "N12", "Channel 13",
+    "Reuters", "Associated Press", "BBC News", "CNN", "Fox News", "NBC News", "CBS News",
+    "ABC News", "Sky News", "Bloomberg", "CNBC", "Financial Times", "The New York Times",
+    "France 24", "DW", "Times of Israel", "Haaretz", "Donald Trump / Truth Social",
+    "Barak Ravid / X", "Abbas Araghchi / X", "Mohsen Rezaei / X", "Sepah News / X",
+    "TankerTrackers", "NOTAM / Airspace", "Marco Rubio", "Mohammad Bagher Ghalibaf",
+    "Scott Bessent", "J.D. Vance", "Donald Trump",
+}
 STORY_STOPWORDS = {
     "the", "a", "an", "and", "or", "but", "to", "of", "for", "in", "on", "at", "by",
     "with", "from", "as", "is", "are", "was", "were", "be", "been", "being", "has", "have",
@@ -168,9 +177,55 @@ def _is_trump_iran_news(item: NewsItem) -> bool:
 
 def _looks_bundled(item: NewsItem) -> bool:
     title = re.sub(r"\s+", " ", item.title or "").strip()
-    # Fail closed only for unusually long, multi-headline strings. Do not split ordinary comma clauses.
     separators = len(re.findall(r"[,،;؛]", title))
     return len(title) >= 180 and separators >= 2
+
+
+def _news_rejection_reason(item: NewsItem, now: datetime) -> str | None:
+    title_l = re.sub(r"\s+", " ", (item.title or "").lower()).strip()
+    combined = f"{item.title} {item.summary}".strip()
+    if _published_dt(item.published) is None:
+        return "invalid_publish_time"
+    if not _published_today(item.published, now):
+        return "not_today_tehran"
+    if _looks_bundled(item):
+        return "bundled_or_multi_headline"
+    if any(pattern in title_l for pattern in ARTICLE_PATTERNS):
+        return "article_or_commentary"
+    if any(pattern in title_l for pattern in VAGUE_PATTERNS):
+        return "vague_or_speculative"
+    if ("?" in title_l or "؟" in title_l) and not any(term in title_l for term in MAJOR_EVENT_TERMS):
+        return "question_or_explainer"
+    if _is_trump_iran_news(item):
+        return None
+    if is_important_news(item.title, item.summary):
+        return None
+    if item.source in TRUSTED_NEWS_SOURCES and is_iran_related(combined):
+        return None
+    return "low_signal_or_unapproved_source"
+
+
+def _audit_news(state: dict, item: NewsItem, reason: str, now: datetime) -> None:
+    records = list(state.get("news_rejections") or [])
+    records.insert(0, {
+        "key": item.key,
+        "source": item.source,
+        "title": item.title,
+        "reason": reason,
+        "published": item.published,
+        "link": item.link,
+        "checked_at": now.astimezone(timezone.utc).isoformat(),
+    })
+    deduped = []
+    used = set()
+    for record in records:
+        identity = (record.get("key"), record.get("reason"))
+        if identity in used:
+            continue
+        used.add(identity)
+        deduped.append(record)
+    state["news_rejections"] = deduped[:200]
+    print(f"NEWS_REJECTED reason={reason} source={item.source!r} title={item.title!r}")
 
 
 def _story_tokens(item: NewsItem) -> set[str]:
@@ -230,7 +285,6 @@ def _select_top_stories(candidates: list[NewsItem], references: list[NewsItem]) 
             continue
         if _is_statement(item):
             speaker = _speaker_key(item)
-            # User wants every distinct Trump statement about Iran. Semantic duplicate suppression above still applies.
             if speaker == "trump":
                 selected.append(item)
                 continue
@@ -293,30 +347,44 @@ def run(now: datetime | None = None) -> int:
             save_state(state, STATE_PATH)
             changed = bool(items) or changed
         else:
-            def eligible(item: NewsItem) -> bool:
-                return (
-                    _published_today(item.published, now)
-                    and not _looks_bundled(item)
-                    and (is_important_news(item.title, item.summary) or _is_trump_iran_news(item))
-                )
-            rejected = [item for item in items if item.key not in seen_set and not eligible(item)]
-            for item in rejected:
+            new_items = [item for item in items if item.key not in seen_set]
+            rejected: list[tuple[NewsItem, str]] = []
+            candidates: list[NewsItem] = []
+            for item in new_items:
+                reason = _news_rejection_reason(item, now)
+                if reason is None:
+                    candidates.append(item)
+                else:
+                    rejected.append((item, reason))
+
+            for item, reason in rejected:
+                _audit_news(state, item, reason, now)
                 seen.insert(0, item.key)
                 seen_set.add(item.key)
-            references = [item for item in items if item.key in seen_set]
-            candidates = [item for item in items if item.key not in seen_set and eligible(item)]
+
+            # Only previously accepted/currently eligible stories can suppress a new factual report.
+            references = [
+                item for item in items
+                if item.key in seen_set and _news_rejection_reason(item, now) is None
+            ]
             selected, duplicates = _select_top_stories(candidates, references)
             for item in duplicates:
+                _audit_news(state, item, "duplicate_or_redundant", now)
                 seen.insert(0, item.key)
                 seen_set.add(item.key)
+
             if rejected or duplicates:
                 state["news_seen"] = seen[:500]
                 save_state(state, STATE_PATH)
                 changed = True
+
             next_color = state.get("next_news_color", "red")
             for item in reversed(selected):
                 title_fa = translate_to_fa(item.title)
                 if not title_fa:
+                    _audit_news(state, item, "translation_failed_retry_later", now)
+                    save_state(state, STATE_PATH)
+                    changed = True
                     continue
                 detail = fetch_news_detail(item)
                 summary_fa = translate_to_fa(detail[:1200]) if detail else ""
@@ -332,7 +400,6 @@ def run(now: datetime | None = None) -> int:
     except Exception as exc:
         print(f"News error: {exc}", file=sys.stderr)
 
-    # Daily car prices at/after 11:00 Tehran, once per day.
     if _car_due(state, now):
         try:
             prices = fetch_car_prices()
@@ -345,7 +412,6 @@ def run(now: datetime | None = None) -> int:
         except Exception as exc:
             print(f"Car price error: {exc}", file=sys.stderr)
 
-    # Weather is isolated so a weather outage never blocks news/markets.
     if _weather_noon_due(state, now):
         try:
             report = fetch_weather_report()
@@ -366,7 +432,6 @@ def run(now: datetime | None = None) -> int:
         except Exception as exc:
             print(f"Weather night error: {exc}", file=sys.stderr)
 
-    # Midnight summary uses the first and last regular TGJU observations from the previous Tehran day.
     summary_day = _market_summary_day(state, now)
     if summary_day:
         data = state.get("market_day_prices") or {}
@@ -403,7 +468,6 @@ def run(now: datetime | None = None) -> int:
 
 
 def monitor_loop(poll_seconds: int = 60, session_seconds: int = 240) -> int:
-    """Run repeated polling cycles for a bounded GitHub Actions session."""
     poll_seconds = max(1, int(poll_seconds))
     session_seconds = max(poll_seconds, int(session_seconds))
     started = time.monotonic()
