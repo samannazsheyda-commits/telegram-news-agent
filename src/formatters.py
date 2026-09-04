@@ -74,25 +74,7 @@ def _published_fa(value: str) -> str:
 
 
 def _brand_footer() -> list[str]:
-    return ["", f'📡 <a href="{CHANNEL_URL}">بی‌خبر</a> ←', "مانیتور تحولات ایران"]
-
-
-def _topic_emoji(item: NewsItem, title_fa: str, summary_fa: str) -> str:
-    text = " ".join([item.title, item.summary, title_fa, summary_fa]).lower()
-    groups: tuple[tuple[str, tuple[str, ...]], ...] = (
-        ("🚀", ("missile", "rocket", "drone", "موشک", "پهپاد", "راکت")),
-        ("⚓", ("hormuz", "tanker", "shipping", "ship", "هرمز", "نفتکش", "کشتیرانی", "کشتی")),
-        ("☢️", ("nuclear", "uranium", "natanz", "fordow", "هسته", "اورانیوم", "نطنز", "فردو")),
-        ("🤝", ("talks", "negotiation", "ceasefire", "deal", "مذاکر", "آتش بس", "آتش‌بس", "توافق")),
-        ("💰", ("sanction", "economy", "economic", "oil price", "تحریم", "اقتصاد", "قیمت نفت")),
-        ("🇮🇱", ("israel", "israeli", "netanyahu", "اسرائیل", "نتانیاهو")),
-        ("🇺🇸", ("trump", "vance", "rubio", "bessent", "white house", "ترامپ", "ونس", "روبیو", "بِسنت", "کاخ سفید")),
-        ("🚨", ("attack", "strike", "war", "bomb", "killed", "حمله", "جنگ", "بمباران", "کشته")),
-    )
-    for emoji, terms in groups:
-        if any(term in text for term in terms):
-            return emoji
-    return "📰"
+    return ["", f'🛑 <a href="{CHANNEL_URL}">بی‌خبر</a> ←', "مانیتور تحولات ایران"]
 
 
 def _is_redundant_summary(title: str, summary: str) -> bool:
@@ -112,7 +94,7 @@ def _is_redundant_summary(title: str, summary: str) -> bool:
 def format_truth(post: TruthPost, persian_text: str) -> str:
     label = "🔁 بازنشر ترامپ در Truth Social | ایران" if post.is_retruth else "🇺🇸 ترامپ در Truth Social | ایران"
     body = _ensure_period(persian_text)
-    parts = [f"{_safe(label)}", "", _safe(body), "", f'🔗 <a href="{_safe(post.url)}">لینک پست</a>']
+    parts = [f"{_safe(label)}", "", _safe(body), "", f'📌 <a href="{_safe(post.url)}">لینک پست</a>']
     parts += _brand_footer()
     return "\n".join(parts).strip()
 
@@ -123,18 +105,17 @@ def format_news(item: NewsItem, title_fa: str, summary_fa: str) -> str:
     if len(summary_fa) > 900:
         summary_fa = _ensure_period(summary_fa[:897].rstrip(" .…") + "…")
 
-    emoji = _topic_emoji(item, title_fa, summary_fa)
-    parts = [f"{emoji} <b>{_safe(title_fa)}</b>"]
+    parts = [f"🔺♦️ <b>{_safe(title_fa)}</b>"]
 
     if summary_fa and not _is_redundant_summary(title_fa, summary_fa):
-        parts += ["", f"▪️ {_safe(summary_fa)}"]
+        parts += ["", f"🟥 <b>{_safe(summary_fa)}</b>"]
 
     published = _published_fa(item.published)
     if published:
-        parts += ["", f"🕒 {_safe(published)}"]
+        parts += ["", f"⏰ {_safe(published)}"]
 
     if item.link:
-        parts += [f'🔗 منبع: {_safe(item.source)} | <a href="{_safe(item.link)}">لینک خبر</a>']
+        parts += [f'📌 منبع: {_safe(item.source)} | <a href="{_safe(item.link)}">لینک خبر</a>']
 
     parts += _brand_footer()
     return "\n".join(parts).strip()
