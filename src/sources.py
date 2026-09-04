@@ -12,17 +12,22 @@ from bs4 import BeautifulSoup
 
 TRUTH_ACCOUNT_ID = "107780257626128497"
 TRUTH_URL = f"https://truthsocial.com/api/v1/accounts/{TRUTH_ACCOUNT_ID}/statuses"
+TRUMPSTRUTH_FEED = "https://www.trumpstruth.org/feed"
 TGJU_OVERVIEW = "https://gem.tgju.org/widget/get/market-overview"
 TGJU_PROFILE_BASE = "https://www.tgju.org/profile"
 GOOGLE_NEWS_BASE = "https://news.google.com/rss/search"
 USER_AGENT = "Mozilla/5.0 (compatible; TelegramNewsAgent/2.0)"
 
-IRAN_NEWS_QUERY = "Iran (war OR Israel OR Trump OR Hormuz OR nuclear OR sanctions OR talks OR attack OR missile OR drone OR tanker OR shipping OR ceasefire)"
+IRAN_NEWS_QUERY = (
+    'Iran (war OR Israel OR Trump OR Hormuz OR nuclear OR IAEA OR "Security Council" OR sanctions '
+    'OR talks OR attack OR missile OR drone OR tanker OR shipping OR ceasefire OR airspace OR NOTAM '
+    'OR explosion OR bank)'
+)
 
 NEWS_QUERIES: tuple[tuple[str, str, str], ...] = (
     ("Axios", f'{IRAN_NEWS_QUERY} source:Axios', "en"),
     ("Al Jazeera", f'{IRAN_NEWS_QUERY} source:"Al Jazeera"', "en"),
-    ("Channel 14", 'Iran site:now14.co.il', "en"),
+    ("Channel 14", 'Iran (attack OR missile OR drone OR nuclear OR war OR Israel) site:now14.co.il', "en"),
     ("Reuters", f'{IRAN_NEWS_QUERY} source:Reuters', "en"),
     ("Associated Press", f'{IRAN_NEWS_QUERY} source:"Associated Press"', "en"),
     ("BBC News", f'{IRAN_NEWS_QUERY} source:"BBC News"', "en"),
@@ -34,7 +39,7 @@ NEWS_QUERIES: tuple[tuple[str, str, str], ...] = (
     ("Times of Israel", f'{IRAN_NEWS_QUERY} source:"The Times of Israel"', "en"),
     ("Haaretz", f'{IRAN_NEWS_QUERY} source:Haaretz', "en"),
     ("Marco Rubio", '"Marco Rubio" Iran', "en"),
-    ("Mohammad Bagher Ghalibaf", '("Mohammad Bagher Ghalibaf" OR قالیباف) (Iran OR ایران)', "en"),
+    ("Mohammad Bagher Ghalibaf", '("Mohammad Bagher Ghalibaf" OR Ghalibaf OR قالیباف) (Iran OR ایران)', "en"),
     ("Scott Bessent", '"Scott Bessent" Iran', "en"),
     ("J.D. Vance", '("J.D. Vance" OR "JD Vance") Iran', "en"),
     ("Donald Trump", '("Donald Trump" OR Trump) Iran', "en"),
@@ -124,16 +129,44 @@ def strip_html(raw: str) -> str:
     return html.unescape(re.sub(r"\s+", " ", soup.get_text(" ", strip=True))).strip()
 
 
-def fetch_truth_posts(session=requests, limit: int = 20) -> list[TruthPost]:
-    response = session.get(TRUTH_URL, params={"limit": limit, "exclude_replies": "true", "with_muted": "true"}, headers={"User-Agent": USER_AGENT}, timeout=20)
-    response.raise_for_status()
-    rows: list[dict[str, Any]] = response.json()
+def _truth_api_posts(payload: list[dict[str, Any]]) -> list[TruthPost]:
     result: list[TruthPost] = []
-    for status in rows:
+    for status in payload:
         target = status.get("reblog") or status
         text = strip_html(target.get("content", "")) or "(پست بدون متن؛ ممکن است شامل تصویر یا ویدیو باشد)"
         result.append(TruthPost(str(status.get("id", "")), str(status.get("created_at", "")), text, str(status.get("url") or target.get("url") or ""), bool(status.get("reblog"))))
     return result
+
+
+def parse_trumpstruth_rss(content: bytes) -> list[TruthPost]:
+    root = ET.fromstring(content)
+    result: list[TruthPost] = []
+    for node in root.findall(".//item"):
+        def value(tag: str) -> str:
+            child = node.find(tag)
+            return (child.text or "").strip() if child is not None else ""
+        link = value("link") or value("guid")
+        match = re.search(r"/statuses/(\d+)", link)
+        if not match:
+            continue
+        title = strip_html(value("title"))
+        description = strip_html(value("description"))
+        text = description or re.sub(r"^Donald J\. Trump:\s*", "", title).strip()
+        if text:
+            result.append(TruthPost(match.group(1), value("pubDate"), text, link, "retruthed" in title.lower()))
+    result.sort(key=lambda p: int(p.id), reverse=True)
+    return result
+
+
+def fetch_truth_posts(session=requests, limit: int = 20) -> list[TruthPost]:
+    try:
+        response = session.get(TRUTH_URL, params={"limit": limit, "exclude_replies": "true", "with_muted": "true"}, headers={"User-Agent": USER_AGENT}, timeout=20)
+        response.raise_for_status()
+        return _truth_api_posts(response.json())
+    except Exception:
+        response = session.get(TRUMPSTRUTH_FEED, headers={"User-Agent": USER_AGENT}, timeout=20)
+        response.raise_for_status()
+        return parse_trumpstruth_rss(response.content)[:limit]
 
 IRAN_TERMS = {"iran", "iranian", "tehran", "khamenei", "irgc", "revolutionary guard", "hormuz", "persian gulf", "isfahan", "natanz", "fordow", "iran's", "iranians", "ایران", "ایرانی", "تهران", "خامنه", "سپاه", "هرمز", "خلیج فارس", "نطنز", "فردو"}
 SECURITY_TERMS = {"explosion", "blast", "attack", "strike", "missile", "drone", "fire", "conflict", "seized", "sinking", "collision", "notam", "airspace closed", "airspace reopened", "flight ban", "flight cancellation", "flights cancelled", "flight restriction", "انفجار", "حمله", "درگیری", "موشک", "پهپاد", "آتش", "توقیف", "غرق", "نوتام", "بسته شدن حریم", "بازگشایی حریم", "لغو پرواز", "ممنوعیت پرواز"}
