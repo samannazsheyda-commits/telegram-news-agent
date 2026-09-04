@@ -99,6 +99,10 @@ def weather_code_fa(code: int | None) -> str:
     return "متغیر"
 
 
+def _to_persian_digits(value: str) -> str:
+    return value.translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"))
+
+
 def _num(values, index: int):
     if not isinstance(values, list) or index >= len(values):
         return None
@@ -203,12 +207,11 @@ def format_night_weather(report: WeatherReport) -> str:
         if len(city.days) < 2:
             continue
         day = city.days[1]
-        rain = "—" if day.precipitation_probability is None else f"{round(day.precipitation_probability)}٪"
+        rain = "—" if day.precipitation_probability is None else f"{_to_persian_digits(str(round(day.precipitation_probability)))}٪"
         lines.append(
             f"• <b>{escape(city.city)}</b>: {_fmt_temp(day.temp_min)} تا {_fmt_temp(day.temp_max)} — "
             f"{weather_code_fa(day.code)} | بارش {rain}"
         )
-    # Compact 3-day national outlook based only on the same forecast data.
     rainy_counts = []
     hot_counts = []
     cold_counts = []
