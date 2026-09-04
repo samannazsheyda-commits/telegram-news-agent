@@ -10,6 +10,18 @@ import requests
 
 USER_AGENT = "Mozilla/5.0 (compatible; TelegramNewsAgent/2.0)"
 PERSIAN_RE = re.compile(r"[\u0600-\u06FF]")
+LATIN_WORD_RE = re.compile(r"\b[A-Za-z]{3,}\b")
+
+NEWS_GLOSSARY = (
+    ("ایالات متحده", "آمریکا"),
+    ("تنگه‌ی هرمز", "تنگه هرمز"),
+    ("تنگه هرمز", "تنگه هرمز"),
+    ("جی دی ونس", "جی‌دی ونس"),
+    ("جی.دی. ونس", "جی‌دی ونس"),
+    ("دونالد ترامپ", "ترامپ"),
+    ("سپاه پاسداران انقلاب اسلامی", "سپاه پاسداران"),
+    ("عباس اراقچی", "عباس عراقچی"),
+)
 
 
 def has_persian(text: str) -> bool:
@@ -20,8 +32,7 @@ def _google_translate(text: str, session=requests) -> str:
     response = session.get(
         "https://translate.googleapis.com/translate_a/single",
         params={"client": "gtx", "sl": "auto", "tl": "fa", "dt": "t", "q": text},
-        headers={"User-Agent": USER_AGENT},
-        timeout=20,
+        headers={"User-Agent": USER_AGENT}, timeout=20,
     )
     response.raise_for_status()
     payload = response.json()
@@ -31,13 +42,36 @@ def _google_translate(text: str, session=requests) -> str:
 def _mymemory_translate(text: str, session=requests) -> str:
     response = session.get(
         "https://api.mymemory.translated.net/get",
-        params={"q": text, "langpair": "en|fa"},
-        headers={"User-Agent": USER_AGENT},
-        timeout=20,
+        params={"q": text, "langpair": "en|fa"}, headers={"User-Agent": USER_AGENT}, timeout=20,
     )
     response.raise_for_status()
     payload = response.json()
     return str((payload.get("responseData") or {}).get("translatedText") or "").strip()
+
+
+def _polish_fa(text: str) -> str:
+    value = (text or "").replace("ي", "ی").replace("ك", "ک")
+    for old, new in NEWS_GLOSSARY:
+        value = value.replace(old, new)
+    value = re.sub(r"\s+([،؛:.!?؟])", r"\1", value)
+    value = re.sub(r"([،؛])([^\s])", r"\1 \2", value)
+    value = re.sub(r"\s+", " ", value).strip()
+    return value
+
+
+def _translation_quality_ok(source: str, translated: str) -> bool:
+    if not translated or not has_persian(translated):
+        return False
+    if translated.strip().lower() == (source or "").strip().lower():
+        return False
+    latin_words = LATIN_WORD_RE.findall(translated)
+    words = re.findall(r"[A-Za-z\u0600-\u06FF]+", translated)
+    if words and len(latin_words) / len(words) > 0.30:
+        return False
+    normalized = re.sub(r"\W+", " ", translated).strip()
+    if len(normalized) < 4:
+        return False
+    return True
 
 
 def translate_to_fa(text: str, session=requests) -> str:
@@ -45,11 +79,11 @@ def translate_to_fa(text: str, session=requests) -> str:
     if not text:
         return ""
     if has_persian(text):
-        return text
+        return _polish_fa(text)
     for translator in (_google_translate, _mymemory_translate):
         try:
-            translated = translator(text, session=session)
-            if translated and translated != text and has_persian(translated):
+            translated = _polish_fa(translator(text, session=session))
+            if _translation_quality_ok(text, translated):
                 return translated
         except Exception:
             continue
@@ -81,12 +115,7 @@ def send_telegram(text: str, bot_token: str, chat_id: str, session=requests) -> 
     for chunk in split_message(text):
         response = session.post(
             url,
-            json={
-                "chat_id": chat_id,
-                "text": chunk,
-                "parse_mode": "HTML",
-                "disable_web_page_preview": True,
-            },
+            json={"chat_id": chat_id, "text": chunk, "parse_mode": "HTML", "disable_web_page_preview": True},
             timeout=20,
         )
         response.raise_for_status()
