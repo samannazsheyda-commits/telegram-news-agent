@@ -51,12 +51,28 @@ def test_new_major_sources_are_shown_in_persian():
         "KAN 11": "کانال ۱۱ اسرائیل", "N12": "کانال ۱۲ اسرائیل", "Channel 13": "کانال ۱۳ اسرائیل",
         "Fox News": "فاکس نیوز", "NBC News": "ان‌بی‌سی نیوز", "CBS News": "سی‌بی‌اس نیوز",
         "ABC News": "ای‌بی‌سی نیوز", "Sky News": "اسکای نیوز", "Bloomberg": "بلومبرگ", "CNBC": "سی‌ان‌بی‌سی",
-        "Sepah News / X": "سپاه نیوز",
+        "Sepah News / X": "سپاه نیوز", "Times of Israel": "تایمز اسرائیل",
     }
     for source, fa in expected.items():
         item = NewsItem("k", source, "Iran", "", "https://example.com", "Fri, 04 Sep 2026 10:00:00 GMT")
         text = format_news(item, "خبر مهم ایران", "", marker_override="⚪️")
         assert text.splitlines()[0].startswith(f"⚪️ <b>{fa}: ")
+
+
+def test_times_of_israel_suffix_is_removed_from_persian_headline():
+    item = NewsItem("toi", "Times of Israel", "Iran strategy - Times of Israel", "", "https://example.com/toi", "Fri, 04 Sep 2026 18:30:00 GMT")
+    text = format_news(item, "آمریکا در حال تدوین استراتژی پس از جنگ ایران است - تایمز اسرائیل", "", marker_override="🟥")
+    first_line = text.splitlines()[0]
+    assert first_line == "🟥 <b>تایمز اسرائیل: آمریکا در حال تدوین استراتژی پس از جنگ ایران است.</b>"
+    assert first_line.count("تایمز اسرائیل") == 1
+
+
+def test_google_news_generic_boilerplate_summary_is_suppressed():
+    item = NewsItem("toi", "Times of Israel", "Iran strategy", "Google News boilerplate", "https://example.com/toi", "Fri, 04 Sep 2026 18:30:00 GMT")
+    summary = "پوشش جامع و به‌روز اخبار، جمع‌آوری‌شده از منابع مختلف در سراسر جهان توسط گوگل نیوز."
+    text = format_news(item, "آمریکا در حال تدوین استراتژی پس از جنگ ایران است", summary, marker_override="🟥")
+    assert "پوشش جامع" not in text
+    assert "گوگل نیوز" not in text
 
 
 def test_news_keeps_two_useful_detail_sentences_not_only_one():
