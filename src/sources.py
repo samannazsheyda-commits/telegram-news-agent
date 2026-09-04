@@ -82,11 +82,21 @@ APPROVED_SOURCE_ALIASES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("Bloomberg", ("bloomberg",)),
     ("CNBC", ("cnbc",)),
     ("Reuters", ("reuters",)), ("Associated Press", ("associated press", "ap news", "apnews")),
-    ("BBC News", ("bbc", "bbc news", "bbc.com")), ("CNN", ("cnn",)),
-    ("Financial Times", ("financial times",)),
-    ("The New York Times", ("new york times", "the new york times")),
+    ("BBC News", ("bbc", "bbc news", "bbc.com")), ("CNN", ("cnn", "cnn.com")),
+    ("Financial Times", ("financial times", "ft.com")),
+    ("The New York Times", ("new york times", "the new york times", "nytimes.com")),
     ("France 24", ("france 24", "france24")), ("DW", ("dw", "deutsche welle")),
     ("Times of Israel", ("times of israel", "the times of israel")), ("Haaretz", ("haaretz",)),
+)
+
+PROMOTIONAL_TITLE_TERMS = (
+    "breaking news", "latest news", "latest headlines", "news and videos", "latest news and videos",
+    "live updates", "watch live", "homepage", "official site", "top stories", "news, weather",
+)
+DETAIL_BOILERPLATE_TERMS = (
+    "comprehensive up-to-date news coverage", "aggregated from sources all over the world by google news",
+    "breaking news, latest news and videos", "latest news and videos", "watch live", "sign up for",
+    "download the app", "all rights reserved", "cookie policy", "privacy policy",
 )
 
 
@@ -225,6 +235,35 @@ def canonical_source(raw: str) -> str | None:
     return None
 
 
+def _source_aliases(source: str) -> tuple[str, ...]:
+    for canonical, aliases in APPROVED_SOURCE_ALIASES:
+        if canonical == source:
+            return aliases + (canonical.lower(),)
+    return (source.lower(),)
+
+
+def _title_segment_is_junk(segment: str, source: str) -> bool:
+    value = re.sub(r"\s+", " ", (segment or "").strip()).lower().strip(" .,:;|—–-")
+    if not value:
+        return True
+    if value in _source_aliases(source):
+        return True
+    if re.fullmatch(r"(?:www\.)?[a-z0-9.-]+\.(?:com|org|net|co|tv|news)", value):
+        return True
+    return any(term in value for term in PROMOTIONAL_TITLE_TERMS)
+
+
+def _clean_feed_title(title: str, source: str) -> str:
+    text = re.sub(r"\s+", " ", (title or "").strip())
+    parts = re.split(r"\s+[-–—|]\s+", text)
+    while len(parts) > 1 and _title_segment_is_junk(parts[-1], source):
+        parts.pop()
+    # Once a promotional tail is gone, the media name is often the next suffix.
+    while len(parts) > 1 and _title_segment_is_junk(parts[-1], source):
+        parts.pop()
+    return " - ".join(parts).strip(" -–—|")
+
+
 def _story_title(title: str) -> str:
     text = re.sub(r"\s+-\s+[^-]{2,80}$", "", title.strip())
     return re.sub(r"[^a-z0-9\u0600-\u06ff]+", " ", text.lower()).strip()
@@ -241,8 +280,8 @@ def parse_google_news_rss(content: bytes, fallback_source: str, allow_special_so
         def value(tag: str) -> str:
             child = node.find(tag)
             return (child.text or "").strip() if child is not None else ""
-        title, summary = strip_html(value("title")), strip_html(value("description"))
-        combined = f"{title} {summary}"
+        raw_title, summary = strip_html(value("title")), strip_html(value("description"))
+        combined = f"{raw_title} {summary}"
         if not is_iran_related(combined) and not (fallback_source == "Al Arabiya" and is_regional_security_alert(combined)):
             continue
         source_node = node.find("source")
@@ -252,6 +291,7 @@ def parse_google_news_rss(content: bytes, fallback_source: str, allow_special_so
             if not allow_special_source:
                 continue
             source = fallback_source
+        title = _clean_feed_title(raw_title, source)
         items.append(NewsItem(_news_key(source, title), source, title, summary, value("link"), value("pubDate")))
     return items
 
@@ -297,10 +337,15 @@ def _clean_detail(value: str) -> str:
     return re.sub(r"\s+", " ", strip_html(value or "")).strip()
 
 
+def _detail_is_boilerplate(detail: str) -> bool:
+    value = (detail or "").lower()
+    return any(term in value for term in DETAIL_BOILERPLATE_TERMS)
+
+
 def _detail_is_useful(title: str, detail: str) -> bool:
     t = _story_title(title)
     d = _story_title(detail)
-    if len(detail) < 70 or not d:
+    if len(detail) < 70 or not d or _detail_is_boilerplate(detail):
         return False
     if t in d or d in t:
         return False
@@ -308,30 +353,36 @@ def _detail_is_useful(title: str, detail: str) -> bool:
 
 
 def fetch_news_detail(item: NewsItem, session=requests) -> str:
-    """Best-effort detail enrichment for a selected story; never invents content."""
+    """Best-effort editorial enrichment from the source page; never invents content."""
     summary = _clean_detail(item.summary)
+    if item.link:
+        try:
+            response = session.get(item.link, headers={"User-Agent": USER_AGENT}, timeout=12, allow_redirects=True)
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
+            candidates: list[str] = []
+            # Source-written subheadline/description gets priority over RSS boilerplate.
+            for attrs in (
+                {"property": "og:description"},
+                {"name": "description"},
+                {"name": "twitter:description"},
+            ):
+                node = soup.find("meta", attrs=attrs)
+                if node and node.get("content"):
+                    candidates.append(str(node.get("content")))
+            # Then inspect the first lead paragraphs, where major outlets usually
+            # put the who/where/how-many detail needed to make a headline complete.
+            paragraphs = [p.get_text(" ", strip=True) for p in soup.find_all("p")]
+            candidates.extend(paragraphs[:8])
+            for candidate in candidates:
+                detail = _clean_detail(candidate)
+                if _detail_is_useful(item.title, detail):
+                    return detail[:1200]
+        except Exception:
+            pass
     if _detail_is_useful(item.title, summary):
         return summary[:1200]
-    if not item.link:
-        return summary[:1200]
-    try:
-        response = session.get(item.link, headers={"User-Agent": USER_AGENT}, timeout=12, allow_redirects=True)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, "html.parser")
-        candidates: list[str] = []
-        for attrs in ({"property": "og:description"}, {"name": "description"}, {"name": "twitter:description"}):
-            node = soup.find("meta", attrs=attrs)
-            if node and node.get("content"):
-                candidates.append(str(node.get("content")))
-        paragraphs = [p.get_text(" ", strip=True) for p in soup.find_all("p")]
-        candidates.extend(paragraphs[:5])
-        for candidate in candidates:
-            detail = _clean_detail(candidate)
-            if _detail_is_useful(item.title, detail):
-                return detail[:1200]
-    except Exception:
-        pass
-    return summary[:1200]
+    return ""
 
 
 def _extract_price(text: str, labels: list[str]) -> int:
