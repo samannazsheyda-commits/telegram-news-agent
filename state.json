@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41514",
   "news_seen": [
+    "69faa894fd0aa5ca4c4fe38c07f9385b17e1d596",
+    "d70d8e0103454193e5286a5c8b8edd9251f3fb79",
+    "6651d683c09b6e15520b101418da656cff64e3aa",
     "13ca27e81a8f0a0136f0b380b6cf1a3ffb0ea004",
     "a6b6fe0c529916d6ad4e03adea1bd691796b697a",
     "edd535a687eff351b222464fc5bd0f53d6c1908d",
@@ -497,12 +500,9 @@
     "0052b02722a059961e5a9eff2314964c8f76f04c",
     "c4eb1415bada777b29fc40e19c75297094144499",
     "6bb955fbae1ac3a52cd7a8cdbfed6594ba6a792b",
-    "e3620141eed06fa358811ab7ed02798d80cf5479",
-    "b3c3ead550fc31979c6ad553e7f0e0dd33295624",
-    "ca0a5886fe3514e03dad718e0bc22dd74f0d6768",
-    "6d0cd1daec336635c7de96c9b1bfb7cc56f1d34d"
+    "e3620141eed06fa358811ab7ed02798d80cf5479"
   ],
-  "market_last_sent_at": "2026-09-04T16:38:19.322621+00:00",
+  "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "red",
   "car_last_prices": {
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -520,5 +520,13 @@
     "سهند S": 1510000000
   },
   "car_last_sent_date": "2026-09-04",
-  "weather_noon_last_sent_date": "2026-09-04"
+  "weather_noon_last_sent_date": "2026-09-04",
+  "weather_night_last_sent_date": "2026-09-04",
+  "market_day_prices": {
+    "date": "2026-09-04",
+    "first_usd": 221060,
+    "last_usd": 221060,
+    "first_gold": 23518800,
+    "last_gold": 23518800
+  }
 }
