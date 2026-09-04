@@ -8,6 +8,7 @@ import tempfile
 import xml.etree.ElementTree as ET
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
+from email.utils import format_datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin, urlparse
@@ -86,6 +87,22 @@ def normalize_x_handle(value: str) -> str:
     return f"@{text}"
 
 
+def normalize_telegram_channel(value: str) -> str:
+    text = (value or "").strip()
+    if text.startswith("http://") or text.startswith("https://"):
+        parsed = urlparse(text)
+        if parsed.netloc.lower() not in {"t.me", "www.t.me", "telegram.me", "www.telegram.me"}:
+            raise ValueError("invalid_telegram_channel")
+        parts = [part for part in parsed.path.strip("/").split("/") if part]
+        if parts and parts[0] == "s":
+            parts = parts[1:]
+        text = parts[0] if parts else ""
+    text = text.lstrip("@").strip()
+    if not re.fullmatch(r"[A-Za-z0-9_]{5,32}", text):
+        raise ValueError("invalid_telegram_channel")
+    return text
+
+
 def validate_website_source(name: str, website_url: str, feed_url: str = "") -> WebsiteSource:
     name = re.sub(r"\s+", " ", (name or "").strip())
     parsed = urlparse((website_url or "").strip())
@@ -156,6 +173,38 @@ def parse_public_feed(content: bytes, source_name: str) -> list[NewsItem]:
             continue
         items.append(NewsItem(_news_key(source_name, title), source_name, title, summary, link, published))
     return items
+
+
+def parse_public_telegram_channel(html_text: str, channel: str, source_name: str) -> list[NewsItem]:
+    channel = normalize_telegram_channel(channel)
+    soup = BeautifulSoup(html_text or "", "html.parser")
+    display = f"{source_name} / Telegram"
+    result: list[NewsItem] = []
+    for message in soup.select(".tgme_widget_message[data-post]"):
+        data_post = str(message.get("data-post") or "")
+        if not data_post.lower().startswith(channel.lower() + "/"):
+            continue
+        text_node = message.select_one(".tgme_widget_message_text")
+        text = strip_html(str(text_node)) if text_node is not None else ""
+        if not text or not is_iran_related(text):
+            continue
+        title = re.sub(r"\s+", " ", text).strip()
+        if len(title) > 240:
+            title = title[:237].rstrip() + "..."
+        time_node = message.select_one("time[datetime]")
+        published = ""
+        if time_node is not None:
+            raw_dt = str(time_node.get("datetime") or "")
+            try:
+                dt = datetime.fromisoformat(raw_dt.replace("Z", "+00:00"))
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                published = format_datetime(dt.astimezone(timezone.utc))
+            except ValueError:
+                published = ""
+        link = f"https://t.me/{data_post}"
+        result.append(NewsItem(_news_key(display, f"{data_post}:{text}"), display, title, text, link, published))
+    return result
 
 
 def _read_sources(path: Path = CUSTOM_SOURCES_PATH) -> list[dict[str, Any]]:
@@ -242,6 +291,17 @@ def _fetch_x_items(source: dict[str, Any], session=requests) -> list[NewsItem]:
     return result
 
 
+def _fetch_telegram_items(source: dict[str, Any], session=requests) -> list[NewsItem]:
+    channel = normalize_telegram_channel(str(source.get("channel") or source.get("url") or ""))
+    response = session.get(
+        f"https://t.me/s/{channel}",
+        headers={"User-Agent": USER_AGENT},
+        timeout=20,
+    )
+    response.raise_for_status()
+    return parse_public_telegram_channel(response.text, channel, str(source.get("name") or channel))
+
+
 def fetch_custom_news_items(path: str | Path = CUSTOM_SOURCES_PATH, session=requests) -> list[NewsItem]:
     merged: dict[str, NewsItem] = {}
     for source in _read_sources(Path(path)):
@@ -260,6 +320,8 @@ def fetch_custom_news_items(path: str | Path = CUSTOM_SOURCES_PATH, session=requ
                 items = parse_public_feed(response.content, str(source.get("name") or "Custom Source"))
             elif kind == "x":
                 items = _fetch_x_items(source, session=session)
+            elif kind == "telegram":
+                items = _fetch_telegram_items(source, session=session)
             else:
                 continue
         except Exception:
