@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from zoneinfo import ZoneInfo
 
-from .formatters import format_market, format_news, format_truth
+from .formatters import _red_story_marker, format_market, format_news, format_truth
 from .services import load_state, save_state, send_telegram, translate_to_fa
 from .sources import NewsItem, fetch_market_snapshot, fetch_news_items, fetch_truth_posts, is_iran_related
 
@@ -235,12 +235,16 @@ def run(now: datetime | None = None) -> int:
                 state["news_seen"] = seen[:500]
                 save_state(state, STATE_PATH)
                 changed = True
+            next_color = state.get("next_news_color", "red")
             for item in reversed(new_items):
                 title_fa = translate_to_fa(item.title)
                 if not title_fa:
                     continue
                 summary_fa = translate_to_fa(item.summary[:1200]) if item.summary else ""
-                send_telegram(format_news(item, title_fa, summary_fa), token, chat_id)
+                marker = _red_story_marker(item) if next_color == "red" else "⚪️"
+                send_telegram(format_news(item, title_fa, summary_fa, marker_override=marker), token, chat_id)
+                next_color = "white" if next_color == "red" else "red"
+                state["next_news_color"] = next_color
                 seen.insert(0, item.key); seen_set.add(item.key)
                 state["news_seen"] = seen[:500]
                 save_state(state, STATE_PATH)
@@ -253,7 +257,7 @@ def run(now: datetime | None = None) -> int:
     if market_due and not _market_quiet_hours(now):
         try:
             snapshot = fetch_market_snapshot()
-            send_telegram(format_market(snapshot), token, chat_id)
+            send_telegram(format_market(snapshot, now), token, chat_id)
             state["market_last_sent_at"] = now.isoformat()
             save_state(state, STATE_PATH)
             changed = True
