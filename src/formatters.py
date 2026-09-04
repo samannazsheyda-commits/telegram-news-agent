@@ -21,7 +21,7 @@ SOURCE_FA = {
     "Bloomberg": "بلومبرگ", "CNBC": "سی‌ان‌بی‌سی", "Reuters": "رویترز",
     "Associated Press": "آسوشیتدپرس", "BBC News": "بی‌بی‌سی", "CNN": "سی‌ان‌ان",
     "Financial Times": "فایننشال تایمز", "The New York Times": "نیویورک تایمز",
-    "France 24": "فرانس ۲۴", "DW": "دویچه‌وله", "Times of Israel": "تایمز آو اسرائیل",
+    "France 24": "فرانس ۲۴", "DW": "دویچه‌وله", "Times of Israel": "تایمز اسرائیل",
     "Haaretz": "هاآرتص", "Donald Trump / Truth Social": "ترامپ / تروث سوشال",
     "Barak Ravid / X": "باراک راوید", "Abbas Araghchi / X": "عباس عراقچی",
     "Mohsen Rezaei / X": "محسن رضایی", "Sepah News / X": "سپاه نیوز",
@@ -31,11 +31,17 @@ SOURCE_SUFFIXES = (
     "Al Arabiya English", "Al Arabiya", "العربیه انگلیسی", "العربیه", "Al Jazeera", "الجزیره",
     "Reuters", "رویترز", "Associated Press", "آسوشیتدپرس", "BBC News", "BBC", "بی‌بی‌سی",
     "CNN", "سی‌ان‌ان", "Financial Times", "فایننشال تایمز", "The New York Times", "New York Times",
-    "نیویورک تایمز", "France 24", "فرانس ۲۴", "DW", "دویچه‌وله", "Times of Israel", "تایمز آو اسرائیل",
+    "نیویورک تایمز", "France 24", "فرانس ۲۴", "DW", "دویچه‌وله", "Times of Israel", "تایمز آو اسرائیل", "تایمز اسرائیل",
     "Haaretz", "هاآرتص", "Axios", "اکسیوس", "Channel 14", "کانال ۱۴ اسرائیل", "KAN 11", "KAN",
     "کانال ۱۱ اسرائیل", "N12", "Channel 12", "کانال ۱۲ اسرائیل", "Channel 13", "Reshet 13",
     "کانال ۱۳ اسرائیل", "Fox News", "فاکس نیوز", "NBC News", "ان‌بی‌سی نیوز", "CBS News", "سی‌بی‌اس نیوز",
     "ABC News", "ای‌بی‌سی نیوز", "Sky News", "اسکای نیوز", "Bloomberg", "بلومبرگ", "CNBC", "سی‌ان‌بی‌سی",
+)
+GOOGLE_NEWS_BOILERPLATE = (
+    "پوشش جامع و به‌روز اخبار",
+    "جمع‌آوری‌شده از منابع مختلف در سراسر جهان توسط گوگل نیوز",
+    "comprehensive up-to-date news coverage",
+    "aggregated from sources all over the world by google news",
 )
 
 
@@ -65,6 +71,8 @@ def _strip_source_suffix(value: str) -> str:
 def _up_to_two_sentences(value: str, max_chars: int = 650) -> str:
     text = re.sub(r"\s+", " ", (value or "").strip())
     if not text:
+        return ""
+    if any(pattern in text.lower() for pattern in GOOGLE_NEWS_BOILERPLATE):
         return ""
     parts = re.split(r"(?<=[.!؟?])\s+", text)
     result = " ".join(parts[:2]).strip()
