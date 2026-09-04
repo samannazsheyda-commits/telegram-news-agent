@@ -43,6 +43,7 @@ def test_important_news_rejects_articles_analysis_and_vague_items():
         "Trump may consider a new approach to Iran",
         "US officials are reviewing options on Iran",
         "Ruling expected soon over Trump's claims about the Strait of Hormuz",
+        "Feature: Inside the debate over Iran policy",
     )
     for text in rejected:
         assert not is_important_news(text, "")
@@ -61,17 +62,18 @@ def test_important_news_accepts_clear_major_new_events():
         assert is_important_news(text, "")
 
 
-def test_special_monitors_are_configured():
+def test_special_monitors_are_configured_without_weak_regional_pseudo_source():
     names = {name for name, _, _ in SPECIAL_QUERIES}
     expected = {
+        "Donald Trump / Truth Social",
         "Barak Ravid / X",
         "Abbas Araghchi / X",
         "Mohsen Rezaei / X",
         "TankerTrackers",
         "NOTAM / Airspace",
-        "Iran regional strikes",
     }
     assert expected <= names
+    assert "Iran regional strikes" not in names
 
 
 def test_special_queries_keep_trump_truth_social_only():
