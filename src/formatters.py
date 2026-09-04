@@ -164,7 +164,6 @@ def format_truth(post: TruthPost, persian_text: str) -> str:
 
 
 def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override: str | None = None) -> str:
-    # Never split a normal headline on commas; that previously produced incomplete fragments.
     title_fa = _ensure_period(_strip_source_suffix(title_fa))
     summary_fa = _ensure_period(_up_to_two_sentences(_strip_source_suffix(summary_fa)))
     marker = marker_override or _story_marker(item)
@@ -204,13 +203,16 @@ def format_market(snapshot: MarketSnapshot, now: datetime | None = None) -> str:
 def _daily_change(label: str, emoji: str, first: int, last: int, suffix: str = "تومان") -> list[str]:
     diff = last - first
     pct = 0.0 if first == 0 else abs(diff) / first * 100
+    first_fa = _to_persian_digits(f"{first:,}")
+    last_fa = _to_persian_digits(f"{last:,}")
+    diff_fa = _to_persian_digits(f"{abs(diff):,}")
     if diff > 0:
-        change = f"▲ {abs(diff):,} {suffix} | {pct:.2f}٪ افزایش"
+        change = f"▲ {diff_fa} {suffix} | {pct:.2f}٪ افزایش"
     elif diff < 0:
-        change = f"▼ {abs(diff):,} {suffix} | {pct:.2f}٪ کاهش"
+        change = f"▼ {diff_fa} {suffix} | {pct:.2f}٪ کاهش"
     else:
         change = "— بدون تغییر"
-    return [f"{emoji} <b>{label}</b>", f"{first:,} ← {last:,} {suffix}", change]
+    return [f"{emoji} <b>{label}</b>", f"{first_fa} ← {last_fa} {suffix}", change]
 
 
 def format_market_daily_summary(first_usd: int, last_usd: int, first_gold: int, last_gold: int, now: datetime | None = None) -> str:
