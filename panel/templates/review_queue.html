@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}نیاز به بررسی | بی‌خبر{% endblock %}
+{% block content %}
+<div class="heading-row"><h1>نیاز به بررسی</h1><span class="badge">{{ items|length }}</span></div>
+{% if not items %}
+  <section class="card empty">فعلاً خبری برای بررسی دستی نیست.</section>
+{% endif %}
+<div class="list">
+{% for item in items %}
+  <a class="news-card" href="{{ url_for('review_edit', item_id=item.id) }}">
+    <div class="meta"><span>{{ item.source }}</span><span>{{ reason_fa.get(item.rejection_reason, item.rejection_reason) }}</span></div>
+    <h2>{{ item.persian_title or item.original_title }}</h2>
+    {% if item.persian_body %}<p>{{ item.persian_body }}</p>{% elif item.original_summary %}<p>{{ item.original_summary }}</p>{% endif %}
+    <div class="meta"><span>{{ item.published_at_source or 'زمان نامشخص' }}</span><span>باز کردن ←</span></div>
+  </a>
+{% endfor %}
+</div>
+{% endblock %}
