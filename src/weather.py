@@ -191,27 +191,28 @@ def _footer() -> str:
 
 
 def format_noon_weather(report: WeatherReport) -> str:
-    lines = ["🌡 <b>دمای امروز مراکز ۳۱ استان</b>", ""]
+    lines = ["🌡 <b>دمای امروز مراکز ۳۱ استان</b>"]
     for city in report.cities:
-        lines.append(f"• <b>{escape(city.city)}</b>: {_fmt_temp(city.current_temp)} — {weather_code_fa(city.current_code)}")
+        lines += ["", f"▫️ <b>{escape(city.city)}</b>: {_fmt_temp(city.current_temp)} — {weather_code_fa(city.current_code)}"]
     lines.append(_footer())
     return "\n".join(lines)
 
 
 def format_night_weather(report: WeatherReport) -> str:
-    lines = ["🌤 <b>پیش‌بینی هوای فردا | مراکز ۳۱ استان</b>", ""]
+    lines = ["🌤 <b>پیش‌بینی هوای فردا | مراکز ۳۱ استان</b>"]
     notes = _important_weather_notes(report, 1)
     if notes:
-        lines += ["⚠️ <b>موارد قابل توجه بر اساس داده پیش‌بینی:</b> " + "؛ ".join(escape(x) for x in notes), ""]
+        lines += ["", "⚠️ <b>موارد قابل توجه بر اساس داده پیش‌بینی:</b> " + "؛ ".join(escape(x) for x in notes)]
     for city in report.cities:
         if len(city.days) < 2:
             continue
         day = city.days[1]
         rain = "—" if day.precipitation_probability is None else f"{_to_persian_digits(str(round(day.precipitation_probability)))}٪"
-        lines.append(
-            f"• <b>{escape(city.city)}</b>: {_fmt_temp(day.temp_min)} تا {_fmt_temp(day.temp_max)} — "
-            f"{weather_code_fa(day.code)} | بارش {rain}"
-        )
+        lines += [
+            "",
+            f"▫️ <b>{escape(city.city)}</b>: {_fmt_temp(day.temp_min)} تا {_fmt_temp(day.temp_max)} — "
+            f"{weather_code_fa(day.code)} | بارش {rain}",
+        ]
     rainy_counts = []
     hot_counts = []
     cold_counts = []
