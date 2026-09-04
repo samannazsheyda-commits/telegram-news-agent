@@ -102,6 +102,8 @@ def test_major_foreign_iran_sources_are_configured():
     expected = {
         "Reuters", "Associated Press", "BBC News", "CNN", "Financial Times",
         "The New York Times", "France 24", "DW", "Times of Israel", "Haaretz",
+        "KAN 11", "N12", "Channel 13", "Fox News", "NBC News", "CBS News",
+        "ABC News", "Sky News", "Bloomberg", "CNBC",
     }
     assert expected <= names
 
