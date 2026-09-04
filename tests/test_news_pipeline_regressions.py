@@ -132,3 +132,32 @@ def test_semantic_duplicate_is_audited_with_title_and_source(tmp_path, monkeypat
         and r["reason"] == "duplicate_or_redundant"
         for r in records
     )
+
+
+def test_rejected_analysis_does_not_become_duplicate_reference_for_valid_story(tmp_path, monkeypatch):
+    state_path = tmp_path / "state.json"
+    _state(state_path)
+    analysis = NewsItem(
+        "analysis",
+        "Reuters",
+        "Analysis: Iran missile attack on Qatar base and what it means",
+        "Iran missile attack on Qatar base was confirmed by officials.",
+        "https://news/analysis",
+        "Fri, 04 Sep 2026 18:35:00 GMT",
+    )
+    factual = NewsItem(
+        "factual",
+        "CNN",
+        "Iran missile attack hits Qatar base, officials say",
+        "Iran missile attack on Qatar base was confirmed by officials.",
+        "https://news/factual",
+        "Fri, 04 Sep 2026 18:40:00 GMT",
+    )
+    sent = []
+    _wire(monkeypatch, state_path, [analysis, factual], sent)
+
+    assert main.run(datetime(2026, 9, 4, 19, 0, tzinfo=timezone.utc)) == 0
+    news = [text for text in sent if "لینک منبع خبر" in text]
+    assert len(news) == 1
+    assert "CNN:" in news[0] or "سی‌ان‌ان:" in news[0]
+    assert "factual" in main.load_state(state_path)["news_seen"]
