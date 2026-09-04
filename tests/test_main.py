@@ -197,7 +197,18 @@ def test_more_than_eight_new_military_stories_are_not_held_for_later(tmp_path, m
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token")
     monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
     monkeypatch.setattr(main, "fetch_truth_posts", lambda: [TruthPost("10", "", "old", "https://truth/10")])
-    items = [NewsItem(f"m{i}", "Reuters", f"Iran launches missile {i} at distinct target in Qatar", f"Officials confirm attack number {i}", f"https://news/{i}", f"Fri, 04 Sep 2026 12:{i:02d}:00 GMT") for i in range(9)]
+    headlines = [
+        "Iran launches missile at Doha airport",
+        "Iranian drone strikes naval base in Bahrain",
+        "Explosion reported after Iran attack on military depot in Iraq",
+        "Iran fires rockets toward US facility in Kuwait",
+        "Air defense activated in Jordan after Iranian missile warning",
+        "Iran drone attack damages radar site in Saudi Arabia",
+        "Iran strikes command center near Abu Dhabi",
+        "Missile interception reported over Qatar after Iran launch",
+        "Iran attack triggers sirens at Gulf military installation",
+    ]
+    items = [NewsItem(f"m{i}", "Reuters", headline, f"Officials confirm event number {i}", f"https://news/{i}", f"Fri, 04 Sep 2026 12:{i:02d}:00 GMT") for i, headline in enumerate(headlines)]
     monkeypatch.setattr(main, "fetch_news_items", lambda: items)
     monkeypatch.setattr(main, "fetch_market_snapshot", lambda: (_ for _ in ()).throw(AssertionError("market should not run")))
     monkeypatch.setattr(main, "translate_to_fa", lambda text: text)
