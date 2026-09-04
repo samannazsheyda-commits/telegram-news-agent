@@ -167,3 +167,51 @@ def test_news_posts_alternate_red_and_white_across_successful_sends(tmp_path, mo
     assert news[0].splitlines()[0].startswith(("🛑 ", "🔺 ", "🟥 "))
     assert news[1].splitlines()[0].startswith("⚪️ ")
     assert main.load_state(state_path)["next_news_color"] == "red"
+
+
+def test_polling_iteration_sends_story_that_appears_on_next_cycle(tmp_path, monkeypatch):
+    state_path = tmp_path / "state.json"
+    state_path.write_text('{"truth_last_id":"10","news_seen":["seed"],"market_last_sent_at":"2026-09-04T11:00:00+00:00"}', encoding="utf-8")
+    monkeypatch.setattr(main, "STATE_PATH", str(state_path))
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
+    monkeypatch.setattr(main, "fetch_truth_posts", lambda: [TruthPost("10", "", "old", "https://truth/10")])
+    cycles = [[], [NewsItem("m-new", "Reuters", "Iran launches missile at US base in Qatar", "Attack confirmed by officials", "https://news/m", "Fri, 04 Sep 2026 12:01:00 GMT")]]
+    monkeypatch.setattr(main, "fetch_news_items", lambda: cycles.pop(0))
+    monkeypatch.setattr(main, "fetch_market_snapshot", lambda: (_ for _ in ()).throw(AssertionError("market should not run")))
+    monkeypatch.setattr(main, "translate_to_fa", lambda text: text)
+    sent = []
+    monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
+    assert main.run(datetime(2026, 9, 4, 12, 0, tzinfo=timezone.utc)) == 0
+    assert sent == []
+    assert main.run(datetime(2026, 9, 4, 12, 2, tzinfo=timezone.utc)) == 0
+    assert len(sent) == 1
+    assert "launches missile" in sent[0]
+    assert "m-new" in main.load_state(state_path)["news_seen"]
+
+
+def test_more_than_eight_new_military_stories_are_not_held_for_later(tmp_path, monkeypatch):
+    state_path = tmp_path / "state.json"
+    state_path.write_text('{"truth_last_id":"10","news_seen":["seed"],"market_last_sent_at":"2026-09-04T11:00:00+00:00"}', encoding="utf-8")
+    monkeypatch.setattr(main, "STATE_PATH", str(state_path))
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
+    monkeypatch.setattr(main, "fetch_truth_posts", lambda: [TruthPost("10", "", "old", "https://truth/10")])
+    items = [NewsItem(f"m{i}", "Reuters", f"Iran launches missile {i} at distinct target in Qatar", f"Officials confirm attack number {i}", f"https://news/{i}", f"Fri, 04 Sep 2026 12:{i:02d}:00 GMT") for i in range(9)]
+    monkeypatch.setattr(main, "fetch_news_items", lambda: items)
+    monkeypatch.setattr(main, "fetch_market_snapshot", lambda: (_ for _ in ()).throw(AssertionError("market should not run")))
+    monkeypatch.setattr(main, "translate_to_fa", lambda text: text)
+    sent = []
+    monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
+    assert main.run(datetime(2026, 9, 4, 12, 20, tzinfo=timezone.utc)) == 0
+    assert len([text for text in sent if "لینک منبع خبر" in text]) == 9
+
+
+def test_monitor_loop_runs_repeated_cycles_without_waiting_for_next_workflow(monkeypatch):
+    calls = []
+    monkeypatch.setattr(main, "run", lambda now=None: calls.append(now) or 0)
+    times = iter([0.0, 0.0, 60.0, 60.0, 120.0, 120.0, 181.0])
+    monkeypatch.setattr(main.time, "monotonic", lambda: next(times))
+    monkeypatch.setattr(main.time, "sleep", lambda seconds: None)
+    assert main.monitor_loop(poll_seconds=60, session_seconds=180) == 0
+    assert len(calls) == 3
