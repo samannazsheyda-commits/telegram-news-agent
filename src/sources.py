@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 TRUTH_ACCOUNT_ID = "107780257626128497"
 TRUTH_URL = f"https://truthsocial.com/api/v1/accounts/{TRUTH_ACCOUNT_ID}/statuses"
 TGJU_OVERVIEW = "https://gem.tgju.org/widget/get/market-overview"
+TGJU_PROFILE_BASE = "https://www.tgju.org/profile"
 GOOGLE_NEWS_BASE = "https://news.google.com/rss/search"
 USER_AGENT = "Mozilla/5.0 (compatible; TelegramNewsAgent/2.0)"
 
@@ -79,6 +80,20 @@ class NewsItem:
 class MarketSnapshot:
     usd_rial: int
     gold18_rial: int
+    eur_rial: int | None = None
+    gbp_rial: int | None = None
+    aed_rial: int | None = None
+    try_rial: int | None = None
+    emami_rial: int | None = None
+    half_rial: int | None = None
+    quarter_rial: int | None = None
+    gram_coin_rial: int | None = None
+    bitcoin_usd: float | None = None
+    tether_rial: int | None = None
+
+    @staticmethod
+    def _toman(value: int | None) -> int | None:
+        return None if value is None else value // 10
 
     @property
     def usd_toman(self) -> int:
@@ -87,6 +102,42 @@ class MarketSnapshot:
     @property
     def gold18_toman(self) -> int:
         return self.gold18_rial // 10
+
+    @property
+    def eur_toman(self) -> int | None:
+        return self._toman(self.eur_rial)
+
+    @property
+    def gbp_toman(self) -> int | None:
+        return self._toman(self.gbp_rial)
+
+    @property
+    def aed_toman(self) -> int | None:
+        return self._toman(self.aed_rial)
+
+    @property
+    def try_toman(self) -> int | None:
+        return self._toman(self.try_rial)
+
+    @property
+    def emami_toman(self) -> int | None:
+        return self._toman(self.emami_rial)
+
+    @property
+    def half_toman(self) -> int | None:
+        return self._toman(self.half_rial)
+
+    @property
+    def quarter_toman(self) -> int | None:
+        return self._toman(self.quarter_rial)
+
+    @property
+    def gram_coin_toman(self) -> int | None:
+        return self._toman(self.gram_coin_rial)
+
+    @property
+    def tether_toman(self) -> int | None:
+        return self._toman(self.tether_rial)
 
 
 def strip_html(raw: str) -> str:
@@ -198,21 +249,89 @@ def fetch_news_items(session=requests) -> list[NewsItem]:
 def _extract_price(text: str, labels: list[str]) -> int:
     normalized = text.replace("٬", ",")
     for label in labels:
-        match = re.search(rf"{re.escape(label)}\s+([0-9][0-9,]*)", normalized)
+        match = re.search(rf"{re.escape(label)}\s+([0-9][0-9,]*(?:\.[0-9]+)?)", normalized)
         if match:
-            return int(match.group(1).replace(",", ""))
+            return int(float(match.group(1).replace(",", "")))
     raise ValueError(f"price not found for labels: {labels}")
+
+
+def _extract_float_price(text: str, labels: list[str]) -> float:
+    normalized = text.replace("٬", ",")
+    for label in labels:
+        match = re.search(rf"{re.escape(label)}\s+([0-9][0-9,]*(?:\.[0-9]+)?)", normalized)
+        if match:
+            return float(match.group(1).replace(",", ""))
+    raise ValueError(f"price not found for labels: {labels}")
+
+
+def parse_tgju_profile_rate(page_text: str) -> int:
+    normalized = page_text.replace("٬", ",")
+    match = re.search(r"نرخ فعلی::\s*([0-9][0-9,]*)", normalized)
+    if not match:
+        raise ValueError("TGJU profile current rate not found")
+    return int(match.group(1).replace(",", ""))
+
+
+def parse_tgju_tether_rial(page_text: str) -> int:
+    normalized = page_text.replace("٬", ",")
+    match = re.search(r"قیمت ریالی\s*[:|]?\s*([0-9][0-9,]*)", normalized)
+    if not match:
+        raise ValueError("TGJU tether rial price not found")
+    return int(match.group(1).replace(",", ""))
 
 
 def parse_tgju_overview(page_text: str) -> MarketSnapshot:
     return MarketSnapshot(
         usd_rial=_extract_price(page_text, ["دلار"]),
         gold18_rial=_extract_price(page_text, ["طلا ۱۸", "طلا 18", "طلای ۱۸", "طلای 18"]),
+        eur_rial=_extract_price(page_text, ["یورو"]),
+        emami_rial=_extract_price(page_text, ["سکه"]),
+        bitcoin_usd=_extract_float_price(page_text, ["بیت کوین", "بیت‌کوین"]),
     )
+
+
+def _fetch_profile_text(session, slug: str) -> str:
+    response = session.get(f"{TGJU_PROFILE_BASE}/{slug}", headers={"User-Agent": USER_AGENT}, timeout=20)
+    response.raise_for_status()
+    return BeautifulSoup(response.text, "html.parser").get_text(" ", strip=True)
 
 
 def fetch_market_snapshot(session=requests) -> MarketSnapshot:
     response = session.get(TGJU_OVERVIEW, headers={"User-Agent": USER_AGENT}, timeout=20)
     response.raise_for_status()
-    text = BeautifulSoup(response.text, "html.parser").get_text(" ", strip=True)
-    return parse_tgju_overview(text)
+    overview_text = BeautifulSoup(response.text, "html.parser").get_text(" ", strip=True)
+    base = parse_tgju_overview(overview_text)
+
+    extras: dict[str, int | None] = {}
+    for field, slug in (
+        ("gbp_rial", "price_gbp"),
+        ("aed_rial", "price_aed"),
+        ("try_rial", "price_try"),
+        ("half_rial", "nim"),
+        ("quarter_rial", "rob"),
+        ("gram_coin_rial", "gerami"),
+    ):
+        try:
+            extras[field] = parse_tgju_profile_rate(_fetch_profile_text(session, slug))
+        except Exception:
+            extras[field] = None
+
+    try:
+        tether_rial = parse_tgju_tether_rial(_fetch_profile_text(session, "crypto-tether"))
+    except Exception:
+        tether_rial = None
+
+    return MarketSnapshot(
+        usd_rial=base.usd_rial,
+        gold18_rial=base.gold18_rial,
+        eur_rial=base.eur_rial,
+        gbp_rial=extras["gbp_rial"],
+        aed_rial=extras["aed_rial"],
+        try_rial=extras["try_rial"],
+        emami_rial=base.emami_rial,
+        half_rial=extras["half_rial"],
+        quarter_rial=extras["quarter_rial"],
+        gram_coin_rial=extras["gram_coin_rial"],
+        bitcoin_usd=base.bitcoin_usd,
+        tether_rial=tether_rial,
+    )
