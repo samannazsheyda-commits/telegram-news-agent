@@ -46,6 +46,34 @@ def test_translation_uses_fallback_and_returns_persian():
     assert session.calls == 2
 
 
+def test_translation_repairs_small_potatoes_idiom_in_news_context():
+    class Session:
+        @staticmethod
+        def get(url, **kwargs):
+            return FakeResponse(payload=[[['ترامپ می‌گوید درگیری ایران «سیب‌زمینی‌های کوچک» است', None, None, None]]])
+
+    text = translate_to_fa('Trump says Iran conflict is "small potatoes"', session=Session)
+    assert "سیب‌زمینی" not in text
+    assert "کم‌اهمیت" in text
+
+
+def test_translation_repairs_high_risk_journalistic_idioms_without_literal_nonsense():
+    cases = [
+        ('All options are on the table', 'همه گزینه‌ها روی میز هستند', 'همه گزینه‌ها مطرح‌اند'),
+        ('The administration doubled down on its Iran policy', 'دولت روی سیاست ایران دو برابر شد', 'دولت بر سیاست خود درباره ایران پافشاری کرد'),
+        ('The president walked back his earlier remarks', 'رئیس‌جمهور اظهارات قبلی خود را راه رفت', 'رئیس‌جمهور از اظهارات قبلی خود عقب‌نشینی کرد'),
+        ('The ball is now in Iran\'s court', 'توپ اکنون در زمین ایران است', 'اکنون نوبت تصمیم‌گیری ایران است'),
+    ]
+
+    for source, bad_translation, expected in cases:
+        class Session:
+            @staticmethod
+            def get(url, **kwargs):
+                return FakeResponse(payload=[[[bad_translation, None, None, None]]])
+        text = translate_to_fa(source, session=Session)
+        assert text == expected
+
+
 def test_telegram_messages_disable_link_preview():
     session = TelegramSession()
     send_telegram('📌 <a href="https://news.google.com/example">لینک خبر</a>', "token", "chat", session=session)
