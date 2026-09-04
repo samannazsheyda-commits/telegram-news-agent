@@ -85,7 +85,7 @@ def send_telegram(text: str, bot_token: str, chat_id: str, session=requests) -> 
                 "chat_id": chat_id,
                 "text": chunk,
                 "parse_mode": "HTML",
-                "disable_web_page_preview": False,
+                "disable_web_page_preview": True,
             },
             timeout=20,
         )
