@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 from .sources import MarketSnapshot, NewsItem, TruthPost
 
 CHANNEL_URL = "https://t.me/bikhabaar"
+TGJU_URL = "https://www.tgju.org/"
 TEHRAN = ZoneInfo("Asia/Tehran")
 PERSIAN_MONTHS = ("فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند")
 SOURCE_FA = {
@@ -23,8 +24,8 @@ SOURCE_FA = {
     "France 24": "فرانس ۲۴", "DW": "دویچه‌وله", "Times of Israel": "تایمز آو اسرائیل",
     "Haaretz": "هاآرتص", "Donald Trump / Truth Social": "ترامپ / تروث سوشال",
     "Barak Ravid / X": "باراک راوید", "Abbas Araghchi / X": "عباس عراقچی",
-    "Mohsen Rezaei / X": "محسن رضایی", "TankerTrackers": "تانکرترکرز",
-    "NOTAM / Airspace": "نوتام / حریم هوایی",
+    "Mohsen Rezaei / X": "محسن رضایی", "Sepah News / X": "سپاه نیوز",
+    "TankerTrackers": "تانکرترکرز", "NOTAM / Airspace": "نوتام / حریم هوایی",
 }
 SOURCE_SUFFIXES = (
     "Al Arabiya English", "Al Arabiya", "العربیه انگلیسی", "العربیه", "Al Jazeera", "الجزیره",
@@ -35,10 +36,6 @@ SOURCE_SUFFIXES = (
     "کانال ۱۱ اسرائیل", "N12", "Channel 12", "کانال ۱۲ اسرائیل", "Channel 13", "Reshet 13",
     "کانال ۱۳ اسرائیل", "Fox News", "فاکس نیوز", "NBC News", "ان‌بی‌سی نیوز", "CBS News", "سی‌بی‌اس نیوز",
     "ABC News", "ای‌بی‌سی نیوز", "Sky News", "اسکای نیوز", "Bloomberg", "بلومبرگ", "CNBC", "سی‌ان‌بی‌سی",
-)
-IRAN_HEADLINE_TERMS = (
-    "ایران", "ایرانی", "تهران", "خامنه", "سپاه", "هرمز", "خلیج فارس", "نطنز", "فردو",
-    "iran", "iranian", "tehran", "khamenei", "irgc", "hormuz", "persian gulf", "natanz", "fordow",
 )
 
 
@@ -65,20 +62,16 @@ def _strip_source_suffix(value: str) -> str:
     return re.sub(rf"\s*[-–—|:]\s*(?:{suffixes})\s*$", "", text, flags=re.IGNORECASE).strip()
 
 
-def _first_sentence(value: str) -> str:
+def _up_to_two_sentences(value: str, max_chars: int = 650) -> str:
     text = re.sub(r"\s+", " ", (value or "").strip())
     if not text:
         return ""
-    return re.split(r"(?<=[.!؟?])\s+", text, maxsplit=1)[0].strip()
-
-
-def _iran_only_bundled_headline(value: str) -> str:
-    text = re.sub(r"\s+", " ", (value or "").strip())
-    parts = [p.strip() for p in re.split(r"\s*[،,؛;]\s*", text) if p.strip()]
-    if len(parts) < 2:
-        return text
-    matches = [p for p in parts if any(term in p.lower() for term in IRAN_HEADLINE_TERMS)]
-    return matches[0] if len(matches) == 1 else text
+    parts = re.split(r"(?<=[.!؟?])\s+", text)
+    result = " ".join(parts[:2]).strip()
+    if len(result) > max_chars:
+        cut = result[:max_chars].rsplit(" ", 1)[0].strip()
+        return cut + "…"
+    return result
 
 
 def _to_persian_digits(value: str) -> str:
@@ -127,9 +120,9 @@ def _is_redundant_summary(title: str, summary: str) -> bool:
     if not s or s == t or t in s or s in t:
         return True
     a, b = set(t.split()), set(s.split())
-    if a and b and len(a & b) / max(1, min(len(a), len(b))) >= 0.60:
+    if a and b and len(a & b) / max(1, min(len(a), len(b))) >= 0.72:
         return True
-    return SequenceMatcher(None, t, s).ratio() >= 0.72
+    return SequenceMatcher(None, t, s).ratio() >= 0.82
 
 
 def _red_story_marker(item: NewsItem) -> str:
@@ -162,14 +155,18 @@ def _source_label(source: str) -> str:
 
 def format_truth(post: TruthPost, persian_text: str) -> str:
     label = "▫️ بازنشر ترامپ در Truth Social | ایران" if post.is_retruth else "⚪️ ترامپ در Truth Social | ایران"
-    parts = [_safe(label), "", f"<b>{_safe(_ensure_period(persian_text))}</b>", "", f'📌 <a href="{_safe(post.url)}">لینک پست</a>']
+    parts = [
+        _safe(label), "", f"<b>{_safe(_ensure_period(persian_text))}</b>", "",
+        f'📌 <a href="{_safe(post.url)}">منبع: Truth Social</a>',
+    ]
     parts += _brand_footer()
     return "\n".join(parts).strip()
 
 
 def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override: str | None = None) -> str:
-    title_fa = _ensure_period(_iran_only_bundled_headline(_strip_source_suffix(title_fa)))
-    summary_fa = _ensure_period(_first_sentence(_strip_source_suffix(summary_fa)))
+    # Never split a normal headline on commas; that previously produced incomplete fragments.
+    title_fa = _ensure_period(_strip_source_suffix(title_fa))
+    summary_fa = _ensure_period(_up_to_two_sentences(_strip_source_suffix(summary_fa)))
     marker = marker_override or _story_marker(item)
     parts = [f"{marker} <b>{_safe(_source_label(item.source))}: {_safe(title_fa)}</b>"]
     if summary_fa and not _is_redundant_summary(title_fa, summary_fa):
@@ -195,10 +192,33 @@ def format_market(snapshot: MarketSnapshot, now: datetime | None = None) -> str:
         _money_line("🇬🇧", "پوند", snapshot.gbp_toman), _money_line("🇦🇪", "درهم", snapshot.aed_toman),
         _money_line("🇹🇷", "لیر", snapshot.try_toman), _money_line("🟡", "طلای ۱۸ عیار", snapshot.gold18_toman, "تومان / گرم"),
         _money_line("🪙", "سکه امامی", snapshot.emami_toman), _money_line("🪙", "نیم‌سکه", snapshot.half_toman),
-        _money_line("🪙", "ربع‌سکه", snapshot.quarter_rial // 10 if snapshot.quarter_rial is not None else None),
-        _money_line("🪙", "سکه گرمی", snapshot.gram_coin_rial // 10 if snapshot.gram_coin_rial is not None else None),
+        _money_line("🪙", "ربع‌سکه", snapshot.quarter_toman), _money_line("🪙", "سکه گرمی", snapshot.gram_coin_toman),
         None if snapshot.bitcoin_usd is None else f"₿ بیت‌کوین: ${snapshot.bitcoin_usd:,.2f}", _money_line("💵", "تتر", snapshot.tether_toman),
     )
     lines.extend(x for x in values if x)
-    lines += ["", f"⏰ {_datetime_fa(now)}", "🔗 منبع: TGJU"]
+    lines += ["", f"⏰ {_datetime_fa(now)}", f'📌 <a href="{TGJU_URL}">منبع: TGJU</a>']
+    lines += _brand_footer()
+    return "\n".join(lines).strip()
+
+
+def _daily_change(label: str, emoji: str, first: int, last: int, suffix: str = "تومان") -> list[str]:
+    diff = last - first
+    pct = 0.0 if first == 0 else abs(diff) / first * 100
+    if diff > 0:
+        change = f"▲ {abs(diff):,} {suffix} | {pct:.2f}٪ افزایش"
+    elif diff < 0:
+        change = f"▼ {abs(diff):,} {suffix} | {pct:.2f}٪ کاهش"
+    else:
+        change = "— بدون تغییر"
+    return [f"{emoji} <b>{label}</b>", f"{first:,} ← {last:,} {suffix}", change]
+
+
+def format_market_daily_summary(first_usd: int, last_usd: int, first_gold: int, last_gold: int, now: datetime | None = None) -> str:
+    now = now or datetime.now(timezone.utc)
+    lines = ["📊 <b>جمع‌بندی بازار روز</b>", ""]
+    lines += _daily_change("دلار آزاد", "🇺🇸", first_usd, last_usd)
+    lines += [""]
+    lines += _daily_change("طلای ۱۸ عیار", "🟡", first_gold, last_gold, "تومان / گرم")
+    lines += ["", f"⏰ {_datetime_fa(now)}", f'📌 <a href="{TGJU_URL}">منبع: TGJU</a>']
+    lines += _brand_footer()
     return "\n".join(lines).strip()
