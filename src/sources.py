@@ -248,16 +248,28 @@ def _google_news_url(query: str, lang: str = "en") -> tuple[str, dict[str, str]]
     return GOOGLE_NEWS_BASE, {"q": query, "hl": "en-US", "gl": "US", "ceid": "US:en"}
 
 
+def _fetch_google_news_query(session, fallback_source: str, query: str, lang: str, allow_special_source: bool = False) -> list[NewsItem]:
+    url, params = _google_news_url(query, lang)
+    response = session.get(url, params=params, headers={"User-Agent": USER_AGENT}, timeout=20)
+    response.raise_for_status()
+    return parse_google_news_rss(response.content, fallback_source=fallback_source, allow_special_source=allow_special_source)
+
+
 def fetch_news_items(session=requests) -> list[NewsItem]:
     merged: dict[str, NewsItem] = {}
     for fallback_source, query, lang in NEWS_QUERIES:
-        url, params = _google_news_url(query, lang)
-        response = session.get(url, params=params, headers={"User-Agent": USER_AGENT}, timeout=20); response.raise_for_status()
-        for item in parse_google_news_rss(response.content, fallback_source=fallback_source): merged.setdefault(item.key, item)
+        try:
+            items = _fetch_google_news_query(session, fallback_source, query, lang)
+        except Exception:
+            continue
+        for item in items:
+            merged.setdefault(item.key, item)
     for fallback_source, query, lang in SPECIAL_QUERIES:
-        url, params = _google_news_url(query, lang)
-        response = session.get(url, params=params, headers={"User-Agent": USER_AGENT}, timeout=20); response.raise_for_status()
-        for item in parse_google_news_rss(response.content, fallback_source=fallback_source, allow_special_source=True):
+        try:
+            items = _fetch_google_news_query(session, fallback_source, query, lang, allow_special_source=True)
+        except Exception:
+            continue
+        for item in items:
             combined = f"{item.title} {item.summary}"
             if fallback_source in {"TankerTrackers", "NOTAM / Airspace"} and not is_security_alert(combined): continue
             if fallback_source == "Al Arabiya" and not is_regional_security_alert(combined): continue
