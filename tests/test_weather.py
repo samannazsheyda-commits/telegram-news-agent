@@ -47,8 +47,12 @@ def test_parse_and_format_31_city_weather_with_source_and_spacing():
     noon = format_noon_weather(report)
     night = format_night_weather(report)
     assert "تهران" in noon and "بندرعباس" in noon
-    assert "پیش‌بینی هوای فردا" in night
-    assert "بارش ۸۰٪" in night
+    assert "پیش‌بینی دقیق هوای فردا" in night
+    assert "فردا" in night
+    assert "بین ۱۴+° تا ۲۶+°" in night
+    assert "احتمال بارش ۸۰٪" in night
+    assert "حدود ۱۲ میلی‌متر بارش" in night
+    assert "چشم‌انداز ۳ روزه" not in night
     assert "Open-Meteo" in noon and "Open-Meteo" in night
     assert "مراکز ۳۱ استان" in noon and "مراکز ۳۱ استان" in night
     assert "\n\n▫️" in noon
