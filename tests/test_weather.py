@@ -49,7 +49,7 @@ def test_parse_and_format_31_city_weather_with_source_and_spacing():
     assert "تهران" in noon and "بندرعباس" in noon
     assert "پیش‌بینی دقیق هوای فردا" in night
     assert "فردا" in night
-    assert "بین ۱۴+° تا ۲۶+°" in night
+    assert "دما بین +14° تا +26° می‌مونه" in night
     assert "احتمال بارش ۸۰٪" in night
     assert "حدود ۱۲ میلی‌متر بارش" in night
     assert "چشم‌انداز ۳ روزه" not in night
