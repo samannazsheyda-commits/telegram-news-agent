@@ -40,6 +40,18 @@ NEWS_QUERIES: tuple[tuple[str, str, str], ...] = (
     ("Donald Trump", '("Donald Trump" OR Trump) Iran', "en"),
 )
 
+# Best-effort zero-cost monitors. X and Truth Social do not provide a stable free API,
+# so these use public Google News indexing restricted to the original domains/accounts.
+SPECIAL_QUERIES: tuple[tuple[str, str, str], ...] = (
+    ("Donald Trump / Truth Social", '(Iran OR Iranian OR Tehran OR Hormuz) site:truthsocial.com/@realDonaldTrump', "en"),
+    ("Barak Ravid / X", '(Iran OR Iranian OR Tehran OR Hormuz) site:x.com/BarakRavid', "en"),
+    ("Abbas Araghchi / X", '(Iran OR Iranian OR Tehran OR Hormuz) site:x.com/araghchi', "en"),
+    ("Mohsen Rezaei / X", '(Iran OR Iranian OR Tehran OR Hormuz) (site:x.com/ir_rezaee OR site:x.com/RezaeeMohsen)', "en"),
+    ("TankerTrackers", '(Iran OR Hormuz OR "Persian Gulf") (explosion OR attack OR strike OR fire OR collision OR conflict OR seized OR sinking) site:x.com/TankerTrackers', "en"),
+    ("NOTAM / Airspace", '(Iran OR Iranian OR "Persian Gulf") (NOTAM OR airspace OR "flight ban" OR "flight cancellation" OR "flights cancelled" OR "airspace closed" OR "airspace reopened")', "en"),
+    ("Iran regional strikes", 'Iran (attack OR strike OR missile OR drone) (Iraq OR Pakistan OR Azerbaijan OR Armenia OR Turkey OR Qatar OR UAE OR Bahrain OR Kuwait OR Saudi OR Oman OR Afghanistan OR Israel)', "en"),
+)
+
 APPROVED_SOURCE_ALIASES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("Axios", ("axios",)),
     ("Al Jazeera", ("al jazeera",)),
@@ -177,10 +189,23 @@ IRAN_TERMS = {
     "ایران", "ایرانی", "تهران", "خامنه", "سپاه", "هرمز", "خلیج فارس", "نطنز", "فردو",
 }
 
+SECURITY_TERMS = {
+    "explosion", "blast", "attack", "strike", "missile", "drone", "fire", "conflict",
+    "seized", "sinking", "collision", "notam", "airspace closed", "airspace reopened",
+    "flight ban", "flight cancellation", "flights cancelled", "flight restriction",
+    "انفجار", "حمله", "درگیری", "موشک", "پهپاد", "آتش", "توقیف", "غرق",
+    "نوتام", "بسته شدن حریم", "بازگشایی حریم", "لغو پرواز", "ممنوعیت پرواز",
+}
+
 
 def is_iran_related(text: str) -> bool:
     haystack = (text or "").lower()
     return any(term in haystack for term in IRAN_TERMS)
+
+
+def is_security_alert(text: str) -> bool:
+    haystack = (text or "").lower()
+    return any(term in haystack for term in SECURITY_TERMS)
 
 
 def canonical_source(raw: str) -> str | None:
@@ -201,7 +226,7 @@ def _news_key(source: str, title: str) -> str:
     return hashlib.sha1(normalized.encode("utf-8")).hexdigest()
 
 
-def parse_google_news_rss(content: bytes, fallback_source: str) -> list[NewsItem]:
+def parse_google_news_rss(content: bytes, fallback_source: str, allow_special_source: bool = False) -> list[NewsItem]:
     root = ET.fromstring(content)
     items: list[NewsItem] = []
     for node in root.findall(".//item"):
@@ -217,7 +242,9 @@ def parse_google_news_rss(content: bytes, fallback_source: str) -> list[NewsItem
         raw_source = strip_html(source_node.text or "") if source_node is not None else fallback_source
         source = canonical_source(raw_source)
         if not source:
-            continue
+            if not allow_special_source:
+                continue
+            source = fallback_source
         items.append(NewsItem(
             key=_news_key(source, title),
             source=source,
@@ -242,6 +269,15 @@ def fetch_news_items(session=requests) -> list[NewsItem]:
         response = session.get(url, params=params, headers={"User-Agent": USER_AGENT}, timeout=20)
         response.raise_for_status()
         for item in parse_google_news_rss(response.content, fallback_source=fallback_source):
+            merged.setdefault(item.key, item)
+
+    for fallback_source, query, lang in SPECIAL_QUERIES:
+        url, params = _google_news_url(query, lang)
+        response = session.get(url, params=params, headers={"User-Agent": USER_AGENT}, timeout=20)
+        response.raise_for_status()
+        for item in parse_google_news_rss(response.content, fallback_source=fallback_source, allow_special_source=True):
+            if fallback_source in {"TankerTrackers", "NOTAM / Airspace"} and not is_security_alert(f"{item.title} {item.summary}"):
+                continue
             merged.setdefault(item.key, item)
     return list(merged.values())
 
