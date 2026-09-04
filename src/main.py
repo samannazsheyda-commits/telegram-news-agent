@@ -17,6 +17,7 @@ from .weather import fetch_weather_report, format_night_weather, format_noon_wea
 STATE_PATH = os.environ.get("STATE_PATH", "state.json")
 MARKET_INTERVAL = timedelta(hours=2)
 TEHRAN = ZoneInfo("Asia/Tehran")
+MIDNIGHT_GRACE = timedelta(hours=3)
 
 ARTICLE_PATTERNS = (
     "analysis:", "opinion:", "explainer", "what to know", "what we know", "why ",
@@ -102,7 +103,14 @@ def _published_dt(value: str) -> datetime | None:
 
 def _published_today(value: str, now: datetime) -> bool:
     published = _published_dt(value)
-    return bool(published and published.astimezone(TEHRAN).date() == now.astimezone(TEHRAN).date())
+    if not published:
+        return False
+    published_local = published.astimezone(TEHRAN)
+    now_local = now.astimezone(TEHRAN)
+    if published_local.date() == now_local.date():
+        return True
+    age = now.astimezone(timezone.utc) - published
+    return now_local.hour < 3 and timedelta(0) <= age <= MIDNIGHT_GRACE
 
 
 def _market_quiet_hours(now: datetime) -> bool:
@@ -260,22 +268,13 @@ def _event_priority(item: NewsItem) -> int:
         return 100
     if any(t in text for t in ("airspace", "notam", "hormuz", "tanker", "flight ban", "حریم هوایی", "نوتام", "هرمز", "نفتکش")):
         return 90
-    if any(t in text for t in ("ceasefire", "sanction", "talks", "negotiation", "agreement", "deal", "security council", "iaea", "resolution", "آتش‌بس", "تحریم", "مذاکرات", "توافق", "شورای امنیت", "شورای حکام", "قطعنامه")):
-        return 80
-    if any(t in text for t in ("nuclear", "uranium", "enrichment", "هسته‌ای", "اورانیوم", "غنی‌سازی")):
-        return 75
-    if _is_trump_iran_news(item):
-        return 70
     if _is_statement(item):
-        return 40
+        return 80
     return 50
 
 
 def _select_top_stories(candidates: list[NewsItem], references: list[NewsItem]) -> tuple[list[NewsItem], list[NewsItem]]:
-    def sort_key(item: NewsItem):
-        dt = _published_dt(item.published) or datetime.min.replace(tzinfo=timezone.utc)
-        return (_event_priority(item), dt)
-    ordered = sorted(candidates, key=sort_key, reverse=True)
+    ordered = sorted(candidates, key=lambda item: (_event_priority(item), _published_dt(item.published) or datetime.min.replace(tzinfo=timezone.utc)), reverse=True)
     selected: list[NewsItem] = []
     skipped: list[NewsItem] = []
     speaker_windows: dict[str, datetime] = {}
@@ -362,7 +361,6 @@ def run(now: datetime | None = None) -> int:
                 seen.insert(0, item.key)
                 seen_set.add(item.key)
 
-            # Only previously accepted/currently eligible stories can suppress a new factual report.
             references = [
                 item for item in items
                 if item.key in seen_set and _news_rejection_reason(item, now) is None
