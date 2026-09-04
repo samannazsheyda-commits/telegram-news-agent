@@ -4,6 +4,7 @@ import hashlib
 import html
 import re
 from dataclasses import dataclass
+from difflib import SequenceMatcher
 from typing import Any
 import xml.etree.ElementTree as ET
 
@@ -60,6 +61,7 @@ SPECIAL_QUERIES: tuple[tuple[str, str, str], ...] = (
     ("Barak Ravid / X", '(Iran OR Iranian OR Tehran OR Hormuz) site:x.com/BarakRavid', "en"),
     ("Abbas Araghchi / X", '(Iran OR Iranian OR Tehran OR Hormuz) site:x.com/araghchi', "en"),
     ("Mohsen Rezaei / X", '(Iran OR Iranian OR Tehran OR Hormuz) (site:x.com/ir_rezaee OR site:x.com/RezaeeMohsen)', "en"),
+    ("Sepah News / X", '(Iran OR Iranian OR Tehran OR Hormuz OR missile OR drone OR attack OR war) site:x.com/Sepah_News', "en"),
     ("TankerTrackers", '(Iran OR Hormuz OR "Persian Gulf") (explosion OR attack OR strike OR fire OR collision OR conflict OR seized OR sinking) site:x.com/TankerTrackers', "en"),
     ("NOTAM / Airspace", '(Iran OR Iranian OR "Persian Gulf") (NOTAM OR airspace OR "flight ban" OR "flight cancellation" OR "flights cancelled" OR "airspace closed" OR "airspace reopened")', "en"),
     ("Al Arabiya", '(Jordan OR Qatar OR Bahrain OR Kuwait OR UAE OR Iraq OR "Saudi Arabia") ("air defense" OR "air defence" OR interception OR intercepted OR sirens OR missile OR drone OR explosion) source:"Al Arabiya"', "en"),
@@ -87,6 +89,7 @@ APPROVED_SOURCE_ALIASES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("Times of Israel", ("times of israel", "the times of israel")), ("Haaretz", ("haaretz",)),
 )
 
+
 @dataclass(frozen=True)
 class TruthPost:
     id: str
@@ -94,6 +97,7 @@ class TruthPost:
     text: str
     url: str
     is_retruth: bool = False
+
 
 @dataclass(frozen=True)
 class NewsItem:
@@ -103,6 +107,7 @@ class NewsItem:
     summary: str
     link: str
     published: str
+
 
 @dataclass(frozen=True)
 class MarketSnapshot:
@@ -122,6 +127,7 @@ class MarketSnapshot:
     @staticmethod
     def _toman(value: int | None) -> int | None:
         return None if value is None else value // 10
+
     @property
     def usd_toman(self) -> int: return self.usd_rial // 10
     @property
@@ -190,17 +196,20 @@ def fetch_truth_posts(session=requests, limit: int = 20) -> list[TruthPost]:
         response.raise_for_status()
         return parse_trumpstruth_rss(response.content)[:limit]
 
+
 IRAN_TERMS = {"iran", "iranian", "tehran", "khamenei", "irgc", "revolutionary guard", "hormuz", "persian gulf", "isfahan", "natanz", "fordow", "iran's", "iranians", "ایران", "ایرانی", "تهران", "خامنه", "سپاه", "هرمز", "خلیج فارس", "نطنز", "فردو"}
 SECURITY_TERMS = {"explosion", "blast", "attack", "strike", "missile", "drone", "fire", "conflict", "seized", "sinking", "collision", "notam", "airspace closed", "airspace reopened", "flight ban", "flight cancellation", "flights cancelled", "flight restriction", "air defense", "air defence", "interception", "intercepted", "sirens", "انفجار", "حمله", "درگیری", "موشک", "پهپاد", "آتش", "توقیف", "غرق", "نوتام", "بسته شدن حریم", "بازگشایی حریم", "لغو پرواز", "ممنوعیت پرواز", "پدافند", "رهگیری", "آژیر"}
 REGIONAL_TERMS = {"jordan", "amman", "qatar", "doha", "bahrain", "kuwait", "uae", "united arab emirates", "abu dhabi", "dubai", "iraq", "baghdad", "saudi arabia", "riyadh", "اردن", "امان", "قطر", "دوحه", "بحرین", "کویت", "امارات", "ابوظبی", "دبی", "عراق", "بغداد", "عربستان", "ریاض"}
 
 
 def is_iran_related(text: str) -> bool:
-    haystack = (text or "").lower(); return any(term in haystack for term in IRAN_TERMS)
+    haystack = (text or "").lower()
+    return any(term in haystack for term in IRAN_TERMS)
 
 
 def is_security_alert(text: str) -> bool:
-    haystack = (text or "").lower(); return any(term in haystack for term in SECURITY_TERMS)
+    haystack = (text or "").lower()
+    return any(term in haystack for term in SECURITY_TERMS)
 
 
 def is_regional_security_alert(text: str) -> bool:
@@ -211,7 +220,8 @@ def is_regional_security_alert(text: str) -> bool:
 def canonical_source(raw: str) -> str | None:
     value = re.sub(r"\s+", " ", (raw or "").lower()).strip()
     for canonical, aliases in APPROVED_SOURCE_ALIASES:
-        if any(alias == value or alias in value for alias in aliases): return canonical
+        if any(alias == value or alias in value for alias in aliases):
+            return canonical
     return None
 
 
@@ -225,10 +235,12 @@ def _news_key(source: str, title: str) -> str:
 
 
 def parse_google_news_rss(content: bytes, fallback_source: str, allow_special_source: bool = False) -> list[NewsItem]:
-    root = ET.fromstring(content); items: list[NewsItem] = []
+    root = ET.fromstring(content)
+    items: list[NewsItem] = []
     for node in root.findall(".//item"):
         def value(tag: str) -> str:
-            child = node.find(tag); return (child.text or "").strip() if child is not None else ""
+            child = node.find(tag)
+            return (child.text or "").strip() if child is not None else ""
         title, summary = strip_html(value("title")), strip_html(value("description"))
         combined = f"{title} {summary}"
         if not is_iran_related(combined) and not (fallback_source == "Al Arabiya" and is_regional_security_alert(combined)):
@@ -237,14 +249,16 @@ def parse_google_news_rss(content: bytes, fallback_source: str, allow_special_so
         raw_source = strip_html(source_node.text or "") if source_node is not None else fallback_source
         source = canonical_source(raw_source)
         if not source:
-            if not allow_special_source: continue
+            if not allow_special_source:
+                continue
             source = fallback_source
         items.append(NewsItem(_news_key(source, title), source, title, summary, value("link"), value("pubDate")))
     return items
 
 
 def _google_news_url(query: str, lang: str = "en") -> tuple[str, dict[str, str]]:
-    if lang == "fa": return GOOGLE_NEWS_BASE, {"q": query, "hl": "fa", "gl": "IR", "ceid": "IR:fa"}
+    if lang == "fa":
+        return GOOGLE_NEWS_BASE, {"q": query, "hl": "fa", "gl": "IR", "ceid": "IR:fa"}
     return GOOGLE_NEWS_BASE, {"q": query, "hl": "en-US", "gl": "US", "ceid": "US:en"}
 
 
@@ -271,17 +285,61 @@ def fetch_news_items(session=requests) -> list[NewsItem]:
             continue
         for item in items:
             combined = f"{item.title} {item.summary}"
-            if fallback_source in {"TankerTrackers", "NOTAM / Airspace"} and not is_security_alert(combined): continue
-            if fallback_source == "Al Arabiya" and not is_regional_security_alert(combined): continue
+            if fallback_source in {"TankerTrackers", "NOTAM / Airspace"} and not is_security_alert(combined):
+                continue
+            if fallback_source == "Al Arabiya" and not is_regional_security_alert(combined):
+                continue
             merged.setdefault(item.key, item)
     return list(merged.values())
+
+
+def _clean_detail(value: str) -> str:
+    return re.sub(r"\s+", " ", strip_html(value or "")).strip()
+
+
+def _detail_is_useful(title: str, detail: str) -> bool:
+    t = _story_title(title)
+    d = _story_title(detail)
+    if len(detail) < 70 or not d:
+        return False
+    if t in d or d in t:
+        return False
+    return SequenceMatcher(None, t, d).ratio() < 0.78
+
+
+def fetch_news_detail(item: NewsItem, session=requests) -> str:
+    """Best-effort detail enrichment for a selected story; never invents content."""
+    summary = _clean_detail(item.summary)
+    if _detail_is_useful(item.title, summary):
+        return summary[:1200]
+    if not item.link:
+        return summary[:1200]
+    try:
+        response = session.get(item.link, headers={"User-Agent": USER_AGENT}, timeout=12, allow_redirects=True)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "html.parser")
+        candidates: list[str] = []
+        for attrs in ({"property": "og:description"}, {"name": "description"}, {"name": "twitter:description"}):
+            node = soup.find("meta", attrs=attrs)
+            if node and node.get("content"):
+                candidates.append(str(node.get("content")))
+        paragraphs = [p.get_text(" ", strip=True) for p in soup.find_all("p")]
+        candidates.extend(paragraphs[:5])
+        for candidate in candidates:
+            detail = _clean_detail(candidate)
+            if _detail_is_useful(item.title, detail):
+                return detail[:1200]
+    except Exception:
+        pass
+    return summary[:1200]
 
 
 def _extract_price(text: str, labels: list[str]) -> int:
     normalized = text.replace("٬", ",")
     for label in labels:
         match = re.search(rf"{re.escape(label)}\s+([0-9][0-9,]*(?:\.[0-9]+)?)", normalized)
-        if match: return int(float(match.group(1).replace(",", "")))
+        if match:
+            return int(float(match.group(1).replace(",", "")))
     raise ValueError(f"price not found for labels: {labels}")
 
 
@@ -289,38 +347,53 @@ def _extract_float_price(text: str, labels: list[str]) -> float:
     normalized = text.replace("٬", ",")
     for label in labels:
         match = re.search(rf"{re.escape(label)}\s+([0-9][0-9,]*(?:\.[0-9]+)?)", normalized)
-        if match: return float(match.group(1).replace(",", ""))
+        if match:
+            return float(match.group(1).replace(",", ""))
     raise ValueError(f"price not found for labels: {labels}")
 
 
 def parse_tgju_profile_rate(page_text: str) -> int:
     match = re.search(r"نرخ فعلی::\s*([0-9][0-9,]*)", page_text.replace("٬", ","))
-    if not match: raise ValueError("TGJU profile current rate not found")
+    if not match:
+        raise ValueError("TGJU profile current rate not found")
     return int(match.group(1).replace(",", ""))
 
 
 def parse_tgju_tether_rial(page_text: str) -> int:
     match = re.search(r"قیمت ریالی\s*[:|]?\s*([0-9][0-9,]*)", page_text.replace("٬", ","))
-    if not match: raise ValueError("TGJU tether rial price not found")
+    if not match:
+        raise ValueError("TGJU tether rial price not found")
     return int(match.group(1).replace(",", ""))
 
 
 def parse_tgju_overview(page_text: str) -> MarketSnapshot:
-    return MarketSnapshot(usd_rial=_extract_price(page_text, ["دلار"]), gold18_rial=_extract_price(page_text, ["طلا ۱۸", "طلا 18", "طلای ۱۸", "طلای 18"]), eur_rial=_extract_price(page_text, ["یورو"]), emami_rial=_extract_price(page_text, ["سکه"]), bitcoin_usd=_extract_float_price(page_text, ["بیت کوین", "بیت‌کوین"]))
+    return MarketSnapshot(
+        usd_rial=_extract_price(page_text, ["دلار"]),
+        gold18_rial=_extract_price(page_text, ["طلا ۱۸", "طلا 18", "طلای ۱۸", "طلای 18"]),
+        eur_rial=_extract_price(page_text, ["یورو"]),
+        emami_rial=_extract_price(page_text, ["سکه"]),
+        bitcoin_usd=_extract_float_price(page_text, ["بیت کوین", "بیت‌کوین"]),
+    )
 
 
 def _fetch_profile_text(session, slug: str) -> str:
-    response = session.get(f"{TGJU_PROFILE_BASE}/{slug}", headers={"User-Agent": USER_AGENT}, timeout=20); response.raise_for_status()
+    response = session.get(f"{TGJU_PROFILE_BASE}/{slug}", headers={"User-Agent": USER_AGENT}, timeout=20)
+    response.raise_for_status()
     return BeautifulSoup(response.text, "html.parser").get_text(" ", strip=True)
 
 
 def fetch_market_snapshot(session=requests) -> MarketSnapshot:
-    response = session.get(TGJU_OVERVIEW, headers={"User-Agent": USER_AGENT}, timeout=20); response.raise_for_status()
+    response = session.get(TGJU_OVERVIEW, headers={"User-Agent": USER_AGENT}, timeout=20)
+    response.raise_for_status()
     base = parse_tgju_overview(BeautifulSoup(response.text, "html.parser").get_text(" ", strip=True))
     extras: dict[str, int | None] = {}
     for field, slug in (("gbp_rial", "price_gbp"), ("aed_rial", "price_aed"), ("try_rial", "price_try"), ("half_rial", "nim"), ("quarter_rial", "rob"), ("gram_coin_rial", "gerami")):
-        try: extras[field] = parse_tgju_profile_rate(_fetch_profile_text(session, slug))
-        except Exception: extras[field] = None
-    try: tether_rial = parse_tgju_tether_rial(_fetch_profile_text(session, "crypto-tether"))
-    except Exception: tether_rial = None
+        try:
+            extras[field] = parse_tgju_profile_rate(_fetch_profile_text(session, slug))
+        except Exception:
+            extras[field] = None
+    try:
+        tether_rial = parse_tgju_tether_rial(_fetch_profile_text(session, "crypto-tether"))
+    except Exception:
+        tether_rial = None
     return MarketSnapshot(base.usd_rial, base.gold18_rial, base.eur_rial, extras["gbp_rial"], extras["aed_rial"], extras["try_rial"], base.emami_rial, extras["half_rial"], extras["quarter_rial"], extras["gram_coin_rial"], base.bitcoin_usd, tether_rial)
