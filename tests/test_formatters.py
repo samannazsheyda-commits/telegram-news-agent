@@ -45,6 +45,34 @@ def test_al_arabiya_is_persian_and_source_suffix_is_removed_from_headline():
     assert "العربیه انگلیسی" not in text
 
 
+def test_new_major_sources_are_shown_in_persian():
+    expected = {
+        "KAN 11": "کانال ۱۱ اسرائیل",
+        "N12": "کانال ۱۲ اسرائیل",
+        "Channel 13": "کانال ۱۳ اسرائیل",
+        "Fox News": "فاکس نیوز",
+        "NBC News": "ان‌بی‌سی نیوز",
+        "CBS News": "سی‌بی‌اس نیوز",
+        "ABC News": "ای‌بی‌سی نیوز",
+        "Sky News": "اسکای نیوز",
+        "Bloomberg": "بلومبرگ",
+        "CNBC": "سی‌ان‌بی‌سی",
+    }
+    for source, fa in expected.items():
+        item = NewsItem("k", source, "Iran", "", "https://example.com", "Fri, 04 Sep 2026 10:00:00 GMT")
+        text = format_news(item, "خبر مهم ایران", "", marker_override="⚪️")
+        assert text.splitlines()[0].startswith(f"⚪️ <b>{fa}: ")
+
+
+def test_news_keeps_at_most_one_short_key_detail_line():
+    item = NewsItem("k", "Reuters", "Iran sanctions", "details", "https://example.com", "Fri, 04 Sep 2026 10:00:00 GMT")
+    summary = "این مهم‌ترین نکته خبر است. این توضیح دوم اضافی است و نباید منتشر شود. این جمله سوم هم نباید بیاید."
+    text = format_news(item, "تحریم‌های تازه علیه ایران اعمال شد", summary, marker_override="🟥")
+    assert "این مهم‌ترین نکته خبر است." in text
+    assert "این توضیح دوم اضافی است" not in text
+    assert "این جمله سوم" not in text
+
+
 def test_news_time_has_only_date_and_time_without_tehran_phrase():
     item = NewsItem("k", "Reuters", "Iran talks", "details", "https://example.com", "Fri, 04 Sep 2026 10:00:00 GMT")
     text = format_news(item, "مذاکرات ایران", "جزئیات", marker_override="⚪️")
