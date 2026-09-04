@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import re
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from zoneinfo import ZoneInfo
@@ -13,7 +14,6 @@ from .sources import NewsItem, fetch_market_snapshot, fetch_news_items, fetch_tr
 
 STATE_PATH = os.environ.get("STATE_PATH", "state.json")
 MARKET_INTERVAL = timedelta(hours=2)
-MAX_NEWS_PER_RUN = 8
 TEHRAN = ZoneInfo("Asia/Tehran")
 
 ARTICLE_PATTERNS = (
@@ -224,19 +224,20 @@ def run(now: datetime | None = None) -> int:
         else:
             rejected = [item for item in items if item.key not in seen_set and (not _published_today(item.published, now) or not is_important_news(item.title, item.summary))]
             for item in rejected:
-                seen.insert(0, item.key); seen_set.add(item.key)
+                seen.insert(0, item.key)
+                seen_set.add(item.key)
             references = [item for item in items if item.key in seen_set]
             candidates = [item for item in items if item.key not in seen_set and _published_today(item.published, now) and is_important_news(item.title, item.summary)]
             selected, duplicates = _select_top_stories(candidates, references)
             for item in duplicates:
-                seen.insert(0, item.key); seen_set.add(item.key)
-            new_items = selected[:MAX_NEWS_PER_RUN]
+                seen.insert(0, item.key)
+                seen_set.add(item.key)
             if rejected or duplicates:
                 state["news_seen"] = seen[:500]
                 save_state(state, STATE_PATH)
                 changed = True
             next_color = state.get("next_news_color", "red")
-            for item in reversed(new_items):
+            for item in reversed(selected):
                 title_fa = translate_to_fa(item.title)
                 if not title_fa:
                     continue
@@ -245,7 +246,8 @@ def run(now: datetime | None = None) -> int:
                 send_telegram(format_news(item, title_fa, summary_fa, marker_override=marker), token, chat_id)
                 next_color = "white" if next_color == "red" else "red"
                 state["next_news_color"] = next_color
-                seen.insert(0, item.key); seen_set.add(item.key)
+                seen.insert(0, item.key)
+                seen_set.add(item.key)
                 state["news_seen"] = seen[:500]
                 save_state(state, STATE_PATH)
                 changed = True
@@ -268,5 +270,30 @@ def run(now: datetime | None = None) -> int:
     return 0
 
 
+def monitor_loop(poll_seconds: int = 60, session_seconds: int = 240) -> int:
+    """Run repeated polling cycles for a bounded GitHub Actions session."""
+    poll_seconds = max(1, int(poll_seconds))
+    session_seconds = max(poll_seconds, int(session_seconds))
+    started = time.monotonic()
+    while True:
+        cycle_started = time.monotonic()
+        rc = run()
+        if rc != 0:
+            return rc
+        elapsed = time.monotonic() - started
+        if elapsed + poll_seconds > session_seconds:
+            return 0
+        cycle_elapsed = time.monotonic() - cycle_started
+        time.sleep(max(0.0, poll_seconds - cycle_elapsed))
+
+
+def _cli() -> int:
+    if "--monitor" in sys.argv[1:]:
+        poll_seconds = int(os.environ.get("POLL_SECONDS", "60"))
+        session_seconds = int(os.environ.get("SESSION_SECONDS", "240"))
+        return monitor_loop(poll_seconds=poll_seconds, session_seconds=session_seconds)
+    return run()
+
+
 if __name__ == "__main__":
-    raise SystemExit(run())
+    raise SystemExit(_cli())
