@@ -91,7 +91,6 @@ def _detail_names_activist(summary: str) -> bool:
     text = re.sub(r"\s+", " ", (summary or "").strip())
     if not text:
         return False
-    # Require an explicit person name next to the role, e.g. «مسیح علی‌نژاد، فعال حقوق بشر ...».
     return bool(re.search(r"[آ-ی][آ-ی‌\-]{1,30}\s+[آ-ی][آ-ی‌\-]{1,35}\s*[،,]\s*(?:یک\s+)?فعال حقوق بشر", text))
 
 
@@ -133,7 +132,7 @@ def _published_fa(value: str) -> str:
 
 
 def _brand_footer() -> list[str]:
-    return ["", f'<a href="{CHANNEL_URL}">📡 بی‌خبر</a> ←', "مانیتور تحولات ایران"]
+    return ["", f'📡 <a href="{CHANNEL_URL}">بی‌خبر</a> ←', "مانیتور تحولات ایران"]
 
 
 def _is_redundant_summary(title: str, summary: str) -> bool:
