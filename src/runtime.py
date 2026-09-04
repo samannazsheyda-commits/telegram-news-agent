@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import os
 import sys
-from datetime import datetime, timezone
+import time
+from datetime import datetime, timedelta, timezone
 
 from . import main as agent
 from .custom_sources import fetch_custom_news_items
 from .editorial_store import LocalEditorialStore, ReviewItem
+from .sources import NewsItem
 
 
 _store = LocalEditorialStore()
@@ -15,6 +17,10 @@ _original_audit_news = agent._audit_news
 _original_format_news = agent.format_news
 _original_send_telegram = agent.send_telegram
 _pending_auto_key: str | None = None
+_pending_auto_item: NewsItem | None = None
+_sent_news_items: list[NewsItem] = []
+RECENT_DEDUP_WINDOW = timedelta(hours=12)
+RECENT_DEDUP_LIMIT = 60
 
 
 def _terminal_manual_keys() -> set[str]:
@@ -26,6 +32,48 @@ def _terminal_manual_keys() -> set[str]:
         }
     except Exception:
         return set()
+
+
+def _record_to_item(record: dict) -> NewsItem | None:
+    try:
+        return NewsItem(
+            str(record.get("key") or ""),
+            str(record.get("source") or ""),
+            str(record.get("title") or ""),
+            str(record.get("summary") or ""),
+            str(record.get("link") or ""),
+            str(record.get("published") or ""),
+        )
+    except Exception:
+        return None
+
+
+def _recent_published_items(now: datetime | None = None) -> list[NewsItem]:
+    now = now or datetime.now(timezone.utc)
+    try:
+        state = agent.load_state(agent.STATE_PATH)
+    except Exception:
+        return []
+    result: list[NewsItem] = []
+    for record in state.get("recent_published_news") or []:
+        sent_at_raw = str(record.get("sent_at") or "")
+        try:
+            sent_at = datetime.fromisoformat(sent_at_raw.replace("Z", "+00:00"))
+            if sent_at.tzinfo is None:
+                sent_at = sent_at.replace(tzinfo=timezone.utc)
+            sent_at = sent_at.astimezone(timezone.utc)
+        except ValueError:
+            sent_at = now
+        if now - sent_at > RECENT_DEDUP_WINDOW:
+            continue
+        item = _record_to_item(record)
+        if item and item.title:
+            result.append(item)
+    return result
+
+
+def _is_recent_duplicate(item: NewsItem, references: list[NewsItem]) -> bool:
+    return any(agent._same_story(item, previous) for previous in references)
 
 
 def _combined_fetch_news_items():
@@ -43,7 +91,18 @@ def _combined_fetch_news_items():
     for item in custom:
         if item.key not in terminal:
             merged.setdefault(item.key, item)
-    return list(merged.values())
+
+    recent = _recent_published_items()
+    if not recent:
+        return list(merged.values())
+
+    filtered: list[NewsItem] = []
+    for item in merged.values():
+        if _is_recent_duplicate(item, recent):
+            print(f"NEWS_SUPPRESSED recent_duplicate source={item.source!r} title={item.title!r}")
+            continue
+        filtered.append(item)
+    return filtered
 
 
 def _review_record(item, reason: str, now: datetime) -> ReviewItem:
@@ -103,27 +162,71 @@ def _audit_with_editorial_store(state: dict, item, reason: str, now: datetime) -
 
 
 def _format_with_tracking(item, title_fa: str, summary_fa: str, marker_override: str | None = None) -> str:
-    global _pending_auto_key
+    global _pending_auto_key, _pending_auto_item
     message = _original_format_news(item, title_fa, summary_fa, marker_override=marker_override)
     _pending_auto_key = item.key if message else None
+    _pending_auto_item = item if message else None
     return message
 
 
 def _send_with_tracking(text: str, bot_token: str, chat_id: str, *args, **kwargs) -> None:
-    global _pending_auto_key
+    global _pending_auto_key, _pending_auto_item
     key = _pending_auto_key
+    item = _pending_auto_item
     try:
         _original_send_telegram(text, bot_token, chat_id, *args, **kwargs)
     except Exception:
         _pending_auto_key = None
+        _pending_auto_item = None
         raise
     if key:
         try:
             _store.mark_auto_published(key)
         except Exception as exc:
             print(f"Editorial auto transition error: {exc}", file=sys.stderr)
-        finally:
-            _pending_auto_key = None
+        if item is not None:
+            _sent_news_items.append(item)
+        _pending_auto_key = None
+        _pending_auto_item = None
+
+
+def _flush_recent_published(now: datetime | None = None) -> None:
+    if not _sent_news_items:
+        return
+    now = now or datetime.now(timezone.utc)
+    try:
+        state = agent.load_state(agent.STATE_PATH)
+        existing = list(state.get("recent_published_news") or [])
+        fresh_existing = []
+        for record in existing:
+            sent_at_raw = str(record.get("sent_at") or "")
+            try:
+                sent_at = datetime.fromisoformat(sent_at_raw.replace("Z", "+00:00"))
+                if sent_at.tzinfo is None:
+                    sent_at = sent_at.replace(tzinfo=timezone.utc)
+                sent_at = sent_at.astimezone(timezone.utc)
+            except ValueError:
+                sent_at = now
+            if now - sent_at <= RECENT_DEDUP_WINDOW:
+                fresh_existing.append(record)
+
+        new_records = [
+            {
+                "key": item.key,
+                "source": item.source,
+                "title": item.title,
+                "summary": item.summary,
+                "link": item.link,
+                "published": item.published,
+                "sent_at": now.isoformat(),
+            }
+            for item in _sent_news_items
+        ]
+        state["recent_published_news"] = (new_records + fresh_existing)[:RECENT_DEDUP_LIMIT]
+        agent.save_state(state, agent.STATE_PATH)
+        _sent_news_items.clear()
+    except Exception as exc:
+        print(f"Recent dedup persistence error: {exc}", file=sys.stderr)
 
 
 def install_integrations() -> None:
@@ -133,14 +236,28 @@ def install_integrations() -> None:
     agent.send_telegram = _send_with_tracking
 
 
-def run() -> int:
+def run(now: datetime | None = None) -> int:
     install_integrations()
-    return agent.run()
+    rc = agent.run(now)
+    _flush_recent_published(now)
+    return rc
 
 
 def monitor_loop(poll_seconds: int = 60, session_seconds: int = 240) -> int:
-    install_integrations()
-    return agent.monitor_loop(poll_seconds=poll_seconds, session_seconds=session_seconds)
+    poll_seconds = max(1, int(poll_seconds))
+    session_seconds = max(poll_seconds, int(session_seconds))
+    started = time.monotonic()
+    while True:
+        cycle_started = time.monotonic()
+        if cycle_started - started >= session_seconds:
+            return 0
+        rc = run()
+        if rc != 0:
+            return rc
+        cycle_finished = time.monotonic()
+        if cycle_finished - started + poll_seconds > session_seconds:
+            return 0
+        time.sleep(max(0.0, poll_seconds - (cycle_finished - cycle_started)))
 
 
 def _cli() -> int:
