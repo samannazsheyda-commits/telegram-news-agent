@@ -277,14 +277,15 @@ def monitor_loop(poll_seconds: int = 60, session_seconds: int = 240) -> int:
     started = time.monotonic()
     while True:
         cycle_started = time.monotonic()
+        if cycle_started - started >= session_seconds:
+            return 0
         rc = run()
         if rc != 0:
             return rc
-        elapsed = time.monotonic() - started
-        if elapsed + poll_seconds > session_seconds:
+        cycle_finished = time.monotonic()
+        if cycle_finished - started + poll_seconds > session_seconds:
             return 0
-        cycle_elapsed = time.monotonic() - cycle_started
-        time.sleep(max(0.0, poll_seconds - cycle_elapsed))
+        time.sleep(max(0.0, poll_seconds - (cycle_finished - cycle_started)))
 
 
 def _cli() -> int:
