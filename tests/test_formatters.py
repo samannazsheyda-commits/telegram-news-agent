@@ -13,7 +13,7 @@ def test_news_footer_has_clickable_bikhabar_and_tagline_after_source():
     item = NewsItem("k", "Reuters", "Iran", "summary", "https://example.com", "")
     text = format_news(item, "خبر ایران", "خلاصه")
     assert '<a href="https://t.me/bikhabaar">بی‌خبر</a>' in text
-    assert "رسانه خبر ایران" in text
+    assert "مانیتور تحولات ایران" in text
     assert text.index("لینک خبر") < text.index("بی‌خبر")
 
 
@@ -21,4 +21,4 @@ def test_truth_footer_has_clickable_bikhabar_and_tagline():
     post = TruthPost("1", "", "Iran", "https://truthsocial.com/post/1")
     text = format_truth(post, "متن فارسی")
     assert '<a href="https://t.me/bikhabaar">بی‌خبر</a>' in text
-    assert "رسانه خبر ایران" in text
+    assert "مانیتور تحولات ایران" in text
