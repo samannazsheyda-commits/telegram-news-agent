@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 import sys
 from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
+from zoneinfo import ZoneInfo
 
 from .formatters import format_market, format_news, format_truth
 from .services import load_state, save_state, send_telegram, translate_to_fa
@@ -11,6 +13,7 @@ from .sources import fetch_market_snapshot, fetch_news_items, fetch_truth_posts,
 STATE_PATH = os.environ.get("STATE_PATH", "state.json")
 MARKET_INTERVAL = timedelta(hours=2)
 MAX_NEWS_PER_RUN = 8
+TEHRAN = ZoneInfo("Asia/Tehran")
 
 
 def _parse_iso(value: str | None) -> datetime | None:
@@ -23,6 +26,18 @@ def _parse_iso(value: str | None) -> datetime | None:
         return dt.astimezone(timezone.utc)
     except ValueError:
         return None
+
+
+def _published_today(value: str, now: datetime) -> bool:
+    if not value:
+        return False
+    try:
+        published = parsedate_to_datetime(value)
+        if published.tzinfo is None:
+            published = published.replace(tzinfo=timezone.utc)
+        return published.astimezone(TEHRAN).date() == now.astimezone(TEHRAN).date()
+    except Exception:
+        return False
 
 
 def _truth_newer(post_id: str, last_id: str) -> bool:
@@ -80,7 +95,22 @@ def run(now: datetime | None = None) -> int:
             changed = bool(items) or changed
             print(f"News bootstrap with {len(items)} Iran-related items")
         else:
-            new_items = [item for item in items if item.key not in seen_set][:MAX_NEWS_PER_RUN]
+            rejected_old = [item for item in items if item.key not in seen_set and not _published_today(item.published, now)]
+            for item in rejected_old:
+                seen.insert(0, item.key)
+                seen_set.add(item.key)
+                print(f"Skipped stale/undated news {item.source}: {item.key} ({item.published or 'no date'})")
+
+            new_items = [
+                item for item in items
+                if item.key not in seen_set and _published_today(item.published, now)
+            ][:MAX_NEWS_PER_RUN]
+
+            if rejected_old:
+                state["news_seen"] = seen[:500]
+                save_state(state, STATE_PATH)
+                changed = True
+
             for item in reversed(new_items):
                 title_fa = translate_to_fa(item.title)
                 if not title_fa:
