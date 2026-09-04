@@ -137,6 +137,58 @@ def test_parse_google_news_rss_filters_irrelevant_and_labels_source():
     assert items[0].key
 
 
+def test_google_news_titles_remove_site_branding_and_promotional_tail():
+    xml = b'''<?xml version="1.0" encoding="UTF-8"?>
+    <rss><channel>
+      <item>
+        <title>Women gathered in a small Iranian town for a wedding. Then deadly strikes hit - ABC News - Breaking News, Latest News and Videos</title>
+        <link>https://news.google.com/abc</link>
+        <pubDate>Fri, 04 Sep 2026 19:15:00 GMT</pubDate>
+        <description>Iran wedding strike report.</description>
+        <source>ABC News</source>
+      </item>
+      <item>
+        <title>Trump says Iran conflict is small potatoes - cnn.com</title>
+        <link>https://news.google.com/cnn</link>
+        <pubDate>Fri, 04 Sep 2026 19:20:00 GMT</pubDate>
+        <description>Iran conflict report.</description>
+        <source>CNN</source>
+      </item>
+    </channel></rss>'''
+    items = parse_google_news_rss(xml, fallback_source="ABC News")
+    titles = {item.source: item.title for item in items}
+    assert titles["ABC News"] == "Women gathered in a small Iranian town for a wedding. Then deadly strikes hit"
+    assert titles["CNN"] == "Trump says Iran conflict is small potatoes"
+
+
+def test_fetch_news_detail_prefers_real_article_subheadline_over_weak_rss_summary():
+    item = sources.NewsItem(
+        "abc-wedding",
+        "ABC News",
+        "Women gathered in a small Iranian town for a wedding. Then deadly strikes hit",
+        "Iran wedding strike report.",
+        "https://example.com/abc",
+        "Fri, 04 Sep 2026 19:15:00 GMT",
+    )
+
+    class Response:
+        text = '''<html><head>
+        <meta property="og:description" content="The small Iranian town of Kuhestak is reeling after a barrage of strikes hit a house where dozens of women were gathered to celebrate a wedding.">
+        </head><body><p>Generic page navigation text.</p></body></html>'''
+        def raise_for_status(self):
+            return None
+
+    class Session:
+        @staticmethod
+        def get(*args, **kwargs):
+            return Response()
+
+    detail = sources.fetch_news_detail(item, session=Session)
+    assert "Kuhestak" in detail
+    assert "dozens of women" in detail
+    assert detail != item.summary
+
+
 def test_parse_al_arabiya_regional_security_without_iran_word():
     xml = b'''<?xml version="1.0" encoding="UTF-8"?>
     <rss><channel><item>
