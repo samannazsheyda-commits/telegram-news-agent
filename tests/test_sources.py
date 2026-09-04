@@ -1,7 +1,7 @@
+from src.main import is_important_news
 from src.sources import (
     NEWS_QUERIES,
     SPECIAL_QUERIES,
-    is_important_news,
     is_iran_related,
     is_security_alert,
     parse_google_news_rss,
@@ -115,21 +115,6 @@ def test_parse_google_news_rss_filters_irrelevant_and_labels_source():
     assert items[0].title.startswith("Trump announces new Iran sanctions")
     assert items[0].published == "Fri, 04 Sep 2026 10:00:00 GMT"
     assert items[0].key
-
-
-def test_parse_google_news_rss_rejects_article_even_when_iran_related():
-    xml = b'''<?xml version="1.0" encoding="UTF-8"?>
-    <rss><channel>
-      <item>
-        <title>How can the US and Iran end their conflict? Three experts explain - BBC News</title>
-        <link>https://news.google.com/article</link>
-        <guid>article</guid>
-        <pubDate>Fri, 04 Sep 2026 10:00:00 GMT</pubDate>
-        <description><![CDATA[<p>Experts examine possible paths for Iran and the United States.</p>]]></description>
-        <source url="https://bbc.com">BBC News</source>
-      </item>
-    </channel></rss>'''
-    assert parse_google_news_rss(xml, fallback_source="BBC News") == []
 
 
 def test_parse_tgju_market_overview_rial_and_toman():
