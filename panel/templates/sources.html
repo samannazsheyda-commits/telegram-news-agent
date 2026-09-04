@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}منابع | بی‌خبر{% endblock %}
+{% block content %}
+<h1>منابع</h1>
+<section class="card">
+  <h2>اضافه کردن سایت</h2>
+  <form method="post" action="{{ url_for('add_website_source') }}" class="stack-form">
+    {{ website_form.hidden_tag() }}
+    {{ website_form.name.label }}{{ website_form.name(placeholder='مثلاً Iran International') }}
+    {{ website_form.website_url.label }}{{ website_form.website_url(placeholder='https://example.com') }}
+    {{ website_form.feed_url.label }}{{ website_form.feed_url(placeholder='https://example.com/rss.xml') }}
+    <p class="muted">اگر RSS را خالی بگذاری، سیستم خودش سعی می‌کند فید عمومی سایت را پیدا کند.</p>
+    {{ website_form.submit(class_='primary') }}
+  </form>
+</section>
+
+<section class="card">
+  <h2>اضافه کردن X / Twitter</h2>
+  <form method="post" action="{{ url_for('add_x_source') }}" class="stack-form">
+    {{ x_form.hidden_tag() }}
+    {{ x_form.handle.label }}{{ x_form.handle(placeholder='@BarakRavid') }}
+    {{ x_form.name.label }}{{ x_form.name(placeholder='نام دلخواه') }}
+    <p class="muted">پایش X در نسخه رایگان best-effort است و از API پولی X استفاده نمی‌کند.</p>
+    {{ x_form.submit(class_='primary') }}
+  </form>
+</section>
+
+<h2>منابع فعلی</h2>
+<div class="list">
+{% for source in sources %}
+  <section class="source-row">
+    <div>
+      <strong>{{ source.name or source.handle }}</strong>
+      <div class="muted small">{% if source.kind == 'website' %}{{ source.feed_url or source.website_url }}{% else %}{{ source.handle }} · best-effort{% endif %}</div>
+      <div class="meta"><span>{{ source.kind }}</span><span>{{ source.status or '' }}</span></div>
+    </div>
+    <div class="source-actions">
+      <form method="post" action="{{ url_for('toggle_source', source_id=source.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit">{{ 'خاموش' if source.active else 'روشن' }}</button>
+      </form>
+      <form method="post" action="{{ url_for('delete_source', source_id=source.id) }}" onsubmit="return confirm('این منبع حذف شود؟')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="danger-text">حذف</button>
+      </form>
+    </div>
+  </section>
+{% else %}
+  <section class="card empty">هنوز منبع سفارشی اضافه نشده.</section>
+{% endfor %}
+</div>
+{% endblock %}
