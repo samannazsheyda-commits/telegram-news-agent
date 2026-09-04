@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}بررسی خبر | بی‌خبر{% endblock %}
+{% block content %}
+<a class="back" href="{{ url_for('review_queue') }}">→ برگشت به صف</a>
+<section class="card source-card">
+  <div class="meta"><span>{{ item.source }}</span><span>{{ reason_fa.get(item.rejection_reason, item.rejection_reason) }}</span></div>
+  <h2>{{ item.original_title }}</h2>
+  {% if item.original_summary %}<p>{{ item.original_summary }}</p>{% endif %}
+  <div class="meta"><span>{{ item.published_at_source or 'زمان نامشخص' }}</span>{% if item.source_url %}<a target="_blank" rel="noopener" href="{{ item.source_url }}">لینک منبع</a>{% endif %}</div>
+</section>
+
+<form method="post" class="stack-form editor-form">
+  {{ form.hidden_tag() }}
+  {{ form.title_fa.label }}
+  {{ form.title_fa() }}
+  {{ form.body_fa.label }}
+  {{ form.body_fa(rows=8) }}
+  <div class="danger-note">با زدن «تأیید و انتشار فوری»، همین متن بلافاصله در @bikhabaar منتشر می‌شود.</div>
+  <div class="split-actions">
+    {{ form.publish(class_='primary', onclick="return confirm('این خبر همین الان در تلگرام منتشر شود؟')") }}
+    {{ form.reject(class_='danger', onclick="return confirm('این خبر رد نهایی شود؟')") }}
+  </div>
+</form>
+{% endblock %}
