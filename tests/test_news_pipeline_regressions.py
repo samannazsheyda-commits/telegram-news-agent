@@ -94,4 +94,41 @@ def test_low_signal_rejection_is_audited_instead_of_disappearing_silently(tmp_pa
     assert main.run(datetime(2026, 9, 4, 19, 0, tzinfo=timezone.utc)) == 0
     state = main.load_state(state_path)
     records = state.get("news_rejections") or []
+    assert sent == []
     assert any(r["key"] == "low-1" and r["reason"] == "low_signal_or_unapproved_source" for r in records)
+
+
+def test_semantic_duplicate_is_audited_with_title_and_source(tmp_path, monkeypatch):
+    state_path = tmp_path / "state.json"
+    _state(state_path)
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["news_seen"] = ["original"]
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    original = NewsItem(
+        "original",
+        "Reuters",
+        "Iran launches missile at US base in Qatar",
+        "Officials confirm an Iranian missile attack on the base.",
+        "https://news/original",
+        "Fri, 04 Sep 2026 18:20:00 GMT",
+    )
+    duplicate = NewsItem(
+        "duplicate",
+        "CNN",
+        "Iran launches missile at US base in Qatar",
+        "Officials confirm an Iranian missile attack on the base.",
+        "https://news/duplicate",
+        "Fri, 04 Sep 2026 18:45:00 GMT",
+    )
+    sent = []
+    _wire(monkeypatch, state_path, [original, duplicate], sent)
+
+    assert main.run(datetime(2026, 9, 4, 19, 0, tzinfo=timezone.utc)) == 0
+    records = main.load_state(state_path).get("news_rejections") or []
+    assert any(
+        r["key"] == "duplicate"
+        and r["source"] == "CNN"
+        and r["title"].startswith("Iran launches missile")
+        and r["reason"] == "duplicate_or_redundant"
+        for r in records
+    )
