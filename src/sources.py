@@ -37,7 +37,22 @@ NEWS_QUERIES: tuple[tuple[str, str, str], ...] = (
     ("Scott Bessent", '"Scott Bessent" Iran', "en"),
     ("J.D. Vance", '("J.D. Vance" OR "JD Vance") Iran', "en"),
     ("Donald Trump", '("Donald Trump" OR Trump) Iran', "en"),
-    ("Hormuz tankers", '(Iran OR Iranian) ("Strait of Hormuz" OR Hormuz) (tanker OR tankers OR ship OR shipping)', "en"),
+)
+
+APPROVED_SOURCE_ALIASES: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("Axios", ("axios",)),
+    ("Al Jazeera", ("al jazeera",)),
+    ("Channel 14", ("channel 14", "now 14", "now14", "israel national news 14")),
+    ("Reuters", ("reuters",)),
+    ("Associated Press", ("associated press", "ap news", "apnews")),
+    ("BBC News", ("bbc", "bbc news", "bbc.com")),
+    ("CNN", ("cnn",)),
+    ("Financial Times", ("financial times",)),
+    ("The New York Times", ("new york times", "the new york times")),
+    ("France 24", ("france 24", "france24")),
+    ("DW", ("dw", "deutsche welle")),
+    ("Times of Israel", ("times of israel", "the times of israel")),
+    ("Haaretz", ("haaretz",)),
 )
 
 
@@ -95,15 +110,13 @@ def fetch_truth_posts(session=requests, limit: int = 20) -> list[TruthPost]:
         text = strip_html(target.get("content", ""))
         if not text:
             text = "(پست بدون متن؛ ممکن است شامل تصویر یا ویدیو باشد)"
-        result.append(
-            TruthPost(
-                id=str(status.get("id", "")),
-                created_at=str(status.get("created_at", "")),
-                text=text,
-                url=str(status.get("url") or target.get("url") or ""),
-                is_retruth=bool(status.get("reblog")),
-            )
-        )
+        result.append(TruthPost(
+            id=str(status.get("id", "")),
+            created_at=str(status.get("created_at", "")),
+            text=text,
+            url=str(status.get("url") or target.get("url") or ""),
+            is_retruth=bool(status.get("reblog")),
+        ))
     return result
 
 
@@ -119,9 +132,22 @@ def is_iran_related(text: str) -> bool:
     return any(term in haystack for term in IRAN_TERMS)
 
 
+def canonical_source(raw: str) -> str | None:
+    value = re.sub(r"\s+", " ", (raw or "").lower()).strip()
+    for canonical, aliases in APPROVED_SOURCE_ALIASES:
+        if any(alias == value or alias in value for alias in aliases):
+            return canonical
+    return None
+
+
+def _story_title(title: str) -> str:
+    text = re.sub(r"\s+-\s+[^-]{2,80}$", "", title.strip())
+    return re.sub(r"[^a-z0-9\u0600-\u06ff]+", " ", text.lower()).strip()
+
+
 def _news_key(source: str, title: str) -> str:
-    normalized = re.sub(r"\s+", " ", title.strip().lower())
-    return hashlib.sha1(f"{source.lower()}|{normalized}".encode("utf-8")).hexdigest()
+    normalized = _story_title(title)
+    return hashlib.sha1(normalized.encode("utf-8")).hexdigest()
 
 
 def parse_google_news_rss(content: bytes, fallback_source: str) -> list[NewsItem]:
@@ -137,19 +163,18 @@ def parse_google_news_rss(content: bytes, fallback_source: str) -> list[NewsItem
         if not is_iran_related(f"{title} {summary}"):
             continue
         source_node = node.find("source")
-        source = strip_html(source_node.text or "") if source_node is not None else fallback_source
-        source = source or fallback_source
-        link = value("link")
-        items.append(
-            NewsItem(
-                key=_news_key(source, title),
-                source=source,
-                title=title,
-                summary=summary,
-                link=link,
-                published=value("pubDate"),
-            )
-        )
+        raw_source = strip_html(source_node.text or "") if source_node is not None else fallback_source
+        source = canonical_source(raw_source)
+        if not source:
+            continue
+        items.append(NewsItem(
+            key=_news_key(source, title),
+            source=source,
+            title=title,
+            summary=summary,
+            link=value("link"),
+            published=value("pubDate"),
+        ))
     return items
 
 
@@ -173,17 +198,17 @@ def fetch_news_items(session=requests) -> list[NewsItem]:
 def _extract_price(text: str, labels: list[str]) -> int:
     normalized = text.replace("٬", ",")
     for label in labels:
-        pattern = rf"{re.escape(label)}\s+([0-9][0-9,]*)"
-        match = re.search(pattern, normalized)
+        match = re.search(rf"{re.escape(label)}\s+([0-9][0-9,]*)", normalized)
         if match:
             return int(match.group(1).replace(",", ""))
     raise ValueError(f"price not found for labels: {labels}")
 
 
 def parse_tgju_overview(page_text: str) -> MarketSnapshot:
-    usd = _extract_price(page_text, ["دلار"])
-    gold = _extract_price(page_text, ["طلا ۱۸", "طلا 18", "طلای ۱۸", "طلای 18"])
-    return MarketSnapshot(usd_rial=usd, gold18_rial=gold)
+    return MarketSnapshot(
+        usd_rial=_extract_price(page_text, ["دلار"]),
+        gold18_rial=_extract_price(page_text, ["طلا ۱۸", "طلا 18", "طلای ۱۸", "طلای 18"]),
+    )
 
 
 def fetch_market_snapshot(session=requests) -> MarketSnapshot:
