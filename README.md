@@ -1,42 +1,55 @@
 # Telegram News Agent
 
-A zero-monthly-cost GitHub Actions bot that publishes:
+A zero-monthly-cost GitHub Actions bot for the Telegram channel `@bikhabaar`.
 
-- New Donald Trump Truth Social posts (Persian translation, best effort)
-- Axios stories specifically related to Iran war/conflict
-- Iran free-market USD and 18k gold prices about every two hours
+## What it publishes
 
-## How it works
+Only Iran-related items are allowed through the news filter.
 
-The workflow runs every 5 minutes. Truth Social and Axios are checked every run. TGJU is checked only when two hours have passed since the last successful market post. `state.json` stores the last Truth ID, Axios links already seen, and the last market-send time so posts are not duplicated.
+- Donald Trump Truth Social posts, only when the post text is directly about Iran / Hormuz / Tehran / IRGC / related Iran terms
+- Iran-related reporting found through Google News RSS for:
+  - Axios
+  - Al Jazeera
+  - Israel Channel 14 / now14.co.il
+  - Marco Rubio
+  - Mohammad Bagher Ghalibaf
+  - Scott Bessent
+  - J.D. Vance
+  - Donald Trump
+  - Strait of Hormuz tankers / shipping
+- Iran free-market USD price every ~2 hours
+- Iran 18k gold price every ~2 hours
 
-On its first successful run, the bot **does not flood old Truth/Axios news**. It marks the currently visible news as the starting point and sends only the current market snapshot. After that, only new news is posted.
+All English news is translated to Persian on a best-effort, no-key translation endpoint. If translation is temporarily unavailable, the original text is still sent so a story is not lost.
 
-## Required GitHub secrets
+## Schedule
 
-The repository needs exactly two Actions secrets:
+The GitHub Actions workflow runs every 5 minutes. News sources are checked each run. Market prices are posted only after at least two hours have passed since the last successful market post.
 
-- `TELEGRAM_BOT_TOKEN` — token from Telegram @BotFather
-- `TELEGRAM_CHAT_ID` — destination channel ID (for a public channel, `@channelusername` also works if the bot is an admin)
+GitHub scheduled workflows can sometimes be delayed, so this is near-real-time rather than guaranteed instant delivery.
 
-Do not commit the bot token to the repository.
+## Required GitHub Actions secrets
 
-## Telegram setup
+Create these under **Settings → Secrets and variables → Actions**:
 
-Create a bot with @BotFather, add it as an administrator to the target channel, and grant permission to post messages. Then add the two values above as GitHub Actions secrets.
+- `TELEGRAM_BOT_TOKEN`
+- `TELEGRAM_CHAT_ID` = `@bikhabaar`
 
-## Run locally
+Never commit the bot token into the repository.
+
+## State / duplicate prevention
+
+`state.json` stores:
+
+- newest Truth Social post ID already examined
+- recent news item keys already seen
+- last successful market-send time
+
+On first run, old news is only recorded as the starting point and is not flooded into the channel. The market snapshot is sent immediately. After that, only new items are published.
+
+## Run tests
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
 pip install -r requirements-dev.txt
-pytest -q
-TELEGRAM_BOT_TOKEN=... TELEGRAM_CHAT_ID=... python -m src.main
+python -m pytest -q
 ```
-
-## Reliability notes
-
-- GitHub scheduled workflows are nominally every 5 minutes, but GitHub can delay scheduled jobs. It is not a guaranteed real-time service.
-- Truth Social's Mastodon-compatible endpoint and Google's no-key translation endpoint are unofficial/best-effort and can change. A translation failure falls back to the original text rather than dropping the news.
-- Price values are read from TGJU in rial and displayed in toman by dividing by 10.
