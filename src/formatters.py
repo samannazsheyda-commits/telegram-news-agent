@@ -17,6 +17,16 @@ SOURCE_FA = {
     "Al Jazeera": "الجزیره",
     "Al Arabiya": "العربیه",
     "Channel 14": "کانال ۱۴ اسرائیل",
+    "KAN 11": "کانال ۱۱ اسرائیل",
+    "N12": "کانال ۱۲ اسرائیل",
+    "Channel 13": "کانال ۱۳ اسرائیل",
+    "Fox News": "فاکس نیوز",
+    "NBC News": "ان‌بی‌سی نیوز",
+    "CBS News": "سی‌بی‌اس نیوز",
+    "ABC News": "ای‌بی‌سی نیوز",
+    "Sky News": "اسکای نیوز",
+    "Bloomberg": "بلومبرگ",
+    "CNBC": "سی‌ان‌بی‌سی",
     "Reuters": "رویترز",
     "Associated Press": "آسوشیتدپرس",
     "BBC News": "بی‌بی‌سی",
@@ -41,6 +51,10 @@ SOURCE_SUFFIXES = (
     "The New York Times", "New York Times", "نیویورک تایمز", "France 24", "فرانس ۲۴",
     "DW", "دویچه‌وله", "Times of Israel", "تایمز آو اسرائیل", "Haaretz", "هاآرتص",
     "Axios", "اکسیوس", "Channel 14", "کانال ۱۴ اسرائیل",
+    "KAN 11", "KAN", "کانال ۱۱ اسرائیل", "N12", "Channel 12", "کانال ۱۲ اسرائیل",
+    "Channel 13", "Reshet 13", "کانال ۱۳ اسرائیل", "Fox News", "فاکس نیوز",
+    "NBC News", "ان‌بی‌سی نیوز", "CBS News", "سی‌بی‌اس نیوز", "ABC News", "ای‌بی‌سی نیوز",
+    "Sky News", "اسکای نیوز", "Bloomberg", "بلومبرگ", "CNBC", "سی‌ان‌بی‌سی",
 )
 
 
@@ -66,6 +80,14 @@ def _strip_source_suffix(value: str) -> str:
     suffixes = "|".join(re.escape(x) for x in sorted(SOURCE_SUFFIXES, key=len, reverse=True))
     text = re.sub(rf"\s*[-–—|:]\s*(?:{suffixes})\s*$", "", text, flags=re.IGNORECASE).strip()
     return text
+
+
+def _first_sentence(value: str) -> str:
+    text = re.sub(r"\s+", " ", (value or "").strip())
+    if not text:
+        return ""
+    parts = re.split(r"(?<=[.!؟?])\s+", text, maxsplit=1)
+    return parts[0].strip()
 
 
 def _to_persian_digits(value: str) -> str:
@@ -158,9 +180,7 @@ def format_truth(post: TruthPost, persian_text: str) -> str:
 
 def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override: str | None = None) -> str:
     title_fa = _ensure_period(_strip_source_suffix(title_fa))
-    summary_fa = _ensure_period((summary_fa or "").strip())
-    if len(summary_fa) > 900:
-        summary_fa = _ensure_period(summary_fa[:897].rstrip(" .…") + "…")
+    summary_fa = _ensure_period(_first_sentence(_strip_source_suffix(summary_fa)))
     marker = marker_override or _story_marker(item)
     source = _source_label(item.source)
     parts = [f"{marker} <b>{_safe(source)}: {_safe(title_fa)}</b>"]
