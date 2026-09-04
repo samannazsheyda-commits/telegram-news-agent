@@ -112,3 +112,21 @@ def test_news_without_valid_publish_time_is_not_sent(tmp_path, monkeypatch):
     rc = main.run(datetime(2026, 9, 4, 12, 0, tzinfo=timezone.utc))
     assert rc == 0
     assert sent == []
+
+
+def test_market_is_suppressed_from_midnight_until_8am_tehran(tmp_path, monkeypatch):
+    state_path = tmp_path / "state.json"
+    state_path.write_text('{"truth_last_id":"10","news_seen":["seed"],"market_last_sent_at":"2026-09-04T15:00:00+00:00"}', encoding="utf-8")
+    monkeypatch.setattr(main, "STATE_PATH", str(state_path))
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
+    monkeypatch.setattr(main, "fetch_truth_posts", lambda: [TruthPost("10", "", "old", "https://truth/10")])
+    monkeypatch.setattr(main, "fetch_news_items", lambda: [])
+    monkeypatch.setattr(main, "fetch_market_snapshot", lambda: (_ for _ in ()).throw(AssertionError("market must be quiet overnight")))
+    sent = []
+    monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
+
+    # 01:30 Tehran (UTC+3:30 in September 2026)
+    rc = main.run(datetime(2026, 9, 4, 22, 0, tzinfo=timezone.utc))
+    assert rc == 0
+    assert sent == []
