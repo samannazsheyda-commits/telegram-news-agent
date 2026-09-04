@@ -5,6 +5,7 @@ from src.custom_sources import (
     discover_feed_url,
     normalize_x_handle,
     parse_public_feed,
+    parse_public_telegram_channel,
     validate_website_source,
 )
 
@@ -65,3 +66,22 @@ def test_public_feed_filters_non_iran_items():
     assert len(items) == 1
     assert items[0].source == "Example"
     assert "Iran" in items[0].title
+
+
+def test_public_telegram_channel_filters_to_iran_posts_and_preserves_post_link():
+    html = '''
+    <div class="tgme_widget_message" data-post="tabzlive/1001">
+      <div class="tgme_widget_message_text">President Trump on Iran: China has very little involvement.</div>
+      <time datetime="2026-09-05T19:02:00+00:00"></time>
+    </div>
+    <div class="tgme_widget_message" data-post="tabzlive/1002">
+      <div class="tgme_widget_message_text">President Trump discusses Canada trade.</div>
+      <time datetime="2026-09-05T19:03:00+00:00"></time>
+    </div>
+    '''
+    items = parse_public_telegram_channel(html, "tabzlive", "Tabz Live")
+    assert len(items) == 1
+    assert items[0].source == "Tabz Live / Telegram"
+    assert items[0].link == "https://t.me/tabzlive/1001"
+    assert "Iran" in items[0].title
+    assert "05 Sep 2026" in items[0].published
