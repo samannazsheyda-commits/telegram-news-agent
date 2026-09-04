@@ -53,7 +53,12 @@ def send_telegram(text: str, bot_token: str, chat_id: str, session=requests) -> 
     for chunk in split_message(text):
         response = session.post(
             url,
-            json={"chat_id": chat_id, "text": chunk, "disable_web_page_preview": False},
+            json={
+                "chat_id": chat_id,
+                "text": chunk,
+                "parse_mode": "HTML",
+                "disable_web_page_preview": False,
+            },
             timeout=20,
         )
         response.raise_for_status()
