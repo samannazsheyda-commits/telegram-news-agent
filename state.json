@@ -1,6 +1,32 @@
 {
   "truth_last_id": "41514",
   "news_seen": [
+    "4368ec7b8a620a79f6dae1941e00fa1ab00f4203",
+    "3413b8245a66ddd83706fa2c89a5d4546ad1a362",
+    "d0804f9568ce0212b1546ca1753937196b15331e",
+    "0ad43489488ffd09f223a03e85292d466f01b59e",
+    "ebc77b1e96530e1dbc13286195525bec3c7c7dfe",
+    "b533114cfe9300aed1e706f8f717b4a743ac89c9",
+    "a05a0b1dbe76408e9b69809af69b258fcec2b201",
+    "1d5e59539b338d22156a2cfc1da4b835ac6170e9",
+    "95f655d53ba7f0ac8ae5ec139388856c58bd1320",
+    "07bf54c66c03b0e9fc4fb0ba628970d97bd53afc",
+    "287c89a2038583400021abbe4d8122e5762d9b86",
+    "d7018c4ab63b1f4659f052fc90fb07513e81b7bc",
+    "f7f2ef246c893e05fd94c89fc6df32229f1e119a",
+    "c324c6e9cffcf1d5243885200aaf26dee9b06ec7",
+    "d9238b19981fce7310585bd32c5ccde572de9e92",
+    "f074a9167565da8e73e7e41959c4aac284ab85de",
+    "b5c57d8ab80dba34a130699334cdf1f64635900c",
+    "34ea556a0e540df5c51ca04fe3ae22c20aff6d19",
+    "23f0e0540b20fdcdd3fa18d293076365cd814f11",
+    "782d2afa17eac2a26c0ac9c6723087abe540fa1a",
+    "9bb93741bc006abbbddb633601da8b4faed0e668",
+    "be4055ca3d5d78f34dc2ab3e0f1f6100e4a43d4c",
+    "0c3b1c626e48314e50d10bce93e31de40f024173",
+    "83364ac4c44a74e92a4e2542c564dd44fce1190b",
+    "94abd38345f5505635663fe1e0b9351015400ae8",
+    "5093c35c0a22149ed36a4544a7e8cea1c8d30d42",
     "a8dcdafa9de01562bd9fd9defcb943ef766cbb2d",
     "76fed494d1c94aba1a044238a40c9518e95f3312",
     "d80cb78b5aac73bd3ed5a3be6edf315da8428b88",
@@ -474,33 +500,7 @@
     "52ab74e7cc689a2282378c6875c69a71b852841c",
     "8753c9a679418f6c18c03a00a5eaff8093cd35cb",
     "199262eeb77988561e894f94cea865af2f2fc8c2",
-    "5f9c7af92fc795fd53d443f10f8193aa3d62407e",
-    "7db68b796721a6999ed7b3d85840bf45b955ade2",
-    "830bffd63450a064f4298bd80973369c77e9895d",
-    "3f136631311b59147bfd2ce12b809f547b147deb",
-    "e1f4f6df9363a369ebf89c6678febb3fa80e2e30",
-    "3a765f01382d931940e4800d6785ad7bbf00c84a",
-    "8371cebfee9ac78596232045ca4fdad940da5f04",
-    "f6f29fb0271f84591ef6f918421e5993ae3f89b3",
-    "a132e4ac77768e38e45db805fce683bbd7fe26e1",
-    "52070f2a44ba120a88466e63a337d19d51cd1d3f",
-    "a56a6308eddb397ee1b53f92f9c312c817935b19",
-    "f5f50907839d0492e09fda4043828f7f420d9932",
-    "0bd97af35e6648770e57f629b4d2eb36f545fc6a",
-    "f02a9d8756e603fbd79ffa2aa584cd21dfc279e4",
-    "e27048e6c9899491e72fb16d631801081cbf1eac",
-    "a4a389747b108657e13bdc007197764ee4934437",
-    "27c9e85ae54ba52deb6de47c47fec95fb12964bf",
-    "0ad43489488ffd09f223a03e85292d466f01b59e",
-    "d0804f9568ce0212b1546ca1753937196b15331e",
-    "ebc77b1e96530e1dbc13286195525bec3c7c7dfe",
-    "b533114cfe9300aed1e706f8f717b4a743ac89c9",
-    "a05a0b1dbe76408e9b69809af69b258fcec2b201",
-    "95f655d53ba7f0ac8ae5ec139388856c58bd1320",
-    "1d5e59539b338d22156a2cfc1da4b835ac6170e9",
-    "07bf54c66c03b0e9fc4fb0ba628970d97bd53afc",
-    "287c89a2038583400021abbe4d8122e5762d9b86",
-    "d7018c4ab63b1f4659f052fc90fb07513e81b7bc"
+    "5f9c7af92fc795fd53d443f10f8193aa3d62407e"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "white",
@@ -530,6 +530,222 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "d0804f9568ce0212b1546ca1753937196b15331e",
+      "source": "The New York Times",
+      "title": "Video: U.S. Will ‘Economically Asphyxiate’ Iranian Regime, Bessent Says",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 17:03:14 GMT",
+      "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPTU1iTmpUbjAwVmVtT09lcnFRRG4zMmp6QnprWnlZRXVxY1k3V3JMUTk2RWVNTkxfWjNEX3hfUjhqRE9rRUNxVTZITkRpV0xaenY1elVwNU13azJLTjd2a19DX0FtbEVzZjBwU1cxci1zUGFUc0s2UTNjVUdVWG1hU25ZUVpTNHRyb1VzcTRPMC1TNmp1UlBDSXotMXFVclJhZXpSaTMxQnRsTGU5bERDeUlpdnNSaThBakVpaU9EYw?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "0ad43489488ffd09f223a03e85292d466f01b59e",
+      "source": "Reuters",
+      "title": "Bessent says US to apply measures never seen on Iran",
+      "reason": "not_today_tehran",
+      "published": "Thu, 13 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNT2p2QW55Tk9jcjF5Ti1OZmlpMGpLTEg0RU92RVEtMzFobXY2TmtNWjFJaUVZMl9RaWxWM09uV2xjVlQ0dnFHcGlEVi1Zc3ZnRHpFMkZ5VExoeTdzSVE0cmYzMVRFQUExRHA2RHNhZFpFMFZnNnIySjh3RTBRSXVtX3ZqVTJjVWhGSmdpTHVmY19QRE9ieWNmaDdaM2hmOHZfRFE?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "ebc77b1e96530e1dbc13286195525bec3c7c7dfe",
+      "source": "Reuters",
+      "title": "Bessent says US to impose 'toughest' ever sanctions on Iran, urges China to cooperate",
+      "reason": "not_today_tehran",
+      "published": "Thu, 20 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOUlFnUHhPNjlxRW5kTy03TFctOE1ST1NabGVNalozY2hiR2RKcEtfV1ZRblJ1VlJXQXRNem1yZmpIRVVYUjJOd2pzWElTX0JVeXZVR1V1Tk5NOG5oWWUtRVZzWDNFOE5KbE1VNmtubXdodnVzQ1RZMFV3TnpUUXVHM1N5MXZqZTBtdW1iUG8xS18wdi1ranhQQXpfVDdiYnRsc09iN3JtbEhZTVIwS202X0lmSkF2V0c2dFV5NQ?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "b533114cfe9300aed1e706f8f717b4a743ac89c9",
+      "source": "Al Jazeera",
+      "title": "US Treasury secretary says new economic measures will ‘collapse’ Iran",
+      "reason": "not_today_tehran",
+      "published": "Thu, 20 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxNV2pvQVMyNVJzdm95alZqZ2g1ZW10UEY2dkVRdXRHSm4tNF8yOTNlak5SOWIxYXNOakMwdEZ4Q2tLYjVJWWUxUUFaQzhaTVFhZTRUWXJuYlRTVng4NHdoUW94SXlwZkNPX1ZjVTc1T0tCblQwUkNfRHFtc1BFTk9YU19leFF4U2gxdVpMbm1TUmdxOVBJeWt3OTU0dEVoN1RURDE5bVpXZVpjY0M20gGyAUFVX3lxTE5NSmVlUW1LZV9DLXk3U2VhVl8yUHYtdnJ6RVJTZDJwT3IydUc0eGpKZGx5VWNhVW5GanlUS3N0SGRrX2tsNGgzTFVoNE1WakhjeE1Nd1VxVXAtSy1qWWF1ZG82Vi11Q0xkLUpiQk9Jdmh1S1JEbGx6Zkd1cnNsRElFT1ZnNTcyMlFVQUpTYkFNb182LW45Y21ZbjNuRi1LMERwUGFSU1p5Q0NrU092TE9zaUE?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "a05a0b1dbe76408e9b69809af69b258fcec2b201",
+      "source": "Al Jazeera",
+      "title": "US launches ‘Operation Economic Outcast’ to cut Iran’s economic lifeline",
+      "reason": "not_today_tehran",
+      "published": "Mon, 24 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPUHhONldpOG9TMnN4R3U3cTh2M1VNQThQa3hfaGpOaXFLQ3RQbWNNcVhYRHhoZDFhQ1VUR1JKUTNoaWhTS1VjOW9hX2ptcUxZWUx3alM3azk4SmpEejJaNkFEaDBjczdmU28tNDY3SFV5TGM4M0lvaENESVhWd3BUM3BucnJhZHc5UE1UNlZGdHF5amxhREpwdDdybFQ2QUF30gGmAUFVX3lxTFB1TUxBVTlRRDhKVHp2TnhsOFQ1TG45YS1fNWxBTmtHZzhqRmlMSXBTQWNHRVpMOWhaWm9VdmdNWnY0Zm9VYzBaankzYWNQaHU3anplU3JTY00xQUJOY1JXVmdsRmh6T2xROF8tMjE4QjhCVlZMWU4zZEx2ODFTLW1oT1V3NURDX3NiX0V0Q00wLUgtaklkSlNkdERiOWpVemZLak9WZlE?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "1d5e59539b338d22156a2cfc1da4b835ac6170e9",
+      "source": "The New York Times",
+      "title": "Bessent’s Warning of ‘Economic D-Day’ for Iran Amounts to More Threats",
+      "reason": "not_today_tehran",
+      "published": "Tue, 25 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE4xYzV1OHFrN0pNdGo3V1VSMExkc2pvc1NhbHpJdE1HdzFsQ3h1M2lMU1JzeGotX212N1VRTVNHcVJibEVmbDJvbjNjdGdLdnZFbnNjSEhRUEt0Z2U1cWp1WGlUYTZkSWVZclM1SzhXZlFjSW1r?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "95f655d53ba7f0ac8ae5ec139388856c58bd1320",
+      "source": "The New York Times",
+      "title": "U.S. Unveils Campaign to Cripple Iran’s Economy, but Offers Few Details",
+      "reason": "not_today_tehran",
+      "published": "Mon, 24 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOakdJdUtkc0szdWhNeW1MUE5BQWNzT0RoVE9EdjlhUGtieFVVS1VIQmpkbmtMeVVBU1IxSTFMME1YSmg0dHVrdmxUS000QnF6bDVRaXlnV0JEbTlhOEg0VzhUY1hsaUwxajk5MVBxSklGMVF0QU1aT0RheFNjeTlNZVBYNmtWVmlFWEJCR3N3U1dhRTQ?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "07bf54c66c03b0e9fc4fb0ba628970d97bd53afc",
+      "source": "BBC News",
+      "title": "US says sanctions will 'squash' Iran's economy and 'collapse' its regime",
+      "reason": "not_today_tehran",
+      "published": "Thu, 20 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9MOUpxR0VLZHYtWllTZWxtUklUanM1R2tDOEhsZlJLRldrV1pmWWxBTHYtRnROUDlUZmkzUEx6VTJvNFh1MmxUYTNkNEl5X0R2SEQzSWFnTUdGdw?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "287c89a2038583400021abbe4d8122e5762d9b86",
+      "source": "Financial Times",
+      "title": "Scott Bessent: an economic D-Day is coming for Iran",
+      "reason": "not_today_tehran",
+      "published": "Sun, 23 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1xUVgwTjVXNk1ZdmYtaDZGMW9ON3VaS0tYU0wyTWVyYjd3TU9KQ2c5cGF1LXp4cnhXbHRXZ3J6Vi0zUl84RF9rQWItVVEwOEdhS1lhV3JQbFBjT01qNi1BY1FCZjhRV19mMmJBMGI4Zmo?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "d7018c4ab63b1f4659f052fc90fb07513e81b7bc",
+      "source": "Axios",
+      "title": "Bessent unveils sanctions designed to cripple Iran",
+      "reason": "not_today_tehran",
+      "published": "Mon, 24 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiekFVX3lxTE1iRnhQekZOLVdfVWVKWDJ4bk9Rd1lBZ2NFbnk0ZjVYcXNFeDMwSmxzdy1zaGpqWWRNMlhmY29GWHNsTEI2MjduN0xnQzNwY3RLZjdvUkR0aXZTa1MyaHN1eldPa09rLUhxWUhKdy1fNmNMR0lZTVRlZy1n?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "f7f2ef246c893e05fd94c89fc6df32229f1e119a",
+      "source": "BBC News",
+      "title": "Iran says it is 'fully prepared' to counter widened US economic sanctions",
+      "reason": "not_today_tehran",
+      "published": "Tue, 25 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE12TGt1ZGswTTBIUElrYUtUWWZoWDUybXVTQXh2M3o4Qm5WQnIwTm9pNnhKLTFmSUswc2NGNFVPWjA2TGswMHV5cXFXYXB2bEFWbFFTelZ5cEdudw?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "c324c6e9cffcf1d5243885200aaf26dee9b06ec7",
+      "source": "Financial Times",
+      "title": "Scott Bessent threatens Iran’s economic partners with more sanctions",
+      "reason": "not_today_tehran",
+      "published": "Tue, 25 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNTjBySkJ1UXhhWnJ1T0VCeTMzQXhtZmtmU3U2VW4ySkdVSXk1dkEwLVZRVWFFUGI4dXRNNHJjSlo5b0RrM2czMDlLT3Mtb05kOVdjbUpJVGZudEF6VlFvbmVFbjdEdkhmbHh6TzFLTmVUam13b05HNHJjR3k0WW5hVWw2aWs?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "d9238b19981fce7310585bd32c5ccde572de9e92",
+      "source": "Associated Press",
+      "title": "Trump's 'economic D-Day' threats become warnings for countries to sever financial ties with Iran",
+      "reason": "not_today_tehran",
+      "published": "Mon, 24 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNZlROSkFsYjg2RjA1RzJfY1VYTWNZZFhPcDVqSDJrRzFWR1pXQ29uS2NvaEhkVWo1d3dHeXF2QnlWTnNJY2RyVlJJWVQwcG15V0wtbEtwdUU0R05YWVhhbHpyZnZvT0tuMXM1RlJ3YVBxSlc4SGpHazJzSndyRkNqbXF6YVF5U1hqT2t0RmpCUnM3SDNXSkxtS2t6T3RnNGMtMnNiT1Q3X0VXNjg?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "f074a9167565da8e73e7e41959c4aac284ab85de",
+      "source": "The New York Times",
+      "title": "Bessent Hosts G20 Meeting; U.S. Strikes Iran for Second Time in Three Days",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 02:19:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE0xeUU3R0t6NmxFeWphcERMU0NWVWJzQklya01ta3Bocjd1eXVsaUtHeGlnNmxQMl9wam5YMkdTQUxYRjc2VFBuTjJLcHNmVFlqTC02Qk5tZFg4c1dHNUhZRW5FQQ?oc=5",
+      "checked_at": "2026-09-04T21:58:48.688941+00:00"
+    },
+    {
+      "key": "b5c57d8ab80dba34a130699334cdf1f64635900c",
+      "source": "Associated Press",
+      "title": "Vance warns Iran not to ‘play’ the US as he departs for negotiations aimed at ending the war",
+      "reason": "not_today_tehran",
+      "published": "Fri, 10 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNMVFJWTlBTU9Xbm52TXBPQlVfRUEwX2E4MWVMM01WNnBvd3ptck1xUmw4M1pIZGo2Y0pvM0pMMVFRS2M4elZoX1g4SkcxTkc0QVlXcUFBemQ3Y01HellqZWV1WFUyNjQtcWF5NnZSdDdJODcybGpUdDBtYXZnMVBSLXFlMnRmRU9aakt5ZS1XTDV5QkRXbzRN?oc=5",
+      "checked_at": "2026-09-04T21:55:48.688544+00:00"
+    },
+    {
+      "key": "34ea556a0e540df5c51ca04fe3ae22c20aff6d19",
+      "source": "Axios",
+      "title": "Vance says U.S. and Iran are \"very close\" to a deal",
+      "reason": "not_today_tehran",
+      "published": "Thu, 28 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE9kbFpsVm5oUkxGLUJnQmJzZ2pzSjZTQTVWUWh5dUhVNjZQNXljTUNKZ0lCZlRQSHdjUUpQZjdNRG9MTnVjVHpQLWIxcE9GQW56UEdVNlBGZmF0WGNtazVCd19EcjVYdVRBaUc3OE8tUml4WV83aEE?oc=5",
+      "checked_at": "2026-09-04T21:55:48.688544+00:00"
+    },
+    {
+      "key": "23f0e0540b20fdcdd3fa18d293076365cd814f11",
+      "source": "BBC News",
+      "title": "US-Iran talks postponed as Israel launches deadly strikes in Lebanon",
+      "reason": "not_today_tehran",
+      "published": "Fri, 19 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE14WXlXWDJnRXlEQWx2TFFMMEVGN2RjN2E2Y3ZFa2doYjkyNTdZUjVlSG1Maks2ZXNULXhmOEZPT3BIV09tcjRoWUF2bmpsOVhibmFnUktXT1Rldw?oc=5",
+      "checked_at": "2026-09-04T21:55:48.688544+00:00"
+    },
+    {
+      "key": "782d2afa17eac2a26c0ac9c6723087abe540fa1a",
+      "source": "CNN",
+      "title": "‘If it doesn’t work out, I’m blaming JD’: Vance’s risky gambit on Iran peace efforts",
+      "reason": "not_today_tehran",
+      "published": "Fri, 19 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE83bkFlZWRxQ3p1NnZUZThvRWkxMnFpV2NMT0thbU5CY2x4OVFhNlBkMGFrOWdwOWMwcnJjX3IybXBOdTlOTDRFc0xTN3JMS21UM3MyaU96RFhzOHlMdFNuVlg5X3FYX2J4QmZUb2REOElRMHpx?oc=5",
+      "checked_at": "2026-09-04T21:55:48.688544+00:00"
+    },
+    {
+      "key": "9bb93741bc006abbbddb633601da8b4faed0e668",
+      "source": "Al Jazeera",
+      "title": "Vance vs Rubio: Is Team Trump divided on Iran and Lebanon?",
+      "reason": "not_today_tehran",
+      "published": "Mon, 29 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxOMnhlT19GaHVXcEFGOW80dXlaeG1pX09UMDZQMjJZOVBxajFNNkQyOXhaM3FVUEh6djV1OFcxRUE4Q0p2eFMzalRqbGdIbkFYVld0d0NQVjJsM0J2OWR5U3NKWkhXYy1jTWxGRm0wVG1QSDRKZjVLR3JHUGQtakJsRTNseHlDVUNDaFpEY1dvbTFuR0VSclJyVEFOc1EyUdIBowFBVV95cUxNcnUzX0pnS0t2TEF0OFZ3OHZJZWdySmZhczVqRlNoTTdfV1pNUWtscHNTdjRFekpOQmZkUVYzUTFmTGNucWtYYnlFbXpHSzNxVnZmckN3RlhReXVwcUJDQ0JyVXRuUnBhVE9vR2ZyZjRxbWN1eHhBUVFDa3QtOEpxYjVoeklZU0tOUUphekFRUHNhc0lrWHpaOEFlWWVOc05XWXBn?oc=5",
+      "checked_at": "2026-09-04T21:55:48.688544+00:00"
+    },
+    {
+      "key": "be4055ca3d5d78f34dc2ab3e0f1f6100e4a43d4c",
+      "source": "The New York Times",
+      "title": "Iran, Epstein, Space Travel: 5 Takeaways From JD Vance’s Interview With Joe Rogan",
+      "reason": "not_today_tehran",
+      "published": "Wed, 15 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPenRUTkwwbUtHcWNzQmFobm1xZGhkVk1iVkR0ZGRyQTlpMzJVdjV6bzk5MEdrc0Q5VjRSX0lmSHRRUVhKUXRLaWZ2NlpNNC1uRDh5R3ZuMzNNMWZ3UWpadi10T01RYUhYdmN5UjJZZ3FieENOUHRTMmVVNTBqRzFjSEpB?oc=5",
+      "checked_at": "2026-09-04T21:55:48.688544+00:00"
+    },
+    {
+      "key": "0c3b1c626e48314e50d10bce93e31de40f024173",
+      "source": "BBC News",
+      "title": "In Trump's shadow, Vance becomes face of Iran deal",
+      "reason": "not_today_tehran",
+      "published": "Fri, 19 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9rZVF4WTdRRjZheHZ1MXJOSVdhejE0YV9SUEdlSUdGSWhYVnZhZ294M2xHU0VHUjVwS0EybG80UEttam5TSDd2WExIOW9iZXdfc3FfT1JjSDdwQQ?oc=5",
+      "checked_at": "2026-09-04T21:55:48.688544+00:00"
+    },
+    {
+      "key": "83364ac4c44a74e92a4e2542c564dd44fce1190b",
+      "source": "BBC News",
+      "title": "Why was JD Vance in a luxury Swiss resort for talks with Iran?",
+      "reason": "not_today_tehran",
+      "published": "Tue, 23 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE13RWxqOWhLUTlTTFpKTWlfVWtUSjRMUzZscDExTTlxa2VEUnRBeXdvX0dINFBlemdzOVpzak9wQVh5bmZ3RU1xQ0pLd2VfcVJ1SHJJWm9TUQ?oc=5",
+      "checked_at": "2026-09-04T21:55:48.688544+00:00"
+    },
+    {
+      "key": "94abd38345f5505635663fe1e0b9351015400ae8",
+      "source": "The New York Times",
+      "title": "As Vance Leads Iran Negotiations, Trump Creates Disruptions in His Path",
+      "reason": "not_today_tehran",
+      "published": "Mon, 22 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQZ1ZOSHByWUpZeGVUX19iX1hxTXhTdHVxd1pqZnlhcUVqeldGNlBEMHlXdFRGUVVDbFNyanc5ZEtBWnY4cTlzRUlBcHZVVndEYUpDR185MlpyTTNMMDBfdWFfbGZXT2ZfbFF6ejk5MXJ4UkctSFppaWVKV2xxdS1YY2VEaGM?oc=5",
+      "checked_at": "2026-09-04T21:55:48.688544+00:00"
+    },
+    {
+      "key": "5093c35c0a22149ed36a4544a7e8cea1c8d30d42",
+      "source": "France 24",
+      "title": "Trump says Iran war is 'small potatoes', Israel strikes southern Lebanon",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 02:56:56 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxORllqbFpONlAxU2MzT19MRGl1YmNKQ3JNUWxFb1BEOEV2TVdPOWNQUllVN3JoV3pDVjVaOF9jWHVycF96N1RHdFp2S1cyQW1XbHlMbVB6QlFobVNFc0ZxTm1nNlVqRHFXbld1LTZQVXBwdmlCb1JydU5WU21YZVRQbGtGeEYzYU90U0RtTGZ5cF9FM0d5bW9SYXVzcXpDc2dKa0VQN21yVkw0UHZNMEpwWTRfMXZ4Y0ZnSjhNTFhSbkkwcko1RE1EUTR3?oc=5",
+      "checked_at": "2026-09-04T21:55:48.688544+00:00"
+    },
     {
       "key": "a8dcdafa9de01562bd9fd9defcb943ef766cbb2d",
       "source": "Al Jazeera",
