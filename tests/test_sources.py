@@ -1,6 +1,7 @@
 from src.sources import (
     NEWS_QUERIES,
     SPECIAL_QUERIES,
+    is_important_news,
     is_iran_related,
     is_security_alert,
     parse_google_news_rss,
@@ -30,6 +31,34 @@ def test_security_alert_filter_for_tankers_and_airspace():
     assert is_security_alert("EASA issues conflict-zone flight restriction for Persian Gulf")
     assert not is_security_alert("Routine tanker traffic update through Hormuz")
     assert not is_security_alert("Weekly airline schedule published")
+
+
+def test_important_news_rejects_articles_analysis_and_vague_items():
+    rejected = (
+        "How can the US and Iran end their conflict? Three experts explain",
+        "Why tensions between Iran and the United States continue",
+        "What to know about Iran and the Strait of Hormuz",
+        "Analysis: What Trump's Iran strategy could mean for the region",
+        "Opinion: The case for a new Iran policy",
+        "Trump may consider a new approach to Iran",
+        "US officials are reviewing options on Iran",
+        "Ruling expected soon over Trump's claims about the Strait of Hormuz",
+    )
+    for text in rejected:
+        assert not is_important_news(text, "")
+
+
+def test_important_news_accepts_clear_major_new_events():
+    accepted = (
+        "Iran launches missiles at US base in Qatar",
+        "Qatar closes airspace after Iranian drone attack",
+        "Trump announces new sanctions on Iran",
+        "Iran and US suspend nuclear talks",
+        "Tanker explodes near Strait of Hormuz",
+        "Iran reopens airspace after NOTAM cancellation",
+    )
+    for text in accepted:
+        assert is_important_news(text, "")
 
 
 def test_special_monitors_are_configured():
@@ -64,11 +93,11 @@ def test_parse_google_news_rss_filters_irrelevant_and_labels_source():
     xml = b'''<?xml version="1.0" encoding="UTF-8"?>
     <rss><channel>
       <item>
-        <title>Trump discusses Iran talks - Axios</title>
+        <title>Trump announces new Iran sanctions - Axios</title>
         <link>https://news.google.com/a</link>
         <guid>ga</guid>
         <pubDate>Fri, 04 Sep 2026 10:00:00 GMT</pubDate>
-        <description><![CDATA[<p>New comments on Iran and Hormuz.</p>]]></description>
+        <description><![CDATA[<p>The White House announced sanctions targeting Iran.</p>]]></description>
         <source url="https://axios.com">Axios</source>
       </item>
       <item>
@@ -83,9 +112,24 @@ def test_parse_google_news_rss_filters_irrelevant_and_labels_source():
     items = parse_google_news_rss(xml, fallback_source="Axios")
     assert len(items) == 1
     assert items[0].source == "Axios"
-    assert items[0].title.startswith("Trump discusses Iran talks")
+    assert items[0].title.startswith("Trump announces new Iran sanctions")
     assert items[0].published == "Fri, 04 Sep 2026 10:00:00 GMT"
     assert items[0].key
+
+
+def test_parse_google_news_rss_rejects_article_even_when_iran_related():
+    xml = b'''<?xml version="1.0" encoding="UTF-8"?>
+    <rss><channel>
+      <item>
+        <title>How can the US and Iran end their conflict? Three experts explain - BBC News</title>
+        <link>https://news.google.com/article</link>
+        <guid>article</guid>
+        <pubDate>Fri, 04 Sep 2026 10:00:00 GMT</pubDate>
+        <description><![CDATA[<p>Experts examine possible paths for Iran and the United States.</p>]]></description>
+        <source url="https://bbc.com">BBC News</source>
+      </item>
+    </channel></rss>'''
+    assert parse_google_news_rss(xml, fallback_source="BBC News") == []
 
 
 def test_parse_tgju_market_overview_rial_and_toman():
