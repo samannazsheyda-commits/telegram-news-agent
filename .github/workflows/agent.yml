@@ -1,6 +1,14 @@
 name: Telegram News Agent
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "requirements*.txt"
+      - ".github/workflows/agent.yml"
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:
