@@ -21,34 +21,30 @@ ARTICLE_PATTERNS = (
     "how can", "how could", "how might", "experts explain", "experts say", "expert says",
     "three experts", "what does", "what could", "could mean", "may mean", "might mean",
     "timeline of", "a look at", "inside the", "the case for", "commentary", "editorial",
-    "in depth", "in-depth", "factbox", "fact check", "backgrounder", "guide to",
+    "in depth", "in-depth", "factbox", "fact check", "backgrounder", "guide to", "feature:",
     "تحلیل", "یادداشت", "کارشناسان", "چرا ", "چگونه ", "آنچه باید بدانید", "مروری بر",
 )
-
 VAGUE_PATTERNS = (
     "may consider", "might consider", "could consider", "is considering", "are considering",
     "reviewing options", "under review", "expected soon", "expected to", "could happen",
     "may happen", "might happen", "possible that", "possibility of", "speculation",
     "در حال بررسی", "ممکن است", "احتمال دارد", "انتظار می‌رود", "پیش‌بینی",
 )
-
 MAJOR_EVENT_TERMS = (
     "attack", "attacks", "attacked", "strike", "strikes", "struck", "missile", "missiles",
     "drone", "drones", "explosion", "blast", "bombing", "killed", "dead", "wounded",
     "intercepted", "seized", "sank", "sinking", "collision", "fire", "war", "ceasefire",
     "sanction", "sanctions", "designates", "blacklists", "agreement", "deal", "signed",
-    "suspend", "suspended", "resume", "resumed", "talks begin", "talks began",
-    "negotiations begin", "negotiations began", "withdraws", "expels", "orders",
-    "announces", "confirms", "declares", "closes airspace", "closed airspace", "reopens airspace",
-    "airspace closed", "airspace reopened", "notam", "flight ban", "flights cancelled",
-    "evacuation", "nuclear site", "uranium", "enrichment", "hormuz", "tanker",
-    "حمله", "موشک", "پهپاد", "انفجار", "بمباران", "کشته", "مجروح", "رهگیری",
-    "توقیف", "غرق", "آتش‌بس", "تحریم", "توافق", "مذاکرات متوقف", "مذاکرات از سر گرفته",
-    "مذاکرات آغاز", "اعلام کرد", "تأیید کرد", "دستور داد", "حریم هوایی بسته", "حریم هوایی باز",
-    "نوتام", "لغو پرواز", "ممنوعیت پرواز", "تخلیه", "هسته‌ای", "اورانیوم", "غنی‌سازی",
-    "هرمز", "نفتکش",
+    "suspend", "suspended", "resume", "resumed", "talks begin", "talks began", "negotiations begin",
+    "withdraws", "expels", "orders", "announces", "confirms", "declares", "closes airspace",
+    "closed airspace", "reopens airspace", "airspace closed", "airspace reopened", "notam",
+    "flight ban", "flights cancelled", "evacuation", "nuclear site", "uranium", "enrichment",
+    "hormuz", "tanker", "حمله", "موشک", "پهپاد", "انفجار", "بمباران", "کشته", "مجروح",
+    "رهگیری", "توقیف", "غرق", "آتش‌بس", "تحریم", "توافق", "مذاکرات متوقف",
+    "مذاکرات از سر گرفته", "مذاکرات آغاز", "اعلام کرد", "تأیید کرد", "دستور داد",
+    "حریم هوایی بسته", "حریم هوایی باز", "نوتام", "لغو پرواز", "ممنوعیت پرواز", "تخلیه",
+    "هسته‌ای", "اورانیوم", "غنی‌سازی", "هرمز", "نفتکش",
 )
-
 STORY_STOPWORDS = {
     "the", "a", "an", "and", "or", "but", "to", "of", "for", "in", "on", "at", "by",
     "with", "from", "as", "is", "are", "was", "were", "be", "been", "being", "has", "have",
@@ -56,6 +52,16 @@ STORY_STOPWORDS = {
     "his", "her", "this", "that", "after", "before", "about", "over", "under", "new", "latest",
     "و", "در", "به", "از", "با", "برای", "که", "این", "آن", "یک", "را", "است", "شد", "می",
 }
+SPEAKERS = {
+    "vance": ("jd vance", "j.d. vance", "vance"),
+    "trump": ("donald trump", "trump"),
+    "rubio": ("marco rubio", "rubio"),
+    "araghchi": ("abbas araghchi", "araghchi", "عراقچی"),
+    "ghalibaf": ("ghalibaf", "قالیباف"),
+    "rezaei": ("mohsen rezaei", "rezaei", "محسن رضایی"),
+    "bessent": ("scott bessent", "bessent"),
+}
+STATEMENT_TERMS = (" says ", " said ", " tells ", " told ", " interview", " remarks", " گفت", " اعلام کرد")
 
 
 def _parse_iso(value: str | None) -> datetime | None:
@@ -70,58 +76,100 @@ def _parse_iso(value: str | None) -> datetime | None:
         return None
 
 
-def _published_today(value: str, now: datetime) -> bool:
-    if not value:
-        return False
+def _published_dt(value: str) -> datetime | None:
     try:
-        published = parsedate_to_datetime(value)
-        if published.tzinfo is None:
-            published = published.replace(tzinfo=timezone.utc)
-        return published.astimezone(TEHRAN).date() == now.astimezone(TEHRAN).date()
+        dt = parsedate_to_datetime(value)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
     except Exception:
-        return False
+        return None
+
+
+def _published_today(value: str, now: datetime) -> bool:
+    published = _published_dt(value)
+    return bool(published and published.astimezone(TEHRAN).date() == now.astimezone(TEHRAN).date())
 
 
 def _market_quiet_hours(now: datetime) -> bool:
-    local_hour = now.astimezone(TEHRAN).hour
-    return 0 <= local_hour < 8
+    return 0 <= now.astimezone(TEHRAN).hour < 8
 
 
 def is_important_news(title: str, summary: str) -> bool:
     title_l = re.sub(r"\s+", " ", (title or "").lower()).strip()
     summary_l = re.sub(r"\s+", " ", (summary or "").lower()).strip()
     combined = f"{title_l} {summary_l}".strip()
-    if not combined:
+    if not combined or any(p in title_l for p in ARTICLE_PATTERNS) or any(p in title_l for p in VAGUE_PATTERNS):
         return False
-
-    if any(pattern in title_l for pattern in ARTICLE_PATTERNS):
+    if ("?" in title_l or "؟" in title_l) and not any(term in title_l for term in MAJOR_EVENT_TERMS):
         return False
-    if any(pattern in title_l for pattern in VAGUE_PATTERNS):
-        return False
-
-    if "?" in title_l or "؟" in title_l:
-        if not any(term in title_l for term in MAJOR_EVENT_TERMS):
-            return False
-
     return any(term in combined for term in MAJOR_EVENT_TERMS)
 
 
 def _story_tokens(item: NewsItem) -> set[str]:
-    text = f"{item.title} {item.summary}".lower()
-    tokens = re.findall(r"[a-z0-9\u0600-\u06ff]+", text)
-    return {token for token in tokens if len(token) > 2 and token not in STORY_STOPWORDS}
+    tokens = re.findall(r"[a-z0-9\u0600-\u06ff]+", f"{item.title} {item.summary}".lower())
+    return {t for t in tokens if len(t) > 2 and t not in STORY_STOPWORDS}
 
 
 def _same_story(left: NewsItem, right: NewsItem) -> bool:
-    left_tokens = _story_tokens(left)
-    right_tokens = _story_tokens(right)
-    if not left_tokens or not right_tokens:
+    a, b = _story_tokens(left), _story_tokens(right)
+    if not a or not b:
         return False
-    common = left_tokens & right_tokens
-    if len(common) < 4:
-        return False
-    overlap = len(common) / min(len(left_tokens), len(right_tokens))
-    return overlap >= 0.50
+    common = a & b
+    return len(common) >= 4 and len(common) / min(len(a), len(b)) >= 0.50
+
+
+def _speaker_key(item: NewsItem) -> str | None:
+    text = f" {item.title.lower()} "
+    for key, aliases in SPEAKERS.items():
+        if any(alias in text for alias in aliases):
+            return key
+    return None
+
+
+def _is_statement(item: NewsItem) -> bool:
+    text = f" {item.title.lower()} "
+    return _speaker_key(item) is not None and any(term in text for term in STATEMENT_TERMS)
+
+
+def _event_priority(item: NewsItem) -> int:
+    text = f"{item.title} {item.summary}".lower()
+    if any(t in text for t in ("missile", "drone", "attack", "strike", "explosion", "blast", "bombing", "موشک", "پهپاد", "حمله", "انفجار", "بمباران")):
+        return 100
+    if any(t in text for t in ("airspace", "notam", "hormuz", "tanker", "flight ban", "حریم هوایی", "نوتام", "هرمز", "نفتکش")):
+        return 90
+    if any(t in text for t in ("ceasefire", "sanction", "talks", "negotiation", "agreement", "deal", "آتش‌بس", "تحریم", "مذاکرات", "توافق")):
+        return 80
+    if any(t in text for t in ("nuclear", "uranium", "enrichment", "هسته‌ای", "اورانیوم", "غنی‌سازی")):
+        return 75
+    if _is_statement(item):
+        return 40
+    return 50
+
+
+def _select_top_stories(candidates: list[NewsItem], references: list[NewsItem]) -> tuple[list[NewsItem], list[NewsItem]]:
+    def sort_key(item: NewsItem):
+        dt = _published_dt(item.published) or datetime.min.replace(tzinfo=timezone.utc)
+        return (_event_priority(item), dt)
+
+    ordered = sorted(candidates, key=sort_key, reverse=True)
+    selected: list[NewsItem] = []
+    skipped: list[NewsItem] = []
+    speaker_windows: dict[str, datetime] = {}
+    for item in ordered:
+        if any(_same_story(item, other) for other in references + selected):
+            skipped.append(item)
+            continue
+        if _is_statement(item):
+            speaker = _speaker_key(item)
+            dt = _published_dt(item.published)
+            if speaker and dt and speaker in speaker_windows and abs(dt - speaker_windows[speaker]) <= timedelta(hours=2):
+                skipped.append(item)
+                continue
+            if speaker and dt:
+                speaker_windows[speaker] = dt
+        selected.append(item)
+    return selected, skipped
 
 
 def _truth_newer(post_id: str, last_id: str) -> bool:
@@ -139,7 +187,6 @@ def run(now: datetime | None = None) -> int:
     if not token or not chat_id:
         print("Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID", file=sys.stderr)
         return 2
-
     changed = False
 
     try:
@@ -150,18 +197,14 @@ def run(now: datetime | None = None) -> int:
                 state["truth_last_id"] = posts[0].id
                 save_state(state, STATE_PATH)
                 changed = True
-                print(f"Truth bootstrap at {posts[0].id}")
             else:
                 new_posts = [p for p in posts if _truth_newer(p.id, str(last_id))]
                 for post in reversed(new_posts):
                     if not is_iran_related(post.text):
                         continue
                     translated = translate_to_fa(post.text)
-                    if not translated:
-                        print(f"Skipped untranslated Truth {post.id}")
-                        continue
-                    send_telegram(format_truth(post, translated), token, chat_id)
-                    print(f"Sent Iran-related Truth {post.id}")
+                    if translated:
+                        send_telegram(format_truth(post, translated), token, chat_id)
                 if new_posts:
                     state["truth_last_id"] = new_posts[0].id
                     save_state(state, STATE_PATH)
@@ -177,60 +220,30 @@ def run(now: datetime | None = None) -> int:
             state["news_seen"] = [item.key for item in items[:300]]
             save_state(state, STATE_PATH)
             changed = bool(items) or changed
-            print(f"News bootstrap with {len(items)} Iran-related items")
         else:
-            rejected = [
-                item for item in items
-                if item.key not in seen_set and (
-                    not _published_today(item.published, now)
-                    or not is_important_news(item.title, item.summary)
-                )
-            ]
+            rejected = [item for item in items if item.key not in seen_set and (not _published_today(item.published, now) or not is_important_news(item.title, item.summary))]
             for item in rejected:
-                seen.insert(0, item.key)
-                seen_set.add(item.key)
-                reason = "stale/undated" if not _published_today(item.published, now) else "low-value/article"
-                print(f"Skipped {reason} news {item.source}: {item.key}")
-
+                seen.insert(0, item.key); seen_set.add(item.key)
             references = [item for item in items if item.key in seen_set]
-            candidates = [
-                item for item in items
-                if item.key not in seen_set
-                and _published_today(item.published, now)
-                and is_important_news(item.title, item.summary)
-            ]
-
-            selected: list[NewsItem] = []
-            duplicates: list[NewsItem] = []
-            for item in candidates:
-                if any(_same_story(item, other) for other in references + selected):
-                    duplicates.append(item)
-                    seen.insert(0, item.key)
-                    seen_set.add(item.key)
-                    print(f"Skipped semantic duplicate {item.source}: {item.key}")
-                    continue
-                selected.append(item)
-
+            candidates = [item for item in items if item.key not in seen_set and _published_today(item.published, now) and is_important_news(item.title, item.summary)]
+            selected, duplicates = _select_top_stories(candidates, references)
+            for item in duplicates:
+                seen.insert(0, item.key); seen_set.add(item.key)
             new_items = selected[:MAX_NEWS_PER_RUN]
-
             if rejected or duplicates:
                 state["news_seen"] = seen[:500]
                 save_state(state, STATE_PATH)
                 changed = True
-
             for item in reversed(new_items):
                 title_fa = translate_to_fa(item.title)
                 if not title_fa:
-                    print(f"Skipped untranslated title {item.source}: {item.key}")
                     continue
                 summary_fa = translate_to_fa(item.summary[:1200]) if item.summary else ""
                 send_telegram(format_news(item, title_fa, summary_fa), token, chat_id)
-                seen.insert(0, item.key)
-                seen_set.add(item.key)
+                seen.insert(0, item.key); seen_set.add(item.key)
                 state["news_seen"] = seen[:500]
                 save_state(state, STATE_PATH)
                 changed = True
-                print(f"Sent news {item.source}: {item.key}")
     except Exception as exc:
         print(f"News error: {exc}", file=sys.stderr)
 
@@ -243,12 +256,8 @@ def run(now: datetime | None = None) -> int:
             state["market_last_sent_at"] = now.isoformat()
             save_state(state, STATE_PATH)
             changed = True
-            print("Sent market snapshot")
         except Exception as exc:
             print(f"Market error: {exc}", file=sys.stderr)
-    elif market_due:
-        print("Skipped market snapshot during Tehran quiet hours (00:00-08:00)")
-
     if changed:
         save_state(state, STATE_PATH)
     return 0
