@@ -132,6 +132,15 @@ def _is_redundant_summary(title: str, summary: str) -> bool:
     return SequenceMatcher(None, t, s).ratio() >= 0.72
 
 
+def _red_story_marker(item: NewsItem) -> str:
+    text = f"{item.title} {item.summary}".lower()
+    if any(x in text for x in ("missile", "drone", "attack", "strike", "explosion", "blast", "bombing", "killed", "seized", "sinking", "موشک", "پهپاد", "حمله", "انفجار", "بمباران", "توقیف", "غرق")):
+        return "🛑"
+    if any(x in text for x in ("notam", "airspace closed", "flight ban", "flights cancelled", "نوتام", "حریم هوایی بسته", "لغو پرواز")):
+        return "🔺"
+    return "🟥"
+
+
 def _story_marker(item: NewsItem) -> str:
     text = f"{item.title} {item.summary}".lower()
     if any(x in text for x in ("missile", "drone", "attack", "strike", "explosion", "blast", "bombing", "killed", "seized", "sinking", "موشک", "پهپاد", "حمله", "انفجار", "بمباران", "توقیف", "غرق")):
