@@ -13,48 +13,32 @@ CHANNEL_URL = "https://t.me/bikhabaar"
 TEHRAN = ZoneInfo("Asia/Tehran")
 PERSIAN_MONTHS = ("فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند")
 SOURCE_FA = {
-    "Axios": "اکسیوس",
-    "Al Jazeera": "الجزیره",
-    "Al Arabiya": "العربیه",
-    "Channel 14": "کانال ۱۴ اسرائیل",
-    "KAN 11": "کانال ۱۱ اسرائیل",
-    "N12": "کانال ۱۲ اسرائیل",
-    "Channel 13": "کانال ۱۳ اسرائیل",
-    "Fox News": "فاکس نیوز",
-    "NBC News": "ان‌بی‌سی نیوز",
-    "CBS News": "سی‌بی‌اس نیوز",
-    "ABC News": "ای‌بی‌سی نیوز",
-    "Sky News": "اسکای نیوز",
-    "Bloomberg": "بلومبرگ",
-    "CNBC": "سی‌ان‌بی‌سی",
-    "Reuters": "رویترز",
-    "Associated Press": "آسوشیتدپرس",
-    "BBC News": "بی‌بی‌سی",
-    "CNN": "سی‌ان‌ان",
-    "Financial Times": "فایننشال تایمز",
-    "The New York Times": "نیویورک تایمز",
-    "France 24": "فرانس ۲۴",
-    "DW": "دویچه‌وله",
-    "Times of Israel": "تایمز آو اسرائیل",
-    "Haaretz": "هاآرتص",
-    "Donald Trump / Truth Social": "ترامپ / تروث سوشال",
-    "Barak Ravid / X": "باراک راوید",
-    "Abbas Araghchi / X": "عباس عراقچی",
-    "Mohsen Rezaei / X": "محسن رضایی",
-    "TankerTrackers": "تانکرترکرز",
+    "Axios": "اکسیوس", "Al Jazeera": "الجزیره", "Al Arabiya": "العربیه",
+    "Channel 14": "کانال ۱۴ اسرائیل", "KAN 11": "کانال ۱۱ اسرائیل", "N12": "کانال ۱۲ اسرائیل",
+    "Channel 13": "کانال ۱۳ اسرائیل", "Fox News": "فاکس نیوز", "NBC News": "ان‌بی‌سی نیوز",
+    "CBS News": "سی‌بی‌اس نیوز", "ABC News": "ای‌بی‌سی نیوز", "Sky News": "اسکای نیوز",
+    "Bloomberg": "بلومبرگ", "CNBC": "سی‌ان‌بی‌سی", "Reuters": "رویترز",
+    "Associated Press": "آسوشیتدپرس", "BBC News": "بی‌بی‌سی", "CNN": "سی‌ان‌ان",
+    "Financial Times": "فایننشال تایمز", "The New York Times": "نیویورک تایمز",
+    "France 24": "فرانس ۲۴", "DW": "دویچه‌وله", "Times of Israel": "تایمز آو اسرائیل",
+    "Haaretz": "هاآرتص", "Donald Trump / Truth Social": "ترامپ / تروث سوشال",
+    "Barak Ravid / X": "باراک راوید", "Abbas Araghchi / X": "عباس عراقچی",
+    "Mohsen Rezaei / X": "محسن رضایی", "TankerTrackers": "تانکرترکرز",
     "NOTAM / Airspace": "نوتام / حریم هوایی",
 }
 SOURCE_SUFFIXES = (
-    "Al Arabiya English", "Al Arabiya", "العربیه انگلیسی", "العربیه",
-    "Al Jazeera", "الجزیره", "Reuters", "رویترز", "Associated Press", "آسوشیتدپرس",
-    "BBC News", "BBC", "بی‌بی‌سی", "CNN", "سی‌ان‌ان", "Financial Times", "فایننشال تایمز",
-    "The New York Times", "New York Times", "نیویورک تایمز", "France 24", "فرانس ۲۴",
-    "DW", "دویچه‌وله", "Times of Israel", "تایمز آو اسرائیل", "Haaretz", "هاآرتص",
-    "Axios", "اکسیوس", "Channel 14", "کانال ۱۴ اسرائیل",
-    "KAN 11", "KAN", "کانال ۱۱ اسرائیل", "N12", "Channel 12", "کانال ۱۲ اسرائیل",
-    "Channel 13", "Reshet 13", "کانال ۱۳ اسرائیل", "Fox News", "فاکس نیوز",
-    "NBC News", "ان‌بی‌سی نیوز", "CBS News", "سی‌بی‌اس نیوز", "ABC News", "ای‌بی‌سی نیوز",
-    "Sky News", "اسکای نیوز", "Bloomberg", "بلومبرگ", "CNBC", "سی‌ان‌بی‌سی",
+    "Al Arabiya English", "Al Arabiya", "العربیه انگلیسی", "العربیه", "Al Jazeera", "الجزیره",
+    "Reuters", "رویترز", "Associated Press", "آسوشیتدپرس", "BBC News", "BBC", "بی‌بی‌سی",
+    "CNN", "سی‌ان‌ان", "Financial Times", "فایننشال تایمز", "The New York Times", "New York Times",
+    "نیویورک تایمز", "France 24", "فرانس ۲۴", "DW", "دویچه‌وله", "Times of Israel", "تایمز آو اسرائیل",
+    "Haaretz", "هاآرتص", "Axios", "اکسیوس", "Channel 14", "کانال ۱۴ اسرائیل", "KAN 11", "KAN",
+    "کانال ۱۱ اسرائیل", "N12", "Channel 12", "کانال ۱۲ اسرائیل", "Channel 13", "Reshet 13",
+    "کانال ۱۳ اسرائیل", "Fox News", "فاکس نیوز", "NBC News", "ان‌بی‌سی نیوز", "CBS News", "سی‌بی‌اس نیوز",
+    "ABC News", "ای‌بی‌سی نیوز", "Sky News", "اسکای نیوز", "Bloomberg", "بلومبرگ", "CNBC", "سی‌ان‌بی‌سی",
+)
+IRAN_HEADLINE_TERMS = (
+    "ایران", "ایرانی", "تهران", "خامنه", "سپاه", "هرمز", "خلیج فارس", "نطنز", "فردو",
+    "iran", "iranian", "tehran", "khamenei", "irgc", "hormuz", "persian gulf", "natanz", "fordow",
 )
 
 
@@ -78,16 +62,23 @@ def _strip_source_suffix(value: str) -> str:
     text = (value or "").strip()
     text = re.sub(r"[.،,؛;]+$", "", text).strip()
     suffixes = "|".join(re.escape(x) for x in sorted(SOURCE_SUFFIXES, key=len, reverse=True))
-    text = re.sub(rf"\s*[-–—|:]\s*(?:{suffixes})\s*$", "", text, flags=re.IGNORECASE).strip()
-    return text
+    return re.sub(rf"\s*[-–—|:]\s*(?:{suffixes})\s*$", "", text, flags=re.IGNORECASE).strip()
 
 
 def _first_sentence(value: str) -> str:
     text = re.sub(r"\s+", " ", (value or "").strip())
     if not text:
         return ""
-    parts = re.split(r"(?<=[.!؟?])\s+", text, maxsplit=1)
-    return parts[0].strip()
+    return re.split(r"(?<=[.!؟?])\s+", text, maxsplit=1)[0].strip()
+
+
+def _iran_only_bundled_headline(value: str) -> str:
+    text = re.sub(r"\s+", " ", (value or "").strip())
+    parts = [p.strip() for p in re.split(r"\s*[،,؛;]\s*", text) if p.strip()]
+    if len(parts) < 2:
+        return text
+    matches = [p for p in parts if any(term in p.lower() for term in IRAN_HEADLINE_TERMS)]
+    return matches[0] if len(matches) == 1 else text
 
 
 def _to_persian_digits(value: str) -> str:
@@ -106,10 +97,8 @@ def _gregorian_to_jalali(gy: int, gm: int, gd: int) -> tuple[int, int, int]:
         jy += (days - 1) // 365
         days = (days - 1) % 365
     if days < 186:
-        jm, jd = 1 + days // 31, 1 + days % 31
-    else:
-        jm, jd = 7 + (days - 186) // 30, 1 + (days - 186) % 30
-    return jy, jm, jd
+        return jy, 1 + days // 31, 1 + days % 31
+    return jy, 7 + (days - 186) // 30, 1 + (days - 186) % 30
 
 
 def _datetime_fa(dt: datetime) -> str:
@@ -143,15 +132,6 @@ def _is_redundant_summary(title: str, summary: str) -> bool:
     return SequenceMatcher(None, t, s).ratio() >= 0.72
 
 
-def _red_story_marker(item: NewsItem) -> str:
-    text = f"{item.title} {item.summary}".lower()
-    if any(x in text for x in ("missile", "drone", "attack", "strike", "explosion", "blast", "bombing", "killed", "seized", "sinking", "موشک", "پهپاد", "حمله", "انفجار", "بمباران", "توقیف", "غرق")):
-        return "🛑"
-    if any(x in text for x in ("notam", "airspace closed", "flight ban", "flights cancelled", "نوتام", "حریم هوایی بسته", "لغو پرواز")):
-        return "🔺"
-    return "🟥"
-
-
 def _story_marker(item: NewsItem) -> str:
     text = f"{item.title} {item.summary}".lower()
     if any(x in text for x in ("missile", "drone", "attack", "strike", "explosion", "blast", "bombing", "killed", "seized", "sinking", "موشک", "پهپاد", "حمله", "انفجار", "بمباران", "توقیف", "غرق")):
@@ -179,11 +159,10 @@ def format_truth(post: TruthPost, persian_text: str) -> str:
 
 
 def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override: str | None = None) -> str:
-    title_fa = _ensure_period(_strip_source_suffix(title_fa))
+    title_fa = _ensure_period(_iran_only_bundled_headline(_strip_source_suffix(title_fa)))
     summary_fa = _ensure_period(_first_sentence(_strip_source_suffix(summary_fa)))
     marker = marker_override or _story_marker(item)
-    source = _source_label(item.source)
-    parts = [f"{marker} <b>{_safe(source)}: {_safe(title_fa)}</b>"]
+    parts = [f"{marker} <b>{_safe(_source_label(item.source))}: {_safe(title_fa)}</b>"]
     if summary_fa and not _is_redundant_summary(title_fa, summary_fa):
         parts += ["", f"{_detail_marker(marker)} <b>{_safe(summary_fa)}</b>"]
     published = _published_fa(item.published)
@@ -207,7 +186,8 @@ def format_market(snapshot: MarketSnapshot, now: datetime | None = None) -> str:
         _money_line("🇬🇧", "پوند", snapshot.gbp_toman), _money_line("🇦🇪", "درهم", snapshot.aed_toman),
         _money_line("🇹🇷", "لیر", snapshot.try_toman), _money_line("🟡", "طلای ۱۸ عیار", snapshot.gold18_toman, "تومان / گرم"),
         _money_line("🪙", "سکه امامی", snapshot.emami_toman), _money_line("🪙", "نیم‌سکه", snapshot.half_toman),
-        _money_line("🪙", "ربع‌سکه", snapshot.quarter_toman), _money_line("🪙", "سکه گرمی", snapshot.gram_coin_toman),
+        _money_line("🪙", "ربع‌سکه", snapshot.quarter_rial // 10 if snapshot.quarter_rial is not None else None),
+        _money_line("🪙", "سکه گرمی", snapshot.gram_coin_rial // 10 if snapshot.gram_coin_rial is not None else None),
         None if snapshot.bitcoin_usd is None else f"₿ بیت‌کوین: ${snapshot.bitcoin_usd:,.2f}", _money_line("💵", "تتر", snapshot.tether_toman),
     )
     lines.extend(x for x in values if x)
