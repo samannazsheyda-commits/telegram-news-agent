@@ -58,7 +58,7 @@ def test_subsequent_run_sends_only_new_news_and_market_not_due(tmp_path, monkeyp
     rc = main.run(datetime(2026, 9, 4, 12, 0, tzinfo=timezone.utc))
     assert rc == 0
     assert len(sent) == 1
-    assert "Al Jazeera" in sent[0]
+    assert "الجزیره:" in sent[0]
 
 
 def test_old_news_is_rejected_even_if_never_seen(tmp_path, monkeypatch):
@@ -144,3 +144,26 @@ def test_military_event_outranks_interview_headlines():
     selected, _ = main._select_top_stories([interview, missile], [])
     assert selected[0].key == "m1"
     assert main._event_priority(missile) > main._event_priority(interview)
+
+
+def test_news_posts_alternate_red_and_white_across_successful_sends(tmp_path, monkeypatch):
+    state_path = tmp_path / "state.json"
+    state_path.write_text('{"truth_last_id":"10","news_seen":["seed"],"market_last_sent_at":"2026-09-04T15:00:00+00:00","next_news_color":"red"}', encoding="utf-8")
+    monkeypatch.setattr(main, "STATE_PATH", str(state_path))
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
+    monkeypatch.setattr(main, "fetch_truth_posts", lambda: [TruthPost("10", "", "old", "https://truth/10")])
+    monkeypatch.setattr(main, "fetch_news_items", lambda: [
+        NewsItem("n1", "Reuters", "Iran launches missile at target in Qatar", "Strike confirmed", "https://n/1", "Fri, 04 Sep 2026 15:25:00 GMT"),
+        NewsItem("n2", "Al Jazeera", "Iran and US resume nuclear talks", "Talks resumed in Geneva", "https://n/2", "Fri, 04 Sep 2026 15:30:00 GMT"),
+    ])
+    monkeypatch.setattr(main, "fetch_market_snapshot", lambda: (_ for _ in ()).throw(AssertionError("market should not run")))
+    monkeypatch.setattr(main, "translate_to_fa", lambda text: text)
+    sent = []
+    monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
+    assert main.run(datetime(2026, 9, 4, 16, 0, tzinfo=timezone.utc)) == 0
+    news = [text for text in sent if "لینک منبع خبر" in text]
+    assert len(news) == 2
+    assert news[0].splitlines()[0].startswith(("🛑 ", "🔺 ", "🟥 "))
+    assert news[1].splitlines()[0].startswith("⚪️ ")
+    assert main.load_state(state_path)["next_news_color"] == "red"
