@@ -15,6 +15,7 @@ def _base_state(extra=""):
 def _quiet_news(monkeypatch):
     monkeypatch.setattr(main, "fetch_truth_posts", lambda: [TruthPost("10", "", "old", "https://truth/10")])
     monkeypatch.setattr(main, "fetch_news_items", lambda: [])
+    monkeypatch.setattr(main, "fetch_market_snapshot", lambda: (_ for _ in ()).throw(RuntimeError("market disabled in this unit test")))
 
 
 def test_car_prices_send_once_at_11_tehran(tmp_path, monkeypatch):
@@ -25,10 +26,9 @@ def test_car_prices_send_once_at_11_tehran(tmp_path, monkeypatch):
     _quiet_news(monkeypatch)
     monkeypatch.setattr(main, "fetch_car_prices", lambda: [CarPrice("پژو ۲۰۷ اتومات", 2_800_000_000)])
     monkeypatch.setattr(main, "format_car_prices", lambda prices, previous: "CAR\n📌 منبع")
-    monkeypatch.setattr(main, "fetch_market_snapshot", lambda: (_ for _ in ()).throw(RuntimeError("not due")))
     sent = []
     monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
-    now = datetime(2026, 9, 4, 7, 30, tzinfo=timezone.utc)  # 11:00 Tehran
+    now = datetime(2026, 9, 4, 7, 30, tzinfo=timezone.utc)
     assert main.run(now) == 0
     assert sent == ["CAR\n📌 منبع"]
     assert main.load_state(state_path)["car_last_sent_date"] == "2026-09-04"
@@ -46,7 +46,7 @@ def test_noon_weather_sends_once_at_12_tehran(tmp_path, monkeypatch):
     monkeypatch.setattr(main, "format_noon_weather", lambda report: "NOON WEATHER\n📌 Open-Meteo")
     sent = []
     monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
-    now = datetime(2026, 9, 4, 8, 30, tzinfo=timezone.utc)  # 12:00 Tehran
+    now = datetime(2026, 9, 4, 8, 30, tzinfo=timezone.utc)
     assert main.run(now) == 0
     assert sent == ["NOON WEATHER\n📌 Open-Meteo"]
     assert main.load_state(state_path)["weather_noon_last_sent_date"] == "2026-09-04"
@@ -62,7 +62,7 @@ def test_night_weather_sends_at_22_tehran(tmp_path, monkeypatch):
     monkeypatch.setattr(main, "format_night_weather", lambda report: "NIGHT WEATHER\n📌 Open-Meteo")
     sent = []
     monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
-    now = datetime(2026, 9, 4, 18, 30, tzinfo=timezone.utc)  # 22:00 Tehran
+    now = datetime(2026, 9, 4, 18, 30, tzinfo=timezone.utc)
     assert main.run(now) == 0
     assert sent == ["NIGHT WEATHER\n📌 Open-Meteo"]
     assert main.load_state(state_path)["weather_night_last_sent_date"] == "2026-09-04"
@@ -78,10 +78,9 @@ def test_midnight_market_summary_uses_previous_days_first_and_last_prices(tmp_pa
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token"); monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
     _quiet_news(monkeypatch)
     monkeypatch.setattr(main, "format_market_daily_summary", lambda *args: "DAILY MARKET\n📌 TGJU")
-    monkeypatch.setattr(main, "fetch_market_snapshot", lambda: (_ for _ in ()).throw(AssertionError("quiet hours")))
     sent = []
     monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
-    now = datetime(2026, 9, 4, 20, 30, tzinfo=timezone.utc)  # Sep 5, 00:00 Tehran
+    now = datetime(2026, 9, 4, 20, 30, tzinfo=timezone.utc)
     assert main.run(now) == 0
     assert sent == ["DAILY MARKET\n📌 TGJU"]
     assert main.load_state(state_path)["market_daily_summary_last_date"] == "2026-09-04"
@@ -93,6 +92,7 @@ def test_every_distinct_trump_statement_about_iran_bypasses_importance_filter(tm
     monkeypatch.setattr(main, "STATE_PATH", str(state_path))
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token"); monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
     monkeypatch.setattr(main, "fetch_truth_posts", lambda: [TruthPost("10", "", "old", "https://truth/10")])
+    monkeypatch.setattr(main, "fetch_market_snapshot", lambda: (_ for _ in ()).throw(RuntimeError("market disabled")))
     items = [
         NewsItem("t1", "Reuters", "Trump says he spoke about Iran this morning", "The president described the conversation without announcing a new policy.", "https://n/1", "Fri, 04 Sep 2026 09:00:00 GMT"),
         NewsItem("t2", "CNN", "Trump says Iran remains on his agenda", "He made the comment later in the day.", "https://n/2", "Fri, 04 Sep 2026 09:20:00 GMT"),
