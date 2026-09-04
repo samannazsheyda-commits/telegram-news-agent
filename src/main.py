@@ -33,7 +33,7 @@ VAGUE_PATTERNS = (
 MAJOR_EVENT_TERMS = (
     "attack", "attacks", "attacked", "strike", "strikes", "struck", "missile", "missiles",
     "drone", "drones", "explosion", "blast", "bombing", "killed", "dead", "wounded",
-    "intercepted", "seized", "sank", "sinking", "collision", "fire", "war", "ceasefire",
+    "intercepted", "interception", "air defense", "air defence", "sirens", "siren", "seized", "sank", "sinking", "collision", "fire", "war", "ceasefire",
     "sanction", "sanctions", "designates", "blacklists", "agreement", "deal", "signed",
     "suspend", "suspended", "resume", "resumed", "talks begin", "talks began", "negotiations begin",
     "withdraws", "expels", "orders", "announces", "confirms", "declares", "closes airspace",
@@ -41,7 +41,7 @@ MAJOR_EVENT_TERMS = (
     "flight ban", "flights cancelled", "evacuation", "nuclear site", "uranium", "enrichment",
     "security council", "iaea", "board of governors", "refer iran", "referral", "resolution",
     "hormuz", "tanker", "حمله", "موشک", "پهپاد", "انفجار", "بمباران", "کشته", "مجروح",
-    "رهگیری", "توقیف", "غرق", "آتش‌بس", "تحریم", "توافق", "مذاکرات متوقف",
+    "رهگیری", "پدافند", "آژیر", "توقیف", "غرق", "آتش‌بس", "تحریم", "توافق", "مذاکرات متوقف",
     "مذاکرات از سر گرفته", "مذاکرات آغاز", "اعلام کرد", "تأیید کرد", "دستور داد",
     "حریم هوایی بسته", "حریم هوایی باز", "نوتام", "لغو پرواز", "ممنوعیت پرواز", "تخلیه",
     "شورای امنیت", "آژانس بین‌المللی انرژی اتمی", "شورای حکام", "قطعنامه", "ارجاع پرونده",
@@ -136,7 +136,7 @@ def _is_statement(item: NewsItem) -> bool:
 
 def _event_priority(item: NewsItem) -> int:
     text = f"{item.title} {item.summary}".lower()
-    if any(t in text for t in ("missile", "drone", "attack", "strike", "explosion", "blast", "bombing", "موشک", "پهپاد", "حمله", "انفجار", "بمباران")):
+    if any(t in text for t in ("missile", "drone", "attack", "strike", "explosion", "blast", "bombing", "air defense", "air defence", "interception", "intercepted", "sirens", "siren", "موشک", "پهپاد", "حمله", "انفجار", "بمباران", "پدافند", "رهگیری", "آژیر")):
         return 100
     if any(t in text for t in ("airspace", "notam", "hormuz", "tanker", "flight ban", "حریم هوایی", "نوتام", "هرمز", "نفتکش")):
         return 90
