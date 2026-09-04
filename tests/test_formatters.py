@@ -15,7 +15,6 @@ def test_news_footer_has_clickable_bikhabar_and_tagline_after_source():
     assert '<a href="https://t.me/bikhabaar">بی‌خبر</a>' in text
     assert "مانیتور تحولات ایران" in text
     assert text.index("لینک خبر") < text.index("بی‌خبر")
-    assert "🛑" in text
 
 
 def test_truth_footer_has_clickable_bikhabar_and_tagline():
@@ -25,18 +24,22 @@ def test_truth_footer_has_clickable_bikhabar_and_tagline():
     assert "مانیتور تحولات ایران" in text
 
 
-def test_news_uses_exactly_one_red_story_marker_and_bold_body():
+def test_critical_security_news_uses_one_red_marker_and_bold_body():
     item = NewsItem("k", "Axios", "Iran missile attack", "missile strike", "https://example.com", "Fri, 04 Sep 2026 10:00:00 GMT")
     text = format_news(item, "حمله موشکی به ایران", "جزئیات حمله")
     first_line = text.splitlines()[0]
-    allowed = ("🛑", "🔺", "♦️", "🟥", "📌")
-    assert sum(first_line.startswith(marker) for marker in allowed) == 1
+    assert first_line.startswith("🛑 ")
     assert "🔺♦️" not in first_line
     assert "<b>حمله موشکی به ایران.</b>" in first_line
-    assert "🟥 <b>جزئیات حمله.</b>" in text
+    assert "<b>جزئیات حمله.</b>" in text
     assert "⏰" in text
     assert "📌 منبع: Axios" in text
-    assert "Axios | ایران" not in text
+
+
+def test_diplomatic_news_uses_white_marker_for_visual_separation():
+    item = NewsItem("k2", "Reuters", "Iran and US resume nuclear talks", "Officials confirmed talks resumed", "https://example.com/2", "Fri, 04 Sep 2026 11:00:00 GMT")
+    text = format_news(item, "مذاکرات ایران و آمریکا از سر گرفته شد", "مقام‌ها از آغاز دوباره مذاکرات خبر دادند")
+    assert text.splitlines()[0].startswith("⚪️ ")
 
 
 def test_news_shows_source_publication_time_in_tehran_time():
@@ -45,6 +48,7 @@ def test_news_shows_source_publication_time_in_tehran_time():
     assert "⏰" in text
     assert "۱۳:۳۰" in text
     assert "۱۴۰۵" in text
+    assert "به وقت ایران" in text
 
 
 def test_market_contains_full_requested_watchlist():
