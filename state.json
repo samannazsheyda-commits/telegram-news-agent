@@ -1,6 +1,13 @@
 {
   "truth_last_id": "41514",
   "news_seen": [
+    "a8dcdafa9de01562bd9fd9defcb943ef766cbb2d",
+    "76fed494d1c94aba1a044238a40c9518e95f3312",
+    "d80cb78b5aac73bd3ed5a3be6edf315da8428b88",
+    "7c8cbd77aa7f8a226e8b3bf5c93cd9342ccae70a",
+    "37351fe08aef8ca94454d7f30d60e2e4946b5b5d",
+    "c485e544f48356c452e768484724d59282efbd4d",
+    "d1091e5df8e2f11c2cfb3e3580a588a1ce5380b1",
     "1c7bc8b221b0e1ba368280f48754dcc315e274a2",
     "3774ef6bb44ab538b95bdacc42c0cf35fd801b10",
     "d40d8cf6484899ac5c36cd99976c6fa634f669cc",
@@ -493,17 +500,10 @@
     "1d5e59539b338d22156a2cfc1da4b835ac6170e9",
     "07bf54c66c03b0e9fc4fb0ba628970d97bd53afc",
     "287c89a2038583400021abbe4d8122e5762d9b86",
-    "d7018c4ab63b1f4659f052fc90fb07513e81b7bc",
-    "f7f2ef246c893e05fd94c89fc6df32229f1e119a",
-    "c324c6e9cffcf1d5243885200aaf26dee9b06ec7",
-    "d9238b19981fce7310585bd32c5ccde572de9e92",
-    "f074a9167565da8e73e7e41959c4aac284ab85de",
-    "1ea76c725b49a14ecd344d9f2cec9e4204203d82",
-    "37351fe08aef8ca94454d7f30d60e2e4946b5b5d",
-    "f1182ac57c95c5162ce66a70f84beda003938d79"
+    "d7018c4ab63b1f4659f052fc90fb07513e81b7bc"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو ۲۰۷ دنده‌ای": 2210000000,
     "پژو ۲۰۷ اتومات": 2810000000,
@@ -530,6 +530,60 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "a8dcdafa9de01562bd9fd9defcb943ef766cbb2d",
+      "source": "Al Jazeera",
+      "title": "Trump’s ‘economic D-Day’ claims first victim: Not Iran, but US markets",
+      "reason": "not_today_tehran",
+      "published": "Fri, 21 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxOenpHVXJUV3A5cTY4b0ctYVZwVUZ3bGFSeFoxaGNMSEtBNUtGR2cxR0tsWi12N09DQzVVY1VPZ3lUNDNVU2t0MGd3Ql9rczBVNnpLZDhkWUpNVHlLekF4a1REMDc2QVZHX05NWmJ4OGtTRWlGcXRodmJsMWZEVWFhSWs1SXA2WWM1NHhNSXl3QTd1VnFHNnJqNnB5aVJXWFhudjA5Tlh0YjA4d9IBrwFBVV95cUxObEVoRGp3U0lCOG9JODRJdHVtTzBDQXlJTU96YVB3SDlmaGRmemU1WmZlYnlLakN0LW0zNTFZcWV3aTBWVHRzbV84ZTVWb3pIY2lmVUg1S09PWUltVUlfa002bGxHQkp4RUhLMXkzM2dvUHl6YXhpQ2tpNnhORHlLSzNtMGpzTlYzbjVJTEtXZUpWYTdJb0NQcU8wY2NKUjJ4ZWxKSmh0NTNQb3dTT0ZF?oc=5",
+      "checked_at": "2026-09-04T21:50:01.593986+00:00"
+    },
+    {
+      "key": "76fed494d1c94aba1a044238a40c9518e95f3312",
+      "source": "Al Jazeera",
+      "title": "Trump announces ‘most crushing economic operation ever’ against Iran",
+      "reason": "not_today_tehran",
+      "published": "Wed, 19 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOWVhCS05GTl9MZEVxcUFnNTlYSERZMlRFVXotU2FQMXBrRHhyVU1ULUN4X2N2TXpJbDFjbEo5X2djeW9hNjlkYU0wVTMxWV9QbHp5TGFHY1EzUFRCZGxNVlNiYVBJNkU5UGpSdG0yOEFxSm5Zc2xrNzloZHRkdXNJMnVobUkwMDJKR1JkS3hPZjRNZFJfWjZKRkhqR2hZUDZRVTNjcS1HWFJGbFHSAbABQVVfeXFMTzNXU2ZhU2FUMmswRXJ0eUdVaWF5SUc4eXRKNlp0eVFWYUpWaE1vUFlmSnhDdFVWLVNDeFlzOTB6aWdYYUZLRzlENzhfSUNkV0dLUS1sNFJ4OUd1dERiUlNGX1ByeFUxREhKckxmOGhGSzhxSHVSdXBDWmZDVWFtQkN3U0pIaHZ0Q3p6QUtpazM2VUtXTkx2b2J3eXpCV0ZyaE1vTTZyVU5vSGo5b3J0RlE?oc=5",
+      "checked_at": "2026-09-04T21:50:01.593986+00:00"
+    },
+    {
+      "key": "d80cb78b5aac73bd3ed5a3be6edf315da8428b88",
+      "source": "Reuters",
+      "title": "Iran grants permission for a number of Iraqi oil tankers to pass through Hormuz",
+      "reason": "not_today_tehran",
+      "published": "Sat, 22 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQSEVXQTRoYlc4andBREZoNFdRM3NHMVRtbmdqRU9PQ1k0LWZWdEo5TFBIN0NHakJnc3lJVmlTZzJZM2d5djl4bHFMUEdXUWU4TXkzb2ppOWdnLUpWV1UxN29HN2dMZFJDY2M4eU9iMm40aTllUVBacnU0bGFtZ054YVRFeGFpSXo0bF80VWpsSDVNQlhPR2NkVEMySG9ucnZ3VEIxNmt1SE9UZzdrLW1DR0ZlZjMzaklxZEg0?oc=5",
+      "checked_at": "2026-09-04T21:50:01.593986+00:00"
+    },
+    {
+      "key": "7c8cbd77aa7f8a226e8b3bf5c93cd9342ccae70a",
+      "source": "Al Jazeera",
+      "title": "Iran’s Ghalibaf accuses Trump of conducting show diplomacy ‘on loop’",
+      "reason": "not_today_tehran",
+      "published": "Thu, 06 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxPb1ZpRXNWVGdSN2dmQ3lyX0JobGRZdmw3WGFEWDhxT2xxbjk4a3VrXzE1ZzFJdXFqUlNVT0xTaG54Z2NrU1h0bF8yNk9aNmhGS2hRSGRWVlY0OW5fQmxMVmhvZ3EwYUZoVTRoemY4bmhwandvTU5tbWNod3lQX1pETXlLR0ZwYWQ2R0RlOHdsSTVvc2pDTlJsLW9sX2hlLXNwamE3VUIybGrSAa4BQVVfeXFMTm9Ra19udlBBUjFJVDUzTTZuVERET0taZVctOHpteE1qZW5QTjZ3N002Rm84M2V0UW9pZ0EzUlM1bWhUclVTVmVvWTc2SEVweTh4OHNoOVVEUjJOei1BMDN4Y0tsOU5MMUFBWHdabEhZbmZuU0h1RzlZZGlBOTFrak9QclY0ODBlZzlrRy1XbmNscHN5cHZIaFh0dDBMRHVIYTU5VWFUcnFub24yd3RB?oc=5",
+      "checked_at": "2026-09-04T21:50:01.593986+00:00"
+    },
+    {
+      "key": "37351fe08aef8ca94454d7f30d60e2e4946b5b5d",
+      "source": "Associated Press",
+      "title": "US plans to sanction another bank in effort to clamp down on Iran transactions, Bessent tells AP",
+      "reason": "not_today_tehran",
+      "published": "Sun, 30 Aug 2026 23:30:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxNdldWT1BUeFUxSlNnaU9rZTl5eDlWd0dSejRvTUg4YkhEZzNIWjVGc0x3VFVENkltZ2dKb3JleFc0YTRQX0M1NGVJcUhXd0l3endPSHFIZl90N0tHSW80S21ZVUhrOG1Yb1RrMTlBX2UydVFCMEV1MjQ1UDI5Z3RkTDQ1TjY3Z1BseXQyZ3Q5eVBENDYwQ2s5Rm9HMkhIQQ?oc=5",
+      "checked_at": "2026-09-04T21:48:01.593802+00:00"
+    },
+    {
+      "key": "d1091e5df8e2f11c2cfb3e3580a588a1ce5380b1",
+      "source": "Tabz Live / Telegram",
+      "title": "🇮🇷 🇺🇸 🇮🇱 ⚡️ — Iranian Foreign Ministry spokesperson Esmaeil Baqaei: Americans, ask yourselves one question: Why should your sons and daughters be offered debt forgiveness in exchange for fighting and dying in a war Israel wants continued...",
+      "reason": "article_or_commentary",
+      "published": "Fri, 04 Sep 2026 21:01:04 +0000",
+      "link": "https://t.me/tabzlive/101796",
+      "checked_at": "2026-09-04T21:47:01.593669+00:00"
+    },
     {
       "key": "1c7bc8b221b0e1ba368280f48754dcc315e274a2",
       "source": "NBC News",
