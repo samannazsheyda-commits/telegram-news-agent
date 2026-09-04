@@ -82,6 +82,19 @@ def _up_to_two_sentences(value: str, max_chars: int = 650) -> str:
     return result
 
 
+def _unnamed_activist_headline(title: str) -> bool:
+    text = re.sub(r"\s+", " ", (title or "").strip())
+    return bool(re.match(r"^(?:یک\s+)?فعال حقوق بشر(?:\s+(?:هشدار|می‌گوید|گفت|می‌نویسد|اعلام))", text))
+
+
+def _detail_names_activist(summary: str) -> bool:
+    text = re.sub(r"\s+", " ", (summary or "").strip())
+    if not text:
+        return False
+    # Require an explicit person name next to the role, e.g. «مسیح علی‌نژاد، فعال حقوق بشر ...».
+    return bool(re.search(r"[آ-ی][آ-ی‌\-]{1,30}\s+[آ-ی][آ-ی‌\-]{1,35}\s*[،,]\s*(?:یک\s+)?فعال حقوق بشر", text))
+
+
 def _to_persian_digits(value: str) -> str:
     return value.translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"))
 
@@ -120,7 +133,7 @@ def _published_fa(value: str) -> str:
 
 
 def _brand_footer() -> list[str]:
-    return ["", f'📡 <a href="{CHANNEL_URL}">بی‌خبر</a> ←', "مانیتور تحولات ایران"]
+    return ["", f'<a href="{CHANNEL_URL}">📡 بی‌خبر</a> ←', "مانیتور تحولات ایران"]
 
 
 def _is_redundant_summary(title: str, summary: str) -> bool:
@@ -174,6 +187,8 @@ def format_truth(post: TruthPost, persian_text: str) -> str:
 def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override: str | None = None) -> str:
     title_fa = _ensure_period(_strip_source_suffix(title_fa))
     summary_fa = _ensure_period(_up_to_two_sentences(_strip_source_suffix(summary_fa)))
+    if _unnamed_activist_headline(title_fa) and not _detail_names_activist(summary_fa):
+        return ""
     marker = marker_override or _story_marker(item)
     parts = [f"{marker} <b>{_safe(_source_label(item.source))}: {_safe(title_fa)}</b>"]
     if summary_fa and not _is_redundant_summary(title_fa, summary_fa):
