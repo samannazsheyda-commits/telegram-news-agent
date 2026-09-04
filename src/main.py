@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import sys
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
@@ -14,6 +15,39 @@ STATE_PATH = os.environ.get("STATE_PATH", "state.json")
 MARKET_INTERVAL = timedelta(hours=2)
 MAX_NEWS_PER_RUN = 8
 TEHRAN = ZoneInfo("Asia/Tehran")
+
+ARTICLE_PATTERNS = (
+    "analysis:", "opinion:", "explainer", "what to know", "what we know", "why ",
+    "how can", "how could", "how might", "experts explain", "experts say", "expert says",
+    "three experts", "what does", "what could", "could mean", "may mean", "might mean",
+    "timeline of", "a look at", "inside the", "the case for", "commentary", "editorial",
+    "in depth", "in-depth", "factbox", "fact check", "backgrounder", "guide to",
+    "تحلیل", "یادداشت", "کارشناسان", "چرا ", "چگونه ", "آنچه باید بدانید", "مروری بر",
+)
+
+VAGUE_PATTERNS = (
+    "may consider", "might consider", "could consider", "is considering", "are considering",
+    "reviewing options", "under review", "expected soon", "expected to", "could happen",
+    "may happen", "might happen", "possible that", "possibility of", "speculation",
+    "در حال بررسی", "ممکن است", "احتمال دارد", "انتظار می‌رود", "پیش‌بینی",
+)
+
+MAJOR_EVENT_TERMS = (
+    "attack", "attacks", "attacked", "strike", "strikes", "struck", "missile", "missiles",
+    "drone", "drones", "explosion", "blast", "bombing", "killed", "dead", "wounded",
+    "intercepted", "seized", "sank", "sinking", "collision", "fire", "war", "ceasefire",
+    "sanction", "sanctions", "designates", "blacklists", "agreement", "deal", "signed",
+    "talks suspended", "suspend talks", "talks resume", "resumes talks", "talks begin",
+    "negotiations suspended", "negotiations resume", "withdraws", "expels", "orders",
+    "announces", "confirms", "declares", "closes airspace", "closed airspace", "reopens airspace",
+    "airspace closed", "airspace reopened", "notam", "flight ban", "flights cancelled",
+    "evacuation", "nuclear site", "uranium", "enrichment", "hormuz", "tanker",
+    "حمله", "موشک", "پهپاد", "انفجار", "بمباران", "کشته", "مجروح", "رهگیری",
+    "توقیف", "غرق", "آتش‌بس", "تحریم", "توافق", "مذاکرات متوقف", "مذاکرات از سر گرفته",
+    "اعلام کرد", "تأیید کرد", "دستور داد", "حریم هوایی بسته", "حریم هوایی باز",
+    "نوتام", "لغو پرواز", "ممنوعیت پرواز", "تخلیه", "هسته‌ای", "اورانیوم", "غنی‌سازی",
+    "هرمز", "نفتکش",
+)
 
 
 def _parse_iso(value: str | None) -> datetime | None:
@@ -43,6 +77,26 @@ def _published_today(value: str, now: datetime) -> bool:
 def _market_quiet_hours(now: datetime) -> bool:
     local_hour = now.astimezone(TEHRAN).hour
     return 0 <= local_hour < 8
+
+
+def is_important_news(title: str, summary: str) -> bool:
+    title_l = re.sub(r"\s+", " ", (title or "").lower()).strip()
+    summary_l = re.sub(r"\s+", " ", (summary or "").lower()).strip()
+    combined = f"{title_l} {summary_l}".strip()
+    if not combined:
+        return False
+
+    if any(pattern in title_l for pattern in ARTICLE_PATTERNS):
+        return False
+    if any(pattern in title_l for pattern in VAGUE_PATTERNS):
+        return False
+
+    # Questions are normally explainers/articles, unless the title also reports a concrete event.
+    if "?" in title_l or "؟" in title_l:
+        if not any(term in title_l for term in MAJOR_EVENT_TERMS):
+            return False
+
+    return any(term in combined for term in MAJOR_EVENT_TERMS)
 
 
 def _truth_newer(post_id: str, last_id: str) -> bool:
@@ -100,18 +154,27 @@ def run(now: datetime | None = None) -> int:
             changed = bool(items) or changed
             print(f"News bootstrap with {len(items)} Iran-related items")
         else:
-            rejected_old = [item for item in items if item.key not in seen_set and not _published_today(item.published, now)]
-            for item in rejected_old:
+            rejected = [
+                item for item in items
+                if item.key not in seen_set and (
+                    not _published_today(item.published, now)
+                    or not is_important_news(item.title, item.summary)
+                )
+            ]
+            for item in rejected:
                 seen.insert(0, item.key)
                 seen_set.add(item.key)
-                print(f"Skipped stale/undated news {item.source}: {item.key} ({item.published or 'no date'})")
+                reason = "stale/undated" if not _published_today(item.published, now) else "low-value/article"
+                print(f"Skipped {reason} news {item.source}: {item.key}")
 
             new_items = [
                 item for item in items
-                if item.key not in seen_set and _published_today(item.published, now)
+                if item.key not in seen_set
+                and _published_today(item.published, now)
+                and is_important_news(item.title, item.summary)
             ][:MAX_NEWS_PER_RUN]
 
-            if rejected_old:
+            if rejected:
                 state["news_seen"] = seen[:500]
                 save_state(state, STATE_PATH)
                 changed = True
