@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41514",
   "news_seen": [
+    "8631ca4fa0ab47072c3e2b33fa94554cf151ec9a",
+    "c052b66457058460797d97d743a95ca3fb84c145",
+    "dacd9419f44f1cf2861f27bf12708e321c05e7f0",
     "e7e23842aa42fa7e9418d6aaf0e515af8bcdbe52",
     "4fc9f03c89e8bd0d2dd4484b780735a99f70c5c8",
     "d861c60b008153b6c7eae70970d794a7672941d4",
@@ -497,13 +500,10 @@
     "61adc78ced473814b7eb04d2d2cab6e36b46e1e5",
     "acc8f09b5f54d087ee4e3d79fd9c72b5886919c0",
     "264651a46fac47e661f29e30e20ae14bcd907376",
-    "f764694775a406b46fde827d68efa641a99e8417",
-    "51aa9f1f712e44aba3f943a26a7df03bed509014",
-    "bf8dd9f6b5216de231fb8f201f40fd96f92bb440",
-    "b90838da160953a3d83bd366ccccd1f34b58db74"
+    "f764694775a406b46fde827d68efa641a99e8417"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو ۲۰۷ دنده‌ای": 2210000000,
     "پژو ۲۰۷ اتومات": 2810000000,
