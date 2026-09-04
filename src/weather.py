@@ -167,6 +167,15 @@ def _fmt_temp(value: float | None) -> str:
     return "—" if value is None else f"{round(value):+d}°"
 
 
+def _fmt_plain_number(value: float | None) -> str:
+    if value is None:
+        return "—"
+    rounded = round(value, 1)
+    if rounded.is_integer():
+        return _to_persian_digits(str(int(rounded)))
+    return _to_persian_digits(str(rounded).replace(".", "٫"))
+
+
 def _important_weather_notes(report: WeatherReport, day_index: int) -> list[str]:
     notes: list[str] = []
     for city in report.cities:
@@ -198,37 +207,29 @@ def format_noon_weather(report: WeatherReport) -> str:
     return "\n".join(lines)
 
 
+def _conversational_forecast(city: WeatherCity, day: WeatherDay) -> str:
+    parts = [
+        f"فردا {escape(city.city)} هوا {weather_code_fa(day.code)}ه و دما بین {_fmt_temp(day.temp_min)} تا {_fmt_temp(day.temp_max)} می‌مونه"
+    ]
+    if day.precipitation_probability is not None:
+        parts.append(f"احتمال بارش {_to_persian_digits(str(round(day.precipitation_probability)))}٪ه")
+    if (day.precipitation_sum or 0) > 0:
+        parts.append(f"حدود {_fmt_plain_number(day.precipitation_sum)} میلی‌متر بارش داریم")
+    if (day.snowfall_sum or 0) > 0:
+        parts.append(f"برف تجمعی حدود {_fmt_plain_number(day.snowfall_sum)} سانتی‌متره")
+    if (day.wind_gust_max or 0) >= 45:
+        parts.append(f"تندباد هم ممکنه تا {_fmt_plain_number(day.wind_gust_max)} کیلومتر بر ساعت برسه")
+    return "؛ ".join(parts) + "."
+
+
 def format_night_weather(report: WeatherReport) -> str:
-    lines = ["🌤 <b>پیش‌بینی هوای فردا | مراکز ۳۱ استان</b>"]
+    lines = ["🌙 <b>پیش‌بینی دقیق هوای فردا | مراکز ۳۱ استان</b>"]
     notes = _important_weather_notes(report, 1)
     if notes:
-        lines += ["", "⚠️ <b>موارد قابل توجه بر اساس داده پیش‌بینی:</b> " + "؛ ".join(escape(x) for x in notes)]
+        lines += ["", "⚠️ <b>نکته‌های مهم فردا:</b> " + "؛ ".join(escape(x) for x in notes)]
     for city in report.cities:
         if len(city.days) < 2:
             continue
-        day = city.days[1]
-        rain = "—" if day.precipitation_probability is None else f"{_to_persian_digits(str(round(day.precipitation_probability)))}٪"
-        lines += [
-            "",
-            f"▫️ <b>{escape(city.city)}</b>: {_fmt_temp(day.temp_min)} تا {_fmt_temp(day.temp_max)} — "
-            f"{weather_code_fa(day.code)} | بارش {rain}",
-        ]
-    rainy_counts = []
-    hot_counts = []
-    cold_counts = []
-    for idx in (1, 2, 3):
-        rainy = hot = cold = 0
-        for city in report.cities:
-            if idx >= len(city.days):
-                continue
-            d = city.days[idx]
-            rainy += int((d.precipitation_probability or 0) >= 60)
-            hot += int((d.temp_max or -100) >= 38)
-            cold += int((d.temp_min or 100) <= 0)
-        rainy_counts.append(rainy); hot_counts.append(hot); cold_counts.append(cold)
-    lines += ["", "🔭 <b>چشم‌انداز ۳ روزه:</b> " +
-              f"تعداد مراکز با احتمال بارش بالا {rainy_counts[0]}، {rainy_counts[1]} و {rainy_counts[2]}؛ " +
-              f"گرمای بالای ۳۸ درجه در {hot_counts[0]}، {hot_counts[1]} و {hot_counts[2]} مرکز؛ " +
-              f"دمای زیر صفر در {cold_counts[0]}، {cold_counts[1]} و {cold_counts[2]} مرکز."]
+        lines += ["", f"▫️ <b>{escape(city.city)}</b>: {_conversational_forecast(city, city.days[1])}"]
     lines.append(_footer())
     return "\n".join(lines)
