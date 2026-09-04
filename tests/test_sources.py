@@ -1,6 +1,8 @@
 from src.sources import (
     NEWS_QUERIES,
+    SPECIAL_QUERIES,
     is_iran_related,
+    is_security_alert,
     parse_google_news_rss,
     parse_tgju_overview,
     parse_tgju_profile_rate,
@@ -17,8 +19,36 @@ def test_iran_filter_accepts_iran_hormuz_and_rejects_unrelated():
     assert is_iran_related("Trump comments on Iran nuclear talks")
     assert is_iran_related("Two tankers pause near the Strait of Hormuz")
     assert is_iran_related("قالیباف درباره ایران و مذاکرات گفت")
+    assert is_iran_related("Iran launched missiles toward Qatar")
     assert not is_iran_related("Trump speaks about US interest rates")
     assert not is_iran_related("Oil prices rise after OPEC meeting")
+
+
+def test_security_alert_filter_for_tankers_and_airspace():
+    assert is_security_alert("Explosion reported near tanker in Strait of Hormuz")
+    assert is_security_alert("Iran airspace closed and flights cancelled after NOTAM")
+    assert is_security_alert("EASA issues conflict-zone flight restriction for Persian Gulf")
+    assert not is_security_alert("Routine tanker traffic update through Hormuz")
+    assert not is_security_alert("Weekly airline schedule published")
+
+
+def test_special_monitors_are_configured():
+    names = {name for name, _, _ in SPECIAL_QUERIES}
+    expected = {
+        "Barak Ravid / X",
+        "Abbas Araghchi / X",
+        "Mohsen Rezaei / X",
+        "TankerTrackers",
+        "NOTAM / Airspace",
+        "Iran regional strikes",
+    }
+    assert expected <= names
+
+
+def test_special_queries_keep_trump_truth_social_only():
+    queries = {name: query for name, query, _ in SPECIAL_QUERIES}
+    assert "truthsocial.com" in queries["Donald Trump / Truth Social"]
+    assert "x.com" not in queries["Donald Trump / Truth Social"]
 
 
 def test_major_foreign_iran_sources_are_configured():
