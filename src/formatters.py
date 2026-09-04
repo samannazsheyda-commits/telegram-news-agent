@@ -15,6 +15,7 @@ PERSIAN_MONTHS = ("فروردین", "اردیبهشت", "خرداد", "تیر", 
 SOURCE_FA = {
     "Axios": "اکسیوس",
     "Al Jazeera": "الجزیره",
+    "Al Arabiya": "العربیه",
     "Channel 14": "کانال ۱۴ اسرائیل",
     "Reuters": "رویترز",
     "Associated Press": "آسوشیتدپرس",
@@ -33,6 +34,14 @@ SOURCE_FA = {
     "TankerTrackers": "تانکرترکرز",
     "NOTAM / Airspace": "نوتام / حریم هوایی",
 }
+SOURCE_SUFFIXES = (
+    "Al Arabiya English", "Al Arabiya", "العربیه انگلیسی", "العربیه",
+    "Al Jazeera", "الجزیره", "Reuters", "رویترز", "Associated Press", "آسوشیتدپرس",
+    "BBC News", "BBC", "بی‌بی‌سی", "CNN", "سی‌ان‌ان", "Financial Times", "فایننشال تایمز",
+    "The New York Times", "New York Times", "نیویورک تایمز", "France 24", "فرانس ۲۴",
+    "DW", "دویچه‌وله", "Times of Israel", "تایمز آو اسرائیل", "Haaretz", "هاآرتص",
+    "Axios", "اکسیوس", "Channel 14", "کانال ۱۴ اسرائیل",
+)
 
 
 def _safe(value: str) -> str:
@@ -49,6 +58,14 @@ def _ensure_period(value: str) -> str:
     if not text or text[-1] in ".!؟?…؛:":
         return text
     return text + "."
+
+
+def _strip_source_suffix(value: str) -> str:
+    text = (value or "").strip()
+    text = re.sub(r"[.،,؛;]+$", "", text).strip()
+    suffixes = "|".join(re.escape(x) for x in sorted(SOURCE_SUFFIXES, key=len, reverse=True))
+    text = re.sub(rf"\s*[-–—|:]\s*(?:{suffixes})\s*$", "", text, flags=re.IGNORECASE).strip()
+    return text
 
 
 def _to_persian_digits(value: str) -> str:
@@ -140,7 +157,7 @@ def format_truth(post: TruthPost, persian_text: str) -> str:
 
 
 def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override: str | None = None) -> str:
-    title_fa = _ensure_period(title_fa)
+    title_fa = _ensure_period(_strip_source_suffix(title_fa))
     summary_fa = _ensure_period((summary_fa or "").strip())
     if len(summary_fa) > 900:
         summary_fa = _ensure_period(summary_fa[:897].rstrip(" .…") + "…")
