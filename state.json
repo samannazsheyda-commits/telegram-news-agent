@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41514",
   "news_seen": [
+    "05b2b4e7b84c26c3ee7fc4f79f7a8876f6fc0978",
+    "1beba5f6815493599b888e2816d336df3d316ff4",
     "352604345e69d7721bdae035501cbb5d95e05f7d",
     "ded80311e5d8ff245c7b6e62816f7cf21a1c3833",
     "4825d7ccb9d3c2118a7f054a06d06e63eee758c2",
@@ -498,9 +500,7 @@
     "447ee29b1aaf3dfcaadda5594617d9648f339fba",
     "f1e7e685c1caacfebdb7bc4d911bdde6206a00b5",
     "e7ad5341e910e6dcdcfcfee7b4a0cd3b386e3abb",
-    "ea1db3ce1a050b53ef158a993b49093ecd2a2f81",
-    "469321255f888ec166a8ce5807c63a467fcaa9c9",
-    "6fa949721e0dd1a9ee933d51dd8bfd1b3ad59160"
+    "ea1db3ce1a050b53ef158a993b49093ecd2a2f81"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "white",
