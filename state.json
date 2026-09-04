@@ -1,6 +1,18 @@
 {
   "truth_last_id": "41516",
   "news_seen": [
+    "4e8eef5eb7bb49e0de4de326cb6022496967e4a8",
+    "ad4653165a40b33965c45a00c8e1255f70a2cf74",
+    "00eb1f22ec54eb6fae2650dabe1e9914002c1202",
+    "4ef7fe13d75bdd254795fb3947c93e81e886186d",
+    "c95cd12142ba3ac4edc2c7b7343da66442a489a4",
+    "84c9affc8b6316085c3a08df967310d07eabdf4c",
+    "f86c9164f6d5a37b5bca9602776e874cf40ca029",
+    "ef043b39a00e89361e3622a6a80e69fdd2276a3e",
+    "5d4bc364955fa9fc789c8713100c2f9da6951ffd",
+    "e0315ba37f8c0bb6114c04842766c505ce53d6b1",
+    "41ca397a3b6de6b3a374b6247e5380a6245d3fb1",
+    "de985b10869f1d37f5fc739dd4fb9214f1d1e078",
     "6651d683c09b6e15520b101418da656cff64e3aa",
     "d70d8e0103454193e5286a5c8b8edd9251f3fb79",
     "4a4cee56f85a42748ccf5e0c0eaf677c4f8f76c0",
@@ -488,19 +500,7 @@
     "293ef40ff0cb502157150a382ecd146282f2dca0",
     "d35289f7974e2996a3708bedaa9163d5daad244b",
     "21f59ac29b6d8cca3d19555d655629b2f4142211",
-    "897aa19da00ce091fefeb3dacc05ecc19577f2b4",
-    "efa4eb9ad944afa44825f1215e7e0a7c4dcedc9a",
-    "2e1d6a509d2c1bb52458d635cf098b546d3423fe",
-    "0b9eab5b9f38c87dac67016ccacf7bbf953b488f",
-    "1a5c70f678347686a7bd709ff0d62ee1fd1c73db",
-    "e00cb6b1262b5abd0137d7abd74f23b1ebc442c5",
-    "047fbd029f99e1fefec3f89a16521f3ddd97bd2e",
-    "a1dd5e7ca64ff81531f4cf0007a07198fce55944",
-    "698895dc009843f2f8c35bbbbfc19148699911ae",
-    "b5c00534b981b30fb1118f3924e08f95fc6b16b3",
-    "c65761b442ef21db8a03c9876e342bcb76ae5ad4",
-    "1769740fbd151e4c6e45a97bf42cae2e5f40e9b8",
-    "b9bc3270e81593e5ed56f62821980492fa560aa8"
+    "897aa19da00ce091fefeb3dacc05ecc19577f2b4"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "red",
@@ -530,6 +530,114 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "4e8eef5eb7bb49e0de4de326cb6022496967e4a8",
+      "source": "Al Jazeera",
+      "title": "Is the US talking to Iran’s Mohammad Bagher Ghalibaf, and who is he?",
+      "reason": "not_today_tehran",
+      "published": "Tue, 24 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPQ2JVbFllVmwtMXk3Q2lQMDh5SDV5bjdoakU1ZXhCSzNDOEhtS203aDNUcVRtQS1WZVJ2a0NqN3JlRU1rUDc2elJTRy1iTko5RHJQb1VlOF9oU2hXNG1rdktIUTcwalJPUTE2RzB0Tml1TDVjNnBMN0FaajZjY25KV0ZlWDUybkdYVnctakNBeUJxY3VMUk9NaVFOQW9Pek9XSWJ6SlRBaUI2d9IBrwFBVV95cUxPeC1QbmFJTC15V01JUDJTWnF3V1BYbXRfVThhWVFEa3gySUJLMkNOTlRoZXlYQzR2b19MenBCRWd0ZDFOenV3U0htTmJkTm9RREZ3MXJlX3U5UTBvV1AwSGZRY0pDS3JNTmpFWlJ2NFZlenVjRW83QVBEdnk1SFBxRjVJM0UxZkV2OGZXNGFSaDdTZmVNek01R2JkR3BvZi1oa2JJQmFDV3dzMHNuZnU0?oc=5",
+      "checked_at": "2026-09-04T23:43:41.362678+00:00"
+    },
+    {
+      "key": "ad4653165a40b33965c45a00c8e1255f70a2cf74",
+      "source": "France 24",
+      "title": "Is Iran's parliamentary speaker Ghalibaf negotiating with the US?",
+      "reason": "not_today_tehran",
+      "published": "Tue, 24 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxQTE5SaWtMcGRhbmN1WWxFYUlMYmFoS0MtemRoLUx3eEY0M0tRbFYySWcxM0J4dlFYVzVuOGM5UVNmSTBmejJ1czVxSWJIN21sdXhfcDA2WFFQN2NKYTE3SzhmVm5lbFk5LVdzNFNHVDhIZGlTNFVXUXU2RG5RWjNFY2lKT3ZWSTFvTDMwQ3U2M3RuNUFLcS1xd3o1Z012Wk83aUhKanl6N2w2dmJVRUF6NEFEZTdTenZxeEN1QW5pRQ?oc=5",
+      "checked_at": "2026-09-04T23:43:41.362678+00:00"
+    },
+    {
+      "key": "00eb1f22ec54eb6fae2650dabe1e9914002c1202",
+      "source": "CNBC",
+      "title": "U.S. has violated ceasefire agreement, Iran parliamentary speaker says",
+      "reason": "not_today_tehran",
+      "published": "Wed, 08 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBwNm02QjMybGo2cWk0d1g2Njd3RlJhVWdQRW9WSHdDdm9kdlVSTkxEeExZSE5ueVBwOUxZQWlMMFJPNkRZV0d6N0poMDd1WmpWZjJWUVp4MWM4RE5Pa192cDZiRWxVbW10Z1o1MmlrUVLSAXZBVV95cUxPa2NqOUdLcGhZenU3QTBYSkIyZVVpQzRzNFJsdDd3bUxzNDNzVTZBclB3Z0ZTcTh1VVpCYzJ2TFlBZzI5Q0xhN2VUcVBVX0l5ZjgtU1RwaGpObGxaZ0dveGJ0bTN5bUhoM3FFU2xWMmxIMjFhbUx3?oc=5",
+      "checked_at": "2026-09-04T23:43:41.362678+00:00"
+    },
+    {
+      "key": "4ef7fe13d75bdd254795fb3947c93e81e886186d",
+      "source": "Al Jazeera",
+      "title": "Where to invest during Iran war? Ask - or don’t - Mohammad Bagher Ghalibaf",
+      "reason": "not_today_tehran",
+      "published": "Tue, 31 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQZmp0bmJCeHdwWi1XRENUNkJpLS00TzF6VW1LN1MzOTA1R2lwSy11RW1ZZXJKS3RRN1Rmb1Z6LVhZbkZNYktQbGN6a1BqWWpIdEp2Yk1EOURBa1BaQ2hYWTJCeThMZjRsWXZnc2FaQnVCbWtnZVlYR3JOWlFOUUtuSFhWWXdCVHJLR1YzRERla1c1c3VCUTN3dlNCdW5mR3ZmSHV5Mkg1dDZjaVZpbmfSAbMBQVVfeXFMTUNveWotcHJ6SFNBeGNCUjE3M0tHOHlnbTd0c1lLNFVOTUNVWXpDbU5TUUxQTjgyRkszVXVHOHdCdWlCcW1nY3RIX3h5MDFobVJCMFdfNWtGb2Rpa0JJMUU4Sko4S09PSzJtQ3c2U3RwcW90RkswYU1VcmJTRXBqRDlneTNYOXJqSnc3TkZmMk0yOEFQOVc5RjlwVW1yeDdHUGdVYi1XSUtleEV1UlF3MVNnRnM?oc=5",
+      "checked_at": "2026-09-04T23:43:41.362678+00:00"
+    },
+    {
+      "key": "c95cd12142ba3ac4edc2c7b7343da66442a489a4",
+      "source": "ABC News",
+      "title": "Trump touts Iran talks with hardline leader Mohammad Ghalibaf, but says 'we know where he lives'",
+      "reason": "not_today_tehran",
+      "published": "Tue, 31 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNZGc0bDJCS1ZhTDVhbkVVQ3pXdTU0NkVZU1lsMzJ6bVV0WnlINW5GNWpuclFsZTJIb2hQQjBmU1pfUElRbWp6X1pqT2hYMWdvT0JlZDJGcGxnX3VnYjdxRE9BMDk4NDBMQmZPTTFhTjJiYlgxWElWbGM5SW03ak9WdmVtWm1OOF85eFc3cFZYY3hUa1lzdlJqZnlqNGJBREl5LXIwaHhac9IBrAFBVV95cUxPZjdqamhYZHppSVdWSXI3Q3pmX3U3Y25XZGdtWGVGQ3hleVJ3X21UdGlPU3hYS0JTdzlvS1ZCWGN2eWdBX2xjVWxaUnFGX1FpT1NOdFE3U0lkWlhUOTF3OW1ZMXRnQjI5dm1jYUdXWGxYeENOb014eTZQMFRHLU9LU0NoRUNwSFlody1ma3ZOUG9udUg2UFR1SGpOdHoydUlzYS1NdnZrRjNDc0J1?oc=5",
+      "checked_at": "2026-09-04T23:43:41.362678+00:00"
+    },
+    {
+      "key": "84c9affc8b6316085c3a08df967310d07eabdf4c",
+      "source": "NBC News",
+      "title": "'You know the drill': Iran takes on Trump on social media",
+      "reason": "not_today_tehran",
+      "published": "Mon, 30 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPZkVmUzJ6djRYWS1GQjZ6VzRKb1FOdnFLYU5UeEJsM1NLY3c3eXR6ZmRVb2kyYzc5X0twWVVfMnY1SW1GX2g3WGR2NTkxZWtjSkt6TU1QV1AxaW5CVTJCeFFsQ2xlVnRJMzQwX0QwMHB2Z01JQVBvY3ZNUTAtdzBKdTNhNlE5Z1ZIWERzWFZIcENfUDZqSnUydGJqVWxOT2NJaVE?oc=5",
+      "checked_at": "2026-09-04T23:43:41.362678+00:00"
+    },
+    {
+      "key": "f86c9164f6d5a37b5bca9602776e874cf40ca029",
+      "source": "Al Jazeera",
+      "title": "Ceasefire in Lebanon ‘as important’ as in Iran, Ghalibaf says",
+      "reason": "not_today_tehran",
+      "published": "Thu, 16 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPVnh1YzhlelR0TnhIaEI3a1I2TWhSZTRBeWlOMTl0dmJLQ1NBRmNSeDZKcjVLcjFTLTV6VGZkV19mQmRncG55emVwT3FoTkR0MjJudjZrTDhsZFdUUUgySjdCSWZ4eU1rb296em13YWRJVWJ6am9veFhZNFl5c1VhVE0wbUQ0S0FYM2NGSEdRZ0hkeEg1UFNsbTNGVnlENmRi0gGmAUFVX3lxTE5uZTZWcmtPUXJicGQteHVBd2lnTV9DWEhtODFMRUpocGp3SXdiNV9DVmJVMzBLQUE3UXczcUNTNUlJQUZiWmR2YnJtTm5YUUJZSnJqcC14aS00cFNJTThUU0hpMnNNanY5ejZrdE1RSm9xblJvSlplaGlvakMxdks0MlVkZGs0ZnVhSXhFdno3cXU1alcxUWl4SjVaNHdmLVNpLVVDSEE?oc=5",
+      "checked_at": "2026-09-04T23:43:41.362678+00:00"
+    },
+    {
+      "key": "ef043b39a00e89361e3622a6a80e69fdd2276a3e",
+      "source": "CNBC",
+      "title": "Iran behind attack on cargo vessel near Oman in Strait of Hormuz, U.S. official tells MS NOW",
+      "reason": "not_today_tehran",
+      "published": "Thu, 25 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxOeXYtaGhsMTh4NnZ4aUFhNEpEZHRPTzdieFZIcGlPTGpNRU14YnFJLURhVWFyM3JCTld3ZGFBakdHLTMxaW02TUxBMlk0dnBzWFRZazRIUGxxamttdmotN3ZseThPM1RkaG9zaXhtenMwM25feTZiX294cWtqT08yZFQ4TEgzMTjSAYwBQVVfeXFMUENtbjNRc3VoY2I4bU9FeGN6UzRkZnYta0cyRmM4RTBHYkxKUnRVTlJZSnI1QkkxRG5PVWRhLVUtc1NFcXZXNF9Pa01CWUFkSkFBNFZyZ0xiNENqUXZFd0RvNU13aUFPVFpicG5hTTEtS0xxRnllR19DNEdQRDY2VTJkZUlMNzZZZXM2Wmc?oc=5",
+      "checked_at": "2026-09-04T23:43:41.362678+00:00"
+    },
+    {
+      "key": "5d4bc364955fa9fc789c8713100c2f9da6951ffd",
+      "source": "The New York Times",
+      "title": "Iran’s Top Negotiator Signals Door to Diplomacy Is Still Open",
+      "reason": "not_today_tehran",
+      "published": "Wed, 15 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMihgFBVV95cUxQbmFyOWZuMXkzUnk1M3VYeldYSTZvcGJza1BWLVFOUEsyS1NvRld4bGR1VnNWNHIzVmNqRUlnSHRvcTU3c1Rid1JxbTAxbnBhTXIxRldHSGNXRWt2YjlOZ2lzUGl6Q2NUejU0akFReW1MbFNJdmN2dVdrdWFPM2U1dUlDcmNzdw?oc=5",
+      "checked_at": "2026-09-04T23:43:41.362678+00:00"
+    },
+    {
+      "key": "e0315ba37f8c0bb6114c04842766c505ce53d6b1",
+      "source": "ABC News",
+      "title": "Video Trump calls US-Iran conflict that’s taken 18 Americans' lives 'small potatoes'",
+      "reason": "duplicate_or_redundant",
+      "published": "Fri, 04 Sep 2026 23:32:36 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiTEFVX3lxTE9vLWxsM05IYU8zZzFmMjV1b2dlRF9MNkVOb2FscUl6NzFCbWhxb0QtOUxrZ3BwekNjR2FMbzM5Y1ctTGdpd2lIeXEwOW4?oc=5",
+      "checked_at": "2026-09-04T23:40:41.362284+00:00"
+    },
+    {
+      "key": "41ca397a3b6de6b3a374b6247e5380a6245d3fb1",
+      "source": "NOTAM / Airspace",
+      "title": "Israel's airspace remains open amid Iranian ballistic missile attack, Transportation Ministry says",
+      "reason": "not_today_tehran",
+      "published": "Sun, 07 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxON1pMUkNjYzdlRGN3bDZqWkpKQlBPMk01T0ppRHhzT3RWSWprTFVTU3BWU3lIdkhySHUyNDVPV3RrdVZndDFYUmhITkdoN1VNWWdsbFBmWEgxQ0ZBMmp2RnFvcjBqa3cxaXVTZ2w5eWJFeHhpUDZ0TmhzeGo2NjNKaXlXWmVXZm5JeFB3Z2ZtVGNyalRZUnY1R0JJNy1yWGpMT2JPS3BCX0RtSmZPRmpxTkhodWNfWnFrMWYyNGxVZWIwc240VmtBU3kwVnNtcTg?oc=5",
+      "checked_at": "2026-09-04T23:40:41.362284+00:00"
+    },
+    {
+      "key": "de985b10869f1d37f5fc739dd4fb9214f1d1e078",
+      "source": "Al Jazeera",
+      "title": "Iran economy could collapse within months, US Treasury’s Bessent warns",
+      "reason": "not_today_tehran",
+      "published": "Mon, 31 Aug 2026 17:15:18 GMT",
+      "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQc3FlY3k0c19Yai1XcV84WWZLbmpuODFvdmV0N2R5RDZLVElsOUIydkR2S2ZLUTRPMmI4cXRYNFBlay1FTTJ3Mmd4eS1NZl8xcDJ2RDA4bmJJbEpZUVBCM1M2NlFjSm1RZUpmcVE5MmVqWG8ybWhTWkxrOXRfSS1BamVaNHpGTWpwZmc3MncwSHZGV3RmV3Z6WEJyNjEtelZXSlFyRDZ6ZGp6X2FWcWI4VHl2ZFrSAboBQVVfeXFMTks1WjFWMFJ5RVFkS0FreXVSUEprWklSOU9iMk1qakJfTHJuWV9KcEgyUVVnZDR1dnFsRGxmMkVncGxTUTEtdDludzgwQjQxXy00RUdOYWFiMUQ4YjRHUkdFZE1vS2FVZ3laZ1F4ZHVvR0luQUw3ZXc2ZmxhblRaNXN4MkZZT3piam5SLUptQ1VuNld0X0ZZY1ZkWTdJMmRWYll4UmtmWmFGdTE0TjdDMk91QndvWEREOTVR?oc=5",
+      "checked_at": "2026-09-04T23:40:41.362284+00:00"
+    },
     {
       "key": "6651d683c09b6e15520b101418da656cff64e3aa",
       "source": "Barak Ravid / X",
@@ -2221,114 +2329,6 @@
       "published": "Thu, 03 Sep 2026 14:15:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE5fX05XOHpwLW9tZzBCeXRIS2NWU3BlbFE4Ynh4aEc1NlBVWUVmampUV0VRTjNaYVhQbW9JYTdLdFVnYi1YZEpqaWt1bjZOWWxUZzNVeQ?oc=5",
       "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "cf73360c9f9a67ec20e715996e06a96cf8c586d7",
-      "source": "Abbas Araghchi / X",
-      "title": "Relatively positive atmosphere in Rome has enabled progress on principles and objectives of a possible deal. We made clear how many in Iran believe that the JCPOA is no longer good enough for us. To them, what is left from that deal are \"lessons learned\".",
-      "reason": "not_today_tehran",
-      "published": "Sat, 19 Apr 2025 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9DSXNSc3l4SERaQlc0akdoQms3MXJlQ29FaTV3SnN2WmtPR1h2WHNKbzZKVXR1dHJ1ME1mTmJscjFwZ20xODNvLXpZYkx0SGtzN2ktcU80My1RejIzZUE?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "b8921012ad5f44aaed9e40e057183bd7589868de",
-      "source": "Abbas Araghchi / X",
-      "title": "Despite its defeats on the battlefield, the U.S. opted to test our determination. Our Powerful Armed Forces will leave no attack or threat unanswered. Leave our region if you want to be safe. History of the Persian Gulf has many chapters on dire fates of intruding",
-      "reason": "not_today_tehran",
-      "published": "Tue, 09 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9SeS03WFFfQVpBT3ZnRUhKVV9NTkRCNFV1d0N2emV0R2tXU1l1TDRJc05kUlpQZHJpZlNuVnN4cFRxdVo1SXVrTnpiUnJreUxXZ081aHp3cHhRdnVUc2c?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "a01e6461aa753c50706844916861ef67f1094d67",
-      "source": "Abbas Araghchi / X",
-      "title": "Months after initiation of war on Iran, US Congress acknowledges loss of dozens of aircraft worth billions. Our powerful Armed Forces are confirmed as 1st to strike down a touted F-35. With lessons learned and knowledge we gained, return to war will feature m",
-      "reason": "not_today_tehran",
-      "published": "Tue, 19 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxPVGFJdVR3RnRzMTZZOTNtZnYxUUU5TWRQY3hvWU1kbnpqcktXNzRZenl5eGw1dHU4bE1Nd1EwM2M4MllTWlZJR3pJU0s3Y0N1OUFhRXM4alV3R1cwYVlYZzNuSXpTTlFjblczZUR4Y2hZYVZ4U3Rtbkc3OTlybWZraklqdmF2SzR5dzBQZlA3MFNUTjg2d0YybFlSdkZxeFhiMU9OaGx4V2xHdFgyUTN4YjlhNnNyeWF3a2h4X3VVZDloSndyT19RbUJzeTRJVzk4TnVWSW83TmM4LVBEeFpz?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "589bafd7d7eb8392e943f7c0b88bc00be5e80e85",
-      "source": "NOTAM / Airspace",
-      "title": "Bahrain, Kuwait and Jordan intercept Iranian missile and drone attacks - sana.sy",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 07:10:51 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE9JcTI0ekQ5Vm9kZEItOWlaQXRsYlZtcHpvWHhIUzVGSXRBTmxpWjlNcHBFRTFRMEVKQWhMbXR4MzlCcnV4Mmk0TExncUFRTkZx?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
-    },
-    {
-      "key": "e792829fab8dc2d1c1dbb9e9db54867a5a9fe5db",
-      "source": "Reuters",
-      "title": "Airlines gradually restore Middle East services after Iran conflict",
-      "reason": "not_today_tehran",
-      "published": "Tue, 25 Aug 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOQVBTWVJmQzQ0amNDbXRwTnRpMXZOc19tNndrYlRWNHFWWllULVVkZGxEVkNic2lGdkhKdFE1N0NzQUt6d3BVcEhvME11eUVWSjlZNXlDcUJ5ZFBMSF9KMDNXMnVMaksyT1p5UUhOVUV1b3pYeVZzeEVCa285VGRtYUN3UFZOalRsS3Bzb0dNV3UzMGZrOWdsdC1FWjdvYW9qUkNVOENCUERpTGdjbl9yM0VLYmxMdw?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
-    },
-    {
-      "key": "41d614aae6e56fb50c8b2b65f578df26aa98721a",
-      "source": "TankerTrackers",
-      "title": "Iran would not have had this kind of firepower if more countries had applied sanctions on the tankers transporting Iranian crude oil. Although the US Office of Foreign Assets Control has imposed sanctions on 142 VLCC supertankers transporting Iranian crude,",
-      "reason": "not_today_tehran",
-      "published": "Sun, 01 Mar 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFB3RlNNRF9qcGlHZjFYUUJ5YURQV1JyaXRETFVFaGZJUlQ2LV9ROXRsR2gxeDQ4STVwb1lQT19JN241SW15cXowcHpxREJRT18tTHFudnZxZDZkb1c5U3I0cV9tU2ZHQQ?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
-    },
-    {
-      "key": "85a813b88ea0f34f3ab65cd6ca3cdebfd438318d",
-      "source": "TankerTrackers",
-      "title": "As maritime tensions quickly escalate in the Middle East between Iran and Israel, we see that Iran has now dispatched a frigate to protect its 'spy ship' SAVIZ, located in the southern section of the Red Sea. SAVIZ was purportedly attacked. A SkySat satellite ima",
-      "reason": "not_today_tehran",
-      "published": "Wed, 14 Apr 2021 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBFMWt2cklpM1FUVDJxbmtTSnpoWktHb3JQX0k2X2MzYXdrTDRocVNYbmNUU2pNQ2JjdXJwM0pYTHRscDdESW16QUR5ck42Q084Smd4d0N6NzYtV0U4aUVaeFRfZEV0QQ?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
-    },
-    {
-      "key": "3dab26bc356e575606b6b0e0e34804c9ee255666",
-      "source": "TankerTrackers",
-      "title": "The VLCC supertanker you see in the video below is BARAKAH (9902615). She is owned by UAE’s Abu Dhabi National Oil Company (ADNOC); the country’s state-owned oil & gas producer. BARAKAH was struck by Iranian drones on 2026-05-04, which is wh",
-      "reason": "not_today_tehran",
-      "published": "Sun, 10 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFB5SGdkdm5GcEcwX0xFSWhJcVgwZUhHcUxXdUpnamlXRjdaRzVxemVGSWxTbFV1Sjk4S3JRUzhrbTBRei15bFpHM0pWQjJFaWJZWnBXSS1fQjFkY1RMVHZaRkpzUHlRdw?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
-    },
-    {
-      "key": "d02ebb6b501baca40e69566ee24257e9e136cd90",
-      "source": "TankerTrackers",
-      "title": "For the umpteenth time, these large flotillas of tiny speedboats traveling back and forth between Oman’s Musandam Governorate and Iran are smugglers. Larger speedboats operating in greater separation more closely fit the profile of IRGC fast-attack boats.",
-      "reason": "not_today_tehran",
-      "published": "Mon, 24 Aug 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE5IRHU4WW5LemJqYWp2cnV3UlBqRG1iMkRIR1pDdDc1Tl9xb2dYdFRZd2k1UVVsdlg2bnhwaFE1cVctMDQwSnNUajFOVEptcDNnVDFaT3JnV0tNcTRMSUpBdVJXdWtmQQ?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
-    },
-    {
-      "key": "04c9e689cefa832263ff2b66498f7183a7ae6bbd",
-      "source": "TankerTrackers",
-      "title": "After Tehran initially denied there being a spill, this explanation seems very plausible. Ironically, this was a vessel that they had seized a long time ago.",
-      "reason": "not_today_tehran",
-      "published": "Tue, 12 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1KTnktWkR1S0ZmRDdFMlJuQjdTSlhsMm04amszRWpJek1KQzE5N3BYMXBTdVZLZFVjT0ZYTjRRczlpMU4zRVZndVhFMVpyQ0wwOGU0SEJzUGVKOUh4SHZMSGtzS1JfZw?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
-    },
-    {
-      "key": "875b8701be5bf56895ab970caaf781248e650f93",
-      "source": "TankerTrackers",
-      "title": "Since the start of this conflict, there have been at least 100 STS (Ship-to-Ship) transfers of oil involving VLCC supertankers; each capable of handling two million barrels of crude oil. Our job has been to identify these vessels and their cargo origins; be it Iran, Ira",
-      "reason": "not_today_tehran",
-      "published": "Fri, 24 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1wWmFYS0doOWlnSU84bFZ2SmhSblRQQ2M2RGlMekZsSkJ2Q1VnZk1uYW81Q1FjMVNQWnlha0Y5S2FiaXpPTXQ4MWRlWmZldWw5NzJ6bFZ2VjlCSlZOOVRFSjF3czNnUQ?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
-    },
-    {
-      "key": "4c49e7003ec2f42c4edf9370201143f60aa1b8c2",
-      "source": "TankerTrackers",
-      "title": "There were twenty-five tankers that departed Iran with crude oil during April 2026. Of that lot, seven were quickly redirected back to Iran by USA from the Arabian Sea/Indian Ocean. Two were seized by USA in the Indian Ocean. One reached the Far East. #OOT",
-      "reason": "not_today_tehran",
-      "published": "Sun, 03 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE94TFBaYV9XUU93YUtOZnMzRkxFSk8zbUtKa3E5cTV0TzgwWEdtYjFuZm5oNEktdDBuM3U2U2Q4SlhyWGUxSXlwVTl6QmJISGluTmNLaU9mY3JiWFdWbHJmMTEtRnVOZw?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",

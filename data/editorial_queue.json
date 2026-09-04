@@ -1,5 +1,23 @@
 [
   {
+    "id": "55aaee6c3f39b128a6f2edf34ce5358d5269b5b1",
+    "news_key": "e0315ba37f8c0bb6114c04842766c505ce53d6b1",
+    "source": "ABC News",
+    "source_url": "https://news.google.com/rss/articles/CBMiTEFVX3lxTE9vLWxsM05IYU8zZzFmMjV1b2dlRF9MNkVOb2FscUl6NzFCbWhxb0QtOUxrZ3BwekNjR2FMbzM5Y1ctTGdpd2lIeXEwOW4?oc=5",
+    "original_title": "Video Trump calls US-Iran conflict that’s taken 18 Americans' lives 'small potatoes'",
+    "original_summary": "Video Trump calls US-Iran conflict that’s taken 18 Americans' lives 'small potatoes' ABC News - Breaking News, Latest News and Videos",
+    "persian_title": "ترامپ درگیری آمریکا و ایران که جان ۱۸ آمریکایی را گرفته است، «مسئله‌ای کم‌اهمیت» خواند",
+    "persian_body": "",
+    "published_at_source": "Fri, 04 Sep 2026 23:32:36 GMT",
+    "discovered_at": "2026-09-04T23:40:41.362284+00:00",
+    "rejection_reason": "duplicate_or_redundant",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-04T23:41:04.534626+00:00"
+  },
+  {
     "id": "91241690cf56e1bf5f2dab8061577fc4b88ffefd",
     "news_key": "eef920ea5a6597e13e158ef8009fe59eab9d7ff0",
     "source": "NBC News",
