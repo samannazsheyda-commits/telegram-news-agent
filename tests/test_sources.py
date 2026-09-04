@@ -1,4 +1,5 @@
 from src.sources import (
+    NEWS_QUERIES,
     is_iran_related,
     parse_google_news_rss,
     parse_tgju_overview,
@@ -16,6 +17,23 @@ def test_iran_filter_accepts_iran_hormuz_and_rejects_unrelated():
     assert is_iran_related("قالیباف درباره ایران و مذاکرات گفت")
     assert not is_iran_related("Trump speaks about US interest rates")
     assert not is_iran_related("Oil prices rise after OPEC meeting")
+
+
+def test_major_foreign_iran_sources_are_configured():
+    names = {name for name, _, _ in NEWS_QUERIES}
+    expected = {
+        "Reuters",
+        "Associated Press",
+        "BBC News",
+        "CNN",
+        "Financial Times",
+        "The New York Times",
+        "France 24",
+        "DW",
+        "Times of Israel",
+        "Haaretz",
+    }
+    assert expected <= names
 
 
 def test_parse_google_news_rss_filters_irrelevant_and_labels_source():
