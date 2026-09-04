@@ -66,7 +66,7 @@ def _published_fa(value: str) -> str:
 
 
 def _brand_footer() -> list[str]:
-    return ["", f'🛑 <a href="{CHANNEL_URL}">بی‌خبر</a> ←', "مانیتور تحولات ایران"]
+    return ["", f'📡 <a href="{CHANNEL_URL}">بی‌خبر</a> ←', "مانیتور تحولات ایران"]
 
 
 def _is_redundant_summary(title: str, summary: str) -> bool:
@@ -81,20 +81,22 @@ def _is_redundant_summary(title: str, summary: str) -> bool:
 
 def _story_marker(item: NewsItem) -> str:
     text = f"{item.title} {item.summary}".lower()
-    if any(x in text for x in ("missile", "drone", "attack", "strike", "explosion", "blast", "bombing", "موشک", "پهپاد", "حمله", "انفجار")):
+    if any(x in text for x in ("missile", "drone", "attack", "strike", "explosion", "blast", "bombing", "killed", "seized", "sinking", "موشک", "پهپاد", "حمله", "انفجار", "بمباران", "توقیف", "غرق")):
         return "🛑"
-    if any(x in text for x in ("notam", "airspace", "flight ban", "نوتام", "حریم هوایی", "لغو پرواز")):
-        return "📌"
-    if any(x in text for x in ("sanction", "talks", "negotiation", "ceasefire", "agreement", "تحریم", "مذاکرات", "آتش‌بس", "توافق")):
-        return "♦️"
-    if any(x in text for x in ("breaking", "urgent", "alert", "فوری", "هشدار")):
+    if any(x in text for x in ("notam", "airspace closed", "flight ban", "flights cancelled", "نوتام", "حریم هوایی بسته", "لغو پرواز")):
         return "🔺"
-    return "🟥"
+    if any(x in text for x in ("breaking", "urgent", "alert", "فوری", "هشدار")):
+        return "🟥"
+    return "⚪️"
+
+
+def _detail_marker(item: NewsItem) -> str:
+    return "▫️" if _story_marker(item) == "⚪️" else "🟥"
 
 
 def format_truth(post: TruthPost, persian_text: str) -> str:
-    label = "🔁 بازنشر ترامپ در Truth Social | ایران" if post.is_retruth else "🇺🇸 ترامپ در Truth Social | ایران"
-    parts = [_safe(label), "", _safe(_ensure_period(persian_text)), "", f'📌 <a href="{_safe(post.url)}">لینک پست</a>']
+    label = "▫️ بازنشر ترامپ در Truth Social | ایران" if post.is_retruth else "⚪️ ترامپ در Truth Social | ایران"
+    parts = [_safe(label), "", f"<b>{_safe(_ensure_period(persian_text))}</b>", "", f'📌 <a href="{_safe(post.url)}">لینک پست</a>']
     parts += _brand_footer()
     return "\n".join(parts).strip()
 
@@ -106,7 +108,7 @@ def format_news(item: NewsItem, title_fa: str, summary_fa: str) -> str:
         summary_fa = _ensure_period(summary_fa[:897].rstrip(" .…") + "…")
     parts = [f"{_story_marker(item)} <b>{_safe(title_fa)}</b>"]
     if summary_fa and not _is_redundant_summary(title_fa, summary_fa):
-        parts += ["", f"🟥 <b>{_safe(summary_fa)}</b>"]
+        parts += ["", f"{_detail_marker(item)} <b>{_safe(summary_fa)}</b>"]
     published = _published_fa(item.published)
     if published:
         parts += ["", f"⏰ {_safe(published)} — به وقت ایران"]
