@@ -1,6 +1,17 @@
 {
   "truth_last_id": "41516",
   "news_seen": [
+    "7fbd2b3558f3a4ac889a8ee560e941b7e89e3101",
+    "0781fdf5782c7ba7574fad60af04fcea15b940bf",
+    "897aa19da00ce091fefeb3dacc05ecc19577f2b4",
+    "be30f546a6d9df4fa691370b0785d4adef52befd",
+    "047fbd029f99e1fefec3f89a16521f3ddd97bd2e",
+    "a1dd5e7ca64ff81531f4cf0007a07198fce55944",
+    "2e1d6a509d2c1bb52458d635cf098b546d3423fe",
+    "efa4eb9ad944afa44825f1215e7e0a7c4dcedc9a",
+    "b5c00534b981b30fb1118f3924e08f95fc6b16b3",
+    "0b9eab5b9f38c87dac67016ccacf7bbf953b488f",
+    "e00cb6b1262b5abd0137d7abd74f23b1ebc442c5",
     "4e8eef5eb7bb49e0de4de326cb6022496967e4a8",
     "ad4653165a40b33965c45a00c8e1255f70a2cf74",
     "00eb1f22ec54eb6fae2650dabe1e9914002c1202",
@@ -489,18 +500,7 @@
     "5cdfdf8a4d2821ded272ebc53eb19c3142743c81",
     "fe6964bcf660ad53bfd7f3ec5aed1c39bdeb9210",
     "f8a11da6c26e45cccd1f843d57406b3408fda539",
-    "eb454ec3544d264d3195056f281a405395667c9f",
-    "41cd24d93e60f2c96d40ea8f40009aeac3ddd7cd",
-    "ee92d634743d380df39f47b55ecbcdb7566bed7a",
-    "41097337ba9efc558bc85de08cd80243beb1ab3d",
-    "9413cf8293f32da67b01b5a81a0af492902cf8f3",
-    "822871b64fc57c3e4cc1ab402c22dacf28b35413",
-    "7c3da0673d6fcb88646745d6cb208523cc561d9c",
-    "296888072e6ce79202e37eba19185be18a3c440c",
-    "293ef40ff0cb502157150a382ecd146282f2dca0",
-    "d35289f7974e2996a3708bedaa9163d5daad244b",
-    "21f59ac29b6d8cca3d19555d655629b2f4142211",
-    "897aa19da00ce091fefeb3dacc05ecc19577f2b4"
+    "eb454ec3544d264d3195056f281a405395667c9f"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "red",
@@ -530,6 +530,105 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "7fbd2b3558f3a4ac889a8ee560e941b7e89e3101",
+      "source": "BBC News",
+      "title": "Iranian attack on Saudi tanker killed two Filipino sailors, Saudi Arabia says",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 17:33:45 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5ETHRCRWFjMm04endYR2xHNmlwWHhGUGUtalljVkRZVXp6aTZaa0J4TlBrb0JHQzA1d2h3ZWI5MnZIelBDbnAya2x1MGZLSlZRT0QwY3RKc2dCQQ?oc=5",
+      "checked_at": "2026-09-04T23:53:51.207949+00:00"
+    },
+    {
+      "key": "0781fdf5782c7ba7574fad60af04fcea15b940bf",
+      "source": "Reuters",
+      "title": "US-Iran strikes raise fears of renewed war across the Middle East",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 21:06:12 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxORjZ4d3JRTk1WcXR6eThpVm1wcVpzQV8wMm42eDB4bDJRMVhxelJpdmZTYXVPQ0JTUmtiNXFVWEZyb1NBTTZibmZJTkk4bjlRNGwtWTU1OF8zXzhENVZhWDN4TUwzekdfVG8xWUpmY3hmcHBDQk5TUzBLSERGbFJ0c05nekFpclo3cFdMcm93dHlEUXctVTY2MjJIMkkxSTRGWnc?oc=5",
+      "checked_at": "2026-09-04T23:53:51.207949+00:00"
+    },
+    {
+      "key": "897aa19da00ce091fefeb3dacc05ecc19577f2b4",
+      "source": "Reuters",
+      "title": "US threatens countries doing business with Iran, but holds off on penalties for now",
+      "reason": "not_today_tehran",
+      "published": "Tue, 25 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxOb0FZaGVaRDU5ZGhzbm1uaHBtUDIwNEhOUk96ZkxVNlRubGFIbHdXTmZhTU1YM2lrclBjNkpkNmlQWnIwUW9pS0xkazBKU2VTZXZMR2RlR0RWTTBnRUVKb2J1SzdyOGNGRjBBWFo4ZnRVQ1dLNG9KT2hTNU5SUGRNNDFERkctaW5oYlhjbTF6VjZNZmZBZHNjemVYZzZCZkFRRkE3MFlJMFlrTl9qT3VaZWQzQ3NnYlE?oc=5",
+      "checked_at": "2026-09-04T23:52:51.207821+00:00"
+    },
+    {
+      "key": "be30f546a6d9df4fa691370b0785d4adef52befd",
+      "source": "Associated Press",
+      "title": "Trump calls Iran conflict ‘small potatoes’ and defends Vance’s position that it’s not a ‘war’",
+      "reason": "duplicate_or_redundant",
+      "published": "Fri, 04 Sep 2026 22:52:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPTzBGbGQ2ZnhaeGhiZ3E0cEpWYnRpU0FtYTFQYlJUOWdkd0F5Y2lvczg0X0h0NTBRUkFXUkU1bWlwSnhtQng1dmtYY0JsVmFFYnpaNDVuMEJLMTROSXEtcUtPQndCdk0zRmNtQWFGdllDN2V5WGRmR0NWZHlQaWtBeFZMdmdGUVk?oc=5",
+      "checked_at": "2026-09-04T23:51:51.207691+00:00"
+    },
+    {
+      "key": "047fbd029f99e1fefec3f89a16521f3ddd97bd2e",
+      "source": "Abbas Araghchi / X",
+      "title": "Thank you @UNESCO for responsible reaction to bombing of Golestan Palace, a World Heritage site. We hope UNESCO will maintain firm and principled stance against further attacks on cultural heritage, incl historic monuments in Isfahan. Site protection is in",
+      "reason": "not_today_tehran",
+      "published": "Fri, 13 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE8xMEdDTUdhOEpUdFNlZjduTlpzUWVkOUs1RmIzSnoxY2FMOEMzd2RlZ3R0S2RqRlpic1ExVWdTWnVHVHNudEZZSEl3OFVMY0lfcG0tZ3FlMzhyOWtaVVE?oc=5",
+      "checked_at": "2026-09-04T23:51:51.207691+00:00"
+    },
+    {
+      "key": "a1dd5e7ca64ff81531f4cf0007a07198fce55944",
+      "source": "Abbas Araghchi / X",
+      "title": "POTUS is absolutely right. Whoever provides secure and safe passage of commercial vessels through the Strait of Hormuz should be compensated for this service. Iran has always been the GUARDIAN of the Strait and will remain so FOREVER. 20% is of cour",
+      "reason": "not_today_tehran",
+      "published": "Mon, 13 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9STEJCVDFsMWdLN3JLdlpHeWozVU9GT0FBQnRVQ1oyQ0g2ZU1NQ254aVlEYkZwa3c2eDkzOXF5MUtvT0V3WHpuZXVPUlpYR2kzX3BwRGVnWEFHaGc5WTczMUIySVJWNFh1?oc=5",
+      "checked_at": "2026-09-04T23:51:51.207691+00:00"
+    },
+    {
+      "key": "2e1d6a509d2c1bb52458d635cf098b546d3423fe",
+      "source": "Times of Israel",
+      "title": "Trump again claims that US may soon hit Iran’s Pickaxe mountain nuclear site",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 19:24:44 GMT",
+      "link": "https://news.google.com/rss/articles/CBMivgFBVV95cUxNQTAwME9jLVl3Qm9EZThVOXpoOE5LY1RKU01XWXNQdjFzQjlpTVZDT1Q0dURtVVUwaTNvODBUdHhJZVJKRmJ6d28tTGswN2JodnB5MDJqaVhRZllXSFJjTk1rcUZVQVRTa2l6ZVFRWHdFZlhNa1otMTgtdEs0OThKR1pTNHNmN25nbzZrUnBUT2hweS1SYUpYT3BQZ3UtNGEzdUc3Uk1sUDM2eFFsQzlNRVh5U19NaGthRDBLMHZB?oc=5",
+      "checked_at": "2026-09-04T23:51:51.207691+00:00"
+    },
+    {
+      "key": "efa4eb9ad944afa44825f1215e7e0a7c4dcedc9a",
+      "source": "Reuters",
+      "title": "Iran warns US against Israeli attack on south Lebanon ridge held by Hezbollah, sources say",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 13:41:45 GMT",
+      "link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOTXNYTGpEYldjZ00zSFctdU5VT1A3blcyNnhmalVSNEMwNVBEa09RWFF1Zk9ibGY2cmdmRVdid2dDbUJwaHhzcFVpVHVxUUQ1NFZRb3F2MkRHREtLZHNoSF9tZUdseGdQZ0hFdFk5eDNTT0VyQzRXLUVZYi1OanRIc3g3SE1RQUlRNGQ3TXBCbi1JZHNycUhXcHJSMXFMb21YZVNtb2cwZGVYWGQ1bGlmQTJtNHZPSi1HZU96S1QwTldxV2NLYllz?oc=5",
+      "checked_at": "2026-09-04T23:51:51.207691+00:00"
+    },
+    {
+      "key": "b5c00534b981b30fb1118f3924e08f95fc6b16b3",
+      "source": "Reuters",
+      "title": "Only a quarter of Americans think Iran war is worthwhile, Reuters/Ipsos poll shows",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 14:56:55 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOVDktVk9zLXloNkRZVGMzYVRQWUVwOFZwYmdWVEVVeXAwcWNBWnNHYTBXdU44UUlOdkVKV0xwWEZfSUFDWkNHenVHemlDM1dWWWI3c3FiYmhhOE5HT1JhbHpRNUFOSVc3MFRjVTJwQTRrNjlteWE2MG50a2V0WnRVdnkwYjVxUFpFbWtZem44Y0M2bjVpTGRIUlNvcjY3V21jUTBGTVNoR2M1a1lRNXhPMVRMSk9VVVJE?oc=5",
+      "checked_at": "2026-09-04T23:51:51.207691+00:00"
+    },
+    {
+      "key": "0b9eab5b9f38c87dac67016ccacf7bbf953b488f",
+      "source": "CNN",
+      "title": "Trump says Iran conflict, which has killed 18 US service members and injured hundreds more, is ‘small potatoes’",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 19:07:51 GMT",
+      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE53alVLRTNPV1hocjlTbVhwb3U5eFg1S3doWVVqdG9GYXNiS1VMWmwyWjhpMDh0UjdrSE9wVWEzVXBMcGdJbllzWUI2eHhaRmpqb1FnUHMzbG5HeDZ4anpISm5DeHdjNk9HR2JTRXlkWHNyQ0k?oc=5",
+      "checked_at": "2026-09-04T23:51:51.207691+00:00"
+    },
+    {
+      "key": "e00cb6b1262b5abd0137d7abd74f23b1ebc442c5",
+      "source": "Reuters",
+      "title": "Trump says US may hit Iran's Pickaxe Mountain soon",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 20:11:43 GMT",
+      "link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNZmd2SXBwYUJhclYxN0pLMDhjUXVmeHhzUTRPY0FsM3hPZlN4YkprT2Y0R0l6Z3U5UXNWVjRDcFJUN2NNa1FsaXlIejlDUXVpbWh4UWJNdUZzZUZpdGN5WkxQa24zYkktU191MTZsV0VwNXcwRzVPRHA4YjlCUUwwajE4akV3Y3pLX0thQXEtTTlSRkJRMGc?oc=5",
+      "checked_at": "2026-09-04T23:51:51.207691+00:00"
+    },
     {
       "key": "4e8eef5eb7bb49e0de4de326cb6022496967e4a8",
       "source": "Al Jazeera",
@@ -2229,105 +2328,6 @@
       "reason": "not_today_tehran",
       "published": "Sat, 23 May 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQZnBqR1ZTM3JkVkJwT0c0UnFLZGV6YW85WmNzRHBGZkNZRXhvbGtScU5TZ18yZW50dHZnS2JOVWtoQzhlQWhnR1NEcmNOb2VOVVJtVFBPR3A3cE9zLTNtUmxaR2VCVzBOVzNqQmI0UHdkbHU1dUI0anZCeDc2UGlodmIzcXlXaGxvV1I0TnFHczhWYzBOSVRVZ3Jtc3dTZ1k?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "d82f0209f7baaeaca90c70a890e5b61f30ba4f3b",
-      "source": "NOTAM / Airspace",
-      "title": "Iran shuts western airspace as US weighs fresh strikes; Rubio in Delhi flags ‘progress’ in Tehran talks - The Indian Express",
-      "reason": "not_today_tehran",
-      "published": "Sat, 23 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxOYUlqVU4xVUVTWG1GUmZHM29XWmQ4T29nSWhFU2ZGeW42aERaOFc0VFA0VnZ5MnpFRmZPN2U2LUFlbXI5ckpyTlJoaE1vSHdka2l0ZmY1NFdfWVF0UmZIcURSNVdQa0g4RlRTSk81OGR5UUZwVkVlQnVSUjhiMm1SNHNfWnBUZEZxYWFvQ0ZhcXlaU3VXYzdXd1ZTVXByOFREdzNrWWJQQTVSVkdwS3doTVM1TFBBbjg1MV9kOEFVN3JkWjI0NHlUWnd30gHQAUFVX3lxTE1hTm9RSUdUSlJVVVBKSXRCNTVDUHpSd3l0YnVTQkk4a3VuTlBlaTUzQVdfZ1RORXdWc1pEbE5jeWo2LVhIX2VZd09yLThPQWxnRllPRUJfSTdfQm8tVEdJaWtMdzgxVWluc1hQSEU5ZDhoaXhzQmQ2eDhFcjRDcmlLdVVhZGdGOVl6Sm1WOUcwWk5ENzNHOGJ1RTNBRUkyWjA0Qk5vRnU1T1R3Z3VTUi1sSGhjVUpteEp2Z01SdTkwaWZBeVBMR0VidzRORUdXMzM?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "26f11a3adede493899c26393f5c2e177d13ae665",
-      "source": "France 24",
-      "title": "Israel ready to attack Iran ‘a third time if necessary’, defence minister says",
-      "reason": "not_today_tehran",
-      "published": "Thu, 09 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPa00zRURxc3AzWU1IOHhmaE45VHB6VFhLSDVJVHNFdHk1ZjhMQUEyeVJvNWRFcjl5SnU4RlZQUmJCQ0R3MWlZbHdsMHQ3elBqZW1haEN1SVZ3ZVluV29UT3NLWnNIVWxFYWxUc3E1b0lfOUl4Q0JiT1FvZFRVcE1GS05kazJJeC1WTUk4TmF4eEZHMjFXTGl4ZzZHbUllZHN5TVR2aU1Oc3VWd3F0a2lNZVFOTUlLNWZYTnVRajRNZEZwd215M0E?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "f6977fe57e21422377b25e34d6efb33b55efa257",
-      "source": "NOTAM / Airspace",
-      "title": "Iran suspends western airport flights as Trump presses for 'immediate ceasefire' - Türkiye Today",
-      "reason": "not_today_tehran",
-      "published": "Sun, 14 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPR3lmLVZwRWp1SVU1cTRUQVZtUHdrQmlVZWxiQi1xZ2tSbTJoekJBc0UyeEpYaUJ3NFRpczYwZGl0N1E1U1FfSFhZOXUxSHltWjVLa2czWDJGTzdkRjU1N0g5QUtpa3VPcnB1WklHYWdrWVZPQlY4cG9UVlJuUFRzcU9JLVRMWjN3TWhWdmRGMV9paTI4Zk91ZkItSU9mMWtOR196ZjdTV3I5V3NSSUVtU2RDX2dEYTBHNkg0Qzd3OA?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "6dc4e4ac919938f5432288a08b35dc5472ee5b68",
-      "source": "NOTAM / Airspace",
-      "title": "Iran says airspace returns to normal after flight restrictions lifted - Anadolu Ajansı",
-      "reason": "not_today_tehran",
-      "published": "Mon, 08 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNNm1JY0Z6ZGktMG9vdWVhUldTTHNQZU9SY0lOelZVUVlIWmhaZXRfMUxKWFBKN19BUkdfS21VQjZ1OUlnTlNCdTA3aXFaTlVKR240NnRSN1Ytam1BOVdod3BHd25ldmhvYUVVZDM0X0d0elg3VnV1NGFPaTY1a1Iwd2hiVXYwdk16SU5JbWJCTkc2X3ByWHJmaXh0dmFOSzg3a0FlRDBNdGFaM29fMTN4cnhUU2I?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "0dc696908e85e62615bbd9a63a7522001ff1c502",
-      "source": "NOTAM / Airspace",
-      "title": "Central Asia’s Airspace Is Growing in Value as the Iran Conflict Reshapes Routes - The Times Of Central Asia",
-      "reason": "not_today_tehran",
-      "published": "Mon, 13 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNTklpQVFBMExENDBDdk16ek9jbXByNzlGY0c4VXRPNU5jeXB0blZ6LVA4V0d5WndwdDJXRHc3UGZ3dHRpWnVQSUZxdHBkSlFMcVF5OTJZZFhXNHFmTHFzSmxKZjVfS3lCNTU1V1ZxVTZLQnhMZUJWMExxdWlrRGUwQmFuV3ZPMDZSNl85Y0dJOVFHZ29mRGIxYTZyX2puYzMySnc?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "18d79aec8ec90a0dcaefd368063929c4a3238ff9",
-      "source": "NOTAM / Airspace",
-      "title": "Iran denies new NOTAM limiting flights across country - Iran International",
-      "reason": "not_today_tehran",
-      "published": "Sat, 23 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE03NGRpUWZabU5abS1ONlBHUjFlaUE2UjFvdl9iR1pJLXRRSWIzbnpwWlJCTGdsTnR6cmZINFFyT0ZEU2ZlUGdvQkx3c3dwMTVCb1E?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "9919a3e7b9dc875cdb834778beb1827a04aaffcf",
-      "source": "NOTAM / Airspace",
-      "title": "Jordan intercepts, downs four Iranian missiles over its airspace - Egypt Today",
-      "reason": "not_today_tehran",
-      "published": "Mon, 13 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNbGcwMVFwMFRCZFJCc0dkcmtMNUNyMXNVMno2Y0h2dHZhdlBFNFJfT0FYU3MzQ0E4NldtbmpzelVRRnoyV2xtYTRYUVFJM2VJMDBNc3ZjZWVmM293MXNTZnpuR0lBdm1WcXlSRzJvM2J5N2VvemZ4UTBiU2xhXzlWSjVFeG1QYVMzUFpDLXB4R2lTV2JTS0RDSkN3dTEzTkdYRGJCUVBGb2VkM0k?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "a2c24e2789a10d42ec7e01d64cfe68af5d8a8419",
-      "source": "NOTAM / Airspace",
-      "title": "Israeli jets entered Iranian airspace to attack negotiators' plane after talks in Islamabad - Middle East Eye",
-      "reason": "not_today_tehran",
-      "published": "Fri, 03 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxQVzFLeHpVOFNZRTliUzhCUzg5REpkNklwSVlycmNqVXZoaFB0QlZxVkFhaEtBSXpTSHZpR1N0VHlYZzhxOW1xcFNCR3Zhc3FzRUNDMXRyYzNfZ1RPcEYyS2FObjVjbHJHUkhtSkhEWmdvdzg0QzBoLWJya1JDa1VTZU5DYTFxb3JHMkpvcVZua1l1Vy1EbTdGbU5pcUtKTW5FVnRmYUY1OEhmVURGRlU1MkJYRGlpTUliekdfQTFxSkM2dlE?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "5dc7933d443a23d18b70422c2c5e53f169b2065f",
-      "source": "NOTAM / Airspace",
-      "title": "Iran says it downed US drone, forced other aircraft to retreat from airspace - Anadolu Ajansı",
-      "reason": "not_today_tehran",
-      "published": "Tue, 26 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOc21WUkJ0R3ZfV0RrOG1UeDFBcEt4OEwxR2RlbE5rNzJ2ajBUak9KdGZzdTBOSDIzM091UVNnclFtODVHSllOYmFjR1JrTzZIdG1rdVRXT0V6VWdVYUVlbVc3dC1BT3VEY1Z2X1hjRGkzYm5EQlktSmhaZmZwNDVtd04xdF9sQmgxbE9ScjdwYUozMEFBb1k4cURtRVVhaDNFMzBYa0VhWHViV1g5SUlyU2dPZDh6TVhLTEFoWUlNRnh4ZG1fNWc?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "11793538e614e35d40c505011db03cdca00c5744",
-      "source": "NOTAM / Airspace",
-      "title": "Kuwait closes airspace as Iranian attacks disrupt Gulf flights - AeroTime",
-      "reason": "not_today_tehran",
-      "published": "Sat, 18 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxQUldUZjZBS0pxS1ItZFFuX19ZNktVNHVuaURzRko0eHFleWREeDNqSzR4QlpZY09rZlJnZ2NIZGhfNU05Y000ZTJBd3NxZnYwblU2Tks0ZUtIREM2TzRIX1psTkhpc2JGdEEtUE1UdUhiWm81MDlxMm5BQTRGclhLdURLai1sc01DVGFiS2owbk_SAZYBQVVfeXFMTWFMdGhQekRWaXhsLVJNUGZRS2N1WlVGOVZ6d3R0UFZPNFJpbWg5R2RMVWp5TjJsU2RMNEphMHJ6bmJuQTlyWmlIb2pFMF9rejI1M0JWWVFfdklKNU1WR0tPQjcydDYzYXhaZWpsTWV1RHYwaXNWU1VRdXM2Vm1ab3lOeUJyV0tFRjNSODJGNlprb29Mb1hn?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "e1d00af5f473cd9b5b2118ad056ee1c3539d8790",
-      "source": "NOTAM / Airspace",
-      "title": "Travel chaos deepens as renewed US-Iran strikes hit key air corridors - Saudi Gazette",
-      "reason": "not_today_tehran",
-      "published": "Thu, 03 Sep 2026 14:15:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE5fX05XOHpwLW9tZzBCeXRIS2NWU3BlbFE4Ynh4aEc1NlBVWUVmampUV0VRTjNaYVhQbW9JYTdLdFVnYi1YZEpqaWt1bjZOWWxUZzNVeQ?oc=5",
       "checked_at": "2026-09-04T22:26:40.315321+00:00"
     }
   ],
