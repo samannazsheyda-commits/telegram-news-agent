@@ -82,7 +82,7 @@ def test_old_news_is_rejected_even_if_never_seen(tmp_path, monkeypatch):
     monkeypatch.setattr(main, "fetch_truth_posts", lambda: [TruthPost("10", "", "old", "https://truth/10")])
     monkeypatch.setattr(main, "fetch_news_items", lambda: [
         NewsItem("old-key", "Axios", "Iran old report", "old summary", "https://news/old", "Mon, 02 Feb 2026 10:00:00 GMT"),
-        NewsItem("today-key", "Reuters", "Iran fresh report", "fresh summary", "https://news/today", "Fri, 04 Sep 2026 08:30:00 GMT"),
+        NewsItem("today-key", "Reuters", "Iran launches missiles at US base in Qatar", "Missile attack confirmed", "https://news/today", "Fri, 04 Sep 2026 08:30:00 GMT"),
     ])
     monkeypatch.setattr(main, "fetch_market_snapshot", lambda: (_ for _ in ()).throw(AssertionError("market should not run")))
     monkeypatch.setattr(main, "translate_to_fa", lambda text: f"FA:{text}")
@@ -92,7 +92,7 @@ def test_old_news_is_rejected_even_if_never_seen(tmp_path, monkeypatch):
     rc = main.run(datetime(2026, 9, 4, 12, 0, tzinfo=timezone.utc))
     assert rc == 0
     assert len(sent) == 1
-    assert "fresh report" in sent[0]
+    assert "launches missiles" in sent[0]
     assert "old report" not in sent[0]
 
 
@@ -126,7 +126,6 @@ def test_market_is_suppressed_from_midnight_until_8am_tehran(tmp_path, monkeypat
     sent = []
     monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
 
-    # 01:30 Tehran (UTC+3:30 in September 2026)
     rc = main.run(datetime(2026, 9, 4, 22, 0, tzinfo=timezone.utc))
     assert rc == 0
     assert sent == []
