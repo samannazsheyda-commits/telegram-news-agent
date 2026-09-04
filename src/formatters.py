@@ -18,7 +18,7 @@ def _norm(value: str) -> str:
 
 
 def _brand_footer() -> list[str]:
-    return ["", f'<a href="{CHANNEL_URL}">بی‌خبر</a>', "رسانه خبر ایران"]
+    return ["", f'<a href="{CHANNEL_URL}">بی‌خبر</a>', "مانیتور تحولات ایران"]
 
 
 def format_truth(post: TruthPost, persian_text: str) -> str:
