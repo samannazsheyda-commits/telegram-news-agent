@@ -11,7 +11,7 @@ def _state(path):
             {
                 "truth_last_id": "10",
                 "news_seen": ["seed"],
-                "market_last_sent_at": "2026-09-04T15:00:00+00:00",
+                "market_last_sent_at": "2026-09-04T18:30:00+00:00",
                 "car_last_sent_date": "2026-09-04",
                 "weather_noon_last_sent_date": "2026-09-04",
                 "weather_night_last_sent_date": "2026-09-04",
