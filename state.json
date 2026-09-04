@@ -1,6 +1,11 @@
 {
   "truth_last_id": "41516",
   "news_seen": [
+    "6651d683c09b6e15520b101418da656cff64e3aa",
+    "d70d8e0103454193e5286a5c8b8edd9251f3fb79",
+    "4a4cee56f85a42748ccf5e0c0eaf677c4f8f76c0",
+    "13ca27e81a8f0a0136f0b380b6cf1a3ffb0ea004",
+    "edd535a687eff351b222464fc5bd0f53d6c1908d",
     "eef920ea5a6597e13e158ef8009fe59eab9d7ff0",
     "51dafb676bc27bb56fd6af3db88f11d1a1c678bf",
     "452652f84fe27bf106da090bf604a58068884a01",
@@ -495,12 +500,7 @@
     "b5c00534b981b30fb1118f3924e08f95fc6b16b3",
     "c65761b442ef21db8a03c9876e342bcb76ae5ad4",
     "1769740fbd151e4c6e45a97bf42cae2e5f40e9b8",
-    "b9bc3270e81593e5ed56f62821980492fa560aa8",
-    "c5ac52eb554ce1fe2b33b557b08f575be101bec9",
-    "fcc16622376cc6eceac0fb4cfd8dde3cd9cb707a",
-    "69faa894fd0aa5ca4c4fe38c07f9385b17e1d596",
-    "d70d8e0103454193e5286a5c8b8edd9251f3fb79",
-    "6651d683c09b6e15520b101418da656cff64e3aa"
+    "b9bc3270e81593e5ed56f62821980492fa560aa8"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "red",
@@ -530,6 +530,51 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "6651d683c09b6e15520b101418da656cff64e3aa",
+      "source": "Barak Ravid / X",
+      "title": "Scoop: The Trump administration is working on a post-war strategy focused on a regional effort to contain Iran and expand normalization of relations between Israel and its neighbors, per two U.S. officials & two sources with knowledge. My story on @axios http",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 18:02:25 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBIR3ViV1lzMVJaQ0pCdk1uX1BTc0dQZDM3NEdxR0I4NDNQaTZaTzJpWXBXa2U0V1VJOXhuM1pOa3gtRUl5ZzdKbDRRQUVpUnpMV2ozdDdTQmhmamJhaGN6WA?oc=5",
+      "checked_at": "2026-09-04T23:30:40.010998+00:00"
+    },
+    {
+      "key": "d70d8e0103454193e5286a5c8b8edd9251f3fb79",
+      "source": "Barak Ravid / X",
+      "title": "BREAKING: A pro-Iranian militia under the command of the Quds force fired rockets at Israel from Syria this morning. The attack failed and the rockets landed in Syrian territory, IDF says",
+      "reason": "not_today_tehran",
+      "published": "Mon, 09 Sep 2019 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1DZW1Zb1NxeldDYU1kZHVuc3dTcEJDckIwWGFXSTNKREpPOXBkVmRsWTIyMTdWbUk0bEJQSTFZcGhSb2puQk9kNkUyQzBCOG0wSUZBSmRDTkxib0QtbzBwbA?oc=5",
+      "checked_at": "2026-09-04T23:30:40.010998+00:00"
+    },
+    {
+      "key": "4a4cee56f85a42748ccf5e0c0eaf677c4f8f76c0",
+      "source": "Reuters",
+      "title": "US sanctions Turkish bank, two subsidiaries in latest pressure on Iran",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 18:22:57 GMT",
+      "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPSml5Y093OWVORkhPb29wMzl1QlYxcWtjWGYwUTNFSUh3bkNTU3NJZ0d3eG9UbUNxeXM4eGE3U2V5ejVqaThPemU1WDBoMndmY0NxOUhKamRhUExmMjBnMDY2RXQ1b2FBMFI4X1NOcjJZNDlaSDR1dGZSclJoM3FOOElibjhITXVjS1ZiVTBpeFNUVXZuaWlORUNENUw1YVJNcFRYUXNwRERJZTgxb1E?oc=5",
+      "checked_at": "2026-09-04T23:29:40.010810+00:00"
+    },
+    {
+      "key": "13ca27e81a8f0a0136f0b380b6cf1a3ffb0ea004",
+      "source": "NBC News",
+      "title": "U.S. service members are unwinding in a Thai resort town strained by the Iran war they’ve been fighting",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 17:43:54 GMT",
+      "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxONmRPT2xHbHp6YzlEU3pFVnprcDRwRG95WWpONlV3ckV1Tk9wcXFVU3dnd2ctWG5sMHZMbnhjTlBGaEdhYnExM01jZDJYeFJPajJkOE8ta3ZZcnpmZWFiSDJFUHp1RlB0amJqVzVoQWtXSU1ISE1sYlE3TmNpZUhBQXB4cDNsc2FUemRCbkE4TzRYTUZkWlV4OHhXbVhCWklx?oc=5",
+      "checked_at": "2026-09-04T23:29:40.010810+00:00"
+    },
+    {
+      "key": "edd535a687eff351b222464fc5bd0f53d6c1908d",
+      "source": "CNBC",
+      "title": "U.S. sanctions Turkish bank accused of enabling Iran as Bessent says he 'hopes for' no further bank penalties",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 17:25:22 GMT",
+      "link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE5WZ0hINWMyZzlIZHhkSUVOdjZ3enJkM1BVVDlURXJfLW03d0VnOHlHVXJJYWJlcjlpc0tlY3BJckZYaElzT0luVlNaOVc4d3pLenZ5NlZ1OGtObkd3YU1HcC1EOTVldzEwRVNiMVZHZ3ZQWDlGLWczODdySzFTMFXSAYQBQVVfeXFMTXNvWVhTVVdwZnFMeVlRZXhYYkV4Y2VxY0VVeEFxVVNQWHVDZWNCSEZoRk50VENwbERmUlV4NjljVVpOSTIyNjlWQ2tfbTQxRTJxSG1QeWliWHE4cmdzWE1BaENpRHAwVHljbmV3MDcyZHhVQXB1SXBpcmVka0dpdm4wNm1L?oc=5",
+      "checked_at": "2026-09-04T23:29:40.010810+00:00"
+    },
     {
       "key": "eef920ea5a6597e13e158ef8009fe59eab9d7ff0",
       "source": "NBC News",
@@ -2283,51 +2328,6 @@
       "reason": "not_today_tehran",
       "published": "Sun, 03 May 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE94TFBaYV9XUU93YUtOZnMzRkxFSk8zbUtKa3E5cTV0TzgwWEdtYjFuZm5oNEktdDBuM3U2U2Q4SlhyWGUxSXlwVTl6QmJISGluTmNLaU9mY3JiWFdWbHJmMTEtRnVOZw?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
-    },
-    {
-      "key": "c407477fd511b756dec01873b08db1b92215ea90",
-      "source": "TankerTrackers",
-      "title": "Although we are unsure whether the container ship EUPHORIA (9235828) has been seized today by Iran in the Strait of Hormuz, we have received reports that she has come under fire. Two other container ships, EPAMINONDAS (9153862) and MSC FRANCE",
-      "reason": "not_today_tehran",
-      "published": "Wed, 22 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE44SktBOXdDSzNZcllQTm1RbVlUZlN5WTVsVS1ZNk1WUngwckhqQzM4R2xwTnVhc3ZGTGlkelhUeXJZUU82OWxJbUpnTjZocDRaRVoxLU5QR21MczJmcm1rYXFBZzAtQQ?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
-    },
-    {
-      "key": "a7701d2a01ce0f72c17d960eb6efbbd33b6074fa",
-      "source": "TankerTrackers",
-      "title": "It looks like two cargo-empty tankers got hit; and US CENTCOM doesn't usually attack oil-laden tankers. NITC have a dozen empty tankers in Iran, and three were already hit over the summer. Other non-NITC tankers got hit too, but we can't currently say for sur",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 01:50:09 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFB1b2s5WjZsN211akU2UlJLamJZTEdoQm1DbXVRSkR4eFBoSzJfZ1FxU3g1U3otYzUzcTNOb3QwdGNTemZHVHBRTFVJQ2RRZk81T084SDhkcFFkZkVMSXNXUFJHZ1dhZw?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
-    },
-    {
-      "key": "672d7629cee4ccbdf45c4ccb7a67511738e9e8bb",
-      "source": "Mohsen Rezaei / X",
-      "title": "After the humiliating failure of the U.S. military in Tabas, 46 years later, in another part of Iran, US military aircraft were once again burned in flames. Over these five decades, Iran has been a land of humiliation‌ for the U.S, and Trump will meet the same fate as",
-      "reason": "not_today_tehran",
-      "published": "Mon, 06 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFBmc0NWV2ZQR2E2ODFVZkpDTmlZQV9pdkNLb19sdlE5QnhYWTNmYWU0ekxZbVJnOGRLbDFzMWVteFN0TC0zZDhiZXpGWjhWcWZGa2F2N1ktbkxOVEYtMHE4?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
-    },
-    {
-      "key": "a3c64a8dd54dc01d26424b84c922c2a9db9930e9",
-      "source": "Mohsen Rezaei / X",
-      "title": "IRAN’s message is clear: the Strait of Hormuz will not reopen until the U.S. ends the war and blockade, releases Iran’s frozen assets, and agrees to a region-wide ceasefire, including in Lebanon and Gaza. Until all conditions are met, the Strait will remain close",
-      "reason": "not_today_tehran",
-      "published": "Tue, 11 Aug 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE9jQ1JnQS1KWnpfQXFJOURHR0VLU1ZTb2F4YzBJekVEMDY3MU5KdkExR1JmVklrQ1A4Z2hGTlBsZDlEZ201ekhlcG1GUHpGNmdpc21TSFRfNDZySlpMTlRZ?oc=5",
-      "checked_at": "2026-09-04T22:15:30.999345+00:00"
-    },
-    {
-      "key": "56e0904fbbd2c806eca3578c9886825277079d2a",
-      "source": "Mohsen Rezaei / X",
-      "title": "If the economic war continues, not a single drop of oil will be exported٫ neither through the Strait of Hormuz nor from anywhere in the Persian Gulf. Iran will regard any country’s participation in or support for America’s economic war against the Iranian people a",
-      "reason": "not_today_tehran",
-      "published": "Sun, 23 Aug 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE1YRXU2ZGUxazRxQlc1QkZXSjVnWm9sQTdOQ1NKSzVmc3hDMmJ6QXgtTGVtX1VOUVVpQU9lNTFQQjVGRWdvb3ZhV1pzdVpkdEpLMGhjRDdiM3FwV3FTM2Nj?oc=5",
       "checked_at": "2026-09-04T22:15:30.999345+00:00"
     }
   ],
