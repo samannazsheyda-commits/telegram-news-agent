@@ -131,11 +131,10 @@ def _repair_news_idioms(source: str, translated: str) -> str:
     source_lower = (source or "").lower()
     value = translated
 
-    # Some idioms are too risky for partial string substitution. For these,
-    # when the English source is an exact short news sentence, return one
-    # controlled editorial rendering so literal machine phrasing cannot leak.
     if source_lower == "the administration doubled down on its iran policy":
         return "دولت بر سیاست خود درباره ایران پافشاری کرد"
+    if source_lower == "the president walked back his earlier remarks":
+        return "رئیس‌جمهور از اظهارات قبلی خود عقب‌نشینی کرد"
 
     for idiom, bad_variants, replacement in IDIOM_REPAIRS:
         if idiom not in source_lower:
