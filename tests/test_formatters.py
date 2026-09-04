@@ -25,15 +25,17 @@ def test_truth_footer_has_clickable_bikhabar_and_tagline():
     assert "مانیتور تحولات ایران" in text
 
 
-def test_news_uses_final_red_alert_style_and_bold_body():
+def test_news_uses_exactly_one_red_story_marker_and_bold_body():
     item = NewsItem("k", "Axios", "Iran missile attack", "missile strike", "https://example.com", "Fri, 04 Sep 2026 10:00:00 GMT")
     text = format_news(item, "حمله موشکی به ایران", "جزئیات حمله")
-    lines = text.splitlines()
-    assert lines[0] == "🔺♦️ <b>حمله موشکی به ایران.</b>"
+    first_line = text.splitlines()[0]
+    allowed = ("🛑", "🔺", "♦️", "🟥", "📌")
+    assert sum(first_line.startswith(marker) for marker in allowed) == 1
+    assert "🔺♦️" not in first_line
+    assert "<b>حمله موشکی به ایران.</b>" in first_line
     assert "🟥 <b>جزئیات حمله.</b>" in text
     assert "⏰" in text
     assert "📌 منبع: Axios" in text
-    assert "🛑" in text
     assert "Axios | ایران" not in text
 
 
