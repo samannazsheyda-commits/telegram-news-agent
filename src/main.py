@@ -40,6 +40,11 @@ def _published_today(value: str, now: datetime) -> bool:
         return False
 
 
+def _market_quiet_hours(now: datetime) -> bool:
+    local_hour = now.astimezone(TEHRAN).hour
+    return 0 <= local_hour < 8
+
+
 def _truth_newer(post_id: str, last_id: str) -> bool:
     try:
         return int(post_id) > int(last_id)
@@ -129,7 +134,7 @@ def run(now: datetime | None = None) -> int:
 
     last_market = _parse_iso(state.get("market_last_sent_at"))
     market_due = last_market is None or now - last_market >= MARKET_INTERVAL
-    if market_due:
+    if market_due and not _market_quiet_hours(now):
         try:
             snapshot = fetch_market_snapshot()
             send_telegram(format_market(snapshot), token, chat_id)
@@ -139,6 +144,8 @@ def run(now: datetime | None = None) -> int:
             print("Sent market snapshot")
         except Exception as exc:
             print(f"Market error: {exc}", file=sys.stderr)
+    elif market_due:
+        print("Skipped market snapshot during Tehran quiet hours (00:00-08:00)")
 
     if changed:
         save_state(state, STATE_PATH)
