@@ -5,6 +5,7 @@ from src.sources import (
     is_iran_related,
     is_security_alert,
     parse_google_news_rss,
+    parse_trumpstruth_rss,
     parse_tgju_overview,
     parse_tgju_profile_rate,
     parse_tgju_tether_rial,
@@ -57,6 +58,8 @@ def test_important_news_accepts_clear_major_new_events():
         "Iran and US suspend nuclear talks",
         "Tanker explodes near Strait of Hormuz",
         "Iran reopens airspace after NOTAM cancellation",
+        "US and allies seek UN Security Council action on Iran nuclear file",
+        "Turkey sanctions bank over Iran-linked transactions",
     )
     for text in accepted:
         assert is_important_news(text, "")
@@ -117,6 +120,21 @@ def test_parse_google_news_rss_filters_irrelevant_and_labels_source():
     assert items[0].title.startswith("Trump announces new Iran sanctions")
     assert items[0].published == "Fri, 04 Sep 2026 10:00:00 GMT"
     assert items[0].key
+
+
+def test_parse_trumpstruth_rss_builds_stable_posts():
+    xml = b'''<?xml version="1.0"?><rss><channel><item>
+      <title>Donald J. Trump: Iran must not threaten American forces</title>
+      <link>https://www.trumpstruth.org/statuses/40123</link>
+      <guid>https://www.trumpstruth.org/statuses/40123</guid>
+      <pubDate>Fri, 04 Sep 2026 16:00:00 GMT</pubDate>
+      <description><![CDATA[<p>Iran must not threaten American forces.</p>]]></description>
+    </item></channel></rss>'''
+    posts = parse_trumpstruth_rss(xml)
+    assert len(posts) == 1
+    assert posts[0].id == "40123"
+    assert "Iran" in posts[0].text
+    assert posts[0].url.endswith("/statuses/40123")
 
 
 def test_parse_tgju_market_overview_rial_and_toman():
