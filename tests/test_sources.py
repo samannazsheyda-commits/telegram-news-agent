@@ -3,6 +3,8 @@ from src.sources import (
     is_iran_related,
     parse_google_news_rss,
     parse_tgju_overview,
+    parse_tgju_profile_rate,
+    parse_tgju_tether_rial,
     strip_html,
 )
 
@@ -22,16 +24,8 @@ def test_iran_filter_accepts_iran_hormuz_and_rejects_unrelated():
 def test_major_foreign_iran_sources_are_configured():
     names = {name for name, _, _ in NEWS_QUERIES}
     expected = {
-        "Reuters",
-        "Associated Press",
-        "BBC News",
-        "CNN",
-        "Financial Times",
-        "The New York Times",
-        "France 24",
-        "DW",
-        "Times of Israel",
-        "Haaretz",
+        "Reuters", "Associated Press", "BBC News", "CNN", "Financial Times",
+        "The New York Times", "France 24", "DW", "Times of Israel", "Haaretz",
     }
     assert expected <= names
 
@@ -60,13 +54,25 @@ def test_parse_google_news_rss_filters_irrelevant_and_labels_source():
     assert len(items) == 1
     assert items[0].source == "Axios"
     assert items[0].title.startswith("Trump discusses Iran talks")
+    assert items[0].published == "Fri, 04 Sep 2026 10:00:00 GMT"
     assert items[0].key
 
 
 def test_parse_tgju_market_overview_rial_and_toman():
-    text = "بورس 6,503,971 (0%) طلا ۱۸ 228,351,000 (0%) دلار 2,199,000 (0%) یورو 2,561,300"
+    text = (
+        "بورس 6,503,971 (0%) طلا ۱۸ 228,351,000 (0%) سکه 2,279,900,000 (0%) "
+        "دلار 2,199,000 (0%) یورو 2,561,300 (0%) بیت کوین 76,912.07 (0%)"
+    )
     snap = parse_tgju_overview(text)
     assert snap.usd_rial == 2_199_000
     assert snap.gold18_rial == 228_351_000
+    assert snap.eur_rial == 2_561_300
+    assert snap.emami_rial == 2_279_900_000
+    assert snap.bitcoin_usd == 76_912.07
     assert snap.usd_toman == 219_900
     assert snap.gold18_toman == 22_835_100
+
+
+def test_parse_tgju_profile_and_tether_rial_prices():
+    assert parse_tgju_profile_rate("پوند GBP نرخ فعلی:: 2,973,100 - ارز آزاد") == 2_973_100
+    assert parse_tgju_tether_rial("نرخ فعلی 1.0 قیمت ریالی | 2,188,500 بالاترین") == 2_188_500
