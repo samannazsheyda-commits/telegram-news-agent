@@ -7,5 +7,23 @@
     "active": true,
     "status": "reference",
     "updated_at": "2026-09-05T00:00:00+00:00"
+  },
+  {
+    "id": "0d773e49d3380aa50af60a0ba330dbe229a22488",
+    "kind": "telegram",
+    "name": "The Cradle",
+    "channel": "thecradlemedia",
+    "active": true,
+    "status": "reference",
+    "updated_at": "2026-09-04T21:56:00+00:00"
+  },
+  {
+    "id": "2a8bc21b3156cc672a0f3d18a354429db5fa1d94",
+    "kind": "telegram",
+    "name": "Clash Report",
+    "channel": "ClashReport",
+    "active": true,
+    "status": "reference",
+    "updated_at": "2026-09-04T21:56:00+00:00"
   }
 ]
