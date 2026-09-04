@@ -3,6 +3,7 @@ from src.sources import (
     NEWS_QUERIES,
     SPECIAL_QUERIES,
     is_iran_related,
+    is_regional_security_alert,
     is_security_alert,
     parse_google_news_rss,
     parse_trumpstruth_rss,
@@ -24,6 +25,14 @@ def test_iran_filter_accepts_iran_hormuz_and_rejects_unrelated():
     assert is_iran_related("Iran launched missiles toward Qatar")
     assert not is_iran_related("Trump speaks about US interest rates")
     assert not is_iran_related("Oil prices rise after OPEC meeting")
+
+
+def test_regional_security_alert_accepts_air_defense_without_explicit_iran_mention():
+    assert is_regional_security_alert("Air defense activated in northern Jordan")
+    assert is_regional_security_alert("Drone sirens sound in Qatar")
+    assert is_regional_security_alert("Missile interception reported over Bahrain")
+    assert not is_regional_security_alert("Jordan announces new tourism campaign")
+    assert not is_regional_security_alert("Air defense exercise held in Poland")
 
 
 def test_security_alert_filter_for_tankers_and_airspace():
@@ -60,12 +69,14 @@ def test_important_news_accepts_clear_major_new_events():
         "Iran reopens airspace after NOTAM cancellation",
         "US and allies seek UN Security Council action on Iran nuclear file",
         "Turkey sanctions bank over Iran-linked transactions",
+        "Air defense activated in northern Jordan",
+        "Drone sirens sound in Qatar",
     )
     for text in accepted:
         assert is_important_news(text, "")
 
 
-def test_special_monitors_are_configured_without_weak_regional_pseudo_source():
+def test_special_monitors_include_al_arabiya_regional_security_without_weak_pseudo_source():
     names = {name for name, _, _ in SPECIAL_QUERIES}
     expected = {
         "Donald Trump / Truth Social",
@@ -74,6 +85,7 @@ def test_special_monitors_are_configured_without_weak_regional_pseudo_source():
         "Mohsen Rezaei / X",
         "TankerTrackers",
         "NOTAM / Airspace",
+        "Al Arabiya",
     }
     assert expected <= names
     assert "Iran regional strikes" not in names
@@ -120,6 +132,21 @@ def test_parse_google_news_rss_filters_irrelevant_and_labels_source():
     assert items[0].title.startswith("Trump announces new Iran sanctions")
     assert items[0].published == "Fri, 04 Sep 2026 10:00:00 GMT"
     assert items[0].key
+
+
+def test_parse_al_arabiya_regional_security_without_iran_word():
+    xml = b'''<?xml version="1.0" encoding="UTF-8"?>
+    <rss><channel><item>
+      <title>Air defense activated in northern Jordan - Al Arabiya English</title>
+      <link>https://news.google.com/jordan-defense</link>
+      <guid>ga</guid>
+      <pubDate>Fri, 04 Sep 2026 16:30:00 GMT</pubDate>
+      <description><![CDATA[<p>Air-defense systems were activated in northern Jordan.</p>]]></description>
+      <source url="https://english.alarabiya.net">Al Arabiya English</source>
+    </item></channel></rss>'''
+    items = parse_google_news_rss(xml, fallback_source="Al Arabiya", allow_special_source=True)
+    assert len(items) == 1
+    assert items[0].source == "Al Arabiya"
 
 
 def test_parse_trumpstruth_rss_builds_stable_posts():
