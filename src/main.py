@@ -39,10 +39,12 @@ MAJOR_EVENT_TERMS = (
     "withdraws", "expels", "orders", "announces", "confirms", "declares", "closes airspace",
     "closed airspace", "reopens airspace", "airspace closed", "airspace reopened", "notam",
     "flight ban", "flights cancelled", "evacuation", "nuclear site", "uranium", "enrichment",
+    "security council", "iaea", "board of governors", "refer iran", "referral", "resolution",
     "hormuz", "tanker", "حمله", "موشک", "پهپاد", "انفجار", "بمباران", "کشته", "مجروح",
     "رهگیری", "توقیف", "غرق", "آتش‌بس", "تحریم", "توافق", "مذاکرات متوقف",
     "مذاکرات از سر گرفته", "مذاکرات آغاز", "اعلام کرد", "تأیید کرد", "دستور داد",
     "حریم هوایی بسته", "حریم هوایی باز", "نوتام", "لغو پرواز", "ممنوعیت پرواز", "تخلیه",
+    "شورای امنیت", "آژانس بین‌المللی انرژی اتمی", "شورای حکام", "قطعنامه", "ارجاع پرونده",
     "هسته‌ای", "اورانیوم", "غنی‌سازی", "هرمز", "نفتکش",
 )
 STORY_STOPWORDS = {
@@ -138,7 +140,7 @@ def _event_priority(item: NewsItem) -> int:
         return 100
     if any(t in text for t in ("airspace", "notam", "hormuz", "tanker", "flight ban", "حریم هوایی", "نوتام", "هرمز", "نفتکش")):
         return 90
-    if any(t in text for t in ("ceasefire", "sanction", "talks", "negotiation", "agreement", "deal", "آتش‌بس", "تحریم", "مذاکرات", "توافق")):
+    if any(t in text for t in ("ceasefire", "sanction", "talks", "negotiation", "agreement", "deal", "security council", "iaea", "resolution", "آتش‌بس", "تحریم", "مذاکرات", "توافق", "شورای امنیت", "شورای حکام", "قطعنامه")):
         return 80
     if any(t in text for t in ("nuclear", "uranium", "enrichment", "هسته‌ای", "اورانیوم", "غنی‌سازی")):
         return 75
@@ -151,7 +153,6 @@ def _select_top_stories(candidates: list[NewsItem], references: list[NewsItem]) 
     def sort_key(item: NewsItem):
         dt = _published_dt(item.published) or datetime.min.replace(tzinfo=timezone.utc)
         return (_event_priority(item), dt)
-
     ordered = sorted(candidates, key=sort_key, reverse=True)
     selected: list[NewsItem] = []
     skipped: list[NewsItem] = []
