@@ -8,9 +8,11 @@ from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from zoneinfo import ZoneInfo
 
-from .formatters import _red_story_marker, format_market, format_news, format_truth
+from .cars import fetch_car_prices, format_car_prices
+from .formatters import _red_story_marker, format_market, format_market_daily_summary, format_news, format_truth
 from .services import load_state, save_state, send_telegram, translate_to_fa
-from .sources import NewsItem, fetch_market_snapshot, fetch_news_items, fetch_truth_posts, is_iran_related
+from .sources import NewsItem, fetch_market_snapshot, fetch_news_detail, fetch_news_items, fetch_truth_posts, is_iran_related
+from .weather import fetch_weather_report, format_night_weather, format_noon_weather
 
 STATE_PATH = os.environ.get("STATE_PATH", "state.json")
 MARKET_INTERVAL = timedelta(hours=2)
@@ -52,6 +54,7 @@ STORY_STOPWORDS = {
     "with", "from", "as", "is", "are", "was", "were", "be", "been", "being", "has", "have",
     "had", "says", "said", "saying", "will", "would", "could", "may", "might", "its", "their",
     "his", "her", "this", "that", "after", "before", "about", "over", "under", "new", "latest",
+    "official", "officials", "confirm", "confirmed", "event", "number", "report", "reported",
     "و", "در", "به", "از", "با", "برای", "که", "این", "آن", "یک", "را", "است", "شد", "می",
 }
 SPEAKERS = {
@@ -97,6 +100,56 @@ def _market_quiet_hours(now: datetime) -> bool:
     return 0 <= now.astimezone(TEHRAN).hour < 8
 
 
+def _tehran_date(now: datetime) -> str:
+    return now.astimezone(TEHRAN).date().isoformat()
+
+
+def _weather_noon_due(state: dict, now: datetime) -> bool:
+    local = now.astimezone(TEHRAN)
+    return 12 <= local.hour < 22 and state.get("weather_noon_last_sent_date") != local.date().isoformat()
+
+
+def _weather_night_due(state: dict, now: datetime) -> bool:
+    local = now.astimezone(TEHRAN)
+    return local.hour >= 22 and state.get("weather_night_last_sent_date") != local.date().isoformat()
+
+
+def _car_due(state: dict, now: datetime) -> bool:
+    local = now.astimezone(TEHRAN)
+    return local.hour >= 11 and state.get("car_last_sent_date") != local.date().isoformat()
+
+
+def _market_summary_day(state: dict, now: datetime) -> str | None:
+    local = now.astimezone(TEHRAN)
+    if local.hour != 0:
+        return None
+    previous_date = (local.date() - timedelta(days=1)).isoformat()
+    data = state.get("market_day_prices") or {}
+    if data.get("date") != previous_date:
+        return None
+    if state.get("market_daily_summary_last_date") == previous_date:
+        return None
+    required = ("first_usd", "last_usd", "first_gold", "last_gold")
+    return previous_date if all(data.get(k) is not None for k in required) else None
+
+
+def _record_market_snapshot(state: dict, snapshot, now: datetime) -> None:
+    day = _tehran_date(now)
+    current = state.get("market_day_prices") or {}
+    if current.get("date") != day:
+        state["market_day_prices"] = {
+            "date": day,
+            "first_usd": snapshot.usd_toman,
+            "last_usd": snapshot.usd_toman,
+            "first_gold": snapshot.gold18_toman,
+            "last_gold": snapshot.gold18_toman,
+        }
+        return
+    current["last_usd"] = snapshot.usd_toman
+    current["last_gold"] = snapshot.gold18_toman
+    state["market_day_prices"] = current
+
+
 def is_important_news(title: str, summary: str) -> bool:
     title_l = re.sub(r"\s+", " ", (title or "").lower()).strip()
     summary_l = re.sub(r"\s+", " ", (summary or "").lower()).strip()
@@ -106,6 +159,18 @@ def is_important_news(title: str, summary: str) -> bool:
     if ("?" in title_l or "؟" in title_l) and not any(term in title_l for term in MAJOR_EVENT_TERMS):
         return False
     return any(term in combined for term in MAJOR_EVENT_TERMS)
+
+
+def _is_trump_iran_news(item: NewsItem) -> bool:
+    text = f"{item.title} {item.summary}".lower()
+    return "trump" in text and is_iran_related(text)
+
+
+def _looks_bundled(item: NewsItem) -> bool:
+    title = re.sub(r"\s+", " ", item.title or "").strip()
+    # Fail closed only for unusually long, multi-headline strings. Do not split ordinary comma clauses.
+    separators = len(re.findall(r"[,،;؛]", title))
+    return len(title) >= 180 and separators >= 2
 
 
 def _story_tokens(item: NewsItem) -> set[str]:
@@ -144,6 +209,8 @@ def _event_priority(item: NewsItem) -> int:
         return 80
     if any(t in text for t in ("nuclear", "uranium", "enrichment", "هسته‌ای", "اورانیوم", "غنی‌سازی")):
         return 75
+    if _is_trump_iran_news(item):
+        return 70
     if _is_statement(item):
         return 40
     return 50
@@ -163,6 +230,10 @@ def _select_top_stories(candidates: list[NewsItem], references: list[NewsItem]) 
             continue
         if _is_statement(item):
             speaker = _speaker_key(item)
+            # User wants every distinct Trump statement about Iran. Semantic duplicate suppression above still applies.
+            if speaker == "trump":
+                selected.append(item)
+                continue
             dt = _published_dt(item.published)
             if speaker and dt and speaker in speaker_windows and abs(dt - speaker_windows[speaker]) <= timedelta(hours=2):
                 skipped.append(item)
@@ -222,12 +293,18 @@ def run(now: datetime | None = None) -> int:
             save_state(state, STATE_PATH)
             changed = bool(items) or changed
         else:
-            rejected = [item for item in items if item.key not in seen_set and (not _published_today(item.published, now) or not is_important_news(item.title, item.summary))]
+            def eligible(item: NewsItem) -> bool:
+                return (
+                    _published_today(item.published, now)
+                    and not _looks_bundled(item)
+                    and (is_important_news(item.title, item.summary) or _is_trump_iran_news(item))
+                )
+            rejected = [item for item in items if item.key not in seen_set and not eligible(item)]
             for item in rejected:
                 seen.insert(0, item.key)
                 seen_set.add(item.key)
             references = [item for item in items if item.key in seen_set]
-            candidates = [item for item in items if item.key not in seen_set and _published_today(item.published, now) and is_important_news(item.title, item.summary)]
+            candidates = [item for item in items if item.key not in seen_set and eligible(item)]
             selected, duplicates = _select_top_stories(candidates, references)
             for item in duplicates:
                 seen.insert(0, item.key)
@@ -241,7 +318,8 @@ def run(now: datetime | None = None) -> int:
                 title_fa = translate_to_fa(item.title)
                 if not title_fa:
                     continue
-                summary_fa = translate_to_fa(item.summary[:1200]) if item.summary else ""
+                detail = fetch_news_detail(item)
+                summary_fa = translate_to_fa(detail[:1200]) if detail else ""
                 marker = _red_story_marker(item) if next_color == "red" else "⚪️"
                 send_telegram(format_news(item, title_fa, summary_fa, marker_override=marker), token, chat_id)
                 next_color = "white" if next_color == "red" else "red"
@@ -254,6 +332,59 @@ def run(now: datetime | None = None) -> int:
     except Exception as exc:
         print(f"News error: {exc}", file=sys.stderr)
 
+    # Daily car prices at/after 11:00 Tehran, once per day.
+    if _car_due(state, now):
+        try:
+            prices = fetch_car_prices()
+            previous = state.get("car_last_prices") or {}
+            send_telegram(format_car_prices(prices, previous), token, chat_id)
+            state["car_last_prices"] = {p.name: p.market_toman for p in prices}
+            state["car_last_sent_date"] = _tehran_date(now)
+            save_state(state, STATE_PATH)
+            changed = True
+        except Exception as exc:
+            print(f"Car price error: {exc}", file=sys.stderr)
+
+    # Weather is isolated so a weather outage never blocks news/markets.
+    if _weather_noon_due(state, now):
+        try:
+            report = fetch_weather_report()
+            send_telegram(format_noon_weather(report), token, chat_id)
+            state["weather_noon_last_sent_date"] = _tehran_date(now)
+            save_state(state, STATE_PATH)
+            changed = True
+        except Exception as exc:
+            print(f"Weather noon error: {exc}", file=sys.stderr)
+
+    if _weather_night_due(state, now):
+        try:
+            report = fetch_weather_report()
+            send_telegram(format_night_weather(report), token, chat_id)
+            state["weather_night_last_sent_date"] = _tehran_date(now)
+            save_state(state, STATE_PATH)
+            changed = True
+        except Exception as exc:
+            print(f"Weather night error: {exc}", file=sys.stderr)
+
+    # Midnight summary uses the first and last regular TGJU observations from the previous Tehran day.
+    summary_day = _market_summary_day(state, now)
+    if summary_day:
+        data = state.get("market_day_prices") or {}
+        try:
+            send_telegram(
+                format_market_daily_summary(
+                    int(data["first_usd"]), int(data["last_usd"]),
+                    int(data["first_gold"]), int(data["last_gold"]), now,
+                ),
+                token,
+                chat_id,
+            )
+            state["market_daily_summary_last_date"] = summary_day
+            save_state(state, STATE_PATH)
+            changed = True
+        except Exception as exc:
+            print(f"Market daily summary error: {exc}", file=sys.stderr)
+
     last_market = _parse_iso(state.get("market_last_sent_at"))
     market_due = last_market is None or now - last_market >= MARKET_INTERVAL
     if market_due and not _market_quiet_hours(now):
@@ -261,6 +392,7 @@ def run(now: datetime | None = None) -> int:
             snapshot = fetch_market_snapshot()
             send_telegram(format_market(snapshot, now), token, chat_id)
             state["market_last_sent_at"] = now.isoformat()
+            _record_market_snapshot(state, snapshot, now)
             save_state(state, STATE_PATH)
             changed = True
         except Exception as exc:
