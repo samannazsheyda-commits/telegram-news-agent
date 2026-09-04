@@ -73,6 +73,16 @@ def test_news_keeps_at_most_one_short_key_detail_line():
     assert "این جمله سوم" not in text
 
 
+def test_bundled_headline_keeps_only_iran_related_segment():
+    item = NewsItem("ap-bundle", "Associated Press", "Vance says Iran fight is not a war, dramatic Nepal rescue, inside a massive civil defense drill", "", "https://example.com/ap", "Fri, 04 Sep 2026 10:53:00 GMT")
+    title = "ونس می‌گوید نبرد با ایران یک «جنگ» نیست، نجات چشمگیر در نپال، پشت صحنه یک رزمایش عظیم دفاع مدنی"
+    text = format_news(item, title, "", marker_override="⚪️")
+    first_line = text.splitlines()[0]
+    assert "ونس می‌گوید نبرد با ایران یک «جنگ» نیست." in first_line
+    assert "نپال" not in text
+    assert "رزمایش عظیم دفاع مدنی" not in text
+
+
 def test_news_time_has_only_date_and_time_without_tehran_phrase():
     item = NewsItem("k", "Reuters", "Iran talks", "details", "https://example.com", "Fri, 04 Sep 2026 10:00:00 GMT")
     text = format_news(item, "مذاکرات ایران", "جزئیات", marker_override="⚪️")
