@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}داشبورد | بی‌خبر{% endblock %}
+{% block content %}
+<h1>داشبورد</h1>
+<div class="stats">
+  <a class="stat" href="{{ url_for('review_queue') }}"><b>{{ queue_count }}</b><span>نیاز به بررسی</span></a>
+  <a class="stat" href="{{ url_for('history', status='published_manual') }}"><b>{{ published_today }}</b><span>منتشرشده امروز</span></a>
+  <a class="stat" href="{{ url_for('history', status='rejected_manual') }}"><b>{{ rejected_today }}</b><span>ردشده امروز</span></a>
+</div>
+<section class="card">
+  <div class="row"><span>وضعیت ربات</span><strong class="ok">فعال</strong></div>
+  <div class="row"><span>کانال</span><strong>@bikhabaar</strong></div>
+  <div class="row"><span>آخرین انتشار ثبت‌شده</span><strong>{{ last_publication or '—' }}</strong></div>
+</section>
+<section class="actions">
+  <a class="primary button" href="{{ url_for('review_queue') }}">بررسی خبرهای ردشده</a>
+  <a class="button" href="{{ url_for('sources') }}">مدیریت منابع</a>
+</section>
+{% endblock %}

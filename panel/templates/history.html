@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}تاریخچه | بی‌خبر{% endblock %}
+{% block content %}
+<h1>تاریخچه</h1>
+<div class="filter-row">
+  <a href="{{ url_for('history') }}">همه</a>
+  <a href="{{ url_for('history', status='published_manual') }}">انتشار دستی</a>
+  <a href="{{ url_for('history', status='published_auto') }}">انتشار خودکار</a>
+  <a href="{{ url_for('history', status='rejected_manual') }}">رد دستی</a>
+</div>
+<div class="list">
+{% for item in items %}
+  <section class="news-card static">
+    <div class="meta"><span>{{ item.source }}</span><span>{{ item.status }}</span></div>
+    <h2>{{ item.final_persian_title or item.persian_title or item.original_title }}</h2>
+    {% if item.final_persian_body or item.persian_body %}<p>{{ item.final_persian_body or item.persian_body }}</p>{% endif %}
+    <div class="meta"><span>{{ item.decision_at or item.updated_at or '' }}</span>{% if item.source_url %}<a href="{{ item.source_url }}" target="_blank" rel="noopener">منبع</a>{% endif %}</div>
+  </section>
+{% else %}
+  <section class="card empty">موردی پیدا نشد.</section>
+{% endfor %}
+</div>
+{% endblock %}

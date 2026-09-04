@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}ورود | بی‌خبر{% endblock %}
+{% block content %}
+<section class="auth-card">
+  <h1>ورود سردبیر</h1>
+  <p class="muted">این پنل فقط برای مدیریت شخصی کانال است.</p>
+  <form method="post" class="stack-form">
+    {{ form.hidden_tag() }}
+    {{ form.password.label }}
+    {{ form.password(autocomplete='current-password', autofocus=true) }}
+    {{ form.submit(class_='primary') }}
+  </form>
+</section>
+{% endblock %}

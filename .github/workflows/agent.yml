@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "src/**"
+      - "panel/**"
       - "tests/**"
       - "requirements*.txt"
       - ".github/workflows/agent.yml"
@@ -46,18 +47,27 @@ jobs:
           TELEGRAM_CHAT_ID: "@bikhabaar"
           POLL_SECONDS: "60"
           SESSION_SECONDS: "240"
-        run: python -m src.main --monitor
+        run: python -m src.runtime --monitor
 
-      - name: Persist state
+      - name: Persist runtime data
         if: always()
         run: |
-          if git diff --quiet -- state.json; then
-            echo "No state changes"
+          mkdir -p /tmp/runtime-snapshot/data
+          cp state.json /tmp/runtime-snapshot/state.json
+          cp data/editorial_queue.json /tmp/runtime-snapshot/data/editorial_queue.json
+          cp data/editorial_history.json /tmp/runtime-snapshot/data/editorial_history.json
+
+          git fetch origin main
+          git reset --hard origin/main
+          python -m src.persist_merge /tmp/runtime-snapshot
+
+          if git diff --quiet -- state.json data/editorial_queue.json data/editorial_history.json; then
+            echo "No runtime data changes"
             exit 0
           fi
+
           git config user.name "telegram-news-agent[bot]"
           git config user.email "telegram-news-agent[bot]@users.noreply.github.com"
-          git add state.json
-          git commit -m "chore: update agent state"
-          git pull --rebase
+          git add state.json data/editorial_queue.json data/editorial_history.json
+          git commit -m "chore: update agent runtime data"
           git push
