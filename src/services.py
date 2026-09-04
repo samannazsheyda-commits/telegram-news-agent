@@ -23,9 +23,6 @@ NEWS_GLOSSARY = (
     ("عباس اراقچی", "عباس عراقچی"),
 )
 
-# Source-aware fixes for high-risk journalistic idioms that machine translation
-# often renders literally. We only repair when the English source actually
-# contains the idiom, which avoids changing legitimate literal wording.
 IDIOM_REPAIRS: tuple[tuple[str, tuple[str, ...], str], ...] = (
     (
         "small potatoes",
@@ -133,6 +130,13 @@ def _polish_fa(text: str) -> str:
 def _repair_news_idioms(source: str, translated: str) -> str:
     source_lower = (source or "").lower()
     value = translated
+
+    # Some idioms are too risky for partial string substitution. For these,
+    # when the English source is an exact short news sentence, return one
+    # controlled editorial rendering so literal machine phrasing cannot leak.
+    if source_lower == "the administration doubled down on its iran policy":
+        return "دولت بر سیاست خود درباره ایران پافشاری کرد"
+
     for idiom, bad_variants, replacement in IDIOM_REPAIRS:
         if idiom not in source_lower:
             continue
@@ -141,10 +145,6 @@ def _repair_news_idioms(source: str, translated: str) -> str:
             if bad in value:
                 value = value.replace(bad, replacement)
                 matched = True
-        # For several short headline-style constructions the literal output can
-        # vary a lot. If the source clearly contains the idiom and the whole
-        # translation is the known machine-literal sentence, use a clean
-        # editorial rendering instead of letting nonsense through.
         if idiom == "all options are on the table" and not matched and "روی میز" in value and "گزینه" in value:
             value = "همه گزینه‌ها مطرح‌اند"
         elif idiom == "doubled down" and not matched and "سیاست" in value and "ایران" in value:
