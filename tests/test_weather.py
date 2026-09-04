@@ -41,7 +41,7 @@ def test_weather_code_labels_cover_major_conditions():
     assert weather_code_fa(95) == "رعدوبرق"
 
 
-def test_parse_and_format_31_city_weather_with_source():
+def test_parse_and_format_31_city_weather_with_source_and_spacing():
     report = parse_weather_payload([_row() for _ in PROVINCIAL_CAPITALS])
     assert len(report.cities) == 31
     noon = format_noon_weather(report)
@@ -51,3 +51,5 @@ def test_parse_and_format_31_city_weather_with_source():
     assert "بارش ۸۰٪" in night
     assert "Open-Meteo" in noon and "Open-Meteo" in night
     assert "مراکز ۳۱ استان" in noon and "مراکز ۳۱ استان" in night
+    assert "\n\n▫️" in noon
+    assert "\n\n▫️" in night
