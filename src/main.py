@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 
 from .formatters import format_market, format_news, format_truth
 from .services import load_state, save_state, send_telegram, translate_to_fa
-from .sources import fetch_market_snapshot, fetch_news_items, fetch_truth_posts, is_iran_related
+from .sources import NewsItem, fetch_market_snapshot, fetch_news_items, fetch_truth_posts, is_iran_related
 
 STATE_PATH = os.environ.get("STATE_PATH", "state.json")
 MARKET_INTERVAL = timedelta(hours=2)
@@ -37,17 +37,25 @@ MAJOR_EVENT_TERMS = (
     "drone", "drones", "explosion", "blast", "bombing", "killed", "dead", "wounded",
     "intercepted", "seized", "sank", "sinking", "collision", "fire", "war", "ceasefire",
     "sanction", "sanctions", "designates", "blacklists", "agreement", "deal", "signed",
-    "talks suspended", "suspend talks", "talks resume", "resumes talks", "talks begin",
-    "negotiations suspended", "negotiations resume", "withdraws", "expels", "orders",
+    "suspend", "suspended", "resume", "resumed", "talks begin", "talks began",
+    "negotiations begin", "negotiations began", "withdraws", "expels", "orders",
     "announces", "confirms", "declares", "closes airspace", "closed airspace", "reopens airspace",
     "airspace closed", "airspace reopened", "notam", "flight ban", "flights cancelled",
     "evacuation", "nuclear site", "uranium", "enrichment", "hormuz", "tanker",
     "حمله", "موشک", "پهپاد", "انفجار", "بمباران", "کشته", "مجروح", "رهگیری",
     "توقیف", "غرق", "آتش‌بس", "تحریم", "توافق", "مذاکرات متوقف", "مذاکرات از سر گرفته",
-    "اعلام کرد", "تأیید کرد", "دستور داد", "حریم هوایی بسته", "حریم هوایی باز",
+    "مذاکرات آغاز", "اعلام کرد", "تأیید کرد", "دستور داد", "حریم هوایی بسته", "حریم هوایی باز",
     "نوتام", "لغو پرواز", "ممنوعیت پرواز", "تخلیه", "هسته‌ای", "اورانیوم", "غنی‌سازی",
     "هرمز", "نفتکش",
 )
+
+STORY_STOPWORDS = {
+    "the", "a", "an", "and", "or", "but", "to", "of", "for", "in", "on", "at", "by",
+    "with", "from", "as", "is", "are", "was", "were", "be", "been", "being", "has", "have",
+    "had", "says", "said", "saying", "will", "would", "could", "may", "might", "its", "their",
+    "his", "her", "this", "that", "after", "before", "about", "over", "under", "new", "latest",
+    "و", "در", "به", "از", "با", "برای", "که", "این", "آن", "یک", "را", "است", "شد", "می",
+}
 
 
 def _parse_iso(value: str | None) -> datetime | None:
@@ -91,12 +99,29 @@ def is_important_news(title: str, summary: str) -> bool:
     if any(pattern in title_l for pattern in VAGUE_PATTERNS):
         return False
 
-    # Questions are normally explainers/articles, unless the title also reports a concrete event.
     if "?" in title_l or "؟" in title_l:
         if not any(term in title_l for term in MAJOR_EVENT_TERMS):
             return False
 
     return any(term in combined for term in MAJOR_EVENT_TERMS)
+
+
+def _story_tokens(item: NewsItem) -> set[str]:
+    text = f"{item.title} {item.summary}".lower()
+    tokens = re.findall(r"[a-z0-9\u0600-\u06ff]+", text)
+    return {token for token in tokens if len(token) > 2 and token not in STORY_STOPWORDS}
+
+
+def _same_story(left: NewsItem, right: NewsItem) -> bool:
+    left_tokens = _story_tokens(left)
+    right_tokens = _story_tokens(right)
+    if not left_tokens or not right_tokens:
+        return False
+    common = left_tokens & right_tokens
+    if len(common) < 4:
+        return False
+    overlap = len(common) / min(len(left_tokens), len(right_tokens))
+    return overlap >= 0.50
 
 
 def _truth_newer(post_id: str, last_id: str) -> bool:
@@ -167,14 +192,28 @@ def run(now: datetime | None = None) -> int:
                 reason = "stale/undated" if not _published_today(item.published, now) else "low-value/article"
                 print(f"Skipped {reason} news {item.source}: {item.key}")
 
-            new_items = [
+            references = [item for item in items if item.key in seen_set]
+            candidates = [
                 item for item in items
                 if item.key not in seen_set
                 and _published_today(item.published, now)
                 and is_important_news(item.title, item.summary)
-            ][:MAX_NEWS_PER_RUN]
+            ]
 
-            if rejected:
+            selected: list[NewsItem] = []
+            duplicates: list[NewsItem] = []
+            for item in candidates:
+                if any(_same_story(item, other) for other in references + selected):
+                    duplicates.append(item)
+                    seen.insert(0, item.key)
+                    seen_set.add(item.key)
+                    print(f"Skipped semantic duplicate {item.source}: {item.key}")
+                    continue
+                selected.append(item)
+
+            new_items = selected[:MAX_NEWS_PER_RUN]
+
+            if rejected or duplicates:
                 state["news_seen"] = seen[:500]
                 save_state(state, STATE_PATH)
                 changed = True
