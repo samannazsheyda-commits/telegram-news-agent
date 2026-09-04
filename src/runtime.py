@@ -17,30 +17,48 @@ _original_send_telegram = agent.send_telegram
 _pending_auto_key: str | None = None
 
 
+def _terminal_manual_keys() -> set[str]:
+    try:
+        return {
+            str(record.get("news_key") or "")
+            for record in _store.history()
+            if record.get("status") in {"published_manual", "published_auto"}
+        }
+    except Exception:
+        return set()
+
+
 def _combined_fetch_news_items():
-    merged = {item.key: item for item in _original_fetch_news_items()}
+    terminal = _terminal_manual_keys()
+    merged = {
+        item.key: item
+        for item in _original_fetch_news_items()
+        if item.key not in terminal
+    }
     try:
         custom = fetch_custom_news_items()
     except Exception as exc:
         print(f"Custom source error: {exc}", file=sys.stderr)
         custom = []
     for item in custom:
-        merged.setdefault(item.key, item)
+        if item.key not in terminal:
+            merged.setdefault(item.key, item)
     return list(merged.values())
 
 
 def _review_record(item, reason: str, now: datetime) -> ReviewItem:
     title_fa = ""
     body_fa = ""
-    try:
-        title_fa = agent.translate_to_fa(item.title)
-    except Exception:
-        title_fa = ""
-    try:
-        detail = agent.fetch_news_detail(item)
-        body_fa = agent.translate_to_fa(detail[:1200]) if detail else ""
-    except Exception:
-        body_fa = ""
+    if reason not in {"invalid_publish_time", "not_today_tehran"}:
+        try:
+            title_fa = agent.translate_to_fa(item.title)
+        except Exception:
+            title_fa = ""
+        try:
+            detail = agent.fetch_news_detail(item)
+            body_fa = agent.translate_to_fa(detail[:1200]) if detail else ""
+        except Exception:
+            body_fa = ""
     return ReviewItem.for_news(
         news_key=item.key,
         source=item.source,
@@ -94,7 +112,11 @@ def _format_with_tracking(item, title_fa: str, summary_fa: str, marker_override:
 def _send_with_tracking(text: str, bot_token: str, chat_id: str, *args, **kwargs) -> None:
     global _pending_auto_key
     key = _pending_auto_key
-    _original_send_telegram(text, bot_token, chat_id, *args, **kwargs)
+    try:
+        _original_send_telegram(text, bot_token, chat_id, *args, **kwargs)
+    except Exception:
+        _pending_auto_key = None
+        raise
     if key:
         try:
             _store.mark_auto_published(key)
