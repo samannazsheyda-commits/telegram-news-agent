@@ -36,6 +36,15 @@ def test_news_starts_with_persian_source_then_headline_and_does_not_repeat_sourc
     assert "📌 <a href=\"https://example.com\">لینک منبع خبر</a>" in text
 
 
+def test_al_arabiya_is_persian_and_source_suffix_is_removed_from_headline():
+    item = NewsItem("arabiya", "Al Arabiya", "US issues new Iran-related sanctions and general license - Al Arabiya English", "", "https://example.com/arabiya", "Fri, 04 Sep 2026 14:18:00 GMT")
+    text = format_news(item, "آمریکا تحریم‌های جدید مرتبط با ایران و مجوز عمومی صادر کرد - العربیه انگلیسی", "", marker_override="🟥")
+    first_line = text.splitlines()[0]
+    assert first_line == "🟥 <b>العربیه: آمریکا تحریم‌های جدید مرتبط با ایران و مجوز عمومی صادر کرد.</b>"
+    assert "Al Arabiya" not in text
+    assert "العربیه انگلیسی" not in text
+
+
 def test_news_time_has_only_date_and_time_without_tehran_phrase():
     item = NewsItem("k", "Reuters", "Iran talks", "details", "https://example.com", "Fri, 04 Sep 2026 10:00:00 GMT")
     text = format_news(item, "مذاکرات ایران", "جزئیات", marker_override="⚪️")
