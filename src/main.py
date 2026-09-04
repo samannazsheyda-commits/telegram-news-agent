@@ -200,15 +200,15 @@ def _news_rejection_reason(item: NewsItem, now: datetime) -> str | None:
         return "bundled_or_multi_headline"
     if any(pattern in title_l for pattern in ARTICLE_PATTERNS):
         return "article_or_commentary"
-    if any(pattern in title_l for pattern in VAGUE_PATTERNS):
-        return "vague_or_speculative"
     if ("?" in title_l or "؟" in title_l) and not any(term in title_l for term in MAJOR_EVENT_TERMS):
         return "question_or_explainer"
     if _is_trump_iran_news(item):
         return None
-    if is_important_news(item.title, item.summary):
-        return None
     if item.source in TRUSTED_NEWS_SOURCES and is_iran_related(combined):
+        return None
+    if any(pattern in title_l for pattern in VAGUE_PATTERNS):
+        return "vague_or_speculative"
+    if is_important_news(item.title, item.summary):
         return None
     return "low_signal_or_unapproved_source"
 
