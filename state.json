@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41514",
   "news_seen": [
+    "352604345e69d7721bdae035501cbb5d95e05f7d",
+    "ded80311e5d8ff245c7b6e62816f7cf21a1c3833",
     "4825d7ccb9d3c2118a7f054a06d06e63eee758c2",
     "5857d479bc0c8d0acdb87dc0933135c92f4e6feb",
     "38dc62b15b0a3c7fcc3ced1433695b75325031a2",
@@ -498,9 +500,7 @@
     "e7ad5341e910e6dcdcfcfee7b4a0cd3b386e3abb",
     "ea1db3ce1a050b53ef158a993b49093ecd2a2f81",
     "469321255f888ec166a8ce5807c63a467fcaa9c9",
-    "6fa949721e0dd1a9ee933d51dd8bfd1b3ad59160",
-    "d3c27bde7561977d6f4860b6f9d0391eb31b6bc2",
-    "a689c9e31228588c2a756447e3008715e27ba2ac"
+    "6fa949721e0dd1a9ee933d51dd8bfd1b3ad59160"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "white",
@@ -530,6 +530,24 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "352604345e69d7721bdae035501cbb5d95e05f7d",
+      "source": "Associated Press",
+      "title": "Trump calls Iran conflict ‘small potatoes’ and says he agrees with Vance that it’s not a ‘war’",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 20:21:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPTzBGbGQ2ZnhaeGhiZ3E0cEpWYnRpU0FtYTFQYlJUOWdkd0F5Y2lvczg0X0h0NTBRUkFXUkU1bWlwSnhtQng1dmtYY0JsVmFFYnpaNDVuMEJLMTROSXEtcUtPQndCdk0zRmNtQWFGdllDN2V5WGRmR0NWZHlQaWtBeFZMdmdGUVk?oc=5",
+      "checked_at": "2026-09-04T21:06:24.167732+00:00"
+    },
+    {
+      "key": "ded80311e5d8ff245c7b6e62816f7cf21a1c3833",
+      "source": "Times of Israel",
+      "title": "US slaps sanctions on Turkish bank, calling it ‘critical financial lifeline’ for Iran",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 16:47:14 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQVVhrZ05BOTdXRmVoY0JRcV80aGNHNF9mazQ0LWVQMHN5aVJLZUF0eVRHeUhGX180Mlo3MTZDVVpkdG1zX3pKZk9tbnFSc19OOVh1M2FUQm5SWlF1Y3JUbHRrYWNaNWpZOC1kVXY4WlBfMWxWNDF5VHpVUXFhLXdBdU1JU2E4cTZSM3JKdm9MT3V6OG9SM2QwaVNCSzZEaGxjN0oyR0V5MFQza29uRmE5N29WRdIBuAFBVV95cUxQVDFDZWxxNHpMd19ZY2N6LUZ3dTVLeHJZM3QySEJPa19KX3Q3Q01haUx2ZDJtMzFKSG9fVVNRYkRUeGZMUm1kLTlONHBpeFNTR1lwSl9SeExQLWpMVzlwZlJEb1JONEFqcGI2R3JoYkpOVHJqSEJQMGlsN0R4SGt6MjZpOGZqYTF3UG4xTmtGaVNiRjJHYWxCVXRPTy1KNjgzNWFNS3NYbU1UQUsyZXY0TEs2TGNPRmFV?oc=5",
+      "checked_at": "2026-09-04T21:03:24.167338+00:00"
+    },
     {
       "key": "4825d7ccb9d3c2118a7f054a06d06e63eee758c2",
       "source": "Fox News",
