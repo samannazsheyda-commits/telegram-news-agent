@@ -5,6 +5,8 @@ from html import escape
 
 from .sources import MarketSnapshot, NewsItem, TruthPost
 
+CHANNEL_URL = "https://t.me/bikhabaar"
+
 
 def _safe(value: str) -> str:
     return escape((value or "").strip(), quote=True)
@@ -15,9 +17,15 @@ def _norm(value: str) -> str:
     return re.sub(r"[^a-z0-9\u0600-\u06ff]+", " ", value.lower()).strip()
 
 
+def _brand_footer() -> list[str]:
+    return ["", f'<a href="{CHANNEL_URL}">بی‌خبر</a>', "رسانه خبر ایران"]
+
+
 def format_truth(post: TruthPost, persian_text: str) -> str:
     label = "🔁 بازنشر ترامپ در Truth Social | ایران" if post.is_retruth else "🇺🇸 ترامپ در Truth Social | ایران"
-    return f"{_safe(label)}\n\n{_safe(persian_text)}\n\n🔗 <a href=\"{_safe(post.url)}\">لینک پست</a>".strip()
+    parts = [f"{_safe(label)}", "", _safe(persian_text), "", f'🔗 <a href="{_safe(post.url)}">لینک پست</a>']
+    parts += _brand_footer()
+    return "\n".join(parts).strip()
 
 
 def format_news(item: NewsItem, title_fa: str, summary_fa: str) -> str:
@@ -34,6 +42,7 @@ def format_news(item: NewsItem, title_fa: str, summary_fa: str) -> str:
         parts += ["", _safe(summary_fa)]
     if item.link:
         parts += ["", f"منبع: {_safe(item.source)} | <a href=\"{_safe(item.link)}\">لینک خبر</a>"]
+    parts += _brand_footer()
     return "\n".join(parts).strip()
 
 
