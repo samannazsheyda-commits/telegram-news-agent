@@ -2,7 +2,7 @@
   {
     "id": "ffe6178d0fa0b28b190e3fcd287d2464e5c7e6dd",
     "kind": "telegram",
-    "name": "Tabz Live",
+    "name": "تبز لایو",
     "channel": "tabzlive",
     "active": true,
     "status": "reference",
@@ -11,7 +11,7 @@
   {
     "id": "0d773e49d3380aa50af60a0ba330dbe229a22488",
     "kind": "telegram",
-    "name": "The Cradle",
+    "name": "دِ کریدل",
     "channel": "thecradlemedia",
     "active": true,
     "status": "reference",
@@ -20,7 +20,7 @@
   {
     "id": "2a8bc21b3156cc672a0f3d18a354429db5fa1d94",
     "kind": "telegram",
-    "name": "Clash Report",
+    "name": "کلش ریپورت",
     "channel": "ClashReport",
     "active": true,
     "status": "reference",
