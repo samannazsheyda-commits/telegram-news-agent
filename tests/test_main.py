@@ -130,3 +130,36 @@ def test_market_is_suppressed_from_midnight_until_8am_tehran(tmp_path, monkeypat
     rc = main.run(datetime(2026, 9, 4, 22, 0, tzinfo=timezone.utc))
     assert rc == 0
     assert sent == []
+
+
+def test_semantic_duplicate_from_another_source_is_not_sent(tmp_path, monkeypatch):
+    state_path = tmp_path / "state.json"
+    state_path.write_text('{"truth_last_id":"10","news_seen":["reuters-original"],"market_last_sent_at":"2026-09-04T15:00:00+00:00"}', encoding="utf-8")
+    monkeypatch.setattr(main, "STATE_PATH", str(state_path))
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
+    monkeypatch.setattr(main, "fetch_truth_posts", lambda: [TruthPost("10", "", "old", "https://truth/10")])
+    monkeypatch.setattr(main, "fetch_news_items", lambda: [
+        NewsItem(
+            "reuters-original", "Reuters",
+            "Vance says Iran conflict is not a war but stops short of offering a timeline for its end",
+            "The vice president declined to give a timeline for ending the Iran conflict.",
+            "https://news/reuters", "Fri, 04 Sep 2026 15:20:00 GMT",
+        ),
+        NewsItem(
+            "cnn-duplicate", "CNN",
+            "JD Vance says Iran war has no timetable for ending",
+            "Vance said the US would not provide a timeline for the end of the conflict with Iran.",
+            "https://news/cnn", "Fri, 04 Sep 2026 15:35:00 GMT",
+        ),
+    ])
+    monkeypatch.setattr(main, "fetch_market_snapshot", lambda: (_ for _ in ()).throw(AssertionError("market should not run")))
+    monkeypatch.setattr(main, "translate_to_fa", lambda text: f"FA:{text}")
+    sent = []
+    monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
+
+    rc = main.run(datetime(2026, 9, 4, 16, 0, tzinfo=timezone.utc))
+    assert rc == 0
+    assert sent == []
+    state = main.load_state(state_path)
+    assert "cnn-duplicate" in state["news_seen"]
