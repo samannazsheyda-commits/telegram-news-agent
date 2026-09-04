@@ -15,6 +15,7 @@ def test_news_footer_has_clickable_bikhabar_and_tagline_after_source():
     assert '<a href="https://t.me/bikhabaar">بی‌خبر</a>' in text
     assert "مانیتور تحولات ایران" in text
     assert text.index("لینک خبر") < text.index("بی‌خبر")
+    assert "🛑" in text
 
 
 def test_truth_footer_has_clickable_bikhabar_and_tagline():
@@ -24,19 +25,22 @@ def test_truth_footer_has_clickable_bikhabar_and_tagline():
     assert "مانیتور تحولات ایران" in text
 
 
-def test_news_starts_with_topic_emoji_bold_title_and_terminal_punctuation():
+def test_news_uses_final_red_alert_style_and_bold_body():
     item = NewsItem("k", "Axios", "Iran missile attack", "missile strike", "https://example.com", "Fri, 04 Sep 2026 10:00:00 GMT")
     text = format_news(item, "حمله موشکی به ایران", "جزئیات حمله")
-    first_line = text.splitlines()[0]
-    assert first_line == "🚀 <b>حمله موشکی به ایران.</b>"
+    lines = text.splitlines()
+    assert lines[0] == "🔺♦️ <b>حمله موشکی به ایران.</b>"
+    assert "🟥 <b>جزئیات حمله.</b>" in text
+    assert "⏰" in text
+    assert "📌 منبع: Axios" in text
+    assert "🛑" in text
     assert "Axios | ایران" not in text
-    assert "🔗 منبع: Axios" in text
 
 
 def test_news_shows_source_publication_time_in_tehran_time():
     item = NewsItem("k", "Reuters", "Iran talks", "details", "https://example.com", "Fri, 04 Sep 2026 10:00:00 GMT")
     text = format_news(item, "مذاکرات ایران", "جزئیات")
-    assert "🕒" in text
+    assert "⏰" in text
     assert "۱۳:۳۰" in text
     assert "۱۴۰۵" in text
 
