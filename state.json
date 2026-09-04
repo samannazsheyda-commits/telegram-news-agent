@@ -1,6 +1,13 @@
 {
   "truth_last_id": "41514",
   "news_seen": [
+    "698895dc009843f2f8c35bbbbfc19148699911ae",
+    "b5c00534b981b30fb1118f3924e08f95fc6b16b3",
+    "c65761b442ef21db8a03c9876e342bcb76ae5ad4",
+    "1769740fbd151e4c6e45a97bf42cae2e5f40e9b8",
+    "b9bc3270e81593e5ed56f62821980492fa560aa8",
+    "c5ac52eb554ce1fe2b33b557b08f575be101bec9",
+    "fcc16622376cc6eceac0fb4cfd8dde3cd9cb707a",
     "69faa894fd0aa5ca4c4fe38c07f9385b17e1d596",
     "d70d8e0103454193e5286a5c8b8edd9251f3fb79",
     "6651d683c09b6e15520b101418da656cff64e3aa",
@@ -493,17 +500,10 @@
     "897aa19da00ce091fefeb3dacc05ecc19577f2b4",
     "efa4eb9ad944afa44825f1215e7e0a7c4dcedc9a",
     "8995780b25f5310b8673ac2837c8d7912040f24c",
-    "5a4e09c6fdd367305030d811087ce8e648408a0d",
-    "43ff281071c3687d8fbec4af09e291d24e3df8d2",
-    "cf9d2bce0b30a3c49b6c73c97c1085a51dce72f7",
-    "de7a0c683269823ea2b2f5ddd9fbc7b592b70fec",
-    "0052b02722a059961e5a9eff2314964c8f76f04c",
-    "c4eb1415bada777b29fc40e19c75297094144499",
-    "6bb955fbae1ac3a52cd7a8cdbfed6594ba6a792b",
-    "e3620141eed06fa358811ab7ed02798d80cf5479"
+    "5a4e09c6fdd367305030d811087ce8e648408a0d"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو ۲۰۷ دنده‌ای": 2210000000,
     "پژو ۲۰۷ اتومات": 2810000000,
