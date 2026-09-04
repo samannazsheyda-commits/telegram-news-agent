@@ -1,3 +1,4 @@
+import src.sources as sources
 from src.main import is_important_news
 from src.sources import (
     NEWS_QUERIES,
@@ -164,6 +165,37 @@ def test_parse_trumpstruth_rss_builds_stable_posts():
     assert posts[0].id == "40123"
     assert "Iran" in posts[0].text
     assert posts[0].url.endswith("/statuses/40123")
+
+
+def test_fetch_news_items_skips_failed_source_and_keeps_other_sources(monkeypatch):
+    good_xml = b'''<?xml version="1.0"?><rss><channel><item>
+      <title>Iran launches missile at target - Reuters</title>
+      <link>https://news.google.com/good</link>
+      <pubDate>Fri, 04 Sep 2026 16:00:00 GMT</pubDate>
+      <description>Iran missile attack confirmed.</description>
+      <source>Reuters</source>
+    </item></channel></rss>'''
+
+    class Response:
+        def __init__(self, content):
+            self.content = content
+        def raise_for_status(self):
+            return None
+
+    class Session:
+        calls = 0
+        @classmethod
+        def get(cls, *args, **kwargs):
+            cls.calls += 1
+            if cls.calls == 1:
+                raise RuntimeError("temporary source failure")
+            return Response(good_xml if cls.calls == 2 else b'<rss><channel></channel></rss>')
+
+    monkeypatch.setattr(sources, "NEWS_QUERIES", (("Axios", "q1", "en"), ("Reuters", "q2", "en")))
+    monkeypatch.setattr(sources, "SPECIAL_QUERIES", ())
+    items = sources.fetch_news_items(session=Session)
+    assert len(items) == 1
+    assert items[0].source == "Reuters"
 
 
 def test_parse_tgju_market_overview_rial_and_toman():
