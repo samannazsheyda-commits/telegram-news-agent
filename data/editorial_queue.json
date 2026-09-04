@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "78d18536e727cedfa00134d3296378af8811bef5",
+    "news_key": "05b2b4e7b84c26c3ee7fc4f79f7a8876f6fc0978",
+    "source": "France 24",
+    "source_url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQYUZEeXNnVENwSUpjVHoycUhUUG5sM3V3VUdXUGJUWDFUZTE2RG1vZEY0ZjFZbUd5YnZEQWQ4MU1WRTVnYzBNXzF2YXhBVmRLdEVNc3hiODdiMmVLenltOF9Hb000a2pMQks2dmRfbGtxX1JETlNMemNWQzdOYXV4UjYzRklfYnBsVHhaUW12ODNDUkpxZFE?oc=5",
+    "original_title": "Trump says Iran war is 'small potatoes' for US",
+    "original_summary": "Trump says Iran war is 'small potatoes' for US France 24",
+    "persian_title": "ترامپ می‌گوید جنگ با ایران برای آمریکا «مسئله‌ای کم‌اهمیت» است",
+    "persian_body": "",
+    "published_at_source": "Fri, 04 Sep 2026 20:51:13 GMT",
+    "discovered_at": "2026-09-04T21:22:47.109036+00:00",
+    "rejection_reason": "duplicate_or_redundant",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-04T21:23:02.913719+00:00"
+  }
+]
