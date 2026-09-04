@@ -42,12 +42,12 @@ IDIOM_REPAIRS: tuple[tuple[str, tuple[str, ...], str], ...] = (
     (
         "doubled down",
         ("دو برابر شد", "دو برابر کرد", "دوبل کرد", "دو برابر کرده است"),
-        "بر موضع خود پافشاری کرد",
+        "پافشاری کرد",
     ),
     (
         "walked back",
         ("راه رفت", "به عقب راه رفت", "عقب رفت"),
-        "از اظهارات قبلی خود عقب‌نشینی کرد",
+        "عقب‌نشینی کرد",
     ),
     (
         "the ball is now in iran's court",
@@ -136,6 +136,22 @@ def _repair_news_idioms(source: str, translated: str) -> str:
     if source_lower == "the president walked back his earlier remarks":
         return "رئیس‌جمهور از اظهارات قبلی خود عقب‌نشینی کرد"
 
+    if "doubled down" in source_lower:
+        match = re.match(
+            r"^(?P<subject>.+?)\s+(?:روی|بر)\s+(?P<object>.+?)\s+(?:دو برابر شد|دو برابر کرد|دو برابر کرده است|دوبل کرد)$",
+            value,
+        )
+        if match:
+            return _polish_fa(f"{match.group('subject')} بر {match.group('object')} پافشاری کرد")
+
+    if "walked back" in source_lower:
+        match = re.match(
+            r"^(?P<subject>.+?)\s+(?P<object>(?:اظهارات|نظرات|سخنان)[^،.!؟]{0,100}?)\s+را\s+(?:به عقب\s+)?(?:راه رفت|عقب رفت)$",
+            value,
+        )
+        if match:
+            return _polish_fa(f"{match.group('subject')} از {match.group('object')} عقب‌نشینی کرد")
+
     for idiom, bad_variants, replacement in IDIOM_REPAIRS:
         if idiom not in source_lower:
             continue
@@ -149,7 +165,8 @@ def _repair_news_idioms(source: str, translated: str) -> str:
         elif idiom == "doubled down" and not matched and "سیاست" in value and "ایران" in value:
             value = "دولت بر سیاست خود درباره ایران پافشاری کرد"
         elif idiom == "walked back" and not matched and "اظهارات" in value:
-            value = "رئیس‌جمهور از اظهارات قبلی خود عقب‌نشینی کرد"
+            value = re.sub(r"\s+را\s*$", "", value)
+            value = f"{value} عقب‌نشینی کرد"
         elif idiom in {"the ball is now in iran's court", "the ball is in iran's court"} and not matched and "زمین ایران" in value:
             value = "اکنون نوبت تصمیم‌گیری ایران است" if "now" in idiom else "نوبت تصمیم‌گیری ایران است"
     return _polish_fa(value)
