@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": "ffe6178d0fa0b28b190e3fcd287d2464e5c7e6dd",
+    "kind": "telegram",
+    "name": "Tabz Live",
+    "channel": "tabzlive",
+    "active": true,
+    "status": "reference",
+    "updated_at": "2026-09-05T00:00:00+00:00"
+  }
+]
