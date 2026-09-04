@@ -1,19 +1,23 @@
 import json
 from datetime import datetime, timezone
 
-import src.main as main
-from src.sources import NewsItem, TruthPost
+import src.runtime as runtime
+from src.sources import NewsItem
 
 
-def _wire(monkeypatch, state_path, items, sent):
-    monkeypatch.setattr(main, "STATE_PATH", str(state_path))
-    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token")
-    monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
-    monkeypatch.setattr(main, "fetch_truth_posts", lambda: [TruthPost("10", "", "old", "https://truth/10")])
-    monkeypatch.setattr(main, "fetch_news_items", lambda: items)
-    monkeypatch.setattr(main, "fetch_news_detail", lambda item: item.summary)
-    monkeypatch.setattr(main, "translate_to_fa", lambda text: text)
-    monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
+def _write_state(path, recent=None):
+    path.write_text(
+        json.dumps({
+            "truth_last_id": "10",
+            "news_seen": ["seed"],
+            "recent_published_news": recent or [],
+            "market_last_sent_at": "2026-09-04T21:00:00+00:00",
+            "car_last_sent_date": "2026-09-05",
+            "weather_noon_last_sent_date": "2026-09-05",
+            "weather_night_last_sent_date": "2026-09-05",
+        }),
+        encoding="utf-8",
+    )
 
 
 def test_same_trump_quote_from_new_source_is_suppressed_across_runs(tmp_path, monkeypatch):
@@ -34,42 +38,63 @@ def test_same_trump_quote_from_new_source_is_suppressed_across_runs(tmp_path, mo
         "https://news/bbc",
         "Fri, 04 Sep 2026 21:20:00 GMT",
     )
-    state_path.write_text(json.dumps({
-        "truth_last_id": "10",
-        "news_seen": ["fr24-small-potatoes"],
-        "recent_published_news": [{
-            "key": original.key,
-            "source": original.source,
-            "title": original.title,
-            "summary": original.summary,
-            "link": original.link,
-            "published": original.published,
-        }],
-        "market_last_sent_at": "2026-09-04T21:00:00+00:00",
-        "car_last_sent_date": "2026-09-05",
-        "weather_noon_last_sent_date": "2026-09-05",
-        "weather_night_last_sent_date": "2026-09-05",
-    }), encoding="utf-8")
-    sent = []
-    _wire(monkeypatch, state_path, [duplicate], sent)
+    _write_state(state_path, [{
+        "key": original.key,
+        "source": original.source,
+        "title": original.title,
+        "summary": original.summary,
+        "link": original.link,
+        "published": original.published,
+        "sent_at": "2026-09-04T21:00:00+00:00",
+    }])
+    monkeypatch.setattr(runtime.agent, "STATE_PATH", str(state_path))
+    monkeypatch.setattr(runtime, "_original_fetch_news_items", lambda: [duplicate])
+    monkeypatch.setattr(runtime, "fetch_custom_news_items", lambda: [])
+    monkeypatch.setattr(runtime, "_terminal_manual_keys", lambda: set())
 
-    assert main.run(datetime(2026, 9, 4, 22, 0, tzinfo=timezone.utc)) == 0
-    assert [x for x in sent if "لینک منبع خبر" in x] == []
-    state = main.load_state(state_path)
-    assert "bbc-small-potatoes" in state["news_seen"]
-    assert any(r["key"] == "bbc-small-potatoes" and r["reason"] == "duplicate_or_redundant" for r in state.get("news_rejections", []))
+    items = runtime._combined_fetch_news_items()
+    assert items == []
+
+
+def test_distinct_new_trump_development_is_not_suppressed(tmp_path, monkeypatch):
+    state_path = tmp_path / "state.json"
+    original = NewsItem(
+        "fr24-small-potatoes",
+        "France 24",
+        "Trump says war with Iran is small potatoes for America",
+        "Trump described the conflict with Iran as small potatoes for the United States.",
+        "https://news/fr24",
+        "Fri, 04 Sep 2026 20:21:00 GMT",
+    )
+    new_story = NewsItem(
+        "reuters-new-sanctions",
+        "Reuters",
+        "Trump announces new sanctions on Iran oil exports",
+        "The president announced a new sanctions package targeting Iranian oil exports.",
+        "https://news/reuters-new",
+        "Fri, 04 Sep 2026 21:30:00 GMT",
+    )
+    _write_state(state_path, [{
+        "key": original.key,
+        "source": original.source,
+        "title": original.title,
+        "summary": original.summary,
+        "link": original.link,
+        "published": original.published,
+        "sent_at": "2026-09-04T21:00:00+00:00",
+    }])
+    monkeypatch.setattr(runtime.agent, "STATE_PATH", str(state_path))
+    monkeypatch.setattr(runtime, "_original_fetch_news_items", lambda: [new_story])
+    monkeypatch.setattr(runtime, "fetch_custom_news_items", lambda: [])
+    monkeypatch.setattr(runtime, "_terminal_manual_keys", lambda: set())
+
+    items = runtime._combined_fetch_news_items()
+    assert [item.key for item in items] == ["reuters-new-sanctions"]
 
 
 def test_successful_publish_is_remembered_for_future_cross_run_dedup(tmp_path, monkeypatch):
     state_path = tmp_path / "state.json"
-    state_path.write_text(json.dumps({
-        "truth_last_id": "10",
-        "news_seen": ["seed"],
-        "market_last_sent_at": "2026-09-04T21:00:00+00:00",
-        "car_last_sent_date": "2026-09-05",
-        "weather_noon_last_sent_date": "2026-09-05",
-        "weather_night_last_sent_date": "2026-09-05",
-    }), encoding="utf-8")
+    _write_state(state_path)
     item = NewsItem(
         "fresh-story",
         "Reuters",
@@ -78,9 +103,13 @@ def test_successful_publish_is_remembered_for_future_cross_run_dedup(tmp_path, m
         "https://news/reuters",
         "Fri, 04 Sep 2026 21:30:00 GMT",
     )
-    sent = []
-    _wire(monkeypatch, state_path, [item], sent)
+    monkeypatch.setattr(runtime.agent, "STATE_PATH", str(state_path))
+    runtime._sent_news_items.clear()
+    runtime._sent_news_items.append(item)
 
-    assert main.run(datetime(2026, 9, 4, 22, 0, tzinfo=timezone.utc)) == 0
-    remembered = main.load_state(state_path).get("recent_published_news") or []
+    runtime._flush_recent_published(datetime(2026, 9, 4, 22, 0, tzinfo=timezone.utc))
+
+    remembered = runtime.agent.load_state(state_path).get("recent_published_news") or []
     assert remembered and remembered[0]["key"] == "fresh-story"
+    assert remembered[0]["sent_at"] == "2026-09-04T22:00:00+00:00"
+    assert runtime._sent_news_items == []
