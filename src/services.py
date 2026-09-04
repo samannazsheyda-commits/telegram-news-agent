@@ -109,6 +109,8 @@ def split_message(text: str, max_len: int = 3900) -> list[str]:
 
 
 def send_telegram(text: str, bot_token: str, chat_id: str, session=requests) -> None:
+    if not (text or "").strip():
+        return
     if not bot_token or not chat_id:
         raise RuntimeError("TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID are required")
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
