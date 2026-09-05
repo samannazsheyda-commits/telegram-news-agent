@@ -1,6 +1,11 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:JasonMBrodsky:2096236068605489648",
+    "x:Jerusalem_Post:2096235638844481952",
+    "x:ABC:2096233947432632693",
+    "x:AlArabiya_Eng:2096233858970644674",
+    "x:JasonMBrodsky:2096233709145837789",
     "x:Jerusalem_Post:2096233356946006101",
     "x:WSJ:2096232931391897853",
     "x:Reuters:2096226878893756830",
@@ -495,15 +500,10 @@
     "bca31812f91c8bcf14503625e755cbe0f2db4f97",
     "f8e779c120c3b20dfdb6f8997128d342d2c26f46",
     "b5c00534b981b30fb1118f3924e08f95fc6b16b3",
-    "13ca27e81a8f0a0136f0b380b6cf1a3ffb0ea004",
-    "26bfb2b3923d2ff893c765ac26ad39c71ba8359f",
-    "ea4cb0d02b481806b4594934cbdd002abe4e88c2",
-    "526d8258bd77ee6a9a371a120375105e706787d8",
-    "3909ab6e651ead62976895a42cfeaea4c90b01aa",
-    "ea7400718e87964b5a2c2483e03f3a288ca04e3b"
+    "13ca27e81a8f0a0136f0b380b6cf1a3ffb0ea004"
   ],
   "market_last_sent_at": "2026-09-05T12:47:38.071885+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -2343,6 +2343,56 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:JasonMBrodsky:2096236068605489648",
+      "source": "Jason Brodsky / X",
+      "title": "Two #Iran regime tankers disabled and one destroyed for a failed missile attack against two U.S. warships.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2096236068605489648",
+      "published": "Sat, 05 Sep 2026 13:56:39 +0000",
+      "sent_at": "2026-09-05T13:58:01.864842+00:00",
+      "fingerprint": "two iran regime tankers disabled and one destroyed for a failed missile attack against two u s warships"
+    },
+    {
+      "key": "x:Jerusalem_Post:2096235638844481952",
+      "source": "Jerusalem Post / X",
+      "title": "Tehran is seeking to close the coordination gap exposed by October 7, with Israeli assessments indicating Iran is working to synchronize its forces and regional allies for a multi-front attack on Israel.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096235638844481952",
+      "published": "Sat, 05 Sep 2026 13:54:57 +0000",
+      "sent_at": "2026-09-05T13:56:03.669970+00:00",
+      "fingerprint": "tehran is seeking to close the coordination gap exposed by october 7 with israeli assessments indicating iran is working to synchronize its forces and regional allies for a multi front attack on israel"
+    },
+    {
+      "key": "x:JasonMBrodsky:2096233709145837789",
+      "source": "Jason Brodsky / X",
+      "title": "Three #Iran regime tankers disabled for a failed missile attack against two U.S. warships.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2096233709145837789",
+      "published": "Sat, 05 Sep 2026 13:47:17 +0000",
+      "sent_at": "2026-09-05T13:55:11.486270+00:00",
+      "fingerprint": "three iran regime tankers disabled for a failed missile attack against two u s warships"
+    },
+    {
+      "key": "x:AlArabiya_Eng:2096233858970644674",
+      "source": "Al Arabiya English / X",
+      "title": "BREAKING: US forces struck three Iranian crude oil tankers on Saturday after Iran’s Revolutionary Guard Corps (IRGC) launched ballistic missiles toward two US Navy warships in regional waters, US Central Command (CENTCOM) says.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096233858970644674",
+      "published": "Sat, 05 Sep 2026 13:47:52 +0000",
+      "sent_at": "2026-09-05T13:55:11.486270+00:00",
+      "fingerprint": "breaking us forces struck three iranian crude oil tankers on saturday after iran s revolutionary guard corps irgc launched ballistic missiles toward two us navy warships in regional waters us central command centcom says"
+    },
+    {
+      "key": "x:ABC:2096233947432632693",
+      "source": "ABC News / X",
+      "title": "President Trump said the war in Iran is \"small potatoes\" and \"not a big thing\" for the U.S. and he brushed off comments from Vice President Vance who said he does not consider the Iran conflict to be a war. ABC News' @rachelvscott has the latest:",
+      "summary": "",
+      "link": "https://x.com/ABC/status/2096233947432632693",
+      "published": "Sat, 05 Sep 2026 13:48:13 +0000",
+      "sent_at": "2026-09-05T13:55:11.486270+00:00",
+      "fingerprint": "president trump said the war in iran is small potatoes and not a big thing for the u s and he brushed off comments from vice president vance who said he does not consider the iran conflict to be a war abc news rachelvscott has the latest"
+    },
     {
       "key": "x:Jerusalem_Post:2096233356946006101",
       "source": "Jerusalem Post / X",
