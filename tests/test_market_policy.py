@@ -17,7 +17,7 @@ def test_regular_market_is_blocked_before_8_tehran():
     assert not regular_market_allowed(at_0730, is_holiday=False)
 
 
-def test_daily_summary_is_due_at_23_only_for_same_day():
+def test_daily_summary_waits_until_2330_and_never_runs_at_midnight():
     from src.market_policy import market_summary_day
 
     state = {
@@ -29,9 +29,11 @@ def test_daily_summary_is_due_at_23_only_for_same_day():
             "last_gold": 19000000,
         }
     }
-    at_23 = datetime(2026, 9, 6, 19, 30, tzinfo=timezone.utc)
+    at_2300 = datetime(2026, 9, 6, 19, 30, tzinfo=timezone.utc)
+    at_2330 = datetime(2026, 9, 6, 20, 0, tzinfo=timezone.utc)
     at_midnight = datetime(2026, 9, 6, 20, 30, tzinfo=timezone.utc)
-    assert market_summary_day(state, at_23, is_holiday=False) == "2026-09-06"
+    assert market_summary_day(state, at_2300, is_holiday=False) is None
+    assert market_summary_day(state, at_2330, is_holiday=False) == "2026-09-06"
     assert market_summary_day(state, at_midnight, is_holiday=False) is None
 
 
@@ -48,6 +50,6 @@ def test_market_and_summary_are_blocked_on_holiday():
         }
     }
     at_10 = datetime(2026, 9, 6, 6, 30, tzinfo=timezone.utc)
-    at_23 = datetime(2026, 9, 6, 19, 30, tzinfo=timezone.utc)
+    at_2330 = datetime(2026, 9, 6, 20, 0, tzinfo=timezone.utc)
     assert not regular_market_allowed(at_10, is_holiday=True)
-    assert market_summary_day(state, at_23, is_holiday=True) is None
+    assert market_summary_day(state, at_2330, is_holiday=True) is None
