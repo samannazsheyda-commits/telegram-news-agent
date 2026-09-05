@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from . import runtime_v2 as v2
 from . import runtime_v6 as v6
 from .fresh_x import is_fresh_iran_topic
+from .persian_editor import edit_news_text, is_promotional_news_text
 
 _easy_news_flow_installed = False
 _original_strict_rejection = v2._strict_rejection_reason
@@ -16,6 +17,7 @@ _original_translate = v2.translate_news_to_fa
 _X_STATUS_RE = re.compile(r"^https?://(?:www\.)?(?:x\.com|twitter\.com)/[A-Za-z0-9_]+/status/\d+(?:[/?#].*)?$", re.I)
 _WEB_LINK_RE = re.compile(r"^https?://", re.I)
 _HEBREW_RE = re.compile(r"[\u0590-\u05FF]")
+_LATIN_WORD_RE = re.compile(r"\b[A-Za-z]{2,}\b")
 _FLAG_RE = re.compile(r"[\U0001F1E6-\U0001F1FF]{2}")
 _VISUAL_EMOJI_RE = re.compile(r"[\U0001F1E6-\U0001F1FF\U0001F300-\U0001FAFF\u2600-\u27BF\uFE0F\u200D]")
 _translation_cache: dict[str, str] = {}
@@ -47,8 +49,36 @@ def _is_x_item(item) -> bool:
     return str(getattr(item, "source", "")).endswith(" / X")
 
 
+def _is_telegram_item(item) -> bool:
+    source = str(getattr(item, "source", ""))
+    return source.endswith(" / Telegram") or source.endswith(" / تلگرام")
+
+
 def _published_dt(item):
     return v2.base.agent._published_dt(getattr(item, "published", "")) or datetime.min.replace(tzinfo=timezone.utc)
+
+
+def _source_text_for_editor(item) -> str:
+    summary = str(getattr(item, "summary", "") or "").strip()
+    title = str(getattr(item, "title", "") or "").strip()
+    if _is_telegram_item(item) and summary:
+        return summary
+    return title
+
+
+def _edited_title(item) -> str:
+    raw = _source_text_for_editor(item)
+    translated = _translate_or_original(raw)
+    if not translated:
+        return ""
+    edited = edit_news_text(raw, translated)
+    if not edited:
+        return ""
+    original_title = str(getattr(item, "title", "") or "").strip()
+    if original_title:
+        _translation_cache[original_title] = edited
+    _translation_cache[raw] = edited
+    return edited
 
 
 def _select_one_story(candidates, references):
@@ -59,10 +89,10 @@ def _select_one_story(candidates, references):
     ordered = sorted(candidates, key=lambda item: (_is_x_item(item), _published_dt(item)), reverse=True)
     selected = []
     for item in ordered:
-        title_fa = _translate_or_original(getattr(item, "title", ""))
+        title_fa = _edited_title(item)
         if not title_fa:
             continue
-        if not v2._original_news_format(item, title_fa, ""):
+        if not v2._original_news_format(_display_item(item), title_fa, ""):
             continue
         selected.append(item)
         if len(selected) >= 5:
@@ -87,8 +117,11 @@ def _easy_rejection_reason(item, now):
             return "invalid_publish_time"
         if not v2.base.agent._published_today(getattr(item, "published", ""), now):
             return "not_today_tehran"
-        if not is_fresh_iran_topic(f"{getattr(item, 'title', '')} {getattr(item, 'summary', '')}"):
+        raw = f"{getattr(item, 'title', '')} {getattr(item, 'summary', '')}"
+        if not is_fresh_iran_topic(raw):
             return "not_iran_related"
+        if is_promotional_news_text(raw):
+            return "promotional_or_non_news"
         return None
     return _original_strict_rejection(item, now)
 
@@ -110,7 +143,6 @@ def _persian_digits(value: str) -> str:
 
 
 def _repair_precise_translation(source: str, translated: str) -> str:
-    """Repair known literal machine translations where location meaning is distorted."""
     source_l = re.sub(r"\s+", " ", str(source or "").lower()).strip()
     tanker = re.search(r"\b(\d+)\s+tankers?\s+(?:above|near|around)\s+(?:the\s+)?strait of hormuz\b", source_l)
     qatar_israel = re.search(r"\b(\d+)\s+from qatar\s*[,;]\s*(\d+)\s+from israel\b", source_l)
@@ -152,7 +184,7 @@ def _strip_visual_emojis(value: str) -> str:
 
 def _display_item(item):
     source = str(getattr(item, "source", "") or "")
-    display_source = source.replace(" / Telegram", " / تلگرام")
+    display_source = source.replace(" / Telegram", " / تلگرام").replace(" / X", " / ایکس")
     return replace(item, source=display_source) if display_source != source else item
 
 
@@ -182,6 +214,9 @@ def _format_news_with_footer_icons(item, title_fa: str, summary_fa: str, marker_
 
     clean_title = _strip_visual_emojis(title_fa)
     clean_summary = _strip_visual_emojis(summary_fa)
+    if _LATIN_WORD_RE.search(clean_title) or _LATIN_WORD_RE.search(clean_summary):
+        return ""
+
     display_item = _display_item(item)
     text = v2._original_news_format(display_item, clean_title, clean_summary, marker_override=marker_override)
     if not text:
@@ -192,6 +227,7 @@ def _format_news_with_footer_icons(item, title_fa: str, summary_fa: str, marker_
     if marker_match:
         text = text[marker_match.end():]
     text = re.sub(r"\n\n(?:▫️|🟥)\s+(?=<b>)", "\n\n", text)
+    text = text.replace(" / Telegram", " / تلگرام").replace(" / X", " / ایکس")
 
     flags = _country_flags(item, clean_title, clean_summary)
     icons = _topic_icons(item, clean_title, clean_summary)
