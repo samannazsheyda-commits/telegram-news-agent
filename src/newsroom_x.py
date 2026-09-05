@@ -6,6 +6,7 @@ from .sources import NewsItem, _fetch_google_news_query
 
 
 _BUILTIN_X_NEWSROOMS = (
+    # Global newsrooms
     ("Reuters", "@Reuters"),
     ("Associated Press", "@AP"),
     ("AFP", "@AFP"),
@@ -14,15 +15,62 @@ _BUILTIN_X_NEWSROOMS = (
     ("France 24", "@FRANCE24"),
     ("Al Jazeera English", "@AJEnglish"),
     ("Al Arabiya English", "@AlArabiya_Eng"),
+    ("The New York Times", "@nytimes"),
+    ("NYT World", "@nytimesworld"),
+    ("Bloomberg", "@business"),
+    ("Financial Times", "@FT"),
+    ("Sky News", "@SkyNews"),
+    ("NBC News", "@NBCNews"),
+    ("CBS News", "@CBSNews"),
+    ("ABC News", "@ABC"),
+    ("Fox News", "@FoxNews"),
+    ("DW News", "@dwnews"),
+    ("The Guardian", "@guardian"),
+    ("Washington Post", "@washingtonpost"),
+    ("Wall Street Journal", "@WSJ"),
     ("Times of Israel", "@TimesofIsrael"),
     ("Haaretz", "@haaretzcom"),
     ("Axios", "@axios"),
+    ("Jerusalem Post", "@Jerusalem_Post"),
+    ("Israel Hayom", "@IsraelHayomEng"),
+    # Israel: officials, military and TV newsrooms
+    ("Benjamin Netanyahu", "@netanyahu"),
+    ("Israel Katz", "@Israel_katz"),
+    ("KAN 11", "@kann_news"),
+    ("N12", "@N12News"),
+    ("Channel 13", "@newsisrael13"),
+    ("Channel 14", "@C14_news"),
+    ("IDF", "@IDF"),
+    # US: officials and institutions relevant to Iran/security/sanctions
+    ("CENTCOM", "@CENTCOM"),
+    ("US Treasury", "@USTreasury"),
+    ("Scott Bessent", "@SecScottBessent"),
+    ("US Secretary of Defense", "@SecDef"),
+    ("US State Department", "@StateDept"),
+    ("State Department Spokesperson", "@statedeptspox"),
+    ("White House", "@WhiteHouse"),
+    # Foreign commentators/reporters with recurring Iran coverage
+    ("Mark Levin", "@marklevinshow"),
+    ("Jason Brodsky", "@JasonMBrodsky"),
+    # Iranian newsrooms only (not Iranian commentators)
+    ("Tasnim Persian", "@Tasnimnews_Fa"),
+    ("Tasnim English", "@Tasnimnews_EN"),
 )
 
 _X_IRAN_QUERY = (
-    "(Iran OR Iranian OR Tehran OR IRGC OR Quds OR Hormuz OR missile OR drone OR nuclear "
-    "OR Israel OR Lebanon OR Hezbollah OR sanctions OR airspace OR NOTAM)"
+    '(Iran OR Iranian OR Tehran OR IRGC OR "Quds Force" OR Hormuz OR "Persian Gulf" OR "Gulf of Oman" '
+    'OR "Arabian Sea" OR "Abraham Lincoln" OR "USS Boxer" OR "carrier strike group" OR carrier OR destroyer '
+    'OR submarine OR "Fifth Fleet" OR NAVCENT OR minelaying OR "mine laying" OR "naval mine" '
+    'OR "mine countermeasures" OR "Al Udeid" OR "Al Dhafra" OR Bahrain OR Qatar OR Kuwait OR "Diego Garcia" '
+    'OR missile OR "ballistic missile" OR "cruise missile" OR drone OR nuclear OR enrichment OR uranium '
+    'OR centrifuge OR IAEA OR Grossi OR inspector OR Fordow OR Natanz OR Isfahan OR Arak OR sanctions OR OFAC '
+    'OR "frozen funds" OR "blocked funds" OR "blocked Iranian funds" OR oil OR tanker OR shipping '
+    'OR Israel OR Netanyahu OR "Israel Katz" OR Lebanon OR Hezbollah OR airspace OR NOTAM)'
 )
+
+
+def x_monitor_query() -> str:
+    return _X_IRAN_QUERY
 
 
 def builtin_x_news_sources() -> tuple[dict[str, str], ...]:
@@ -37,10 +85,10 @@ def _default_searcher(source: dict[str, str], session=requests) -> list[NewsItem
 
 
 def fetch_builtin_x_news_items(*, searcher=None, session=requests) -> list[NewsItem]:
-    """Best-effort monitoring of official newsroom posts indexed from X.
+    """Best-effort monitoring of selected X accounts for Iran-relevant posts.
 
-    X posts are treated as fast editorial signals. They still pass the agent's
-    normal freshness, Iran relevance, deduplication and translation gates.
+    Only posts matching the broad Iran/security topic query enter this stream. The
+    runtime still enforces freshness, Iran relevance and cross-source deduplication.
     """
     merged: dict[str, NewsItem] = {}
     for source in builtin_x_news_sources():
