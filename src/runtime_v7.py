@@ -82,7 +82,7 @@ def _edited_title(item) -> str:
 
 
 def _select_one_story(candidates, references):
-    """Choose up to five publishable candidates, prioritizing X posts first."""
+    """Return every publishable candidate from the current scan; do not hold news for a later cycle."""
     _translation_cache.clear()
     if not candidates:
         return [], []
@@ -95,8 +95,6 @@ def _select_one_story(candidates, references):
         if not v2._original_news_format(_display_item(item), title_fa, ""):
             continue
         selected.append(item)
-        if len(selected) >= 5:
-            break
     return selected, []
 
 
