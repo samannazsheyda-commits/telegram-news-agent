@@ -14,6 +14,28 @@ def test_easy_flow_accepts_x_without_editorial_rejection():
     assert v7._easy_rejection_reason(item, datetime(2026, 9, 5, tzinfo=timezone.utc)) is None
 
 
+def test_easy_flow_rejects_x_post_without_iran_anchor():
+    from src import runtime_v7 as v7
+
+    item = NewsItem(
+        "x:kann:1",
+        "KAN 11 / X",
+        "שגריר ארה\"ב בישראל במהלך ביקורו בכפר הפלסטיני ליד רמאללה",
+        "",
+        "https://x.com/kann_news/status/1",
+        "Sat, 05 Sep 2026 08:00:00 +0000",
+    )
+    assert v7._easy_rejection_reason(item, datetime(2026, 9, 5, tzinfo=timezone.utc)) == "not_iran_related"
+
+
+def test_translation_failure_does_not_fall_back_to_hebrew(monkeypatch):
+    from src import runtime_v7 as v7
+
+    monkeypatch.setattr(v7, "_original_translate", lambda value, session=None: "")
+    hebrew = "שגריר ארה\"ב בישראל"
+    assert v7._translate_or_original(hebrew) == ""
+
+
 def test_install_easy_flow_wires_policy_without_leaking_after_test(monkeypatch):
     from src import runtime_v7 as v7
 
