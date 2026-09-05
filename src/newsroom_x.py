@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import requests
 
+from . import formatters as _formatters
 from .sources import NewsItem, _fetch_google_news_query
 
 
@@ -37,6 +38,31 @@ _BUILTIN_X_NEWSROOMS = (
     # Iranian newsrooms only — no Iranian commentators
     ("Tasnim Persian", "@Tasnimnews_Fa"), ("Tasnim English", "@Tasnimnews_EN"),
 )
+
+_PERSIAN_SOURCE_NAMES = {
+    "Reuters": "رویترز", "Associated Press": "آسوشیتدپرس", "AFP": "خبرگزاری فرانسه",
+    "BBC World": "بی‌بی‌سی ورلد", "CNN": "سی‌ان‌ان", "France 24": "فرانس ۲۴",
+    "Al Jazeera English": "الجزیره انگلیسی", "Al Arabiya English": "العربیه انگلیسی",
+    "The New York Times": "نیویورک تایمز", "NYT World": "نیویورک تایمز جهان",
+    "Bloomberg": "بلومبرگ", "Financial Times": "فایننشال تایمز", "Sky News": "اسکای نیوز",
+    "NBC News": "ان‌بی‌سی نیوز", "CBS News": "سی‌بی‌اس نیوز", "ABC News": "ای‌بی‌سی نیوز",
+    "Fox News": "فاکس نیوز", "DW News": "دویچه‌وله", "The Guardian": "گاردین",
+    "Washington Post": "واشنگتن پست", "Wall Street Journal": "وال‌استریت ژورنال",
+    "The Economist": "اکونومیست", "Times of Israel": "تایمز اسرائیل", "Haaretz": "هاآرتص",
+    "Axios": "اکسیوس", "Jerusalem Post": "جروزالم پست", "Israel Hayom": "اسرائیل هیوم",
+    "Benjamin Netanyahu": "بنیامین نتانیاهو", "Israel Katz": "اسرائیل کاتز",
+    "KAN 11": "کانال ۱۱ اسرائیل", "N12": "کانال ۱۲ اسرائیل", "Channel 13": "کانال ۱۳ اسرائیل",
+    "Channel 14": "کانال ۱۴ اسرائیل", "IDF": "ارتش اسرائیل", "CENTCOM": "سنتکام",
+    "US Treasury": "وزارت خزانه‌داری آمریکا", "Scott Bessent": "اسکات بسنت",
+    "Pete Hegseth": "پیت هگست", "Marco Rubio": "مارکو روبیو", "JD Vance": "جی‌دی ونس",
+    "US State Department": "وزارت خارجه آمریکا", "State Department Spokesperson": "سخنگوی وزارت خارجه آمریکا",
+    "White House": "کاخ سفید", "Mark Levin": "مارک لوین", "Jason Brodsky": "جیسون برادسکی",
+    "Mark Dubowitz": "مارک دوبوویتز", "Emanuel Fabian": "امانوئل فابیان", "Seth Frantzman": "ست فرانتزمن",
+    "Jonathan Conricus": "جاناتان کانریکوس", "Michael Doran": "مایکل دوران", "Jennifer Hansler": "جنیفر هنسلر",
+    "Joe Truzman": "جو تروزمن", "Tasnim Persian": "تسنیم", "Tasnim English": "تسنیم انگلیسی",
+}
+for _name, _fa in _PERSIAN_SOURCE_NAMES.items():
+    _formatters.SOURCE_FA[f"{_name} / X"] = f"{_fa} / ایکس"
 
 _X_IRAN_QUERY = (
     '(Iran OR Iranian OR Tehran OR IRGC OR "Quds Force" OR Hormuz OR "Persian Gulf" OR "Gulf of Oman" '
