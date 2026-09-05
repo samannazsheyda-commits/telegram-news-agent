@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:BBCWorld:2096246356931137577",
+    "x:FoxNews:2096245958044496255",
+    "x:axios:2096245475439485318",
     "x:CNN:2096241541916352728",
     "x:AJEnglish:2096240934996611380",
     "7c2dcffdf2c02da08652931143a7a53884b1534e",
@@ -497,13 +500,10 @@
     "d4106c8996feaeee45352b970123995282d29a70",
     "ab7714cf653c0b5b67d3dcd08b8da688d8bb5f91",
     "ca59bac4f0b3c7336ccb72cdefcccc5a5e5bada6",
-    "d036bb56984d0acd9bf5a048b70a738b992b3df9",
-    "5de176a78f0b1daf3a7cd68b2c051736142dfc02",
-    "256af0b97d7e8571dfeb77c94d932bc94f9b6365",
-    "9c81fc976d8f69c34c983388f9edf7e3fcb94a03"
+    "d036bb56984d0acd9bf5a048b70a738b992b3df9"
   ],
   "market_last_sent_at": "2026-09-05T12:47:38.071885+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -2343,6 +2343,36 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:BBCWorld:2096246356931137577",
+      "source": "BBC World / X",
+      "title": "US hits 3 Iranian oil tankers after saying its warships were targeted",
+      "summary": "",
+      "link": "https://x.com/BBCWorld/status/2096246356931137577",
+      "published": "Sat, 05 Sep 2026 14:37:32 +0000",
+      "sent_at": "2026-09-05T14:39:13.681077+00:00",
+      "fingerprint": "us hits 3 iranian oil tankers after saying its warships were targeted"
+    },
+    {
+      "key": "x:FoxNews:2096245958044496255",
+      "source": "Fox News / X",
+      "title": "BREAKING: U.S. Central Command confirms the U.S. struck three Iranian oil tankers in response to Iran targeting U.S. Navy warships. @AlexHoganTV has the latest | @SatAmericaFNC",
+      "summary": "",
+      "link": "https://x.com/FoxNews/status/2096245958044496255",
+      "published": "Sat, 05 Sep 2026 14:35:57 +0000",
+      "sent_at": "2026-09-05T14:37:05.593778+00:00",
+      "fingerprint": "breaking u s central command confirms the u s struck three iranian oil tankers in response to iran targeting u s navy warships alexhogantv has the latest satamericafnc"
+    },
+    {
+      "key": "x:axios:2096245475439485318",
+      "source": "Axios / X",
+      "title": "U.S. attacks 3 Iranian tankers in tit-for-tat response",
+      "summary": "",
+      "link": "https://x.com/axios/status/2096245475439485318",
+      "published": "Sat, 05 Sep 2026 14:34:02 +0000",
+      "sent_at": "2026-09-05T14:35:57.489277+00:00",
+      "fingerprint": "u s attacks 3 iranian tankers in tit for tat response"
+    },
     {
       "key": "x:AJEnglish:2096240934996611380",
       "source": "Al Jazeera English / X",
