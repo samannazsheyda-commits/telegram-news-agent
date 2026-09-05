@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:JasonMBrodsky:2096198565404025262",
     "x:JasonMBrodsky:2096190282983247876",
     "x:business:2096191671138451479",
     "b7f38256245730b44d39bd30364b452854d7ac99",
@@ -499,11 +500,10 @@
     "5fd5c1268e4be22ee14d61ccc4e42cc782d5db2a",
     "9f7d9983e91d04112d1dcc234859060b41c5d8e3",
     "d737534fd2f114c34cc5b0cef034b26f56e86fbc",
-    "08f201f0c92aee4ef45a2955bb251f52c5734107",
-    "655ea31b926011e25493d8179881483c449c1530"
+    "08f201f0c92aee4ef45a2955bb251f52c5734107"
   ],
   "market_last_sent_at": "2026-09-05T10:44:48.152950+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -2343,6 +2343,15 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:JasonMBrodsky:2096198565404025262",
+      "source": "Jason Brodsky / X",
+      "title": "Can’t make it up. #Iran’s regime’s Chief Justice Gholamhossein Mohseni Ejei, one of the most notorious Islamic Republic officials who has carried out record levels of executions and once bit a reporter, is in #India for a BRICS judicial summit lecturing on human dignity. Sadly unsurprising India gave him a visa as India abstained from even voting for an UNHRC fact finding mission into Mahsa Amini’s murder. But still. This is shameless.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2096198565404025262",
+      "published": "Sat, 05 Sep 2026 11:27:38 +0000",
+      "sent_at": "2026-09-05T11:28:43.937871+00:00"
+    },
     {
       "key": "x:JasonMBrodsky:2096190282983247876",
       "source": "Jason Brodsky / X",
