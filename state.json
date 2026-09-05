@@ -1,6 +1,11 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "6e6fccc5d6a3c970b7869c05e5c890ca4a45955c",
+    "41ca397a3b6de6b3a374b6247e5380a6245d3fb1",
+    "6ea4f6b2095e271d9a6d40e2bd216daa7670f6ac",
+    "4d9208b705368e30e1816e208dd095a090cc995f",
+    "a5d1715c786dadfc4a7125dd6df6e0bbe29b7301",
     "71aec9738198d25d012982d252fe3c4b5d5333ea",
     "2bf4795617a3a4276c15dc1d8a2c00d29b1019d6",
     "f95511e02754a491e12c9c79e635b578593099b2",
@@ -495,12 +500,7 @@
     "0d8ac1a775653b8e2d169c98208a6502d7fdb507",
     "035642786db1c3042b28252a3b94d2006982bd88",
     "ee5ae2415f8d020fa42a754d265667c9d76847fe",
-    "00041968f4177392a8945a1956fe1d1a55df3182",
-    "1f604ad950069882b872a12749d28ce7dcddcd81",
-    "87ba9ada61906abf442b0c29073f32cf667d48ab",
-    "29278ca1c172238cb020f377471a787f63c18601",
-    "7f0dd58d0d6ee362ba004eda7038346fdf68fb61",
-    "65319cbd7bfecad16a0d9eb078f3faed6f79d253"
+    "00041968f4177392a8945a1956fe1d1a55df3182"
   ],
   "market_last_sent_at": "2026-09-05T16:50:16.078276+00:00",
   "next_news_color": "white",
@@ -540,6 +540,33 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "6e6fccc5d6a3c970b7869c05e5c890ca4a45955c",
+      "source": "NOTAM / Airspace",
+      "title": "Iran reopens parts of airspace and some airports from Saturday morning - Iran International",
+      "reason": "not_today_tehran",
+      "published": "Sat, 18 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTFBGbjAwYnBOdkR6Q2FSTmJ5c0wxSWUzQTZOVTAtb1FUWmQxMDlublZyRjhlc0NFbXRLX3BZS3VWdFpkMTJ3WDNlRG5adTRWUUFBOXc?oc=5",
+      "checked_at": "2026-09-05T17:19:10.548997+00:00"
+    },
+    {
+      "key": "41ca397a3b6de6b3a374b6247e5380a6245d3fb1",
+      "source": "Times of Israel",
+      "title": "Israel's airspace remains open amid Iranian ballistic missile attack, Transportation Ministry says",
+      "reason": "not_today_tehran",
+      "published": "Sun, 07 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxON1pMUkNjYzdlRGN3bDZqWkpKQlBPMk01T0ppRHhzT3RWSWprTFVTU3BWU3lIdkhySHUyNDVPV3RrdVZndDFYUmhITkdoN1VNWWdsbFBmWEgxQ0ZBMmp2RnFvcjBqa3cxaXVTZ2w5eWJFeHhpUDZ0TmhzeGo2NjNKaXlXWmVXZm5JeFB3Z2ZtVGNyalRZUnY1R0JJNy1yWGpMT2JPS3BCX0RtSmZPRmpxTkhodWNfWnFrMWYyNGxVZWIwc240VmtBU3kwVnNtcTg?oc=5",
+      "checked_at": "2026-09-05T17:19:10.548997+00:00"
+    },
+    {
+      "key": "6ea4f6b2095e271d9a6d40e2bd216daa7670f6ac",
+      "source": "NOTAM / Airspace",
+      "title": "Qatar Restricts Flights Through Airspace as Iran Vows Retaliation For Israeli Strikes On Beirut - PYOK",
+      "reason": "not_today_tehran",
+      "published": "Sun, 07 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxQa1ExVGhlNm8wNFpyZmVwbkpkOG1VNGVkRzIzTEczNktrSlpaVWh4b2xBNEExdk1yM01iMy11RjNGSkc0RmxzN295MHY4ZnlRelVGX0tZcTNyejFPRjE5TWRSTEpwVGNGVWxrdHBhR1NPZl91X29mVnZBMGpTaGRfdTl5c0UxVXp6eW1vYzBiemV0R2VaRVVfdk8wd2VWcTBTWkFfaDd1VmVRWFVpa19iczloenRPVHVQQjFETVFQOVk1akR2QzhCb283RDZxYVhTaGtIeUhZc1ZRWjA?oc=5",
+      "checked_at": "2026-09-05T17:19:10.548997+00:00"
+    },
     {
       "key": "71aec9738198d25d012982d252fe3c4b5d5333ea",
       "source": "NBC News",
@@ -2312,37 +2339,30 @@
       "published": "Thu, 03 Sep 2026 17:44:05 +0000",
       "link": "https://x.com/statedeptspox/status/2095568528007127326",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:statedeptspox:2095946450375233872",
-      "source": "State Department Spokesperson / X",
-      "title": "The U.S. is cutting off the Iranian regime’s access to the global financial system. New Treasury sanctions on Türkiye-based Golden Global Bank mark the latest action in Operation Economic Outcast. Any entity laundering funds or evading sanctions for the Iranian regime risks losing access to the U.S. financial system.",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 18:45:49 +0000",
-      "link": "https://x.com/statedeptspox/status/2095946450375233872",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:StateDept:2095212662422376755",
-      "source": "US State Department / X",
-      "title": "SECRETARY RUBIO on VENEZUELA OIL DEAL: Obviously, it will have some short-term benefits. But it also ensures that the United States, not China, Russia, or Iran, will have a position with regard to the largest oil producer in our hemisphere.",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 18:10:00 +0000",
-      "link": "https://x.com/StateDept/status/2095212662422376755",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:SecScottBessent:2095654604943815139",
-      "source": "Scott Bessent / X",
-      "title": "The European Union has officially joined Operation Economic Outcast and we appreciate their strong and early stance. The United States stands firm with our allies in ensuring the murderous Iranian regime cannot exploit the global financial system to fund its nuclear ambitions, weapons programs, and terror proxies. The world is sending a clear message to the Iranian regime: We will not stop until every remaining financial lifeline has been severed.",
-      "reason": "not_today_tehran",
-      "published": "Thu, 03 Sep 2026 23:26:07 +0000",
-      "link": "https://x.com/SecScottBessent/status/2095654604943815139",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "a5d1715c786dadfc4a7125dd6df6e0bbe29b7301",
+      "source": "ژئوپی واچ / Telegram",
+      "title": "🇺🇸 ❌ 🇮🇷 - 5 Tankers above the Strait of Hormuz. 3 from Qatar, 2 from Israel.",
+      "summary": "🇺🇸 ❌ 🇮🇷 - 5 Tankers above the Strait of Hormuz. 3 from Qatar, 2 from Israel.",
+      "link": "https://t.me/GeoPWatch/39534",
+      "published": "Sat, 05 Sep 2026 17:10:32 +0000",
+      "sent_at": "2026-09-05T17:19:10.544681+00:00",
+      "fingerprint": "5 tankers above the strait of hormuz 3 from qatar 2 from israel 5 tankers above the strait of hormuz 3 from qatar 2 from israel"
+    },
+    {
+      "key": "4d9208b705368e30e1816e208dd095a090cc995f",
+      "source": "ژئوپی واچ / Telegram",
+      "title": "🇮🇷 💥 - Unconfirmed reports of explosions heard from Qeshm Island and Missile Launches from Iran towards the Strait of Hormuz.",
+      "summary": "🇮🇷 💥 - Unconfirmed reports of explosions heard from Qeshm Island and Missile Launches from Iran towards the Strait of Hormuz.",
+      "link": "https://t.me/GeoPWatch/39535",
+      "published": "Sat, 05 Sep 2026 17:12:04 +0000",
+      "sent_at": "2026-09-05T17:19:10.544681+00:00",
+      "fingerprint": "unconfirmed reports of explosions heard from qeshm island and missile launches from iran towards the strait of hormuz unconfirmed reports of explosions heard from qeshm island and missile launches from iran towards the strait of hormuz"
+    },
     {
       "key": "x:CENTCOM:2096247889366290840",
       "source": "CENTCOM / X",
