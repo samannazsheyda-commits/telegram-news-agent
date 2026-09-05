@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-import src.runtime as runtime
+import src.runtime_v2 as runtime
 from src.news_context import fetch_news_detail_enriched
 from src.sources import NewsItem
 
@@ -99,4 +99,4 @@ def test_priority_news_from_two_days_ago_is_not_republished_as_fresh_news():
         "Wed, 02 Sep 2026 07:10:00 GMT",
     )
     now = datetime(2026, 9, 4, 12, 0, tzinfo=timezone.utc)
-    assert runtime._priority_rejection_reason(item, now) == "not_today_tehran"
+    assert runtime._strict_rejection_reason(item, now) == "not_today_tehran"
