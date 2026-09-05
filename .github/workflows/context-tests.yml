@@ -17,4 +17,4 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
       - name: Run context regression tests
-        run: python -m pytest -q tests/test_news_context_enrichment.py tests/test_services.py
+        run: python -m pytest -q tests/test_news_context_enrichment.py tests/test_services.py tests/test_x_priority_sources.py
