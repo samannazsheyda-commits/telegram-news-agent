@@ -12,41 +12,6 @@ CAR_SOURCE_NAME = "ماشین۳"
 CHANNEL_URL = "https://t.me/bikhabaar"
 USER_AGENT = "Mozilla/5.0 (compatible; TelegramNewsAgent/2.0)"
 
-# Curated high-volume / high-liquidity models commonly traded in Iran. Each entry
-# is only posted when a matching live row exists on the source page.
-TARGET_MODELS: tuple[tuple[str, tuple[str, ...]], ...] = (
-    ("پراید ۱۵۱", ("پراید 151", "سایپا 151")),
-    ("پژو ۲۰۷ دنده‌ای", ("پژو 207 دنده‌ای (برقی)", "پژو 207 دنده‌ای (هیدرولیک)", "پژو 207 دنده‌ای")),
-    ("پژو ۲۰۷ اتومات", ("پژو 207 اتوماتیک", "پژو 207 اتومات")),
-    ("پژو ۲۰۷ TU3", ("پژو 207 TU3", "207 TU3")),
-    ("دنا پلاس توربو اتومات", ("دنا پلاس اتوماتیک", "دنا پلاس توربو اتوماتیک")),
-    ("دنا پلاس ۶ دنده", ("دنا پلاس MT6", "دنا پلاس 6 دنده")),
-    ("تارا V1", ("تارا دستی V1", "تارا V1")),
-    ("تارا V4 اتومات", ("تارا اتوماتیک V4", "تارا V4")),
-    ("سورن پلاس", ("سورن پلاس TU5P", "سورن پلاس XU7P", "سورن پلاس")),
-    ("سورن پلاس دوگانه‌سوز", ("سورن پلاس دوگانه سوز", "سورن دوگانه")),
-    ("رانا پلاس", ("رانا پلاس",)),
-    ("شاهین G", ("شاهین G",)),
-    ("شاهین اتومات", ("شاهین اتومات", "شاهین اتوماتیک")),
-    ("شاهین پلاس", ("شاهین پلاس",)),
-    ("کوییک S", ("کوییک S", "کوییک اس")),
-    ("کوییک GX", ("کوییک GX",)),
-    ("کوییک GXR", ("کوییک GXR",)),
-    ("ساینا S", ("ساینا S",)),
-    ("ساینا GX", ("ساینا GX", "ساینا دوگانه GX")),
-    ("اطلس G", ("اطلس G", "اطلس")),
-    ("سهند S", ("سهند S", "سهند")),
-    ("ری‌را", ("ری را", "ری‌را", "ریرا")),
-    ("هایما S5", ("هایما S5",)),
-    ("هایما S7", ("هایما S7",)),
-    ("هایما 8S", ("هایما 8S", "هایما S8")),
-    ("فیدلیتی پرایم", ("فیدلیتی پرایم", "فیدلیتی 5 نفره", "فیدلیتی 7 نفره")),
-    ("دیگنیتی پرایم", ("دیگنیتی پرایم", "دیگنیتی")),
-    ("آریزو ۵", ("آریزو 5", "آریزو5")),
-    ("ام‌وی‌ام X22 Pro", ("X22 Pro", "X22 پرو", "ام وی ام X22")),
-    ("آریسان ۲", ("آریسان 2", "آریسان")),
-)
-
 PERSIAN_TO_ASCII = str.maketrans("۰۱۲۳۴۵۶۷۸۹٬", "0123456789,")
 
 
@@ -54,12 +19,6 @@ PERSIAN_TO_ASCII = str.maketrans("۰۱۲۳۴۵۶۷۸۹٬", "0123456789,")
 class CarPrice:
     name: str
     market_toman: int
-
-
-def _norm(text: str) -> str:
-    text = (text or "").translate(PERSIAN_TO_ASCII)
-    text = text.replace("ي", "ی").replace("ك", "ک")
-    return re.sub(r"\s+", " ", text).strip().lower()
 
 
 def _parse_price(text: str) -> int | None:
@@ -72,38 +31,17 @@ def _parse_price(text: str) -> int | None:
 
 def parse_car_prices(html: str) -> list[CarPrice]:
     soup = BeautifulSoup(html or "", "html.parser")
-    rows: list[tuple[str, int]] = []
+    result: list[CarPrice] = []
     for tr in soup.find_all("tr"):
         cells = [c.get_text(" ", strip=True) for c in tr.find_all(["td", "th"])]
         if len(cells) < 2:
             continue
+        name = cells[0].strip()
         price = _parse_price(cells[1])
-        if price:
-            rows.append((cells[0], price))
-    if not rows:
+        if name and price:
+            result.append(CarPrice(name, price))
+    if not result:
         raise ValueError("car price table not found")
-
-    result: list[CarPrice] = []
-    used_rows: set[int] = set()
-    for display, aliases in TARGET_MODELS:
-        best: tuple[int, int] | None = None
-        for idx, (row_name, price) in enumerate(rows):
-            if idx in used_rows:
-                continue
-            rn = _norm(row_name)
-            for rank, alias in enumerate(aliases):
-                an = _norm(alias)
-                if an == rn or an in rn:
-                    candidate = (rank, idx)
-                    if best is None or candidate < best:
-                        best = candidate
-                    break
-        if best is not None:
-            _, idx = best
-            used_rows.add(idx)
-            result.append(CarPrice(display, rows[idx][1]))
-    if len(result) < 8:
-        raise ValueError(f"too few target car prices found: {len(result)}")
     return result
 
 
