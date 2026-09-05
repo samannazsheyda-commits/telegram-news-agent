@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "bb72c3e3d18cf43a9a3c5dc73853823e0feed85a",
     "10c2064a817cb0025d0566572c13ccf7c3360a62",
     "77552fc5107aff588ed597aec7f34bd70167e4a0",
     "c2e341b47a8f9c93466c9f488d8d5633a4be1811",
@@ -499,8 +500,7 @@
     "0bd97af35e6648770e57f629b4d2eb36f545fc6a",
     "f5f50907839d0492e09fda4043828f7f420d9932",
     "f02a9d8756e603fbd79ffa2aa584cd21dfc279e4",
-    "d0804f9568ce0212b1546ca1753937196b15331e",
-    "a4a389747b108657e13bdc007197764ee4934437"
+    "d0804f9568ce0212b1546ca1753937196b15331e"
   ],
   "market_last_sent_at": "2026-09-05T06:37:39.475345+00:00",
   "next_news_color": "white",
@@ -534,6 +534,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "bb72c3e3d18cf43a9a3c5dc73853823e0feed85a",
+      "source": "Abbas Araghchi / X",
+      "title": "In Iran, an official could never travel to another country to collude with a foreign spy service on how to \"coach\" our own President into doing bidding of foreigners. We would ask what the foreign country may have on that official. And promptly charge him/her with",
+      "reason": "not_today_tehran",
+      "published": "Sun, 08 Mar 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9BakxFd2lXa3pWNTJ2Y2ZPbVl4WWZjc3VCQ2xKLWlRTmxtZkJOZEFEaE1tZVh4TERhNGxQRFczY2dMS0Y0TGV3a0hLRkx1QjlzUmdNdXBoWkhvUkM0bnc?oc=5",
+      "checked_at": "2026-09-05T07:00:34.650269+00:00"
+    },
     {
       "key": "10c2064a817cb0025d0566572c13ccf7c3360a62",
       "source": "NOTAM / Airspace",
@@ -2323,15 +2332,6 @@
       "reason": "not_today_tehran",
       "published": "Fri, 21 Aug 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNTUg2U0Y4M3hyc25yWmk2ckFfRHROdFdmR2pRajRSSF9Nd3pvT0Y2dFlpcHoyWC1JR0Z3a1BMMGhMWmUyMmdUX2lhY05RX1A3RTF5cTBZT0FDN3A5RkJfd2xwcjk4U0U3RmN1eERNQW1CZ2FjUTdMZm55bXU0MWJtNEltZHZBbEF6TGs2UVJWRmRzbGdkTzBoaC1lNWhaa1J1OGtqMlZTWU01S03SAbABQVVfeXFMTXNrZTIycjJkbHBCNWpHd0tjUkFXNF8xZW90b2d5RmQxTEZYM2oxM3AydVpqQVd2X2U1V3V3MHEwTzUtUkxjVl9Rd1dmZlpzZTFDNElBTmlSb0F3a0RXN0xSZnlLT1JyWlpjcW1pSWx5V0RoVUhyYXRVTkVSVG1Pc054Q0lZOGpvTk5sTThSemdtVHM1TV9RRjhqT0lCelpPU29BTG1FMTlpY2lvbDhoZDQ?oc=5",
-      "checked_at": "2026-09-05T05:47:05.823045+00:00"
-    },
-    {
-      "key": "708f10aebbdf31659c773949d9616df2f776304b",
-      "source": "Al Jazeera",
-      "title": "US Secretary of State say Iran is in ‘a lot of trouble’",
-      "reason": "not_today_tehran",
-      "published": "Wed, 22 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPMmphT2VRenVjMVNpVVlkbnVBZk84c1VCd0tPWmstTlphT2kyWDVEc24xa2hxYTZiUWZRbnlkemtRbGQwOG1felpsd1lZVjdxLTBSS2RDU1lOT0pZUnhwMnB1QjZEQ2RpU3J6UlhSWi1pRWhpNHNHR1FZZms5NmNRNkQ1ZHAxSGJFdEw1MEVVQ2JHQ09kY19aZnFnc3HSAaIBQVVfeXFMTl9MQy1Rcm5mNlBGdE9Nd25NX182cGNmdUlnRmhSWWtGZG9ja1ljWFZmMlJXOV9YSldScDNjWWd0U0xraDhYenZ1bXBQejZMNFBmS1I3WjUyOXU1RlpwMjl1cURhSUM1ZkhXdmxSLVhrd1BDTmRDRFZGTkQxNTBnejFsRUpwUHVrLUU1eUhlQ2xiQWZNNDFtdjRIM1hQQl9yWWFR?oc=5",
       "checked_at": "2026-09-05T05:47:05.823045+00:00"
     }
   ],
