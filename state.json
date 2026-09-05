@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:Reuters:2096226878893756830",
     "583b9814f26fe38fcbcbb405aa5fd98207294721",
     "x:AJEnglish:2096219775902892094",
     "x:TankerTrackers:2096215788063498460",
@@ -499,11 +500,10 @@
     "3909ab6e651ead62976895a42cfeaea4c90b01aa",
     "ea7400718e87964b5a2c2483e03f3a288ca04e3b",
     "178935397b2becb00fc2c7f99dfac200dc82631c",
-    "c602c7e71b9c2cb313b38a3a07ead04e8937bdd0",
-    "bf8b48d6e1f74c820cf911904a7406586f3f0d70"
+    "c602c7e71b9c2cb313b38a3a07ead04e8937bdd0"
   ],
   "market_last_sent_at": "2026-09-05T12:47:38.071885+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -2343,6 +2343,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:Reuters:2096226878893756830",
+      "source": "Reuters / X",
+      "title": "Iranian tanker hit by US attack near Iran's Kharg Island, Tasnim says",
+      "summary": "",
+      "link": "https://x.com/Reuters/status/2096226878893756830",
+      "published": "Sat, 05 Sep 2026 13:20:08 +0000",
+      "sent_at": "2026-09-05T13:21:20.715401+00:00",
+      "fingerprint": "iranian tanker hit by us attack near iran s kharg island tasnim says"
+    },
     {
       "key": "x:AJEnglish:2096219775902892094",
       "source": "Al Jazeera English / X",
