@@ -50,6 +50,12 @@ jobs:
       - name: Restore production runtime state after tests
         run: git restore --source=HEAD -- state.json data/editorial_queue.json data/editorial_history.json
 
+      - name: Publish one-off simplified market summary
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: "@bikhabaar"
+        run: python -m src.publish_once_market
+
       - name: Run near-realtime monitor
         id: monitor
         env:
