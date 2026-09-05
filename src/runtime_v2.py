@@ -8,13 +8,19 @@ from . import runtime as base
 from . import services
 from . import sources
 from .news_context import fetch_news_detail_enriched
-from .newsroom_x import fetch_builtin_x_news_items
+from .newsroom_x import fetch_builtin_x_news_items, is_monitored_x_topic
+from .oil import OilSnapshot, fetch_oil_snapshot, format_oil_lines
 
 
 _original_generic_fetch = base._original_fetch_news_items
 _original_custom_fetch = base.fetch_custom_news_items
 _original_priority_score = base._priority_event_priority
+_original_market_fetch = base.agent.fetch_market_snapshot
+_original_market_format = base.agent.format_market
+_original_market_daily_format = base.agent.format_market_daily_summary
+_original_record_market = base.agent._record_market_snapshot
 _x_news_keys: set[str] = set()
+_market_hooks_installed = False
 
 _X_SOURCE_FA = {
     "Reuters / X": "رویترز / ایکس",
@@ -25,9 +31,42 @@ _X_SOURCE_FA = {
     "France 24 / X": "فرانس ۲۴ / ایکس",
     "Al Jazeera English / X": "الجزیره انگلیسی / ایکس",
     "Al Arabiya English / X": "العربیه انگلیسی / ایکس",
+    "The New York Times / X": "نیویورک تایمز / ایکس",
+    "NYT World / X": "نیویورک تایمز جهان / ایکس",
+    "Bloomberg / X": "بلومبرگ / ایکس",
+    "Financial Times / X": "فایننشال تایمز / ایکس",
+    "Sky News / X": "اسکای نیوز / ایکس",
+    "NBC News / X": "ان‌بی‌سی نیوز / ایکس",
+    "CBS News / X": "سی‌بی‌اس نیوز / ایکس",
+    "ABC News / X": "ای‌بی‌سی نیوز / ایکس",
+    "Fox News / X": "فاکس نیوز / ایکس",
+    "DW News / X": "دویچه‌وله / ایکس",
+    "The Guardian / X": "گاردین / ایکس",
+    "Washington Post / X": "واشنگتن پست / ایکس",
+    "Wall Street Journal / X": "وال‌استریت ژورنال / ایکس",
     "Times of Israel / X": "تایمز اسرائیل / ایکس",
     "Haaretz / X": "هاآرتص / ایکس",
     "Axios / X": "اکسیوس / ایکس",
+    "Jerusalem Post / X": "جروزالم پست / ایکس",
+    "Israel Hayom / X": "اسرائیل هیوم / ایکس",
+    "Benjamin Netanyahu / X": "بنیامین نتانیاهو / ایکس",
+    "Israel Katz / X": "اسرائیل کاتز / ایکس",
+    "KAN 11 / X": "کانال ۱۱ اسرائیل / ایکس",
+    "N12 / X": "کانال ۱۲ اسرائیل / ایکس",
+    "Channel 13 / X": "کانال ۱۳ اسرائیل / ایکس",
+    "Channel 14 / X": "کانال ۱۴ اسرائیل / ایکس",
+    "IDF / X": "ارتش اسرائیل / ایکس",
+    "CENTCOM / X": "سنتکام / ایکس",
+    "US Treasury / X": "وزارت خزانه‌داری آمریکا / ایکس",
+    "Scott Bessent / X": "اسکات بسنت / ایکس",
+    "US Secretary of Defense / X": "وزیر دفاع آمریکا / ایکس",
+    "US State Department / X": "وزارت خارجه آمریکا / ایکس",
+    "State Department Spokesperson / X": "سخنگوی وزارت خارجه آمریکا / ایکس",
+    "White House / X": "کاخ سفید / ایکس",
+    "Mark Levin / X": "مارک لوین / ایکس",
+    "Jason Brodsky / X": "جیسون برادسکی / ایکس",
+    "Tasnim Persian / X": "تسنیم / ایکس",
+    "Tasnim English / X": "تسنیم انگلیسی / ایکس",
 }
 base.news_formatters.SOURCE_FA.update(_X_SOURCE_FA)
 
@@ -42,7 +81,6 @@ _PRESERVED_SPECIAL_SOURCES = {
 
 
 def translate_news_to_fa(text: str, session=None) -> str:
-    """Translate mixed English/Persian headlines instead of accepting them as Persian."""
     value = (text or "").strip()
     if not value:
         return ""
@@ -51,7 +89,6 @@ def translate_news_to_fa(text: str, session=None) -> str:
     mostly_latin = bool(latin_words) and (not words or len(latin_words) / len(words) > 0.30)
     if not mostly_latin:
         return services.translate_to_fa(value, session=session or services.requests)
-
     translation_session = session or services.requests
     for translator in (services._google_translate, services._mymemory_translate):
         try:
@@ -65,7 +102,6 @@ def translate_news_to_fa(text: str, session=None) -> str:
 
 
 def _x_first_fetch_news_items():
-    """Fetch only the official newsroom X stream, never the newsroom websites."""
     global _x_news_keys
     try:
         x_items = fetch_builtin_x_news_items()
@@ -83,11 +119,7 @@ def _fetch_preserved_special_items() -> list:
             continue
         try:
             items = sources._fetch_google_news_query(
-                sources.requests,
-                source_name,
-                query,
-                lang,
-                allow_special_source=True,
+                sources.requests, source_name, query, lang, allow_special_source=True,
             )
         except Exception as exc:
             print(f"Special source error ({source_name}): {exc}", file=sys.stderr)
@@ -116,10 +148,7 @@ def _no_priority_web_news() -> list:
 
 def _is_newsroom_x(item) -> bool:
     return item.source.endswith(" / X") and item.source not in {
-        "Barak Ravid / X",
-        "Abbas Araghchi / X",
-        "Mohsen Rezaei / X",
-        "Sepah News / X",
+        "Barak Ravid / X", "Abbas Araghchi / X", "Mohsen Rezaei / X", "Sepah News / X",
     }
 
 
@@ -129,7 +158,7 @@ def _strict_rejection_reason(item, now: datetime):
             return "invalid_publish_time"
         if not base.agent._published_today(item.published, now):
             return "not_today_tehran"
-        if not base.agent.is_iran_related(f"{item.title} {item.summary}"):
+        if not is_monitored_x_topic(f"{item.title} {item.summary}"):
             return "low_signal_or_unapproved_source"
         return None
     return base._original_news_rejection_reason(item, now)
@@ -143,12 +172,96 @@ def _priority_event_priority(item) -> int:
 
 
 def fetch_news_detail_x_only(item, session=None) -> str:
-    """Newsroom X items publish the tweet text only; non-X alerts keep normal detail enrichment."""
     if item.source.endswith(" / X"):
         return ""
     if session is None:
         return fetch_news_detail_enriched(item)
     return fetch_news_detail_enriched(item, session=session)
+
+
+def _fetch_market_with_oil():
+    snapshot = _original_market_fetch()
+    oil = fetch_oil_snapshot()
+    object.__setattr__(snapshot, "brent_usd", oil.brent_usd)
+    object.__setattr__(snapshot, "wti_usd", oil.wti_usd)
+    return snapshot
+
+
+def _insert_before_timestamp(text: str, extra_lines: list[str]) -> str:
+    if not extra_lines:
+        return text
+    marker = "\n⏰ "
+    block = "\n" + "\n".join(extra_lines) + "\n"
+    if marker in text:
+        return text.replace(marker, block + "⏰ ", 1)
+    return text + block.rstrip()
+
+
+def _format_market_with_oil(snapshot, now=None) -> str:
+    text = _original_market_format(snapshot, now)
+    oil = OilSnapshot(getattr(snapshot, "brent_usd", None), getattr(snapshot, "wti_usd", None))
+    lines = format_oil_lines(oil)
+    if lines:
+        lines.append('📌 منبع نفت: Yahoo Finance')
+    return _insert_before_timestamp(text, lines)
+
+
+def _record_market_with_oil(state: dict, snapshot, now: datetime) -> None:
+    _original_record_market(state, snapshot, now)
+    data = state.get("market_day_prices") or {}
+    for key in ("brent", "wti"):
+        value = getattr(snapshot, f"{key}_usd", None)
+        if value is None:
+            continue
+        first_key, last_key = f"first_{key}", f"last_{key}"
+        if data.get(first_key) is None:
+            data[first_key] = float(value)
+        data[last_key] = float(value)
+    state["market_day_prices"] = data
+
+
+def _oil_daily_lines(label: str, first: float | None, last: float | None) -> list[str]:
+    if first is None or last is None:
+        return []
+    diff = last - first
+    pct = 0.0 if first == 0 else abs(diff) / first * 100
+    if diff > 0:
+        change = f"▲ ${abs(diff):,.2f} | {pct:.2f}٪ افزایش"
+    elif diff < 0:
+        change = f"▼ ${abs(diff):,.2f} | {pct:.2f}٪ کاهش"
+    else:
+        change = "— بدون تغییر"
+    return [f"🛢 <b>{label}</b>", f"${first:,.2f} ← ${last:,.2f} / بشکه", change]
+
+
+def _format_market_daily_with_oil(first_usd, last_usd, first_gold, last_gold, now=None) -> str:
+    text = _original_market_daily_format(first_usd, last_usd, first_gold, last_gold, now)
+    try:
+        state = base.agent.load_state(base.agent.STATE_PATH)
+        data = state.get("market_day_prices") or {}
+    except Exception:
+        data = {}
+    extra: list[str] = []
+    for label, key in (("نفت برنت", "brent"), ("نفت WTI", "wti")):
+        lines = _oil_daily_lines(label, data.get(f"first_{key}"), data.get(f"last_{key}"))
+        if lines:
+            if extra:
+                extra.append("")
+            extra.extend(lines)
+    if extra:
+        extra.extend(["", "📌 منبع نفت: Yahoo Finance"])
+    return _insert_before_timestamp(text, extra)
+
+
+def _install_market_hooks() -> None:
+    global _market_hooks_installed
+    if _market_hooks_installed:
+        return
+    base.agent.fetch_market_snapshot = _fetch_market_with_oil
+    base.agent.format_market = _format_market_with_oil
+    base.agent._record_market_snapshot = _record_market_with_oil
+    base.agent.format_market_daily_summary = _format_market_daily_with_oil
+    _market_hooks_installed = True
 
 
 def install_integrations() -> None:
@@ -159,6 +272,7 @@ def install_integrations() -> None:
     base._priority_event_priority = _priority_event_priority
     base.agent.fetch_news_detail = fetch_news_detail_x_only
     base.agent.translate_to_fa = translate_news_to_fa
+    _install_market_hooks()
     base.install_integrations()
 
 
@@ -176,7 +290,6 @@ def run(now: datetime | None = None) -> int:
 
 def monitor_loop(poll_seconds: int = 60, session_seconds: int = 240) -> int:
     import time
-
     poll_seconds = max(1, int(poll_seconds))
     session_seconds = max(poll_seconds, int(session_seconds))
     started = time.monotonic()
@@ -195,7 +308,6 @@ def monitor_loop(poll_seconds: int = 60, session_seconds: int = 240) -> int:
 
 def _cli() -> int:
     import os
-
     if "--monitor" in sys.argv[1:]:
         return monitor_loop(
             poll_seconds=int(os.environ.get("POLL_SECONDS", "60")),
