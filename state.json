@@ -1,6 +1,11 @@
 {
   "truth_last_id": "41522",
   "news_seen": [
+    "4fc9f03c89e8bd0d2dd4484b780735a99f70c5c8",
+    "d861c60b008153b6c7eae70970d794a7672941d4",
+    "76d2830d2edefd93a7a447e7128b58af6c5d1427",
+    "d036bb56984d0acd9bf5a048b70a738b992b3df9",
+    "4312c57ea4afd4cf5fab4f6f8df1e2a9025ac4df",
     "5de176a78f0b1daf3a7cd68b2c051736142dfc02",
     "742cd8dbd3904c134e081c767da73dafc2bcf217",
     "9a3042c31d73aada8517b8bfa38faf4ffd88e625",
@@ -495,12 +500,7 @@
     "6c8c6948716be8b25f26c9acff2c0426633e375c",
     "8631ca4fa0ab47072c3e2b33fa94554cf151ec9a",
     "c052b66457058460797d97d743a95ca3fb84c145",
-    "dacd9419f44f1cf2861f27bf12708e321c05e7f0",
-    "e7e23842aa42fa7e9418d6aaf0e515af8bcdbe52",
-    "4fc9f03c89e8bd0d2dd4484b780735a99f70c5c8",
-    "d861c60b008153b6c7eae70970d794a7672941d4",
-    "76d2830d2edefd93a7a447e7128b58af6c5d1427",
-    "0a3d6c54b420dfc5c030cda165d3e27ecb722106"
+    "dacd9419f44f1cf2861f27bf12708e321c05e7f0"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "white",
@@ -530,6 +530,51 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "4fc9f03c89e8bd0d2dd4484b780735a99f70c5c8",
+      "source": "ABC News",
+      "title": "US vice-president says Iran conflict not a war - ABC News & Headlines - Australian Broadcasting Corporation",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 22:32:59 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOa1FCbUhna1pGME5ZbWVuSS1rNll2STB4amlvOFJHc0stanJmd09BZEd5S19oYmVSREU3bjFIRE5PdkZBUE54TnI0ZzNfNVFtSTJ1NDdRRDZUeWRBSFM4VEh0QllSOWNVRjc5X2N5N2hKRkZ5dkt0cTZoTDg1S3VUTmxjam92dkJ2?oc=5",
+      "checked_at": "2026-09-05T01:05:14.744157+00:00"
+    },
+    {
+      "key": "d861c60b008153b6c7eae70970d794a7672941d4",
+      "source": "ABC News",
+      "title": "'A big piece of our hearts left this earth': Military families reflect on service members killed, injured in Iran war",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 14:45:30 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNSzJWcmVEeGZUdnNJbkdEZXJVSXdZSHJTNUphSjBXRDNLbnBqbTNXYm1jM25LU0gtelZ0d2FTX2FNRHFGQTc2OUN5TnhibUpWbU1aQ2xZcjdYX2UyaDNJOVhjOU5CZWI4MlJkWF9wOEp3U1pHVTF4V0ZCcDZCTTVHZWVlYVF5aHFyX1hlbU94UW1ya0tibllWMmpMaEd4VE5Oc3BZ0gGoAUFVX3lxTE5GVnZNemM2TUZwdTF2c0ZPeUV2T1NjbGxZOFc4Vk12OFVjUEF2LXJZbzdNajhlYnFBcldmYWhUalZfZ01HZE1TakpsaHV4SkttOEFrQWNUejlINngteDRRTFNVNGQyQ2Q1UXhQeXhKZDhNSkRweXpybW84NFhFUzUyMGFNUUQ0NUNteUdiVFM0bHR3b3c4Mjdtb2JvQ2ZPNGJuSWkwRy1mVg?oc=5",
+      "checked_at": "2026-09-05T01:04:14.744014+00:00"
+    },
+    {
+      "key": "76d2830d2edefd93a7a447e7128b58af6c5d1427",
+      "source": "Al Arabiya",
+      "title": "Fire breaks out at Kuwait airport after reported strike - VIDEO",
+      "reason": "not_today_tehran",
+      "published": "Sat, 28 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxPNl9zTlk2ZVByaUw0NUxHRWxrc3EyOTBGbXpBTGNtaTUwTllRR2JoQi1iaFh5b0J3YWdwRU9GTEFKSmVTS3BSaGlxTXFsaGNXU3c3OEdMQ3FOZ0pleVI4MHlkQkFrQVUtcWhTREJ2eUNWbllJN1VoVUQ2TlJNd05mTzF0NDlVVmY1SGc?oc=5",
+      "checked_at": "2026-09-05T01:03:14.743930+00:00"
+    },
+    {
+      "key": "d036bb56984d0acd9bf5a048b70a738b992b3df9",
+      "source": "TankerTrackers",
+      "title": "Crude oil exports via the Strait of Hormuz per our tracking: - Pre-conflict era (2026-01-01 to 2026-02-28): 16.63 Mbpd - Pre-US blockade conflict era (2026-02-28 to 2026-04-13): 3.45 Mbpd - First US blockade (2026-04-13 to 2026-06-18): 2.72 Mbpd - MoU effe",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 14:25:50 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBFZl9jRWtQdUZOYzYwZ2dHTUtoRDA2WUl1VUxfaVJrR0NkNDUzM3ZUVld0YXh5Vk00TkxXR0ZMZWtoSzZhZ0hpbmZyZ3ExX3lVSmsybm9IbjB2b044OU9LVy1oWFd6QQ?oc=5",
+      "checked_at": "2026-09-05T01:02:14.743733+00:00"
+    },
+    {
+      "key": "4312c57ea4afd4cf5fab4f6f8df1e2a9025ac4df",
+      "source": "CNN",
+      "title": "Trump warns Iran of harsher strikes if it retaliates against ‘justified attack’ by US",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 18:14:54 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNcURITjZ0bXRINU5yRFRnOEhJMkZ6STUtVFl3M041VmNTak5VOXFMaDl2ekp0NTgxRk01Y202ODlOcGJScWEzc2hOelVKcEZVU0NUTnVsbFFhRWlLbkp4Y0lqR3EzSGRDOEoxZXYxZkJHeHA5eVhuNG9aNjVDekpuZUw1RE1FUW5xNktVbm9Obzl5NUpEYmZtZVFFUEFPdVQtVHVV?oc=5",
+      "checked_at": "2026-09-05T01:02:14.743733+00:00"
+    },
     {
       "key": "5de176a78f0b1daf3a7cd68b2c051736142dfc02",
       "source": "Barak Ravid / X",
@@ -2283,51 +2328,6 @@
       "reason": "not_today_tehran",
       "published": "Fri, 22 May 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQamZXLVdEMmlQVnlvNUZqdHc1X0lhTldqd3JDY2lKT1lhUmJLREJQOGROUlI1YmEydEpBd2d1YlRGVWtIVm84elg4WlFtaUpZU3RMaTJUdUhZOTM1RVJHTkJLOG0ya2tGdEY5T0p2TmZXaE9DZHo1Qk9xcDhua1BoTFhEODNhcVltLTdwR2hpZkFTU3JUS3d4Z3luMGw?oc=5",
-      "checked_at": "2026-09-04T22:27:40.315473+00:00"
-    },
-    {
-      "key": "4aa3ca1235b3159c72f44b2b07b7499ae3457d07",
-      "source": "NOTAM / Airspace",
-      "title": "Iran’s IRGC claims downing of US drone, warns against ceasefire violations - Türkiye Today",
-      "reason": "not_today_tehran",
-      "published": "Tue, 26 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPdXBjMWZjWEc5Vy1nRFMwMUxzbmJ3M3JFOWNaMGkxb3Q4UEswbWVRSE5jbE14M1Qzd1MwcWVjcG1qYjdkQS1iN1dyOU01TUd2VXRQNnA5RjIwbFdLaHRTUk13M3NfUmlpQVNhbFlRWHpzaUN5c0tOOWotS1NMRzV0TmxPNlJhV050cF9LLTNNRlhRRFAtdXVudw?oc=5",
-      "checked_at": "2026-09-04T22:27:40.315473+00:00"
-    },
-    {
-      "key": "10ce583c1fc3591eacf34e0c872f310a62a16b2e",
-      "source": "NOTAM / Airspace",
-      "title": "IRGC says it downed US MQ-9 drone over Persian Gulf - Iran International",
-      "reason": "not_today_tehran",
-      "published": "Tue, 26 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE8xemVLXzU2Q1lnM3ExQmFPM3JaTEJVOXN6d1Q2NW1BZlNQVG9qNHhSbE1EbU5pUGhHUXQwdWI4YlBFYS1fNWVWQWMwWWhocUk1cUE?oc=5",
-      "checked_at": "2026-09-04T22:27:40.315473+00:00"
-    },
-    {
-      "key": "3d860604179b0326d7b01590113e0a522c10b3b1",
-      "source": "NOTAM / Airspace",
-      "title": "Egypt condemns Iranian attacks violating Jordanian airspace - Egypt Today",
-      "reason": "not_today_tehran",
-      "published": "Thu, 09 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNRDNqSnd0cUw3bUhrUXNTbjBhVEJ6XzcxY1pCS0FhT3dyanhtOFQwb1ExOEdmSTRMbUVyZm9pbVhIMzRaRzNfdFMzTmc2SmVkOThQWXA0b3lFSk9EaXlwekpmeHF1Zkx4ZGFQdm8xXzJWcUlrYkxnSk9LdUNsNTY3dU93TGJQWWJHZVg2UjVRRWstRHRodThtc2ZEdWdNTmVzM2h3Ry1n?oc=5",
-      "checked_at": "2026-09-04T22:27:40.315473+00:00"
-    },
-    {
-      "key": "b1607ee8d30f15df24023068730e78e38b907048",
-      "source": "Barak Ravid / X",
-      "title": "A U.S. official told me on Tuesday that the new strikes degraded Iran's attack capabilities in the strait and \"bought at least a month\" of lowered threat levels for commercial ships",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 01:53:22 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFA1eTdIeGtCZTNBTi1yMlRvZzlVWlpsZUVOTEFqZ2hTUmExNGdsSC1iNnJRRGxfbDFlLXl6QjJWeHE3djRqVkU3eDFabklrRHJQeVdxeDAxbzNucTBKV3hjSA?oc=5",
-      "checked_at": "2026-09-04T22:27:40.315473+00:00"
-    },
-    {
-      "key": "4041e4700d04d3303ad2fb4ff5c35a8920501dda",
-      "source": "Reuters",
-      "title": "US probes Iran wedding strike that analysis shows was likely direct hit by US munition",
-      "reason": "not_today_tehran",
-      "published": "Thu, 03 Sep 2026 23:57:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiywFBVV95cUxPdWJyTEVVNzlNV2lCVktTZkk3dHZpYUFndlRkdTVXMzlnR0hEMXZYVnN5U3V5dC1JMEpWVDMwZng4YjhUc3pfOVpiNWNwdDRwbHY1TFhMLWZFZFh3YlF2SVEwYnJjNGkzTlpGR0hsRkwyMkQ4QVRSdmV4Ykxtd0xZamtOYkNNUV90TzhWdnF5ejhGRGhxSHgtcmp0SGdFVkhUa2owblM0QnN0aDRpeXlnRlBHUDdqZnE5TmRjd2FuR1dyVE5qY3VsNFJHWQ?oc=5",
       "checked_at": "2026-09-04T22:27:40.315473+00:00"
     }
   ],
