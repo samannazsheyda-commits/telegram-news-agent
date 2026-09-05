@@ -1,6 +1,10 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "469321255f888ec166a8ce5807c63a467fcaa9c9",
+    "6fa949721e0dd1a9ee933d51dd8bfd1b3ad59160",
+    "d3c27bde7561977d6f4860b6f9d0391eb31b6bc2",
+    "37351fe08aef8ca94454d7f30d60e2e4946b5b5d",
     "5093c35c0a22149ed36a4544a7e8cea1c8d30d42",
     "0a3d6c54b420dfc5c030cda165d3e27ecb722106",
     "c8cfae484e130fa2623103653635b4523c799281",
@@ -496,11 +500,7 @@
     "3eaeea04753586803e4ececf2c4cc1a4b46b499f",
     "447ee29b1aaf3dfcaadda5594617d9648f339fba",
     "f1e7e685c1caacfebdb7bc4d911bdde6206a00b5",
-    "e7ad5341e910e6dcdcfcfee7b4a0cd3b386e3abb",
-    "ea1db3ce1a050b53ef158a993b49093ecd2a2f81",
-    "469321255f888ec166a8ce5807c63a467fcaa9c9",
-    "6fa949721e0dd1a9ee933d51dd8bfd1b3ad59160",
-    "d3c27bde7561977d6f4860b6f9d0391eb31b6bc2"
+    "e7ad5341e910e6dcdcfcfee7b4a0cd3b386e3abb"
   ],
   "market_last_sent_at": "2026-09-05T04:34:33.611150+00:00",
   "next_news_color": "white",
@@ -530,6 +530,42 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "469321255f888ec166a8ce5807c63a467fcaa9c9",
+      "source": "The New York Times",
+      "title": "U.S. and Iran Hint at Diplomacy, Even as Strikes Continue",
+      "reason": "not_today_tehran",
+      "published": "Mon, 20 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNeWdKdVhxZWQtSWFmcnhxdmZqelJkOHRGREJsajlMQ3dhSlpqUDlTVWlBa1dReW1oYm5mSzM2WUp1WVNIUWxnTTNzX0kyaElQVGF3a2FoTGtidXcyMEdIX0pNNVdfdHc5ckMycVNaMDBzbmJwNEF6Zm4tdHBsZUF2eTdWT05ULUVMSHVTSw?oc=5",
+      "checked_at": "2026-09-05T04:59:50.140279+00:00"
+    },
+    {
+      "key": "6fa949721e0dd1a9ee933d51dd8bfd1b3ad59160",
+      "source": "Associated Press",
+      "title": "With US-Iran talks stalled, diplomatic efforts expand to unlikely European players",
+      "reason": "not_today_tehran",
+      "published": "Fri, 14 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQZktFcUhFSURKNmRzcy1lVVJNcWxMa2dZMkVOaDhZUTRpVXM4OXZpejhXamRDSlVOXy1BT3hGLTNsMC1xakJKenpTdWd0TmhfRC1EMDRfUFNlLU15V2U2UGZ1S2RKeDU1eFdFeEE1RzNiZVN3Q0xfdk1BTTJqcDViOFFtd0syamdWZmQtbV8yU1pPTHh6SnpnR191dF9VR1Vk?oc=5",
+      "checked_at": "2026-09-05T04:58:50.140156+00:00"
+    },
+    {
+      "key": "d3c27bde7561977d6f4860b6f9d0391eb31b6bc2",
+      "source": "Axios",
+      "title": "Rubio tells allies U.S. shifting from strikes to sanctions on Iran",
+      "reason": "not_today_tehran",
+      "published": "Tue, 25 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1ncnpsVHhadTQwc3Z0ZGlDX0RIZ0dOY3U2WWtyYU93TDcycXY2eW9POHFCcEpna0h2Y1MyZlM2MnNkVVpBelB3QVFuUDF6U3NiRlNXNG1NT0d6ZVFpYm95QnBLNnREWDFjYVE?oc=5",
+      "checked_at": "2026-09-05T04:57:50.140025+00:00"
+    },
+    {
+      "key": "37351fe08aef8ca94454d7f30d60e2e4946b5b5d",
+      "source": "Associated Press",
+      "title": "US plans to sanction another bank in effort to clamp down on Iran transactions, Bessent tells AP",
+      "reason": "not_today_tehran",
+      "published": "Sun, 30 Aug 2026 23:30:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxNdldWT1BUeFUxSlNnaU9rZTl5eDlWd0dSejRvTUg4YkhEZzNIWjVGc0x3VFVENkltZ2dKb3JleFc0YTRQX0M1NGVJcUhXd0l3endPSHFIZl90N0tHSW80S21ZVUhrOG1Yb1RrMTlBX2UydVFCMEV1MjQ1UDI5Z3RkTDQ1TjY3Z1BseXQyZ3Q5eVBENDYwQ2s5Rm9HMkhIQQ?oc=5",
+      "checked_at": "2026-09-05T04:56:50.139885+00:00"
+    },
     {
       "key": "5093c35c0a22149ed36a4544a7e8cea1c8d30d42",
       "source": "France 24",
@@ -2292,42 +2328,6 @@
       "reason": "not_today_tehran",
       "published": "Thu, 09 Jul 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPeVdhcDNQdjNITHFYQTZPN1Q2Nm1RUndWV0RzcjdHWGxrdHJISHp6UDNqdFl1TXAtOHcxTnM5b3RFS3ZfZ05HMm9wM25Kc3QzVUxxQzdsMDB0UHVYWkRST2tUd3F4YVRyU3Y3U3N6ZWdmOTNQS3EwYUo1V0N5b284aTRLeHhBUFBYNG90bUdnMXZlMC00ai0wRUJBVFZRNkNwRmJnMTdNV3Vza1p6SnF6clctYzh4djYy?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "abe4095245afbf5de97a1730b386d7f58953788a",
-      "source": "Barak Ravid / X",
-      "title": "A U.S. official and two other sources briefed on the Iran meeting Trump held with his team said no decisions were made. One source said Trump didn't seem to be inclined to accept Iran's proposal because it would postpone talks over that nation's nuclear prog",
-      "reason": "not_today_tehran",
-      "published": "Tue, 28 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFA4WnpHZ0ZTS0tRbVZoTm93RUQ4NXJ5VE1hTW1xYWtady1oQm5xZldDQUJjcFRobFYycjF4RHR6Yk50ZFhGTWlfR1RaMUljRVhTSEVsSGNJUzV3SjBXRzBlUQ?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "5fd5c1268e4be22ee14d61ccc4e42cc782d5db2a",
-      "source": "Barak Ravid / X",
-      "title": "🇺🇸🇮🇷🚢Trump reimposes naval blockade on Iran amid escalating clashes in Hormuz. My report on @axios https://t.co/2v8sCRak2p",
-      "reason": "not_today_tehran",
-      "published": "Mon, 13 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9EMGpPSjV1cXU2V3Q4bWtHcDctQWhCU1k0SElyNWlqaUw2M0YtMmJwbzNtNGthRjVEaGJaUXNIcnZYVGpYdTBNclhtZEFtTFdSRFE0RUJHZno0Z2NLaUwtbw?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "a4c65b64518069f4d43d6f17b5278159da54324c",
-      "source": "Barak Ravid / X",
-      "title": "The U.S. military is conducting strikes on Iranian targets in the area of the strait of Hormuz in retaliation for Iranian attack this morning on a commercial tanker, U.S. official says",
-      "reason": "not_today_tehran",
-      "published": "Sat, 27 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1Xb3AtaDR5Z1drazhNQ0VRb0dHQU1uZU1ZQWhJVkVjWDh5ZTlCamFtRlY3Ylg5TVlOcjVOb2FLSUE0ZlVfYldsemNid3pmRThuTV91dXFVNE5LMDNlY1RiUQ?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "36ff0d7fdd8b756d6946ee61999c4cd69389b38d",
-      "source": "Barak Ravid / X",
-      "title": "🚨Turkey, Egypt, and Pakistan have been passing messages between the U.S. and Iran over the past two days in an effort to de-escalate, U.S. source says 🚨Senior officials from the three countries held separate talks with White House envoy Steve Witkoff and I",
-      "reason": "not_today_tehran",
-      "published": "Mon, 23 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5aYVFwMVU1WHVfRnJfYmxpTndPREQxam1HYlhFNHBQM1ltZWM3OFNtSE9mQ0NqX3RpYzJRRTJhUWZRTlRJZmEzRHBDYmp4QV9KTk5JOThkLTVNckttTW42dg?oc=5",
       "checked_at": "2026-09-05T01:46:46.148951+00:00"
     }
   ],
