@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:TankerTrackers:2096215788063498460",
     "636ce9e89fc0a11b01afffc822502f7717791e46",
     "x:haaretzcom:2096210523033403406",
     "3d860604179b0326d7b01590113e0a522c10b3b1",
@@ -499,11 +500,10 @@
     "c602c7e71b9c2cb313b38a3a07ead04e8937bdd0",
     "bf8b48d6e1f74c820cf911904a7406586f3f0d70",
     "9c3627c5b2fa51f5cb00b9b9a506dfd1878d9886",
-    "0ebb7f92c31a2959f50d0b6b0a88c551ce49457f",
-    "aa986b75c2b368245172b903c26ddc0818b31502"
+    "0ebb7f92c31a2959f50d0b6b0a88c551ce49457f"
   ],
   "market_last_sent_at": "2026-09-05T10:44:48.152950+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -2343,6 +2343,15 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:TankerTrackers:2096215788063498460",
+      "source": "TankerTrackers / X",
+      "title": "Video shows a National Iranian Tanker company VLCC. There are only two that fit that exact layout & load condition at Kharg right now. She's laden with cargo and that's not the usual target criteria as CENTCOM mostly retaliate against empty NITC tankers. No visible smoke either.",
+      "summary": "",
+      "link": "https://x.com/TankerTrackers/status/2096215788063498460",
+      "published": "Sat, 05 Sep 2026 12:36:04 +0000",
+      "sent_at": "2026-09-05T12:39:02.194706+00:00"
+    },
     {
       "key": "x:haaretzcom:2096210523033403406",
       "source": "Haaretz / X",
