@@ -1,5 +1,23 @@
 [
   {
+    "id": "a33fc17b1bf12f96406e72ff70685f27b141d4f6",
+    "news_key": "38eb433999b0dfc7d81388041a9d1019f9cbfdc9",
+    "source": "NOTAM / Airspace",
+    "source_url": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9scE5oUmpFWHo5NkZfaFA5NmFMWXBZNWpyWUJ0QVVlUk90VW1RZXlEeEk5T1VCdzlYUmNnZk9sT2ZkOVJ2S0FucDZ6bUhxWmtTa1FONmFTTGw3T0pLTFdoZ1FJYkhVOEZub2ZZSVZxX2xWRi1OTmZfRERR0gF_QVVfeXFMUE9jQXlqc1lVc3Jfb2RDOWRITFdfcVB2XzhNaXEwcV9qWTk3LUNJUWNZUWdQd1FEckdWUzZYYnA2RGlrREcxZnA3UHdYQTFXNXNtQy1DRjlldWZmMzhfeDBkb0RGRDdpaHZrSlhMQ2lwbmNTNHd3WjNYQjNXcmhlOA?oc=5",
+    "original_title": "Kuwait Temporarily Closes Airspace After Iranian Attacks - The Defense Post",
+    "original_summary": "Kuwait Temporarily Closes Airspace After Iranian Attacks The Defense Post",
+    "persian_title": "",
+    "persian_body": "",
+    "published_at_source": "Thu, 11 Jun 2026 07:00:00 GMT",
+    "discovered_at": "2026-09-05T10:20:58.743746+00:00",
+    "rejection_reason": "not_today_tehran",
+    "status": "superseded",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-05T10:21:42.526925+00:00"
+  },
+  {
     "id": "07c7b3caeb8303ad249eebf4a3a09fffae37b522",
     "news_key": "097c69b1737517a9d22f8fe5bc729e74b9156fb0",
     "source": "NOTAM / Airspace",
@@ -15658,24 +15676,6 @@
     "final_persian_body": "",
     "decision_at": "",
     "updated_at": "2026-09-05T01:48:06.166611+00:00"
-  },
-  {
-    "id": "a33fc17b1bf12f96406e72ff70685f27b141d4f6",
-    "news_key": "38eb433999b0dfc7d81388041a9d1019f9cbfdc9",
-    "source": "NOTAM / Airspace",
-    "source_url": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9scE5oUmpFWHo5NkZfaFA5NmFMWXBZNWpyWUJ0QVVlUk90VW1RZXlEeEk5T1VCdzlYUmNnZk9sT2ZkOVJ2S0FucDZ6bUhxWmtTa1FONmFTTGw3T0pLTFdoZ1FJYkhVOEZub2ZZSVZxX2xWRi1OTmZfRERR0gF_QVVfeXFMUE9jQXlqc1lVc3Jfb2RDOWRITFdfcVB2XzhNaXEwcV9qWTk3LUNJUWNZUWdQd1FEckdWUzZYYnA2RGlrREcxZnA3UHdYQTFXNXNtQy1DRjlldWZmMzhfeDBkb0RGRDdpaHZrSlhMQ2lwbmNTNHd3WjNYQjNXcmhlOA?oc=5",
-    "original_title": "Kuwait Temporarily Closes Airspace After Iranian Attacks",
-    "original_summary": "Kuwait Temporarily Closes Airspace After Iranian Attacks thedefensepost.com",
-    "persian_title": "",
-    "persian_body": "",
-    "published_at_source": "Thu, 11 Jun 2026 07:00:00 GMT",
-    "discovered_at": "2026-09-05T01:45:46.148799+00:00",
-    "rejection_reason": "not_today_tehran",
-    "status": "superseded",
-    "final_persian_title": "",
-    "final_persian_body": "",
-    "decision_at": "",
-    "updated_at": "2026-09-05T01:45:53.999964+00:00"
   },
   {
     "id": "585a330b3e79a76a2bf6aa75b26048564766599d",

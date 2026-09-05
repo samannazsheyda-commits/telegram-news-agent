@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "38eb433999b0dfc7d81388041a9d1019f9cbfdc9",
     "d67f6153077252082556849d7dbbb76c6a18a21b",
     "097c69b1737517a9d22f8fe5bc729e74b9156fb0",
     "39a9bd9ee9da921059c843538b5d62565caf831d",
@@ -499,8 +500,7 @@
     "d7b6d8056d660db0c4bc349bdb3a8db736b33e1e",
     "9360307ed267174beb8ee4a5dd1cef43dee38aab",
     "d63ab45d9a575038a15de6e6f49b0d235968283a",
-    "401189796a83bf18cd5a1d935c282e059d9e30fc",
-    "26218b66f2550c7aebb847a1c31ee9ef681db1bd"
+    "401189796a83bf18cd5a1d935c282e059d9e30fc"
   ],
   "market_last_sent_at": "2026-09-05T08:43:54.746517+00:00",
   "next_news_color": "red",
@@ -547,7 +547,7 @@
       "reason": "translation_failed_retry_later",
       "published": "Sat, 05 Sep 2026 09:54:56 +0000",
       "link": "https://x.com/AlArabiya_Eng/status/2096175236408344804",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
+      "checked_at": "2026-09-05T10:23:58.744213+00:00"
     },
     {
       "key": "x:TankerTrackers:2096031376487133584",
@@ -556,7 +556,16 @@
       "reason": "translation_failed_retry_later",
       "published": "Sat, 05 Sep 2026 00:23:17 +0000",
       "link": "https://x.com/TankerTrackers/status/2096031376487133584",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
+      "checked_at": "2026-09-05T10:23:58.744213+00:00"
+    },
+    {
+      "key": "38eb433999b0dfc7d81388041a9d1019f9cbfdc9",
+      "source": "NOTAM / Airspace",
+      "title": "Kuwait Temporarily Closes Airspace After Iranian Attacks - The Defense Post",
+      "reason": "not_today_tehran",
+      "published": "Thu, 11 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9scE5oUmpFWHo5NkZfaFA5NmFMWXBZNWpyWUJ0QVVlUk90VW1RZXlEeEk5T1VCdzlYUmNnZk9sT2ZkOVJ2S0FucDZ6bUhxWmtTa1FONmFTTGw3T0pLTFdoZ1FJYkhVOEZub2ZZSVZxX2xWRi1OTmZfRERR0gF_QVVfeXFMUE9jQXlqc1lVc3Jfb2RDOWRITFdfcVB2XzhNaXEwcV9qWTk3LUNJUWNZUWdQd1FEckdWUzZYYnA2RGlrREcxZnA3UHdYQTFXNXNtQy1DRjlldWZmMzhfeDBkb0RGRDdpaHZrSlhMQ2lwbmNTNHd3WjNYQjNXcmhlOA?oc=5",
+      "checked_at": "2026-09-05T10:20:58.743746+00:00"
     },
     {
       "key": "097c69b1737517a9d22f8fe5bc729e74b9156fb0",
@@ -2330,15 +2339,6 @@
       "published": "Mon, 27 Jul 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1wV1BMWjBCR2RYVERvbW5ORlR5blRpTjBrTktycERIY19mVW8wQUIxWHV2M2U1VFpqT0NEU2hxeGRTUzdiN1pOcC13cnhWbUJidEdzd2JXQThKb2F2eUt0TmRFLWdTNG1fUHFN?oc=5",
       "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "672d7629cee4ccbdf45c4ccb7a67511738e9e8bb",
-      "source": "Mohsen Rezaei / X",
-      "title": "After the humiliating failure of the U.S. military in Tabas, 46 years later, in another part of Iran, US military aircraft were once again burned in flames. Over these five decades, Iran has been a land of humiliation‌ for the U.S, and Trump will meet the same fate as",
-      "reason": "not_today_tehran",
-      "published": "Mon, 06 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFBmc0NWV2ZQR2E2ODFVZkpDTmlZQV9pdkNLb19sdlE5QnhYWTNmYWU0ekxZbVJnOGRLbDFzMWVteFN0TC0zZDhiZXpGWjhWcWZGa2F2N1ktbkxOVEYtMHE4?oc=5",
-      "checked_at": "2026-09-05T08:25:36.583911+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
