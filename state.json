@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:Jerusalem_Post:2096270696913449391",
+    "x:Jerusalem_Post:2096270163658068212",
     "x:AlArabiya_Eng:2096269172426609005",
     "x:AJEnglish:2096264844135858592",
     "x:CENTCOMFarsi:2096255895445373362",
@@ -498,9 +500,7 @@
     "de77fdac90edd1b074b68d59cbea95b57acb8fb9",
     "2159dc78fb6d8f4a5e7361ba637afa5a4e8dadd0",
     "29f0fa35b7c9f50c819beab969844f3c08bb9293",
-    "44e421038abd57b99985eda3161ff7e2cdbc5d9d",
-    "5d61a7c1036bfcd0b971eb9e63bae2b531ed5c91",
-    "044e83f0fc892a8fbb34c5dd1d9a7a20e8847e40"
+    "44e421038abd57b99985eda3161ff7e2cdbc5d9d"
   ],
   "market_last_sent_at": "2026-09-05T14:48:33.575362+00:00",
   "next_news_color": "red",
@@ -2343,6 +2343,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:Jerusalem_Post:2096270163658068212",
+      "source": "Jerusalem Post / X",
+      "title": "Ten people were killed when a fuel tanker exploded on a highway in western Iran as a result of a traffic accident, state media reported on Saturday.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096270163658068212",
+      "published": "Sat, 05 Sep 2026 16:12:08 +0000",
+      "sent_at": "2026-09-05T16:26:11.642907+00:00",
+      "fingerprint": "ten people were killed when a fuel tanker exploded on a highway in western iran as a result of a traffic accident state media reported on saturday"
+    },
+    {
+      "key": "x:Jerusalem_Post:2096270696913449391",
+      "source": "Jerusalem Post / X",
+      "title": "US Defense Secretary Pete Hegseth called Iran's oil tanker fleet \"defenseless\" and promised that if Iran shoots towards US ships, the US Navy will destroy and sink the regime's ships in a post on X/Twitter.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096270696913449391",
+      "published": "Sat, 05 Sep 2026 16:14:15 +0000",
+      "sent_at": "2026-09-05T16:26:11.642907+00:00",
+      "fingerprint": "us defense secretary pete hegseth called iran s oil tanker fleet defenseless and promised that if iran shoots towards us ships the us navy will destroy and sink the regime s ships in a post on x twitter"
+    },
     {
       "key": "x:AlArabiya_Eng:2096269172426609005",
       "source": "Al Arabiya English / X",
