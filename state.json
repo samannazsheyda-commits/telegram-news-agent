@@ -1,6 +1,11 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "636ce9e89fc0a11b01afffc822502f7717791e46",
+    "x:haaretzcom:2096210523033403406",
+    "3d860604179b0326d7b01590113e0a522c10b3b1",
+    "64a4e630975cfd13bd1e5f114fd16779c29c3f0b",
+    "5bfc3dbb8ac497013982211bec2b98c0ba7debc4",
     "1a69134c1b01198dfd26df1bb21f313e57fbdaa6",
     "6b15a7db9ba4018ad0959e5e3ea8fa1a6453d70e",
     "17347c27166a060350dd0ac1673839bcebcf94e6",
@@ -495,15 +500,10 @@
     "bf8b48d6e1f74c820cf911904a7406586f3f0d70",
     "9c3627c5b2fa51f5cb00b9b9a506dfd1878d9886",
     "0ebb7f92c31a2959f50d0b6b0a88c551ce49457f",
-    "aa986b75c2b368245172b903c26ddc0818b31502",
-    "b61ae54d4afe2eb4935f4a97fee6a9ae48083696",
-    "3e94b231520dcc8dca969e7fcca340c725ed1610",
-    "3abda0b1b3d6bc5065f5bdc67b8365f30d7f6e29",
-    "636ce9e89fc0a11b01afffc822502f7717791e46",
-    "583b9814f26fe38fcbcbb405aa5fd98207294721"
+    "aa986b75c2b368245172b903c26ddc0818b31502"
   ],
   "market_last_sent_at": "2026-09-05T10:44:48.152950+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -540,6 +540,42 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "636ce9e89fc0a11b01afffc822502f7717791e46",
+      "source": "NOTAM / Airspace",
+      "title": "Flights To UAE, Kuwait Affected, Bahrain Closes Airspace After Iran Launches Attack - NDTV Profit",
+      "reason": "not_today_tehran",
+      "published": "Wed, 03 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNZUhBLVNrZnVQVTRVMmxZdTYwQzVVZ3dVbHkzamhFdHpmdEZiM1RTNWY5LVQ5dElfTGJkM0ZqNU9KdVl4a2YwOG1RM3JRak9hSUNtN1NHUEVtNEUyVWpudzNjQWpKb0lqZ05mbUJNb3JVeVRWM054dFI4Unh5YUd6a2diMXRHalhUR2ZmMW9JZEF4ZE5YX2FCNnpOM1d0MllqOXJ6MUFXNzFaTkJ1YWU3ck16dzlRMUtXMFBnQXo0QkEzYlh3SEhMMNIB0AFBVV95cUxQeHUyT3I3MTE0ejYzTi1DV3pJV2hZUHZKYkRWZWc5S2hLblpvNkhsajJNWnZDZG1wM1p3VUJQVGZDZFRmUksyUmJUYWNNaVJXMnd6YTI5V2ZSZ1hjTFc0YldvNzhqRFFsa0RseUc5bnBRWnU3VnYxOURYblJXTTNkYmtLSXlEUUJqTjEyUTh5c0tBMFgwQjVSVWVjN1FxdWN6Z3NWNzAycDdOQkY1VXF5Ull0TUMtTkZtMkZ4alFuSF9WNnVtZEthSEdTek45Q2Q3?oc=5",
+      "checked_at": "2026-09-05T12:22:27.240046+00:00"
+    },
+    {
+      "key": "3d860604179b0326d7b01590113e0a522c10b3b1",
+      "source": "NOTAM / Airspace",
+      "title": "Egypt condemns Iranian attacks violating Jordanian airspace - Egypt Today",
+      "reason": "not_today_tehran",
+      "published": "Thu, 09 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNRDNqSnd0cUw3bUhrUXNTbjBhVEJ6XzcxY1pCS0FhT3dyanhtOFQwb1ExOEdmSTRMbUVyZm9pbVhIMzRaRzNfdFMzTmc2SmVkOThQWXA0b3lFSk9EaXlwekpmeHF1Zkx4ZGFQdm8xXzJWcUlrYkxnSk9LdUNsNTY3dU93TGJQWWJHZVg2UjVRRWstRHRodThtc2ZEdWdNTmVzM2h3Ry1n?oc=5",
+      "checked_at": "2026-09-05T12:21:13.511581+00:00"
+    },
+    {
+      "key": "64a4e630975cfd13bd1e5f114fd16779c29c3f0b",
+      "source": "NOTAM / Airspace",
+      "title": "Iran partially closes western airspace amid missile fire - Middle East Eye",
+      "reason": "not_today_tehran",
+      "published": "Sun, 07 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQYmxjLXpJVEozZ3FsRG82RjBpZ0JZMHN6WHZMQ2lNTGVtaDFXWFlsUXBDSjRER1hCMTNZd1BIMzNfTTBZNzR5MnlIWC1CZ29MVGVrT3lQS0prX3dQN2RZb242M04ybXQ3OUFNMjVZWWVZTE5hWjdSbGpsaWVsTDh4SXlxdjVKLWxpNDQwTnN4SzVoWGRvSzVGQUhZcEwzeTljQ1pOZEd4SHdfQ1NxOEl2dG1fRQ?oc=5",
+      "checked_at": "2026-09-05T12:21:13.511581+00:00"
+    },
+    {
+      "key": "5bfc3dbb8ac497013982211bec2b98c0ba7debc4",
+      "source": "NOTAM / Airspace",
+      "title": "Iran Integrates Artificial Intelligence into Air Defense Systems - - WANA News Agency",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 18:12:18 GMT",
+      "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNa2VrcXdGX2pHdmhYNlZab1c2Qmc1V0VPb0RnSWVyZ0NiM1ZuN3JPaW5oZWhJN0syRDNMUXFMQTZJV2xxbW1UNDdYWFBYaEV3UUtDZlRQVGlnbXkzakE0TzhzWXQzZXNVcFJRRGdCMXkwWTBtSTBTQ0dvUzJFQ0dTSFd4U05SUk9FcnZUdQ?oc=5",
+      "checked_at": "2026-09-05T12:21:13.511581+00:00"
+    },
     {
       "key": "1a69134c1b01198dfd26df1bb21f313e57fbdaa6",
       "source": "NOTAM / Airspace",
@@ -2303,46 +2339,19 @@
       "published": "Fri, 20 Feb 2026 08:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE94ZzhOdjE2OWxoQ1Q2VjNQUFhBNTNGN0tmWENtQVdsbXVkWTVsVHVYcG4wR1ZzYmZDSDhwUndqVkxUbjZ2TFlfTjVxX1J1ZDBrbzdJdzlzMnFKSzg3dWc?oc=5",
       "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "23ea9c9f80b976225f7940b77a2f5f4f549528e0",
-      "source": "Abbas Araghchi / X",
-      "title": "Iran respects the Kingdom of Saudi Arabia and considers it a brotherly nation. Our operations are aimed at enemy aggressors who have no respect for Arabs or Iranians, nor can provide any security. Just look at what we did to their aerial command. High time t",
-      "reason": "not_today_tehran",
-      "published": "Mon, 30 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9fVVNrWUQtYzB4aUhVYS15dWlxWHFJdFdLZ0pwTWc0cWFHRG1zV2dQbWtUdm5FMjhsNC03NVF1WGNGSndEaDhYLVViRU5BVVUwa2syaHdjTlJsMFdzbnc?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "3733d9f23c8f0bc5d28c55309fd91de4a4fb33fc",
-      "source": "Abbas Araghchi / X",
-      "title": "Netanyahu doesn't want you to see how Iran's Powerful Armed Forces are punishing Israel for its aggression. Here's what our men & women on the ground report: utter destruction caused by our missiles, panicked leaders, and air defenses in disarray. And we'",
-      "reason": "not_today_tehran",
-      "published": "Tue, 10 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFBpZ0d6Yko1OWs5aFppTVpvSHJnX1dkN2JrLW51cnZKU0VmdnVIdmJsbkxqVEpTdXEteTd0ei1OSUJTVjhKUnVKcHVEa2xZMGRRc0dQb1NCZ2otdGhVclE?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "41a211f240afb403e8ff15843808424fc33f5f01",
-      "source": "Abbas Araghchi / X",
-      "title": "From the football pitch to the negotiating table to the battlefield, every step we take as Iranians is part of a larger struggle: defending the honor and dignity of our dear people. #Minab168",
-      "reason": "not_today_tehran",
-      "published": "Sun, 21 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE11cGc0Z1BWX3QzR0ZMNHdUUjVocHhCMVMtTHJxTHItWUZwaGFldExJYkY4QjY2MkVhUmNRaHV3aU1VOVpmYTB4Uk9XS2FKRnBGbkZpNXViMGVZWE9OUlE?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "a4b48f2fe754eb81937cd06d50079c4d49eea667",
-      "source": "Abbas Araghchi / X",
-      "title": "Hundreds of Iranian civilians have been killed in Israel-U.S. bombings, including over 200 children. Reports claim that some neighboring states which host U.S. forces and permit attacks on Iran are also actively encouraging this slaughter. Stances should be pr",
-      "reason": "not_today_tehran",
-      "published": "Mon, 16 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1JVVhkc0JXM0F6c2o4dU9ZZzBpdDRDeDV3MFlFZDhSTmlyMlNfbHFPSHJGcU5jMXlucWJqanVNSTNybWx1eXFfMGluS2JSSnhGbTR6bGhiMGFYNWdwR3c?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:haaretzcom:2096210523033403406",
+      "source": "Haaretz / X",
+      "title": "Iran accuses U.S. of striking oil tanker near key Persian Gulf terminal",
+      "summary": "",
+      "link": "https://x.com/haaretzcom/status/2096210523033403406",
+      "published": "Sat, 05 Sep 2026 12:15:09 +0000",
+      "sent_at": "2026-09-05T12:22:27.237030+00:00"
+    },
     {
       "key": "x:JasonMBrodsky:2096198565404025262",
       "source": "Jason Brodsky / X",
