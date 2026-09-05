@@ -6,7 +6,8 @@ import src.runtime_v2 as runtime
 
 
 def _item(key, source, title, summary=""):
-    return NewsItem(key, source, title, summary, f"https://example.com/{key}", "Sat, 05 Sep 2026 05:00:00 GMT")
+    link = f"https://x.com/Reuters/status/{key}" if source.endswith(" / X") else f"https://example.com/{key}"
+    return NewsItem(key, source, title, summary, link, "Sat, 05 Sep 2026 05:00:00 GMT")
 
 
 def test_expanded_x_registry_contains_required_accounts():
