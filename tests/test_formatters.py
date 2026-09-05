@@ -115,13 +115,15 @@ def test_market_contains_full_requested_watchlist_timestamp_source_and_footer():
     assert "بی‌خبر" in text
 
 
-def test_daily_market_summary_reports_amount_and_percentage_with_source():
+def test_daily_market_summary_uses_latest_simplified_layout_with_source():
     text = format_market_daily_summary(
         200_000, 210_000, 20_000_000, 19_000_000,
         datetime(2026, 9, 4, 20, 30, tzinfo=timezone.utc),
     )
-    assert "۱۰,۰۰۰ تومان" in text
-    assert "5.00٪ افزایش" in text
-    assert "۱,۰۰۰,۰۰۰ تومان / گرم" in text
-    assert "5.00٪ کاهش" in text
+    assert "۲۱۰,۰۰۰ تومان" in text
+    assert "🔺 ۵.۰۰٪" in text
+    assert "۱۹,۰۰۰,۰۰۰ تومان / گرم" in text
+    assert "🔻 ۵.۰۰٪" in text
+    assert "۲۰۰,۰۰۰" not in text
+    assert "۲۰,۰۰۰,۰۰۰" not in text
     assert "منبع: TGJU" in text
