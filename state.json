@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:JasonMBrodsky:2096249240812957763",
     "55c6d35889d4ca0ed6c848616049e18d66ad5658",
     "e1de45950983c6a520b18f42df3db5686deb4d32",
     "a797ecf7a590fb9ae375fd0eec641f5190de9596",
@@ -499,11 +500,10 @@
     "044e83f0fc892a8fbb34c5dd1d9a7a20e8847e40",
     "8bb4e81c020c1d8768da38664e6c9cd691776abf",
     "07b36e841147bdc7ad2c122f0e1bd9549517ae27",
-    "c2e26a1f945a2e253cae82ab22de259478480761",
-    "299fdab3df512821d5a75303f125d52fb9b85bec"
+    "c2e26a1f945a2e253cae82ab22de259478480761"
   ],
-  "market_last_sent_at": "2026-09-05T12:47:38.071885+00:00",
-  "next_news_color": "red",
+  "market_last_sent_at": "2026-09-05T14:48:33.575362+00:00",
+  "next_news_color": "white",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -531,9 +531,9 @@
   "market_day_prices": {
     "date": "2026-09-05",
     "first_usd": 221060,
-    "last_usd": 225815,
+    "last_usd": 226500,
     "first_gold": 23518800,
-    "last_gold": 23697500,
+    "last_gold": 23673300,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
@@ -2343,6 +2343,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:JasonMBrodsky:2096249240812957763",
+      "source": "Jason Brodsky / X",
+      "title": "The rift that opened up within #Iran's regime's Assembly of Experts after it issued that statement from 60 members in June only to be later rebuked by the Assembly's leadership could be an interesting signpost over the dynamics in the selection of the new chairman.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2096249240812957763",
+      "published": "Sat, 05 Sep 2026 14:49:00 +0000",
+      "sent_at": "2026-09-05T14:49:56.651049+00:00",
+      "fingerprint": "the rift that opened up within iran s regime s assembly of experts after it issued that statement from 60 members in june only to be later rebuked by the assembly s leadership could be an interesting signpost over the dynamics in the selection of the new chairman"
+    },
     {
       "key": "55c6d35889d4ca0ed6c848616049e18d66ad5658",
       "source": "دِ کریدل / Telegram",
