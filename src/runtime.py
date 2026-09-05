@@ -4,9 +4,18 @@ import os
 import sys
 import time
 from datetime import datetime, timedelta, timezone
+from email.utils import format_datetime
 
+from . import formatters as news_formatters
 from . import main as agent
 from .custom_sources import fetch_custom_news_items
+from .editorial_rules import (
+    editorial_detail,
+    fetch_priority_news_items,
+    is_duplicate_story,
+    is_low_value_company_news,
+    is_priority_security_news,
+)
 from .editorial_store import LocalEditorialStore, ReviewItem
 from .sources import NewsItem
 
@@ -16,11 +25,15 @@ _original_fetch_news_items = agent.fetch_news_items
 _original_audit_news = agent._audit_news
 _original_format_news = agent.format_news
 _original_send_telegram = agent.send_telegram
+_original_news_rejection_reason = agent._news_rejection_reason
+_original_event_priority = agent._event_priority
 _pending_auto_key: str | None = None
 _pending_auto_item: NewsItem | None = None
 _sent_news_items: list[NewsItem] = []
-RECENT_DEDUP_WINDOW = timedelta(hours=12)
-RECENT_DEDUP_LIMIT = 60
+_priority_news_keys: set[str] = set()
+RECENT_DEDUP_WINDOW = timedelta(hours=72)
+RECENT_DEDUP_LIMIT = 300
+PRIORITY_LOOKBACK = timedelta(hours=72)
 
 
 def _terminal_manual_keys() -> set[str]:
@@ -73,36 +86,89 @@ def _recent_published_items(now: datetime | None = None) -> list[NewsItem]:
 
 
 def _is_recent_duplicate(item: NewsItem, references: list[NewsItem]) -> bool:
-    return any(agent._same_story(item, previous) for previous in references)
+    return any(is_duplicate_story(item, previous) for previous in references)
 
 
 def _combined_fetch_news_items():
+    global _priority_news_keys
     terminal = _terminal_manual_keys()
-    merged = {
-        item.key: item
-        for item in _original_fetch_news_items()
-        if item.key not in terminal
-    }
+    merged: dict[str, NewsItem] = {}
+
+    for item in _original_fetch_news_items():
+        if item.key in terminal:
+            continue
+        if is_low_value_company_news(item):
+            print(f"NEWS_SUPPRESSED low_value_company source={item.source!r} title={item.title!r}")
+            continue
+        merged.setdefault(item.key, item)
+
     try:
         custom = fetch_custom_news_items()
     except Exception as exc:
         print(f"Custom source error: {exc}", file=sys.stderr)
         custom = []
     for item in custom:
-        if item.key not in terminal:
-            merged.setdefault(item.key, item)
+        if item.key in terminal:
+            continue
+        if is_low_value_company_news(item):
+            print(f"NEWS_SUPPRESSED low_value_company source={item.source!r} title={item.title!r}")
+            continue
+        merged.setdefault(item.key, item)
+
+    try:
+        priority_items = fetch_priority_news_items()
+    except Exception as exc:
+        print(f"Priority source error: {exc}", file=sys.stderr)
+        priority_items = []
+    _priority_news_keys = {item.key for item in priority_items}
+    for item in priority_items:
+        if item.key in terminal:
+            continue
+        if is_low_value_company_news(item):
+            continue
+        merged.setdefault(item.key, item)
 
     recent = _recent_published_items()
-    if not recent:
-        return list(merged.values())
-
     filtered: list[NewsItem] = []
     for item in merged.values():
-        if _is_recent_duplicate(item, recent):
-            print(f"NEWS_SUPPRESSED recent_duplicate source={item.source!r} title={item.title!r}")
+        references = recent + filtered
+        if _is_recent_duplicate(item, references):
+            print(f"NEWS_SUPPRESSED duplicate_event source={item.source!r} title={item.title!r}")
             continue
         filtered.append(item)
     return filtered
+
+
+def _priority_rejection_reason(item: NewsItem, now: datetime) -> str | None:
+    reason = _original_news_rejection_reason(item, now)
+    if reason != "not_today_tehran":
+        return reason
+    if item.key not in _priority_news_keys and not is_priority_security_news(item):
+        return reason
+    published = agent._published_dt(item.published)
+    if not published:
+        return reason
+    age = now.astimezone(timezone.utc) - published
+    if age < timedelta(0) or age > PRIORITY_LOOKBACK:
+        return reason
+    # Re-run every other editorial check with a current timestamp. This relaxes only
+    # the age gate for a critical security story; commentary/vague/bundled filters remain.
+    current_item = NewsItem(
+        item.key,
+        item.source,
+        item.title,
+        item.summary,
+        item.link,
+        format_datetime(now.astimezone(timezone.utc)),
+    )
+    return _original_news_rejection_reason(current_item, now)
+
+
+def _priority_event_priority(item: NewsItem) -> int:
+    base = _original_event_priority(item)
+    if item.key in _priority_news_keys or is_priority_security_news(item):
+        return max(base, 95)
+    return base
 
 
 def _review_record(item, reason: str, now: datetime) -> ReviewItem:
@@ -232,6 +298,12 @@ def _flush_recent_published(now: datetime | None = None) -> None:
 def install_integrations() -> None:
     agent.fetch_news_items = _combined_fetch_news_items
     agent._audit_news = _audit_with_editorial_store
+    agent._same_story = is_duplicate_story
+    agent._news_rejection_reason = _priority_rejection_reason
+    agent._event_priority = _priority_event_priority
+    # The source-page description/subheadline remains the preferred detail source,
+    # but the formatter no longer forces every item to exactly two sentences.
+    news_formatters._up_to_two_sentences = editorial_detail
     agent.format_news = _format_with_tracking
     agent.send_telegram = _send_with_tracking
 
