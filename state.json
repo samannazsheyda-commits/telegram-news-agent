@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "75deef33720ecbb2fb17a152fe57e55d7507d578",
+    "x:Jerusalem_Post:2096325224253788304",
+    "c9a1d56e067c2b4455d8025bca4f12d983a1ecc9",
     "x:Jerusalem_Post:2096322012713013719",
     "8853d883ce80d973aee224d751f69647a8257840",
     "x:marklevinshow:2096319696668925982",
@@ -497,13 +500,10 @@
     "fe7ec0578043f395d0d930f8624edd84b0297f25",
     "8bb3128249385dc64e89e6baa2df41e4c9f0a7b2",
     "10711c69582f83dee9bd0034a20cddb91845e6ed",
-    "ac31093e645c9c14bba50829a929c15622b356a9",
-    "a562677bd50abd6978c6a04b352d9f51e469a864",
-    "ca33220c905d2624f87af3d0984a14aeae5edb10",
-    "cbcdd9073145fb18186df25575b00b050cfaee23"
+    "ac31093e645c9c14bba50829a929c15622b356a9"
   ],
   "market_last_sent_at": "2026-09-05T19:32:05.566713+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -540,6 +540,24 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "75deef33720ecbb2fb17a152fe57e55d7507d578",
+      "source": "NOTAM / Airspace",
+      "title": "Why Israeli Fighter Jets Avoided Iranian Airspace - WANA News Agency",
+      "reason": "not_today_tehran",
+      "published": "Mon, 08 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9SNkRYelBlcEZrWHpNLUg1TFNONy1xMjk1WnBia3ZldklPb0JKS2xaaDlEUWlCU1ZMYkNIRXNJWHhlNmdGN3BxTEtueFRQWGdxbG1UMU52SC1UZHlWcnV1cGhUbEJNLWZSTkJVR2N3NGY0OWlGWUZVUA?oc=5",
+      "checked_at": "2026-09-05T20:03:18.713509+00:00"
+    },
+    {
+      "key": "c9a1d56e067c2b4455d8025bca4f12d983a1ecc9",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Former CIA Director David Petraeus on Iran: We’ve used perhaps half of our missile interceptors in this particular conflict. We need to learn from the Ukrainians, who are using 10,000 cheap drones per day.",
+      "reason": "bundled_or_multi_headline",
+      "published": "Sat, 05 Sep 2026 19:55:38 +0000",
+      "link": "https://t.me/ClashReport/95212",
+      "checked_at": "2026-09-05T20:00:24.001610+00:00"
+    },
     {
       "key": "8853d883ce80d973aee224d751f69647a8257840",
       "source": "NOTAM / Airspace",
@@ -2321,28 +2339,20 @@
       "published": "Fri, 04 Sep 2026 10:41:10 +0000",
       "link": "https://x.com/JasonMBrodsky/status/2095824486431858777",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:JasonMBrodsky:2095825250701267327",
-      "source": "Jason Brodsky / X",
-      "title": "A highly rich lecture from Araghchi about Arab sovereignty when Iranian officials used to brag they controlled four Arab capitals.",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 10:44:12 +0000",
-      "link": "https://x.com/JasonMBrodsky/status/2095825250701267327",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:JasonMBrodsky:2095873000092373105",
-      "source": "Jason Brodsky / X",
-      "title": "Following his piece earlier this year in @TheEconomist where he adopted a patronizing tone against the U.S. that has led the Trump administration to lash out at Muscat, #Oman's foreign minister continues to lecture the U.S. while saying nothing critical about #Iran's regime's foreign policy, let alone Oman's role in enabling it. He could sit at the table for the next 50 years having constructive conversation after constructive conversation. It's not going to change the reality that there is likely no durable diplomatic solution with the current Iranian regime in power. It requires enmity with the U.S. to justify its existence. https://www.ft.com/content/f3a578e4-5509-4d4e-9981-7127c40b2e31?sharetype=blocked",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 13:53:57 +0000",
-      "link": "https://x.com/JasonMBrodsky/status/2095873000092373105",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
-  "market_daily_summary_last_date": "2026-09-04",
+  "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:Jerusalem_Post:2096325224253788304",
+      "source": "Jerusalem Post / X",
+      "title": "The Iranian Navy targeted three oil tankers traveling through the Strait of Hormuz and three US-affiliated ships in retaliation for the three oil tankers hit earlier in the day by US forces, the IRGC claimed on Saturday.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096325224253788304",
+      "published": "Sat, 05 Sep 2026 19:50:55 +0000",
+      "sent_at": "2026-09-05T20:01:55.565173+00:00",
+      "fingerprint": "the iranian navy targeted three oil tankers traveling through the strait of hormuz and three us affiliated ships in retaliation for the three oil tankers hit earlier in the day by us forces the irgc claimed on saturday"
+    },
     {
       "key": "x:Jerusalem_Post:2096322012713013719",
       "source": "Jerusalem Post / X",
