@@ -13,6 +13,8 @@ _easy_news_flow_installed = False
 _original_strict_rejection = v2._strict_rejection_reason
 _original_translate = v2.translate_news_to_fa
 _RLM = "\u200f"
+_X_STATUS_RE = re.compile(r"^https?://(?:www\.)?(?:x\.com|twitter\.com)/[A-Za-z0-9_]+/status/\d+(?:[/?#].*)?$", re.I)
+_WEB_LINK_RE = re.compile(r"^https?://", re.I)
 
 _TOPIC_ICONS = (
     ("🚀", ("missile", "rocket", "موشک", "راکت")),
@@ -48,29 +50,49 @@ def _select_one_story(candidates, references):
     return [newest], []
 
 
-def _easy_rejection_reason(item, now):
-    # Easy flow means almost no editorial blocking, but the channel remains Iran-only.
-    # Re-check relevance here even if ingestion already filtered it so a bad upstream
-    # row can never leak into production.
+def _has_valid_source_link(item) -> bool:
+    link = str(getattr(item, "link", "") or "").strip()
+    if not link:
+        return False
     if _is_x_item(item):
+        return bool(_X_STATUS_RE.match(link))
+    return bool(_WEB_LINK_RE.match(link))
+
+
+def _easy_rejection_reason(item, now):
+    # Keep the flow permissive, but never publish a source-less item or an X post
+    # that is not directly Iran-related.
+    if _is_x_item(item):
+        if not _has_valid_source_link(item):
+            return "missing_direct_source_link"
         if not is_fresh_iran_topic(f"{getattr(item, 'title', '')} {getattr(item, 'summary', '')}"):
             return "not_iran_related"
         return None
     return _original_strict_rejection(item, now)
 
 
-def _looks_persian(value: str) -> bool:
-    return bool(re.search(r"[\u0600-\u06FF]", value or ""))
+def _is_persian_output(value: str) -> bool:
+    text = str(value or "").strip()
+    if not text:
+        return False
+    persian_letters = re.findall(r"[\u0600-\u06FF]", text)
+    latin_letters = re.findall(r"[A-Za-z]", text)
+    letter_count = len(persian_letters) + len(latin_letters)
+    if len(persian_letters) < 4 or letter_count == 0:
+        return False
+    # Allow normal acronyms/names such as IAEA or IRGC, but never an English body
+    # containing only one Persian word.
+    return len(persian_letters) / letter_count >= 0.55
 
 
 def _translate_or_original(value, session=None):
     text = str(value or "").strip()
-    translated = _original_translate(text, session=session)
-    if translated:
+    translated = str(_original_translate(text, session=session) or "").strip()
+    if translated and _is_persian_output(translated):
         return translated
-    # Persian text is safe to keep as-is. Never leak Hebrew/English/other foreign
-    # source text into the Persian channel when translation fails.
-    return text if _looks_persian(text) else ""
+    # Persian source posts can pass untouched. English/Hebrew or bad translator
+    # fallbacks are withheld and retried instead of leaking into the channel.
+    return text if _is_persian_output(text) else ""
 
 
 def _topic_icons(item, title_fa: str, summary_fa: str) -> str:
@@ -80,6 +102,13 @@ def _topic_icons(item, title_fa: str, summary_fa: str) -> str:
 
 
 def _format_news_with_footer_icons(item, title_fa: str, summary_fa: str, marker_override=None) -> str:
+    # Every published news card must have a real source URL and a Persian headline.
+    # This is the last safety gate before Telegram formatting.
+    if not _has_valid_source_link(item) or not _is_persian_output(title_fa):
+        return ""
+    if summary_fa and not _is_persian_output(summary_fa):
+        summary_fa = ""
+
     text = v2._original_news_format(item, title_fa, summary_fa, marker_override=marker_override)
     if not text:
         return text
