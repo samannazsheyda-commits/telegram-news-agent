@@ -1,6 +1,11 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "ac38e1b70171858dc5700941dd4968e8573b1dbd",
+    "e4e02e3bd9e965275150509eee4fcf361415bc7d",
+    "5797daada67408be35fae2d03bb5e2167547e9b0",
+    "3d92bc9ea120fbcde678ac0a01191beb99b60022",
+    "1519b980e86f1e9b8149b33c538b30b0539009a0",
     "81f8d53f047163c39ff2cb4280601880ad90dc2a",
     "28f230603527771b74b30b6425b5178b7613f985",
     "ee640e849784bc1110433cdd2e5041dc219e9836",
@@ -495,12 +500,7 @@
     "d475db1b1438f5a406f420e38d2594881260fa0d",
     "330e5f6284ec19ef4908a4b0fe5ff4c9e882fb81",
     "92b3bc46b950ce0dd663a241dcf2bb697d711ca6",
-    "93bd552fc45835b95544a5cc616ee96fd5174d8d",
-    "6af0767dc52a080e8d61c9548dd2c053a9affcf2",
-    "38688faaf3843bca0fbbbde2780aa9a23f70ba7e",
-    "66691d8498aa0d34bceb2b7b3a6c12bc533587fa",
-    "80bd3d4bdaf5a6b48ae545e3ca1966cc1360445c",
-    "a346b50f653fad877c9c38a32ad2b5147a5d0bcc"
+    "93bd552fc45835b95544a5cc616ee96fd5174d8d"
   ],
   "market_last_sent_at": "2026-09-05T06:37:39.475345+00:00",
   "next_news_color": "white",
@@ -540,6 +540,51 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "ac38e1b70171858dc5700941dd4968e8573b1dbd",
+      "source": "Abbas Araghchi / X",
+      "title": "Iran has so far kept its word, unlike the so-called U.S. Treasury Secretary who is violating Para 9 of the MoU. That violation follows other violations and missteps by the United States. Reality check: There can only be mutual compliance.",
+      "reason": "not_today_tehran",
+      "published": "Fri, 10 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE5iNDNxVFA3VVlZdFZNUzlrTENfTnBJdk96TDJzS3MtMl9vZF8tN0wyYlBBM0lpVzZkMDJXQTg3UUZRQlBFUmJhcExRVGJwYU5fbVB0VlQ5eDIycGFWWWc?oc=5",
+      "checked_at": "2026-09-05T08:19:39.302404+00:00"
+    },
+    {
+      "key": "e4e02e3bd9e965275150509eee4fcf361415bc7d",
+      "source": "Abbas Araghchi / X",
+      "title": "I've been told that family of a U.S. soldier killed in the war of choice on Iran is relying on public donations. As fair and equitable deal was within reach, those providing poor advice to POTUS are responsible for bloodshed. This war is imposed on both Americans",
+      "reason": "not_today_tehran",
+      "published": "Sun, 15 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE5oTWp6RjBfd3NvMEVVbnF4OVRUUm15SHFtWXRORE41VThhUjZIRDRpbkt3TWJyQTJDQU1sSl96SGNrLUpINlZIcUxsVHA2NW14QXQwY3JSSk84SFMtdGc?oc=5",
+      "checked_at": "2026-09-05T08:19:39.302404+00:00"
+    },
+    {
+      "key": "5797daada67408be35fae2d03bb5e2167547e9b0",
+      "source": "Abbas Araghchi / X",
+      "title": "A rising number of voices—incl European and U.S. officials—exclaim that the war on Iran is unjust. More members of the international community should follow suit. Wave of global repercussions has only begun and will hit all—regardless of wealth, faith, or rac",
+      "reason": "not_today_tehran",
+      "published": "Tue, 17 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE13VWVrWDcyanVmb0RxXzRpYVFJUGQ0cFVOYi1BZGthYkExRzMxOGZFNjQwX1VFdjBtN0d4czZ4STZ1VzE1QUJ3WmNvdkFDX2MtajlCSVlJSlluOU02Mnc?oc=5",
+      "checked_at": "2026-09-05T08:19:39.302404+00:00"
+    },
+    {
+      "key": "3d92bc9ea120fbcde678ac0a01191beb99b60022",
+      "source": "Abbas Araghchi / X",
+      "title": "Honored to host my predecessors, Drs. Salehi, Zarif, and Mottaki, at Foreign Ministry today to honor our fallen colleagues. Drs. Amir-Abdollahian and Kharazi led the way in defending Iran's dignity and interests in an exemplary manner in the diplomatic arena.",
+      "reason": "not_today_tehran",
+      "published": "Wed, 20 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE4teXdoc1djb3ExU3lwdDltZTd2RDg1dTBHY1BXeUhZV0tnb1Bfb1hMLXpqaDlwd0hWXzJPNjd3ZnlPNkRpdUVrQ3JNdnpack5hdzI2U3BkV1gzQnBpTXc?oc=5",
+      "checked_at": "2026-09-05T08:19:39.302404+00:00"
+    },
+    {
+      "key": "1519b980e86f1e9b8149b33c538b30b0539009a0",
+      "source": "Abbas Araghchi / X",
+      "title": "Iran, a nation with a rich culture originating from 7000 years of civilization, will never respond to the language of threat and intimidation. Iranians have never bowed down before any foreigners and respond only to respect. Iran knows exactly what happened dur",
+      "reason": "not_today_tehran",
+      "published": "Mon, 28 Jul 2025 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFA4aGQ1ekZSMS10YzZEeVkxbWxWbjQ1UGFLRWFyblYwRzM3U2E2bGJVWHZTXzFQRGRmX0V2MDZBWjR0cEVwaExwQmRRbVNZWEt0M25ZTFBiMkQ1VG5JOHc?oc=5",
+      "checked_at": "2026-09-05T08:19:39.302404+00:00"
+    },
     {
       "key": "81f8d53f047163c39ff2cb4280601880ad90dc2a",
       "source": "Abbas Araghchi / X",
@@ -2293,51 +2338,6 @@
       "reason": "not_today_tehran",
       "published": "Thu, 03 Sep 2026 09:06:29 GMT",
       "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFBMRkVvZV9pa20zNGoyN3VuTTlNbnFyeUs1QXlXTWZQeWt5RVZxLWNISHlKOXVFaGlrdWtYajU5UnhXbDFseXhMWFp1NGlLNHFyVjE5TWFKMA?oc=5",
-      "checked_at": "2026-09-05T05:48:15.246422+00:00"
-    },
-    {
-      "key": "bf8b48d6e1f74c820cf911904a7406586f3f0d70",
-      "source": "Associated Press / X",
-      "title": "President Trump’s decision to strike Iran pulls him toward the kind of overseas conflict he once denounced. https://t.co/wCL2C8E6Nv",
-      "reason": "not_today_tehran",
-      "published": "Sat, 28 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1xMGJTS3JibkkzeTNlbGxBdEItMGtiT3hSa1RuSC1oUWpXeVlqbmh2OVhNa190eUtkemlUWU5jdWxmUEVwQWpRVk9leXJwZXVPUlNweGNLbXY1Q3lDZTRVSQ?oc=5",
-      "checked_at": "2026-09-05T05:48:15.246422+00:00"
-    },
-    {
-      "key": "9c3627c5b2fa51f5cb00b9b9a506dfd1878d9886",
-      "source": "Reuters / X",
-      "title": "Iran fired missiles at several Arab Gulf cities, causing waves of blasts that shook windows and sent people rushing for cover in rare and potentially far-reaching attacks on a region that prides itself on its security. The attacks unfolded during the holy Muslim mon",
-      "reason": "not_today_tehran",
-      "published": "Sat, 28 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFAyVVNvakwtcVZoRjAzbVlIRDI0SmVqN0RkV1FENXRXQnlISk9yZl94MkFXU01aUUJ5QzFyTGUtWEdrMllKc3RBeV8waTJSSTFUTzQyZEc4dXdfeXExUGNBZzBKdGRTdjdmNTQzd0Rn?oc=5",
-      "checked_at": "2026-09-05T05:48:15.246422+00:00"
-    },
-    {
-      "key": "0ebb7f92c31a2959f50d0b6b0a88c551ce49457f",
-      "source": "Reuters / X",
-      "title": "Number of Iranian military personnel reported killed by US strikes this week rises to 13 https://t.co/WR6rauWU8m https://t.co/WR6rauWU8m",
-      "reason": "not_today_tehran",
-      "published": "Thu, 03 Sep 2026 23:45:09 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBDaVVyaHhVZ0JlZlZhaVlVU2lodjhFUlJaaWM5UU1xYjV4SWlrQmN2S2pUMjZyNi1DYUQzMl81TWxETmtGbWstdkFrQmVkYUtpeTRMRGd1Z28yQldW?oc=5",
-      "checked_at": "2026-09-05T05:48:15.246422+00:00"
-    },
-    {
-      "key": "aa986b75c2b368245172b903c26ddc0818b31502",
-      "source": "Reuters / X",
-      "title": "The United States and Iran have signaled no quick end to their war, with President Trump saying it was necessary to finish the job and Iran warning that the world should be ready for oil at $200 a barrel after striking tankers in Iraqi waters and other ships near t",
-      "reason": "not_today_tehran",
-      "published": "Wed, 11 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFA1OHg4M3l1VnU5Tzl2Sk5LUnd3SnZUbDl4NTlFamZ3dDNwZW56Q3NVMnZFdFlGNEszSnV0QWZDZVRwbEUyS0FWVklMYlI1M1JKUnQ0NFBSQy1NUmQ4dlFVeEZ3VE42Zk0?oc=5",
-      "checked_at": "2026-09-05T05:48:15.246422+00:00"
-    },
-    {
-      "key": "b61ae54d4afe2eb4935f4a97fee6a9ae48083696",
-      "source": "Reuters / X",
-      "title": "Pipelines and ports: Iran war spurs Gulf infrastructure investment https://t.co/85CANthGI8 https://t.co/85CANthGI8",
-      "reason": "not_today_tehran",
-      "published": "Fri, 28 Aug 2026 12:20:24 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE9XZ041eWNUWE5ydExWOFZaQjdnTHFGZFVlOWwxSXZvQmpxVHRldkZ2cUY0Y1VqRlgwQlB5WV91VG4yS2xlWXM0M0dCNDZXeTBJdVRjQm1IejJRTWpH?oc=5",
       "checked_at": "2026-09-05T05:48:15.246422+00:00"
     }
   ],
