@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
@@ -11,6 +12,10 @@ PERSIAN_MONTHS = (
     "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند",
 )
 PERSIAN_DIGITS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
+VESSEL_TERMS = (
+    "tanker", "tankers", "bulk carrier", "kamsarmax", "handysize", "vlcc",
+    "lng carrier", "lpg carrier", "container ship", "cargo ship", "vessel",
+)
 
 
 @dataclass(frozen=True)
@@ -21,6 +26,15 @@ class HormuzTrafficReport:
     rolling_average: int | float | None
     vessel_details: tuple[str, ...]
     notes: tuple[str, ...]
+    sources: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class ParsedHormuzStats:
+    observed_count: int | None
+    previous_count: int | None
+    rolling_average: int | float | None
+    vessel_details: tuple[str, ...]
     sources: tuple[str, ...]
 
 
@@ -79,6 +93,63 @@ def _format_number(value: int | float) -> str:
     else:
         rendered = str(int(value))
     return _to_persian_digits(rendered)
+
+
+def _first_number(text: str, patterns: tuple[str, ...]) -> int | float | None:
+    for pattern in patterns:
+        match = re.search(pattern, text, flags=re.IGNORECASE)
+        if not match:
+            continue
+        raw = match.group(1).replace(",", "")
+        try:
+            value = float(raw)
+        except ValueError:
+            continue
+        return int(value) if value.is_integer() else value
+    return None
+
+
+def parse_hormuz_source_text(text: str, publisher: str = "") -> ParsedHormuzStats:
+    cleaned = re.sub(r"\s+", " ", text or "").strip()
+    observed = _first_number(cleaned, (
+        r"(?:only\s+)?(\d+(?:\.\d+)?)\s+(?:cargo|commercial)?\s*(?:ships?|vessels?)\s+(?:transited|crossed|passed through|passed)",
+        r"(?:transits?|traffic)\s+(?:fell|dropped|rose|increased)?\s*(?:to|at)?\s*(\d+(?:\.\d+)?)\s+(?:ships?|vessels?)",
+    ))
+    previous = _first_number(cleaned, (
+        r"(?:down|up)\s+from\s+(\d+(?:\.\d+)?)\s+(?:a|the)?\s*(?:day|one day)\s+earlier",
+        r"previous\s+day[^\d]{0,20}(\d+(?:\.\d+)?)\s+(?:ships?|vessels?)",
+    ))
+    average = _first_number(cleaned, (
+        r"10[- ]day\s+average(?:\s+(?:was|of))?\s+(\d+(?:\.\d+)?)",
+        r"average\s+of\s+(\d+(?:\.\d+)?)\s+(?:ships?|vessels?)\s+(?:a|per)\s+day",
+    ))
+
+    details: list[str] = []
+    for sentence in re.split(r"(?<=[.!?])\s+", cleaned):
+        low = sentence.lower()
+        if any(term in low for term in VESSEL_TERMS) and any(
+            token in low for token in ("two ", "one ", "three ", "four ", "medium-range", "kamsarmax", "handysize", "vlcc", "lng", "lpg")
+        ):
+            details.append(sentence.strip())
+    details = details[:4]
+
+    sources: list[str] = []
+    if "kpler" in cleaned.lower():
+        sources.append("Kpler")
+    if "vortexa" in cleaned.lower():
+        sources.append("Vortexa")
+    if publisher:
+        normalized = publisher.strip()
+        if normalized and normalized not in sources:
+            sources.append(normalized)
+
+    return ParsedHormuzStats(
+        observed_count=observed if isinstance(observed, int) else None,
+        previous_count=previous if isinstance(previous, int) else None,
+        rolling_average=average,
+        vessel_details=tuple(details),
+        sources=tuple(sources),
+    )
 
 
 def format_hormuz_report(report: HormuzTrafficReport) -> str:
