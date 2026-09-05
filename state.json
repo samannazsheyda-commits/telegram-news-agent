@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:TankerTrackers:2096031376487133584",
+    "x:AlArabiya_Eng:2096175236408344804",
+    "x:AlArabiya_Eng:2096182873434800389",
     "38eb433999b0dfc7d81388041a9d1019f9cbfdc9",
     "d67f6153077252082556849d7dbbb76c6a18a21b",
     "097c69b1737517a9d22f8fe5bc729e74b9156fb0",
@@ -497,13 +500,10 @@
     "0fd5a8d47bdac05fff4c57fb0a1f08cf24bd291b",
     "8eeaa1a703a8d9d47bbfa5b2928cabdfd70ab444",
     "f6a83c940c1dc4ece963f7a7bd3588cc2d0bbf3b",
-    "d7b6d8056d660db0c4bc349bdb3a8db736b33e1e",
-    "9360307ed267174beb8ee4a5dd1cef43dee38aab",
-    "d63ab45d9a575038a15de6e6f49b0d235968283a",
-    "401189796a83bf18cd5a1d935c282e059d9e30fc"
+    "d7b6d8056d660db0c4bc349bdb3a8db736b33e1e"
   ],
-  "market_last_sent_at": "2026-09-05T08:43:54.746517+00:00",
-  "next_news_color": "red",
+  "market_last_sent_at": "2026-09-05T10:44:48.152950+00:00",
+  "next_news_color": "white",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -531,9 +531,9 @@
   "market_day_prices": {
     "date": "2026-09-05",
     "first_usd": 221060,
-    "last_usd": 224000,
+    "last_usd": 224520,
     "first_gold": 23518800,
-    "last_gold": 23674400,
+    "last_gold": 23614900,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
@@ -2343,6 +2343,33 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:TankerTrackers:2096031376487133584",
+      "source": "TankerTrackers / X",
+      "title": "We’ve now tagged 17 crude oil and gas (LNG & LPG) ship-to-ship transfers which took place yesterday (2026-09-04) in the Gulf of Oman. At least 24 million barrels were being exchanged. We also identified many more oil-laden tankers waiting for a dance partner in those waters. It appears that the dance floor itself is the limitation. It's getting quite crowded and port services are kept busy around the clock to ensure smooth and safe transfers. In addition, we spotted at least 7.25 million barrels, along with two more LNG tankers, assembling to transit the SoH into the GoO under the protection of US CENTCOM. Busy day. #OOTT #IranWar #Tankers",
+      "summary": "",
+      "link": "https://x.com/TankerTrackers/status/2096031376487133584",
+      "published": "Sat, 05 Sep 2026 00:23:17 +0000",
+      "sent_at": "2026-09-05T10:45:40.708446+00:00"
+    },
+    {
+      "key": "x:AlArabiya_Eng:2096175236408344804",
+      "source": "Al Arabiya English / X",
+      "title": "Iranian experts are taking part in directing Houthi military operations in Yemen’s southwestern province of Taiz, Yemeni military sources tell Al Arabiya English 🔴 The sources said dozens of Houthi fighters had been killed in intense battles as Yemeni armed forces made advances on several fronts over the past few hours 🔴 Yemen’s air force also carried out a series of airstrikes against Houthi positions in Taiz and the western province of Hodeidah, according to the sources 🔴 The strikes helped thwart Houthi attempts to advance along several axes, the sources added",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096175236408344804",
+      "published": "Sat, 05 Sep 2026 09:54:56 +0000",
+      "sent_at": "2026-09-05T10:44:33.300077+00:00"
+    },
+    {
+      "key": "x:AlArabiya_Eng:2096182873434800389",
+      "source": "Al Arabiya English / X",
+      "title": "BREAKING: Four Iranian and Lebanese experts were killed in a strike targeting a Houthi command center in Yemen’s northern al-Jawf province, Yemeni military sources say.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096182873434800389",
+      "published": "Sat, 05 Sep 2026 10:25:16 +0000",
+      "sent_at": "2026-09-05T10:43:34.879022+00:00"
+    },
     {
       "key": "d67f6153077252082556849d7dbbb76c6a18a21b",
       "source": "NOTAM / Airspace",
