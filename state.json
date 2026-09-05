@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:JasonMBrodsky:2096189697013793139",
+    "x:AJEnglish:2096189272189526020",
+    "x:kann_news:2096188326730494125",
     "x:TankerTrackers:2096031376487133584",
     "x:AlArabiya_Eng:2096175236408344804",
     "x:AlArabiya_Eng:2096182873434800389",
@@ -497,13 +500,10 @@
     "655ea31b926011e25493d8179881483c449c1530",
     "afea21b3a92fa8fb52c178540de59ad07dea9aec",
     "ed06d4a7374f040657b0ad21b0019e8a75c4d05c",
-    "0fd5a8d47bdac05fff4c57fb0a1f08cf24bd291b",
-    "8eeaa1a703a8d9d47bbfa5b2928cabdfd70ab444",
-    "f6a83c940c1dc4ece963f7a7bd3588cc2d0bbf3b",
-    "d7b6d8056d660db0c4bc349bdb3a8db736b33e1e"
+    "0fd5a8d47bdac05fff4c57fb0a1f08cf24bd291b"
   ],
   "market_last_sent_at": "2026-09-05T10:44:48.152950+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -2343,6 +2343,33 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:JasonMBrodsky:2096189697013793139",
+      "source": "Jason Brodsky / X",
+      "title": "An Iranian tanker ‌was hit by U.S. forces on Saturday near #Iran's key oil export hub, Kharg Island, in the Gulf, the semi-official Iranian news agency Tasnim reported.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2096189697013793139",
+      "published": "Sat, 05 Sep 2026 10:52:23 +0000",
+      "sent_at": "2026-09-05T10:53:02.079715+00:00"
+    },
+    {
+      "key": "x:AJEnglish:2096189272189526020",
+      "source": "Al Jazeera English / X",
+      "title": "US President Donald Trump says Washington may strike Iran’s Pickaxe Mountain “very soon”, in the latest in a series of threats he has made against the heavily fortified underground site. So why is Trump threatening to strike it again?",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096189272189526020",
+      "published": "Sat, 05 Sep 2026 10:50:42 +0000",
+      "sent_at": "2026-09-05T10:52:02.320929+00:00"
+    },
+    {
+      "key": "x:kann_news:2096188326730494125",
+      "source": "KAN 11 / X",
+      "title": "שגריר ארה\"ב בישראל, מייק האקבי, במהלך ביקורו בכפר הפלסטיני תורמוס-עייא מצפון לרמאללה: \"שמענו מהתושבים תלונות לגבי האתגרים העומדים בפניהם, כשחלקם מאויימים ע\"י אנשים שאני מגדיר כטרוריסטים. כשאתה מנסה לייצר אווירה בה אנשים לא מרגישים בנוח ולא בטוחים בתוך הבתים שלהם – זה טרור בכל מובן המילה\" @LiranHaroni",
+      "summary": "",
+      "link": "https://x.com/kann_news/status/2096188326730494125",
+      "published": "Sat, 05 Sep 2026 10:46:57 +0000",
+      "sent_at": "2026-09-05T10:47:40.088647+00:00"
+    },
     {
       "key": "x:TankerTrackers:2096031376487133584",
       "source": "TankerTrackers / X",
