@@ -7,11 +7,25 @@ def _x(key: str, published: str, title: str = "Iran update") -> NewsItem:
     return NewsItem(key, "Reuters / X", title, "", f"https://x.com/Reuters/status/{key.split(':')[-1]}", published)
 
 
-def test_easy_flow_accepts_x_without_editorial_rejection():
+def test_easy_flow_accepts_current_x_without_editorial_rejection():
     from src import runtime_v7 as v7
 
-    item = _x("x:Reuters:2", "Thu, 03 Sep 2026 08:00:00 +0000")
-    assert v7._easy_rejection_reason(item, datetime(2026, 9, 5, tzinfo=timezone.utc)) is None
+    item = _x("x:Reuters:2", "Sat, 05 Sep 2026 08:00:00 +0000")
+    assert v7._easy_rejection_reason(item, datetime(2026, 9, 5, 9, 0, tzinfo=timezone.utc)) is None
+
+
+def test_easy_flow_rejects_stale_x_post():
+    from src import runtime_v7 as v7
+
+    item = _x("x:Reuters:20", "Thu, 03 Sep 2026 08:00:00 +0000")
+    assert v7._easy_rejection_reason(item, datetime(2026, 9, 5, 9, 0, tzinfo=timezone.utc)) == "not_today_tehran"
+
+
+def test_easy_flow_rejects_x_without_publish_time():
+    from src import runtime_v7 as v7
+
+    item = _x("x:Reuters:21", "")
+    assert v7._easy_rejection_reason(item, datetime(2026, 9, 5, 9, 0, tzinfo=timezone.utc)) == "invalid_publish_time"
 
 
 def test_easy_flow_rejects_x_post_without_iran_anchor():
@@ -85,6 +99,13 @@ def test_mixed_english_with_one_persian_word_is_not_treated_as_persian(monkeypat
     assert v7._translate_or_original("Breaking ایران missile update from Reuters") == ""
 
 
+def test_mixed_hebrew_translation_is_rejected(monkeypatch):
+    from src import runtime_v7 as v7
+
+    monkeypatch.setattr(v7, "_original_translate", lambda value, session=None: "ایران אמרה שהשיחות יימשכו")
+    assert v7._translate_or_original("Iran says talks continue") == ""
+
+
 def test_persian_source_text_can_pass_without_translation(monkeypatch):
     from src import runtime_v7 as v7
 
@@ -135,9 +156,11 @@ def test_install_easy_flow_wires_policy_without_leaking_after_test(monkeypatch):
         v7._easy_news_flow_installed = original_flag
 
 
-def test_easy_flow_selects_only_one_newest_story_per_cycle():
+def test_easy_flow_selects_only_newest_translatable_story_per_cycle(monkeypatch):
     from src import runtime_v7 as v7
 
+    monkeypatch.setattr(v7, "_original_translate", lambda value, session=None: "ترجمه فارسی ایران")
+    v7._translation_cache.clear()
     items = [
         _x("x:Reuters:1", "Sat, 05 Sep 2026 08:00:00 +0000"),
         _x("x:Reuters:2", "Sat, 05 Sep 2026 08:01:00 +0000"),
@@ -148,9 +171,45 @@ def test_easy_flow_selects_only_one_newest_story_per_cycle():
     assert skipped == []
 
 
-def test_distinct_x_posts_are_not_semantically_deduped():
+def test_translation_failure_on_newest_does_not_starve_older_story(monkeypatch):
     from src import runtime_v7 as v7
 
+    newest = _x("x:Reuters:3", "Sat, 05 Sep 2026 08:02:00 +0000", "Newest Iran update")
+    older = _x("x:Reuters:2", "Sat, 05 Sep 2026 08:01:00 +0000", "Older Iran update")
+
+    def translator(value, session=None):
+        return "" if value.startswith("Newest") else "خبر فارسی معتبر درباره ایران"
+
+    monkeypatch.setattr(v7, "_original_translate", translator)
+    v7._translation_cache.clear()
+    selected, skipped = v7._select_one_story([older, newest], [])
+    assert [item.key for item in selected] == ["x:Reuters:2"]
+    assert skipped == []
+
+
+def test_selector_caches_successful_translation_for_main_send(monkeypatch):
+    from src import runtime_v7 as v7
+
+    calls = []
+
+    def translator(value, session=None):
+        calls.append(value)
+        return "خبر فارسی معتبر درباره ایران"
+
+    monkeypatch.setattr(v7, "_original_translate", translator)
+    v7._translation_cache.clear()
+    item = _x("x:Reuters:9", "Sat, 05 Sep 2026 08:02:00 +0000", "Iran update from Reuters")
+    selected, _ = v7._select_one_story([item], [])
+    assert selected == [item]
+    assert v7._translate_or_original(item.title) == "خبر فارسی معتبر درباره ایران"
+    assert calls == [item.title]
+
+
+def test_distinct_x_posts_are_not_semantically_deduped(monkeypatch):
+    from src import runtime_v7 as v7
+
+    monkeypatch.setattr(v7, "_original_translate", lambda value, session=None: "خبر فارسی معتبر درباره ایران")
+    v7._translation_cache.clear()
     older = _x("x:Reuters:1", "Sat, 05 Sep 2026 08:00:00 +0000", "Iran tanker hit near Kharg")
     newer = _x("x:Reuters:2", "Sat, 05 Sep 2026 08:01:00 +0000", "Iran tanker hit near Kharg")
     selected, skipped = v7._select_one_story([newer], [older])

@@ -15,6 +15,8 @@ _original_translate = v2.translate_news_to_fa
 _RLM = "\u200f"
 _X_STATUS_RE = re.compile(r"^https?://(?:www\.)?(?:x\.com|twitter\.com)/[A-Za-z0-9_]+/status/\d+(?:[/?#].*)?$", re.I)
 _WEB_LINK_RE = re.compile(r"^https?://", re.I)
+_HEBREW_RE = re.compile(r"[\u0590-\u05FF]")
+_translation_cache: dict[str, str] = {}
 
 _TOPIC_ICONS = (
     ("🚀", ("missile", "rocket", "موشک", "راکت")),
@@ -29,6 +31,15 @@ _TOPIC_ICONS = (
     ("🕊️", ("ceasefire", "talks", "negotiation", "deal", "آتش‌بس", "مذاکره", "توافق")),
 )
 
+_EXTRA_COUNTRY_FLAGS = (
+    ("🇾🇪", ("yemen", "yemeni", "houthi", "houthis", "یمن", "یمنی", "حوثی")),
+    ("🇵🇸", ("palestine", "palestinian", "gaza", "west bank", "فلسطین", "فلسطینی", "غزه", "کرانه باختری")),
+    ("🇸🇾", ("syria", "syrian", "damascus", "سوریه", "سوری", "دمشق")),
+    ("🇹🇷", ("turkey", "turkish", "ankara", "ترکیه", "ترک", "آنکارا")),
+    ("🇵🇰", ("pakistan", "pakistani", "islamabad", "پاکستان", "پاکستانی", "اسلام‌آباد")),
+    ("🇦🇫", ("afghanistan", "afghan", "kabul", "افغانستان", "افغان", "کابل")),
+)
+
 
 def _is_x_item(item) -> bool:
     return str(getattr(item, "source", "")).endswith(" / X")
@@ -39,15 +50,25 @@ def _published_dt(item):
 
 
 def _select_one_story(candidates, references):
-    """Publish exactly one newest eligible item per monitor cycle.
+    """Choose one newest candidate whose Persian card is actually publishable.
 
-    Distinct X status IDs are not semantically deduplicated here. Exact reposts are
-    still blocked by the existing news_seen/published-key state before selection.
+    Exact already-published keys are blocked upstream. Distinct X status IDs are not
+    semantically deduplicated here. If the newest title cannot be translated or would
+    format to an empty card, continue down the queue in the same cycle instead of
+    letting one bad item starve the feed.
     """
+    _translation_cache.clear()
     if not candidates:
         return [], []
-    newest = max(candidates, key=_published_dt)
-    return [newest], []
+    ordered = sorted(candidates, key=_published_dt, reverse=True)
+    for item in ordered:
+        title_fa = _translate_or_original(getattr(item, "title", ""))
+        if not title_fa:
+            continue
+        if not v2._original_news_format(item, title_fa, ""):
+            continue
+        return [item], []
+    return [], []
 
 
 def _has_valid_source_link(item) -> bool:
@@ -60,11 +81,15 @@ def _has_valid_source_link(item) -> bool:
 
 
 def _easy_rejection_reason(item, now):
-    # Keep the flow permissive, but never publish a source-less item or an X post
-    # that is not directly Iran-related.
+    # The feed is permissive on editorial scoring, but not on provenance, freshness,
+    # or Iran relevance. Old indexed/timeline rows must never refill the channel.
     if _is_x_item(item):
         if not _has_valid_source_link(item):
             return "missing_direct_source_link"
+        if v2.base.agent._published_dt(getattr(item, "published", "")) is None:
+            return "invalid_publish_time"
+        if not v2.base.agent._published_today(getattr(item, "published", ""), now):
+            return "not_today_tehran"
         if not is_fresh_iran_topic(f"{getattr(item, 'title', '')} {getattr(item, 'summary', '')}"):
             return "not_iran_related"
         return None
@@ -73,7 +98,7 @@ def _easy_rejection_reason(item, now):
 
 def _is_persian_output(value: str) -> bool:
     text = str(value or "").strip()
-    if not text:
+    if not text or _HEBREW_RE.search(text):
         return False
     persian_letters = re.findall(r"[\u0600-\u06FF]", text)
     latin_letters = re.findall(r"[A-Za-z]", text)
@@ -87,18 +112,37 @@ def _is_persian_output(value: str) -> bool:
 
 def _translate_or_original(value, session=None):
     text = str(value or "").strip()
-    translated = str(_original_translate(text, session=session) or "").strip()
+    if not text:
+        return ""
+    cached = _translation_cache.get(text)
+    if cached:
+        return cached
+    try:
+        translated = str(_original_translate(text, session=session) or "").strip()
+    except Exception:
+        translated = ""
     if translated and _is_persian_output(translated):
+        _translation_cache[text] = translated
         return translated
     # Persian source posts can pass untouched. English/Hebrew or bad translator
     # fallbacks are withheld and retried instead of leaking into the channel.
-    return text if _is_persian_output(text) else ""
+    if _is_persian_output(text):
+        _translation_cache[text] = text
+        return text
+    return ""
 
 
 def _topic_icons(item, title_fa: str, summary_fa: str) -> str:
     text = f" {item.title} {item.summary} {title_fa} {summary_fa} ".lower()
     icons = [icon for icon, terms in _TOPIC_ICONS if any(term in text for term in terms)]
     return " ".join(dict.fromkeys(icons))
+
+
+def _country_flags(item, title_fa: str, summary_fa: str) -> str:
+    text = f" {item.title} {item.summary} {title_fa} {summary_fa} ".lower()
+    base_flags = v2._country_flags(item, title_fa, summary_fa).split()
+    extra = [flag for flag, terms in _EXTRA_COUNTRY_FLAGS if any(term in text for term in terms)]
+    return " ".join(dict.fromkeys([*base_flags, *extra]))
 
 
 def _format_news_with_footer_icons(item, title_fa: str, summary_fa: str, marker_override=None) -> str:
@@ -113,7 +157,7 @@ def _format_news_with_footer_icons(item, title_fa: str, summary_fa: str, marker_
     if not text:
         return text
 
-    flags = v2._country_flags(item, title_fa, summary_fa)
+    flags = _country_flags(item, title_fa, summary_fa)
     icons = _topic_icons(item, title_fa, summary_fa)
     meta = " ".join(part for part in (flags, icons) if part)
     if not meta:
