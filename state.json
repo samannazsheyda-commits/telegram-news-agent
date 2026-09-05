@@ -1,6 +1,10 @@
 {
-  "truth_last_id": "41516",
+  "truth_last_id": "41522",
   "news_seen": [
+    "99135efccde571d3e581ed774551c3d3476abbd7",
+    "af6a9361fec24dee3774dc083f925850c04b9848",
+    "dfd861dc257b09c49a5ed426a40e57e8042fc4ae",
+    "386084dc5afb641e165e09a979945c659f167ce3",
     "f871d9833129e84b17805be3500b593c09d82c08",
     "7fbd2b3558f3a4ac889a8ee560e941b7e89e3101",
     "0781fdf5782c7ba7574fad60af04fcea15b940bf",
@@ -496,11 +500,7 @@
     "5de176a78f0b1daf3a7cd68b2c051736142dfc02",
     "9a3042c31d73aada8517b8bfa38faf4ffd88e625",
     "0545b93d1340a9a8da9017473e5a631f8d0d1895",
-    "afbf8c69ffd59aab862c394b03ded10bee3c3122",
-    "84953cb863f4bd5a5b23d47c0c31449d076929d4",
-    "5cdfdf8a4d2821ded272ebc53eb19c3142743c81",
-    "fe6964bcf660ad53bfd7f3ec5aed1c39bdeb9210",
-    "f8a11da6c26e45cccd1f843d57406b3408fda539"
+    "afbf8c69ffd59aab862c394b03ded10bee3c3122"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "red",
@@ -530,6 +530,42 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "99135efccde571d3e581ed774551c3d3476abbd7",
+      "source": "Al Jazeera",
+      "title": "‘Small potatoes’: US President Trump downplays war on Iran",
+      "reason": "duplicate_or_redundant",
+      "published": "Fri, 04 Sep 2026 23:58:39 GMT",
+      "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPVjdic3NWOEx4bDdlWTRfcXp3bUhUUDlMWkc4RGFfazVDSmVoWHh1dmRKZktTNllZM1RhRjJoRGkxMGR2S1lHbE9Cd0NndEptdnFTZEZMaW93bTRRRTJ1ZThGc1V0c1o1VDc0Q2VjZ0NIaTVMZ1otdzBEbnhFMTZ4WE1sZ1c5Y2Z3MHJaRUt6ZF82NkFLcWlzcEJfc9IBoAFBVV95cUxPRS14Y20xajR0enBJQzRGN1dTNlhSSU1sNmRTSVNOeUptcEtpeG9tRzdJalZQNTFEYkJteUptc3ktSXhtZDJPdHB5b2tGUnNMclE0OHVRQ0FYak1xSnFMZFg3S0x1OG50bzRSQ3Z1LTc0NFExejBxU21TOWRpVUotWndtWGdYelhvOWZwc1FtdU5VYUJsU3BXTXpORTVZODhl?oc=5",
+      "checked_at": "2026-09-05T00:34:29.808093+00:00"
+    },
+    {
+      "key": "af6a9361fec24dee3774dc083f925850c04b9848",
+      "source": "تبز لایو / Telegram",
+      "title": "🇹🇷 📞 🇦🇪 — Turkish President Erdoğan discussed bilateral relations and regional tensions with UAE President Sheikh Mohamed bin Zayed Al Nahyan in a phone call. Erdoğan said cooperation between Türkiye and the UAE would continue to expand,...",
+      "reason": "low_signal_or_unapproved_source",
+      "published": "Sat, 05 Sep 2026 00:16:30 +0000",
+      "link": "https://t.me/tabzlive/101806",
+      "checked_at": "2026-09-05T00:34:29.808093+00:00"
+    },
+    {
+      "key": "dfd861dc257b09c49a5ed426a40e57e8042fc4ae",
+      "source": "Times of Israel",
+      "title": "Vance: Preventing nuclear Iran is the ‘number two’ US goal, after ensuring cheap oil",
+      "reason": "not_today_tehran",
+      "published": "Fri, 14 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNX2I4WWsyX0VsSGFDSl9VYmV6SkpFQjdRU05mNk92ZGp0N1NvSkk2TER4bWxIZzk5RFprYUg4WnRkUGN2cHloSEtYUkkyaTFZanlRNXU1LWZpa1VVQU1PLXVIdUwzQm5waGZ4THRfdjdGV2p4OFJkOGJ2SDNtRUJmUUpzZUlfVHpheG9ERmVidFNFUzZQVnZyei1KNk1SMmZxR1pJV1lwdVhsVV9FX3RFONIBtgFBVV95cUxOSUxSaU5vbTdqNTZ0QTNMQ1laZlB5ZEE4ZHdXVjJ0V3RVRmxxMVh1LUtnVlRjLTBzWTJmRklnX1RqWUVwaWVCUk1KeEVhWDIybmhBWkVic1QzaVo2SEF0Q0JsT2ZOWWlYaVF2TzFESUN2WWtxVU1lcmhYc1EtNnAyZDRnNjFXeTh0YlREbHFqczMxUHcxVURlRWlSSFJkOS16QUwyaGZEaV9NUHhGb01qbmVCNVJiUQ?oc=5",
+      "checked_at": "2026-09-05T00:34:29.808093+00:00"
+    },
+    {
+      "key": "386084dc5afb641e165e09a979945c659f167ce3",
+      "source": "The New York Times",
+      "title": "Iran War Helps to Drive U.S. Diesel Prices to New High",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 17:40:08 GMT",
+      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQcXloYk5UMGdQS2dXVEZsR3FsU1RERGpiZFpTNkdUMzAtTnRLb1VKbEZxanY4cUp3M2UtaFZFdlBBVG5FWjFwZWRNQ3QyakluVEw4d3JjZHZTZzZRQlAyZEFLOG1OU0lkNUExTmQ4X3J1WWpWeEJscjBtcTg3Tnh1Qks0WQ?oc=5",
+      "checked_at": "2026-09-05T00:34:29.808093+00:00"
+    },
     {
       "key": "f871d9833129e84b17805be3500b593c09d82c08",
       "source": "CNBC",
@@ -2293,42 +2329,6 @@
       "published": "Fri, 04 Sep 2026 06:53:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQUDhITzU0TDIyV0VyQTBvT0FPZmZBZHJaTGFKc3dQaFl6VHpmbmM1TVUtTXRtY2Z1d2dONVdDcXhpUHB4Z2xVcjF4NnBac2ZRUXVBcXpOU0VOZlJfejNfWHZVNEVxeGk3TzZ6MWVIYWljN194YjEtbExGeWJtYk52UTdabG0yWTNQQnlFTy0wd2E2amE1QnBqSDZTaldIb1M4MzFR?oc=5",
       "checked_at": "2026-09-04T22:27:40.315473+00:00"
-    },
-    {
-      "key": "13574e8838238cb362a96c96e55b2bc8688d4759",
-      "source": "Reuters",
-      "title": "US and allies push IAEA board to report Iran to UN Security Council, diplomats say",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 15:36:48 GMT",
-      "link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOTWN6cU9lV0RMREdsVnRUZW1vS0tKZk9tZUJmMnFpTTdNM2c4c2J2bUtzOElSbjA2WnFCQzdZSnotczdsYnNPRWFLckFyV0EwNWg1akIyTFo4NDF4ODVMTnVSNnBjcWREd1Q4dWk3Q3FyWFkwMFdLbzY5YU9yLVkySDlEOGJBVktZQTJ1d2NJMkJSUGpKaks5dTNUb2xySnVBb3VGUUdILXZpaVZqeHVtcWR4Nm03M1oxNUFUNA?oc=5",
-      "checked_at": "2026-09-04T22:27:40.315473+00:00"
-    },
-    {
-      "key": "811e1b7a21d5db6130bceca12e64ef99a24716fa",
-      "source": "تبز لایو / Telegram",
-      "title": "🇺🇳 🇺🇸 🇪🇺 🇮🇷 ⚡️ — The U.S., Britain, France and Germany are preparing to seek an IAEA resolution next week referring Iran to the UN Security Council for the first time in 20 years, according to diplomats and a draft seen by Reuters. The p...",
-      "reason": "bundled_or_multi_headline",
-      "published": "Fri, 04 Sep 2026 22:22:32 +0000",
-      "link": "https://t.me/tabzlive/101801",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "64a4e630975cfd13bd1e5f114fd16779c29c3f0b",
-      "source": "NOTAM / Airspace",
-      "title": "Iran partially closes western airspace amid missile fire - Middle East Eye",
-      "reason": "not_today_tehran",
-      "published": "Sun, 07 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQYmxjLXpJVEozZ3FsRG82RjBpZ0JZMHN6WHZMQ2lNTGVtaDFXWFlsUXBDSjRER1hCMTNZd1BIMzNfTTBZNzR5MnlIWC1CZ29MVGVrT3lQS0prX3dQN2RZb242M04ybXQ3OUFNMjVZWWVZTE5hWjdSbGpsaWVsTDh4SXlxdjVKLWxpNDQwTnN4SzVoWGRvSzVGQUhZcEwzeTljQ1pOZEd4SHdfQ1NxOEl2dG1fRQ?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "99b189997c55904000a2b12c7065d2c81f341b31",
-      "source": "Al Jazeera",
-      "title": "Jordan intercepts Iranian missiles over its airspace",
-      "reason": "not_today_tehran",
-      "published": "Wed, 10 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNSVRBeTJ2TWR4SElud2NBSEFUa2ZUbXFkZVlIWklCN3l5aHdReC1aNzZ2QjZrYjhTOWVFU3VENXBZTlltZm9oSDdRTHlGU3NwLWV3TG5aN01ER2JCZnltNHdONWE5cTlwb1FoR2Zjd1ppdkREUHZMU0pfUlY1dnVTMXVmTF9kcWN6OG5tZ20zeW95SkJ0OFM3T2FNSW9qc194aF8tX21n0gGrAUFVX3lxTFBWNDh5Z2dsTGV5U3l2SGU2ekZXZDFSaWNFc3dkZFN1UmZnQTJvV1JyajZiYjR0QjVwZmVjOHZsdk11Y3ZFNzZEMHVCVjlaX2NXVmdnNDZOMGxfOGxtNVRqUVVYVGJiMDRqenp0VGo0aXNZc3d4WW45bTViOGpPS1Z5MEFhaTZldDJRLXN5bXAxaGQyLV9OWGxXb0NZNjh5YXl0d1ZvQ3FKVUV4OA?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
