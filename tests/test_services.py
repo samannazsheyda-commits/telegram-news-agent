@@ -1,4 +1,5 @@
 from src.services import has_persian, send_telegram, translate_to_fa
+from src.runtime_v2 import translate_news_to_fa
 
 
 class FakeResponse:
@@ -53,7 +54,7 @@ def test_mixed_english_headline_with_persian_source_suffix_is_still_translated()
             return FakeResponse(payload=[[["بحرین، کویت و اردن حملات موشکی و پهپادی ایران را رهگیری کردند - سانا", None, None, None]]])
 
     source = "Bahrain, Kuwait and Jordan intercept Iranian missile and drone attacks - سانا"
-    translated = translate_to_fa(source, session=Session)
+    translated = translate_news_to_fa(source, session=Session)
     assert translated.startswith("بحرین، کویت و اردن")
     assert "intercept Iranian" not in translated
 
