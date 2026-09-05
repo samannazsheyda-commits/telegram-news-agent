@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-RUNTIME_COMMAND = 'python -m src.runtime_v6 --monitor'
+RUNTIME_COMMAND = 'python -m src.runtime_v7 --monitor'
 
 
 def test_workflow_runs_bounded_monitor_and_keeps_manual_dispatch():
