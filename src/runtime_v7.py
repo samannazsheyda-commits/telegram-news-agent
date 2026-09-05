@@ -10,6 +10,20 @@ from . import runtime_v6 as v6
 _easy_news_flow_installed = False
 _original_strict_rejection = v2._strict_rejection_reason
 _original_translate = v2.translate_news_to_fa
+_RLM = "\u200f"
+
+_TOPIC_ICONS = (
+    ("🚀", ("missile", "rocket", "موشک", "راکت")),
+    ("🛸", ("drone", "uav", "پهپاد")),
+    ("💥", ("strike", "attack", "explosion", "blast", "bomb", "حمله", "انفجار", "بمباران")),
+    ("💨", ("smoke", "fire", "burning", "دود", "آتش", "حریق")),
+    ("🚢", ("ship", "tanker", "vessel", "navy", "کشتی", "نفتکش", "شناور", "ناو")),
+    ("✈️", ("aircraft", "airplane", "flight", "airspace", "هواپیما", "پرواز", "حریم هوایی")),
+    ("🛢️", ("oil", "crude", "petroleum", "نفت", "نفت خام")),
+    ("☢️", ("nuclear", "uranium", "enrichment", "iaea", "هسته", "اورانیوم", "غنی‌سازی", "آژانس")),
+    ("⚓", ("hormuz", "strait", "هرمز", "تنگه")),
+    ("🕊️", ("ceasefire", "talks", "negotiation", "deal", "آتش‌بس", "مذاکره", "توافق")),
+)
 
 
 def _is_x_item(item) -> bool:
@@ -47,6 +61,28 @@ def _translate_or_original(value, session=None):
     return translated or str(value or "").strip()
 
 
+def _topic_icons(item, title_fa: str, summary_fa: str) -> str:
+    text = f" {item.title} {item.summary} {title_fa} {summary_fa} ".lower()
+    icons = [icon for icon, terms in _TOPIC_ICONS if any(term in text for term in terms)]
+    return " ".join(dict.fromkeys(icons))
+
+
+def _format_news_with_footer_icons(item, title_fa: str, summary_fa: str, marker_override=None) -> str:
+    text = v2._original_news_format(item, title_fa, summary_fa, marker_override=marker_override)
+    if not text:
+        return text
+
+    flags = v2._country_flags(item, title_fa, summary_fa)
+    icons = _topic_icons(item, title_fa, summary_fa)
+    meta = " ".join(part for part in (flags, icons) if part)
+    if not meta:
+        return text
+
+    # Final line only: one blank line after the brand tagline, forced RTL so the
+    # flags/icons render on the right edge in Telegram.
+    return f"{text.rstrip()}\n\n{_RLM}{meta}"
+
+
 def install_easy_news_flow() -> None:
     global _easy_news_flow_installed
     if _easy_news_flow_installed:
@@ -54,6 +90,7 @@ def install_easy_news_flow() -> None:
     v6.install_output_policy()
     v2._strict_rejection_reason = _easy_rejection_reason
     v2.translate_news_to_fa = _translate_or_original
+    v2._format_news_with_flags = _format_news_with_footer_icons
     v2.base.agent._news_rejection_reason = _easy_rejection_reason
     v2.base.agent._select_top_stories = _select_one_story
     _easy_news_flow_installed = True
