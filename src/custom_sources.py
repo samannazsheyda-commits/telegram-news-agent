@@ -16,6 +16,7 @@ from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
 
+from .persian_editor import trim_to_complete_sentences
 from .sources import GOOGLE_NEWS_BASE, NewsItem, USER_AGENT, is_iran_related, strip_html
 
 
@@ -178,9 +179,6 @@ def parse_public_feed(content: bytes, source_name: str) -> list[NewsItem]:
 def _direct_iran_telegram_relevance(text: str) -> bool:
     if not is_iran_related(text):
         return False
-    # A foreign/regional story is not an Iran story merely because a weapon is
-    # described as Iran-made/Iranian-made. Remove that provenance-only phrase and
-    # require another genuine Iran signal to remain.
     without_provenance = re.sub(
         r"(?i)(?:#\s*)?iran(?:ian)?\s*[-–—]?\s*made\b",
         " ",
@@ -204,7 +202,9 @@ def parse_public_telegram_channel(html_text: str, channel: str, source_name: str
             continue
         title = re.sub(r"\s+", " ", text).strip()
         if len(title) > 240:
-            title = title[:237].rstrip() + "..."
+            title = trim_to_complete_sentences(title, max_chars=240)
+            if not title:
+                continue
         time_node = message.select_one("time[datetime]")
         published = ""
         if time_node is not None:
