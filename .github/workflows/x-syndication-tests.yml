@@ -14,27 +14,30 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
-      - name: Live search X status diagnostic
+      - name: Probe public X proxy APIs
         run: |
           python - <<'PY'
-          import requests, re, urllib.parse
-          q = 'site:x.com/Reuters/status Iran Reuters'
-          ua = {'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/152 Safari/537.36'}
+          import requests
           urls = [
-              'https://www.google.com/search?num=20&tbs=qdr:d&q=' + urllib.parse.quote(q),
-              'https://html.duckduckgo.com/html/?q=' + urllib.parse.quote(q),
+            'https://api.fxtwitter.com/Reuters',
+            'https://api.fxtwitter.com/user/Reuters',
+            'https://api.fxtwitter.com/users/Reuters',
+            'https://api.vxtwitter.com/Reuters',
+            'https://api.vxtwitter.com/user/Reuters',
+            'https://api.vxtwitter.com/users/Reuters',
+            'https://twitterviewer.io/profile/Reuters',
           ]
-          found = []
+          ok = []
           for url in urls:
               try:
-                  r = requests.get(url, headers=ua, timeout=30)
-                  print('URL', url.split('?')[0], 'status', r.status_code, 'bytes', len(r.text))
-                  print(r.text[:3500])
-                  links = re.findall(r'https?://(?:www\.)?x\.com/Reuters/status/\d+', r.text, re.I)
-                  print('xlinks', list(dict.fromkeys(links))[:10])
-                  found.extend(links)
+                  r = requests.get(url, headers={'User-Agent':'Mozilla/5.0'}, timeout=20)
+                  print('\nURL', url, 'status', r.status_code, 'type', r.headers.get('content-type'), 'bytes', len(r.content))
+                  print(r.text[:3000])
+                  if r.status_code == 200 and ('status' in r.text.lower() or 'tweet' in r.text.lower()):
+                      ok.append(url)
               except Exception as exc:
                   print('ERR', url, exc)
-          assert found, 'Google/DDG returned no direct Reuters X status links'
+          assert ok, 'No usable public X proxy profile endpoint found'
+          print('usable', ok)
           PY
       - run: python -m pytest -q
