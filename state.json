@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "10c2064a817cb0025d0566572c13ccf7c3360a62",
+    "77552fc5107aff588ed597aec7f34bd70167e4a0",
     "c2e341b47a8f9c93466c9f488d8d5633a4be1811",
     "6c07a06255299516ee6307b09c36aa77e69bd907",
     "f6977fe57e21422377b25e34d6efb33b55efa257",
@@ -498,11 +500,9 @@
     "f5f50907839d0492e09fda4043828f7f420d9932",
     "f02a9d8756e603fbd79ffa2aa584cd21dfc279e4",
     "d0804f9568ce0212b1546ca1753937196b15331e",
-    "a4a389747b108657e13bdc007197764ee4934437",
-    "27c9e85ae54ba52deb6de47c47fec95fb12964bf",
-    "0ad43489488ffd09f223a03e85292d466f01b59e"
+    "a4a389747b108657e13bdc007197764ee4934437"
   ],
-  "market_last_sent_at": "2026-09-05T04:34:33.611150+00:00",
+  "market_last_sent_at": "2026-09-05T06:37:39.475345+00:00",
   "next_news_color": "white",
   "car_last_prices": {
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -527,9 +527,31 @@
     "first_usd": 221060,
     "last_usd": 221060,
     "first_gold": 23518800,
-    "last_gold": 23518800
+    "last_gold": 23518800,
+    "first_brent": 96.28,
+    "last_brent": 96.28,
+    "first_wti": 91.48,
+    "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "10c2064a817cb0025d0566572c13ccf7c3360a62",
+      "source": "NOTAM / Airspace",
+      "title": "EASA extends its CZIB for the Middle East, Persian Gulf - TravelPress",
+      "reason": "not_today_tehran",
+      "published": "Thu, 25 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQTGJxVXZoa3lCTE5Sb3NSVEgyeVM0eUlSOGZCSXhzSU9EdmJTMVJTcllhNmxNRk9LNWdRd29BV2x0THZtTFl4RnliekVZOFdIc2R5dG9FVFBYbThEN3hSTFBfMmtDbkN3NDA3WlAtUDRvS2ZmUmpuUlNuR1lqZmpQbld0cGFPUWVKajNN?oc=5",
+      "checked_at": "2026-09-05T06:37:39.475345+00:00"
+    },
+    {
+      "key": "77552fc5107aff588ed597aec7f34bd70167e4a0",
+      "source": "NOTAM / Airspace",
+      "title": "Flydubai and Air Arabia are once again using Iranian airspace. - Aviation.Direct",
+      "reason": "not_today_tehran",
+      "published": "Mon, 24 Aug 2026 09:13:21 GMT",
+      "link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOektnS09HU2FFRDlieFpJYmFBdC00UFlJbHBrNUlYZjBtS2hiZFZpSzlCRF8zUmhIZUtwRC1jMl9uMEkzT3FnUnFKa2F0LTJoUFBOdUoyOXZpU0dNTXdZYy1wZ1p0TGRseGhwTlUtT1VwSmVxb29VN0V1V2RRd2NOeU1oU1dlRjBpNlY0QTZFbklGdG8?oc=5",
+      "checked_at": "2026-09-05T06:37:39.475345+00:00"
+    },
     {
       "key": "c2e341b47a8f9c93466c9f488d8d5633a4be1811",
       "source": "NOTAM / Airspace",
@@ -2310,24 +2332,6 @@
       "reason": "not_today_tehran",
       "published": "Wed, 22 Jul 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPMmphT2VRenVjMVNpVVlkbnVBZk84c1VCd0tPWmstTlphT2kyWDVEc24xa2hxYTZiUWZRbnlkemtRbGQwOG1felpsd1lZVjdxLTBSS2RDU1lOT0pZUnhwMnB1QjZEQ2RpU3J6UlhSWi1pRWhpNHNHR1FZZms5NmNRNkQ1ZHAxSGJFdEw1MEVVQ2JHQ09kY19aZnFnc3HSAaIBQVVfeXFMTl9MQy1Rcm5mNlBGdE9Nd25NX182cGNmdUlnRmhSWWtGZG9ja1ljWFZmMlJXOV9YSldScDNjWWd0U0xraDhYenZ1bXBQejZMNFBmS1I3WjUyOXU1RlpwMjl1cURhSUM1ZkhXdmxSLVhrd1BDTmRDRFZGTkQxNTBnejFsRUpwUHVrLUU1eUhlQ2xiQWZNNDFtdjRIM1hQQl9yWWFR?oc=5",
-      "checked_at": "2026-09-05T05:47:05.823045+00:00"
-    },
-    {
-      "key": "c5815100f3c665c4b07c64b4194524823b22a0d8",
-      "source": "CNBC",
-      "title": "Trump, Rubio say talks with Tehran ongoing despite Iranian media claims otherwise",
-      "reason": "not_today_tehran",
-      "published": "Tue, 02 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxPM0dZb3ZuSldZT3hucnNPWFMtdERJRm0tN05hM0ZWRHVYMS1BcDdqWDNaUHBKd3BiS0NWbU9JenZIWUlRZGxmd0pheVFZWUgweDhxbFNta2dKOFR0YTNOS0dYcHJfaXpQTEZWZkJlME5ZcV8zX1dYSHVYOU5CblJkdGw2UTNydTFfY2pWSmNHV1rSAZYBQVVfeXFMUDM1U1gtUU5kV2ZwWmYxWjc4TGxXbHl5OGRUcl9Ca3ZteHRmWGZiOTRCNVNNTlgyb2doZ01pZE9mcHNPTkx5b0NuZHVOSXFvNXhyRmh0cTRYZ21qdnlHejNhSWI1TVlPdkVvVWZtX0NVdUJnUG1LTWdIU19OLXdqUmxpem1uN3BEVWNaN0RWVHVtLVZseEtn?oc=5",
-      "checked_at": "2026-09-05T05:47:05.823045+00:00"
-    },
-    {
-      "key": "3abbeea0c8cc938594a470876d02c978d5b72a00",
-      "source": "CBS News",
-      "title": "Rubio says progress made in Strait of Hormuz talks after Trump threatens \"decapitation\"",
-      "reason": "not_today_tehran",
-      "published": "Wed, 05 Aug 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOQ1dLLUtEN1BOZURoRGtpQ1JYaDRibllHa25fRHBpNXlrSUdLV1N3NzVETUFZN3FXTFZlUTB2dmJWd1hSWUNRdDdVcUNnTmNfTTgtVXd1eTJ3WmNoRWxrY2FhcFdlX1d4bUxQdzVIcWM5RHNHNDBsOEN0TjFVTGN5ZHMtZkJ2SW5JTVJLWC04YzJmRG9CTlM5MGRVdzFTNVNYcVVOcGlzeFlSamc?oc=5",
       "checked_at": "2026-09-05T05:47:05.823045+00:00"
     }
   ],
