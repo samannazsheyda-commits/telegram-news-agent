@@ -7,11 +7,25 @@ def _x(key: str, published: str, title: str = "Iran update") -> NewsItem:
     return NewsItem(key, "Reuters / X", title, "", f"https://x.com/Reuters/status/{key.split(':')[-1]}", published)
 
 
-def test_easy_flow_accepts_x_without_editorial_rejection():
+def test_easy_flow_accepts_current_x_without_editorial_rejection():
     from src import runtime_v7 as v7
 
-    item = _x("x:Reuters:2", "Thu, 03 Sep 2026 08:00:00 +0000")
-    assert v7._easy_rejection_reason(item, datetime(2026, 9, 5, tzinfo=timezone.utc)) is None
+    item = _x("x:Reuters:2", "Sat, 05 Sep 2026 08:00:00 +0000")
+    assert v7._easy_rejection_reason(item, datetime(2026, 9, 5, 9, 0, tzinfo=timezone.utc)) is None
+
+
+def test_easy_flow_rejects_stale_x_post():
+    from src import runtime_v7 as v7
+
+    item = _x("x:Reuters:20", "Thu, 03 Sep 2026 08:00:00 +0000")
+    assert v7._easy_rejection_reason(item, datetime(2026, 9, 5, 9, 0, tzinfo=timezone.utc)) == "not_today_tehran"
+
+
+def test_easy_flow_rejects_x_without_publish_time():
+    from src import runtime_v7 as v7
+
+    item = _x("x:Reuters:21", "")
+    assert v7._easy_rejection_reason(item, datetime(2026, 9, 5, 9, 0, tzinfo=timezone.utc)) == "invalid_publish_time"
 
 
 def test_easy_flow_rejects_x_post_without_iran_anchor():
@@ -85,6 +99,13 @@ def test_mixed_english_with_one_persian_word_is_not_treated_as_persian(monkeypat
     assert v7._translate_or_original("Breaking ایران missile update from Reuters") == ""
 
 
+def test_mixed_hebrew_translation_is_rejected(monkeypatch):
+    from src import runtime_v7 as v7
+
+    monkeypatch.setattr(v7, "_original_translate", lambda value, session=None: "ایران אמרה שהשיחות יימשכו")
+    assert v7._translate_or_original("Iran says talks continue") == ""
+
+
 def test_persian_source_text_can_pass_without_translation(monkeypatch):
     from src import runtime_v7 as v7
 
@@ -120,31 +141,34 @@ def test_install_easy_flow_wires_policy_without_leaking_after_test(monkeypatch):
     original_selector = v7.v2.base.agent._select_top_stories
     original_translate = v7.v2.translate_news_to_fa
     original_strict = v7.v2._strict_rejection_reason
+    original_limit = getattr(v7.v2.base.agent, "NEWS_PER_CYCLE", None)
     original_flag = v7._easy_news_flow_installed
 
     try:
         v7._easy_news_flow_installed = False
         v7.install_easy_news_flow()
         assert v7.v2.base.agent._news_rejection_reason is v7._easy_rejection_reason
-        assert v7.v2.base.agent._select_top_stories is v7._select_one_story
+        assert v7.v2.base.agent._select_top_stories is v7._select_news_queue
+        assert v7.v2.base.agent.NEWS_PER_CYCLE == 1
     finally:
         v7.v2.base.agent._news_rejection_reason = original_reason
         v7.v2.base.agent._select_top_stories = original_selector
+        v7.v2.base.agent.NEWS_PER_CYCLE = original_limit
         v7.v2.translate_news_to_fa = original_translate
         v7.v2._strict_rejection_reason = original_strict
         v7._easy_news_flow_installed = original_flag
 
 
-def test_easy_flow_selects_only_one_newest_story_per_cycle():
+def test_easy_flow_orders_full_queue_oldest_to_newest_for_main_reverse_loop():
     from src import runtime_v7 as v7
 
     items = [
+        _x("x:Reuters:3", "Sat, 05 Sep 2026 08:02:00 +0000"),
         _x("x:Reuters:1", "Sat, 05 Sep 2026 08:00:00 +0000"),
         _x("x:Reuters:2", "Sat, 05 Sep 2026 08:01:00 +0000"),
-        _x("x:Reuters:3", "Sat, 05 Sep 2026 08:02:00 +0000"),
     ]
-    selected, skipped = v7._select_one_story(items, [])
-    assert [item.key for item in selected] == ["x:Reuters:3"]
+    selected, skipped = v7._select_news_queue(items, [])
+    assert [item.key for item in selected] == ["x:Reuters:1", "x:Reuters:2", "x:Reuters:3"]
     assert skipped == []
 
 
@@ -153,6 +177,6 @@ def test_distinct_x_posts_are_not_semantically_deduped():
 
     older = _x("x:Reuters:1", "Sat, 05 Sep 2026 08:00:00 +0000", "Iran tanker hit near Kharg")
     newer = _x("x:Reuters:2", "Sat, 05 Sep 2026 08:01:00 +0000", "Iran tanker hit near Kharg")
-    selected, skipped = v7._select_one_story([newer], [older])
+    selected, skipped = v7._select_news_queue([newer], [older])
     assert [item.key for item in selected] == ["x:Reuters:2"]
     assert skipped == []
