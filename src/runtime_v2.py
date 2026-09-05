@@ -16,6 +16,21 @@ _original_custom_fetch = base.fetch_custom_news_items
 _original_priority_score = base._priority_event_priority
 _x_news_keys: set[str] = set()
 
+_X_SOURCE_FA = {
+    "Reuters / X": "رویترز / ایکس",
+    "Associated Press / X": "آسوشیتدپرس / ایکس",
+    "AFP / X": "خبرگزاری فرانسه / ایکس",
+    "BBC World / X": "بی‌بی‌سی ورلد / ایکس",
+    "CNN / X": "سی‌ان‌ان / ایکس",
+    "France 24 / X": "فرانس ۲۴ / ایکس",
+    "Al Jazeera English / X": "الجزیره انگلیسی / ایکس",
+    "Al Arabiya English / X": "العربیه انگلیسی / ایکس",
+    "Times of Israel / X": "تایمز اسرائیل / ایکس",
+    "Haaretz / X": "هاآرتص / ایکس",
+    "Axios / X": "اکسیوس / ایکس",
+}
+base.news_formatters.SOURCE_FA.update(_X_SOURCE_FA)
+
 _PRESERVED_SPECIAL_SOURCES = {
     "Barak Ravid / X",
     "Abbas Araghchi / X",
