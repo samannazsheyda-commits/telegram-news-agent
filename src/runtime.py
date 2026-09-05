@@ -153,8 +153,6 @@ def _priority_rejection_reason(item: NewsItem, now: datetime) -> str | None:
     age = now.astimezone(timezone.utc) - published
     if age < timedelta(0) or age > PRIORITY_LOOKBACK:
         return reason
-    # Re-run every other editorial check with a current timestamp. This relaxes only
-    # the age gate for a critical security story; commentary/vague/bundled filters remain.
     current_item = NewsItem(
         item.key,
         item.source,
@@ -312,6 +310,12 @@ def _send_hormuz_daily(now: datetime | None = None) -> None:
     report_date = local.date() - timedelta(days=1)
     report = fetch_hormuz_traffic_report(report_date)
 
+    # No verified observed vessel count = no channel post. Keep the day unsent so
+    # later monitor cycles can retry if Kpler/Vortexa/Reuters publish a real count.
+    if report.observed_count is None:
+        print(f"HORMUZ_SKIPPED no_verified_count report_date={report_date.isoformat()}")
+        return
+
     translated_details: list[str] = []
     for detail in report.vessel_details:
         try:
@@ -333,8 +337,6 @@ def install_integrations() -> None:
     agent._same_story = is_duplicate_story
     agent._news_rejection_reason = _priority_rejection_reason
     agent._event_priority = _priority_event_priority
-    # The source-page description/subheadline remains the preferred detail source,
-    # but the formatter no longer forces every item to exactly two sentences.
     news_formatters._up_to_two_sentences = editorial_detail
     agent.format_news = _format_with_tracking
     agent.send_telegram = _send_with_tracking

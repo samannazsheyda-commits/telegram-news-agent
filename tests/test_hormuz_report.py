@@ -130,3 +130,25 @@ def test_runtime_sends_previous_day_report_once_after_noon(tmp_path, monkeypatch
     assert requested_dates == [date(2026, 9, 4)]
     assert sent == ["HORMUZ REPORT\nمنابع: Kpler، Reuters"]
     assert runtime.agent.load_state(state_path)["hormuz_last_sent_date"] == "2026-09-05"
+
+
+def test_runtime_does_not_publish_hormuz_message_when_no_observed_count(tmp_path, monkeypatch):
+    state_path = tmp_path / "state.json"
+    state_path.write_text('{"truth_last_id":"10","news_seen":["seed"]}', encoding="utf-8")
+    monkeypatch.setattr(runtime.agent, "STATE_PATH", str(state_path))
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
+    report = HormuzTrafficReport(
+        report_date=date(2026, 9, 4), observed_count=None, previous_count=None, rolling_average=None,
+        vessel_details=(), notes=("برای این روز آمار دقیق و قابل استناد کشتی‌ها منتشر نشده است.",),
+        sources=("Kpler", "Vortexa", "Reuters"),
+    )
+    monkeypatch.setattr(runtime, "fetch_hormuz_traffic_report", lambda report_date: report)
+    sent = []
+    monkeypatch.setattr(runtime.agent, "send_telegram", lambda text, token, chat: sent.append(text))
+
+    now = datetime(2026, 9, 5, 12, 4, tzinfo=TEHRAN)
+    runtime._send_hormuz_daily(now)
+
+    assert sent == []
+    assert runtime.agent.load_state(state_path).get("hormuz_last_sent_date") is None
