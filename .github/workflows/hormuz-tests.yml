@@ -16,5 +16,5 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
-      - name: Run Hormuz and daily integration tests
-        run: python -m pytest -q tests/test_hormuz_report.py tests/test_daily_features.py
+      - name: Run full test suite
+        run: python -m pytest -q
