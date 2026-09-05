@@ -47,16 +47,20 @@ jobs:
       - name: Run tests
         run: python -m pytest -q
 
+      - name: Restore production runtime state after tests
+        run: git restore --source=HEAD -- state.json data/editorial_queue.json data/editorial_history.json
+
       - name: Run near-realtime monitor
+        id: monitor
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: "@bikhabaar"
           POLL_SECONDS: "60"
-          SESSION_SECONDS: "240"
+          SESSION_SECONDS: "270"
         run: python -m src.runtime_v7 --monitor
 
       - name: Persist runtime data
-        if: always()
+        if: ${{ always() && steps.monitor.outcome != 'skipped' }}
         run: |
           mkdir -p /tmp/runtime-snapshot/data
           cp state.json /tmp/runtime-snapshot/state.json
