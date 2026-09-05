@@ -16,5 +16,5 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
-      - name: Run editorial rule tests
-        run: python -m pytest -q tests/test_editorial_rules.py
+      - name: Run full test suite
+        run: python -m pytest -q
