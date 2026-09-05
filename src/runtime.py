@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import sys
 import time
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from email.utils import format_datetime
 
@@ -17,6 +18,7 @@ from .editorial_rules import (
     is_priority_security_news,
 )
 from .editorial_store import LocalEditorialStore, ReviewItem
+from .hormuz import fetch_hormuz_traffic_report, format_hormuz_report, hormuz_report_due
 from .sources import NewsItem
 
 
@@ -295,6 +297,36 @@ def _flush_recent_published(now: datetime | None = None) -> None:
         print(f"Recent dedup persistence error: {exc}", file=sys.stderr)
 
 
+def _send_hormuz_daily(now: datetime | None = None) -> None:
+    now = now or datetime.now(timezone.utc)
+    state = agent.load_state(agent.STATE_PATH)
+    if not hormuz_report_due(state, now):
+        return
+
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+    if not token or not chat_id:
+        return
+
+    local = now.astimezone(agent.TEHRAN)
+    report_date = local.date() - timedelta(days=1)
+    report = fetch_hormuz_traffic_report(report_date)
+
+    translated_details: list[str] = []
+    for detail in report.vessel_details:
+        try:
+            translated = agent.translate_to_fa(detail)
+        except Exception:
+            translated = ""
+        translated_details.append(translated or detail)
+    if translated_details:
+        report = replace(report, vessel_details=tuple(translated_details))
+
+    agent.send_telegram(format_hormuz_report(report), token, chat_id)
+    state["hormuz_last_sent_date"] = local.date().isoformat()
+    agent.save_state(state, agent.STATE_PATH)
+
+
 def install_integrations() -> None:
     agent.fetch_news_items = _combined_fetch_news_items
     agent._audit_news = _audit_with_editorial_store
@@ -311,6 +343,11 @@ def install_integrations() -> None:
 def run(now: datetime | None = None) -> int:
     install_integrations()
     rc = agent.run(now)
+    if rc == 0:
+        try:
+            _send_hormuz_daily(now)
+        except Exception as exc:
+            print(f"Hormuz daily report error: {exc}", file=sys.stderr)
     _flush_recent_published(now)
     return rc
 
