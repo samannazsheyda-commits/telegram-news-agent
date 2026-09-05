@@ -2,8 +2,19 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
-def isolate_external_daily_services(monkeypatch):
+def isolate_external_daily_services(monkeypatch, tmp_path):
     import src.main as main
+    import src.runtime as runtime
+    from src.editorial_store import LocalEditorialStore
+
+    # Unit tests must never read or mutate production runtime state tracked in the repo.
+    monkeypatch.setattr(main, "STATE_PATH", str(tmp_path / "state.json"))
+    monkeypatch.setattr(
+        runtime,
+        "_store",
+        LocalEditorialStore(tmp_path / "editorial_queue.json", tmp_path / "editorial_history.json"),
+    )
+    monkeypatch.setattr(runtime, "_sent_news_items", [])
 
     # Existing unit tests should never make live HTTP calls. Feature-specific tests
     # can override these monkeypatches explicitly.
