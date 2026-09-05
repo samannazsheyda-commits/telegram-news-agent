@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import os
+import re
 import sys
 from datetime import datetime, timezone
 
 from . import runtime_v2 as v2
 from . import runtime_v6 as v6
+from .fresh_x import is_fresh_iran_topic
 
 _easy_news_flow_installed = False
 _original_strict_rejection = v2._strict_rejection_reason
@@ -47,18 +49,28 @@ def _select_one_story(candidates, references):
 
 
 def _easy_rejection_reason(item, now):
-    # Fresh X ingestion has already applied the single content rule: Iran relevance.
-    # Do not reject a distinct X post for age, editorial score, company/news value,
-    # wording, or semantic similarity. Exact published keys remain blocked upstream.
+    # Easy flow means almost no editorial blocking, but the channel remains Iran-only.
+    # Re-check relevance here even if ingestion already filtered it so a bad upstream
+    # row can never leak into production.
     if _is_x_item(item):
+        if not is_fresh_iran_topic(f"{getattr(item, 'title', '')} {getattr(item, 'summary', '')}"):
+            return "not_iran_related"
         return None
     return _original_strict_rejection(item, now)
 
 
+def _looks_persian(value: str) -> bool:
+    return bool(re.search(r"[\u0600-\u06FF]", value or ""))
+
+
 def _translate_or_original(value, session=None):
-    translated = _original_translate(value, session=session)
-    # Translation failure must not silently kill an otherwise valid X post.
-    return translated or str(value or "").strip()
+    text = str(value or "").strip()
+    translated = _original_translate(text, session=session)
+    if translated:
+        return translated
+    # Persian text is safe to keep as-is. Never leak Hebrew/English/other foreign
+    # source text into the Persian channel when translation fails.
+    return text if _looks_persian(text) else ""
 
 
 def _topic_icons(item, title_fa: str, summary_fa: str) -> str:
@@ -78,8 +90,6 @@ def _format_news_with_footer_icons(item, title_fa: str, summary_fa: str, marker_
     if not meta:
         return text
 
-    # Final line only: one blank line after the brand tagline, forced RTL so the
-    # flags/icons render on the right edge in Telegram.
     return f"{text.rstrip()}\n\n{_RLM}{meta}"
 
 
