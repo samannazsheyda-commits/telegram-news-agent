@@ -57,7 +57,7 @@ def fetch_oil_snapshot(session=requests) -> OilSnapshot:
 def format_oil_lines(snapshot: OilSnapshot) -> list[str]:
     lines: list[str] = []
     if snapshot.brent_usd is not None:
-        lines.append(f"🛢 نفت برنت: ${snapshot.brent_usd:,.2f} / بشکه")
+        lines.append(f"🛢 <b>نفت برنت: ${snapshot.brent_usd:,.2f} / بشکه</b>")
     if snapshot.wti_usd is not None:
         lines.append(f"🛢 نفت WTI: ${snapshot.wti_usd:,.2f} / بشکه")
     return lines
