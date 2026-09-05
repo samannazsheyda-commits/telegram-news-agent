@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 
 from .editorial_store import merge_record_sets
+
+
+RECENT_PUBLISHED_LIMIT = 300
 
 
 def _read(path: Path, default):
@@ -17,6 +22,56 @@ def _read(path: Path, default):
 def _write(path: Path, value) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _normalise_link(value: object) -> str:
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    try:
+        parts = urlsplit(raw)
+        return urlunsplit((parts.scheme.lower(), parts.netloc.lower(), parts.path.rstrip("/"), "", ""))
+    except ValueError:
+        return raw
+
+
+def _text_fingerprint(record: dict) -> str:
+    text = f"{record.get('title') or ''} {record.get('summary') or ''}".lower()
+    return " ".join(re.findall(r"[a-z0-9\u0600-\u06ff]+", text))
+
+
+def _record_identity(record: dict) -> tuple[str, str, str]:
+    return (
+        str(record.get("key") or "").strip(),
+        _normalise_link(record.get("link")),
+        str(record.get("fingerprint") or "").strip() or _text_fingerprint(record),
+    )
+
+
+def _merge_recent_published(remote: list, local: list) -> list:
+    merged: list[dict] = []
+    seen_keys: set[str] = set()
+    seen_links: set[str] = set()
+    seen_fingerprints: set[str] = set()
+    for raw in list(local or []) + list(remote or []):
+        if not isinstance(raw, dict):
+            continue
+        record = dict(raw)
+        key, link, fingerprint = _record_identity(record)
+        if (key and key in seen_keys) or (link and link in seen_links) or (fingerprint and fingerprint in seen_fingerprints):
+            continue
+        if fingerprint:
+            record["fingerprint"] = fingerprint
+        if key:
+            seen_keys.add(key)
+        if link:
+            seen_links.add(link)
+        if fingerprint:
+            seen_fingerprints.add(fingerprint)
+        merged.append(record)
+        if len(merged) >= RECENT_PUBLISHED_LIMIT:
+            break
+    return merged
 
 
 def merge_state(remote: dict, local: dict) -> dict:
@@ -32,6 +87,10 @@ def merge_state(remote: dict, local: dict) -> dict:
         used.add(key)
         seen.append(key)
     result["news_seen"] = seen[:500]
+    result["recent_published_news"] = _merge_recent_published(
+        list((remote or {}).get("recent_published_news") or []),
+        list((local or {}).get("recent_published_news") or []),
+    )
     return result
 
 
