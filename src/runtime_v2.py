@@ -22,6 +22,7 @@ _original_record_market = base.agent._record_market_snapshot
 _original_news_format = base._original_format_news
 _x_news_keys: set[str] = set()
 _market_hooks_installed = False
+_RTL_MARK = "\u200f"
 
 _X_SOURCE_FA = {
     "Reuters / X": "رویترز / ایکس", "Associated Press / X": "آسوشیتدپرس / ایکس",
@@ -196,12 +197,19 @@ def _insert_before_timestamp(text: str, extra_lines: list[str]) -> str:
     return text + block.rstrip()
 
 
+def _rtl_market_text(text: str) -> str:
+    return "\n".join(
+        f"{_RTL_MARK}{line}" if line.strip() else line
+        for line in (text or "").splitlines()
+    )
+
+
 def _format_market_with_oil(snapshot, now=None) -> str:
     text = _original_market_format(snapshot, now)
     oil = OilSnapshot(getattr(snapshot, "brent_usd", None), getattr(snapshot, "wti_usd", None))
     lines = format_oil_lines(oil)
     if lines: lines.append("📌 منبع نفت: Yahoo Finance")
-    return _insert_before_timestamp(text, lines)
+    return _rtl_market_text(_insert_before_timestamp(text, lines))
 
 
 def _record_market_with_oil(state: dict, snapshot, now: datetime) -> None:
@@ -215,14 +223,17 @@ def _record_market_with_oil(state: dict, snapshot, now: datetime) -> None:
     state["market_day_prices"] = data
 
 
-def _oil_daily_lines(label: str, first: float | None, last: float | None) -> list[str]:
+def _oil_daily_lines(label: str, first: float | None, last: float | None, *, primary: bool = False) -> list[str]:
     if first is None or last is None: return []
     diff = last - first
     pct = 0.0 if first == 0 else abs(diff) / first * 100
     if diff > 0: change = f"▲ ${abs(diff):,.2f} | {pct:.2f}٪ افزایش"
     elif diff < 0: change = f"▼ ${abs(diff):,.2f} | {pct:.2f}٪ کاهش"
     else: change = "— بدون تغییر"
-    return [f"🛢 <b>{label}</b>", f"${first:,.2f} ← ${last:,.2f} / بشکه", change]
+    lines = [f"🛢 {label}", f"${first:,.2f} ← ${last:,.2f} / بشکه", change]
+    if primary:
+        return [f"<b>{line}</b>" for line in lines]
+    return lines
 
 
 def _format_market_daily_with_oil(first_usd, last_usd, first_gold, last_gold, now=None) -> str:
@@ -232,12 +243,17 @@ def _format_market_daily_with_oil(first_usd, last_usd, first_gold, last_gold, no
     except Exception: data = {}
     extra: list[str] = []
     for label, key in (("نفت برنت", "brent"), ("نفت WTI", "wti")):
-        lines = _oil_daily_lines(label, data.get(f"first_{key}"), data.get(f"last_{key}"))
+        lines = _oil_daily_lines(
+            label,
+            data.get(f"first_{key}"),
+            data.get(f"last_{key}"),
+            primary=(key == "brent"),
+        )
         if lines:
             if extra: extra.append("")
             extra.extend(lines)
     if extra: extra.extend(["", "📌 منبع نفت: Yahoo Finance"])
-    return _insert_before_timestamp(text, extra)
+    return _rtl_market_text(_insert_before_timestamp(text, extra))
 
 
 def _install_market_hooks() -> None:
