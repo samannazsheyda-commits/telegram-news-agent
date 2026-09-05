@@ -25,6 +25,7 @@ jobs:
         run: python -m pytest -q
       - name: Repeat critical newsroom tests ten times
         run: |
+          echo "Running critical newsroom regression suite 10 consecutive times"
           for i in $(seq 1 10); do
             echo "Critical audit pass $i/10"
             python -m pytest -q \
