@@ -6,7 +6,8 @@ from email.utils import format_datetime, parsedate_to_datetime
 import requests
 
 from . import formatters
-from .newsroom_x import builtin_x_news_sources, clean_x_post_text, is_monitored_x_topic
+from .news_output import clean_visible_x_text
+from .newsroom_x import builtin_x_news_sources, is_monitored_x_topic
 from .sources import NewsItem, USER_AGENT
 
 FXTWITTER_TIMELINE = "https://api.fxtwitter.com/2/profile/{handle}/statuses"
@@ -98,7 +99,7 @@ def parse_fxtwitter_timeline(payload: object, source_name: str, handle: str) -> 
         if url and not url.lower().startswith(canonical_prefix):
             continue
 
-        text = clean_x_post_text(str(row.get("text") or row.get("full_text") or ""))
+        text = clean_visible_x_text(str(row.get("text") or row.get("full_text") or ""))
         published = _normalise_created_at(row.get("created_at"))
         if not text or not published or not is_fresh_iran_topic(text):
             continue
