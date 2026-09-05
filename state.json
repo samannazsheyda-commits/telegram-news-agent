@@ -1,6 +1,16 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "71aec9738198d25d012982d252fe3c4b5d5333ea",
+    "2bf4795617a3a4276c15dc1d8a2c00d29b1019d6",
+    "f95511e02754a491e12c9c79e635b578593099b2",
+    "75a4ea15153b032318f0c28a89c0964edb4106b2",
+    "ff136188ec11ffec999a1f158edf82d20566df22",
+    "45ddb785b05641e4dd6447e3097a8ba03ac2ee24",
+    "fca37f39c7a0892604af75de603b850e324b7fca",
+    "94294db98b8e298f2f876dd6a81b263ad405fad6",
+    "f860598b8025ad77427746e3afa13de0611f1a06",
+    "5cd09fd956bd7954b061508717b32f9f7ad172c0",
     "6f0b5c240177706c79b1891a77bddecfb11e3267",
     "47f4e24904caa4a74f63fa51b3b982a8b7676037",
     "3601300f4f8b86148773d0ceb2e6f21eb63bf378",
@@ -490,19 +500,9 @@
     "87ba9ada61906abf442b0c29073f32cf667d48ab",
     "29278ca1c172238cb020f377471a787f63c18601",
     "7f0dd58d0d6ee362ba004eda7038346fdf68fb61",
-    "65319cbd7bfecad16a0d9eb078f3faed6f79d253",
-    "2fcb81bff353cf658bb283e6c7111a1778652a8c",
-    "4a3f2911f63a776028e6d16d5884778b9dec1e56",
-    "02e1d124bc4aae53ca8109b1489187f80a75f307",
-    "c8cfae484e130fa2623103653635b4523c799281",
-    "06da1645959ca9e810f850decd7121e92a1906c6",
-    "71aec9738198d25d012982d252fe3c4b5d5333ea",
-    "2bf4795617a3a4276c15dc1d8a2c00d29b1019d6",
-    "f95511e02754a491e12c9c79e635b578593099b2",
-    "6e6fccc5d6a3c970b7869c05e5c890ca4a45955c",
-    "75a4ea15153b032318f0c28a89c0964edb4106b2"
+    "65319cbd7bfecad16a0d9eb078f3faed6f79d253"
   ],
-  "market_last_sent_at": "2026-09-05T14:48:33.575362+00:00",
+  "market_last_sent_at": "2026-09-05T16:50:16.078276+00:00",
   "next_news_color": "white",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
@@ -531,15 +531,105 @@
   "market_day_prices": {
     "date": "2026-09-05",
     "first_usd": 221060,
-    "last_usd": 226500,
+    "last_usd": 227200,
     "first_gold": 23518800,
-    "last_gold": 23673300,
+    "last_gold": 23670100,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "71aec9738198d25d012982d252fe3c4b5d5333ea",
+      "source": "NBC News",
+      "title": "Trump’s abrupt U-turn on a plan to reopen the Strait of Hormuz came after backlash from allies",
+      "reason": "not_today_tehran",
+      "published": "Wed, 06 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOR2RtM2QzRXQ0cWtMaUtzdTJvbjgyM3JlRnlXTk9VWEJZZDEwVVVjZ0xkd1QzZEk1WjBtQ2xUcVdnSldScGhjRVRIYmduckRxWl84TVBDOTM1UTNsQlRBTWNSMEhnQUVrcjZCbVFUb01yNDJpSHBURWZtaW9MUjhKeG1mZWtFaUZKQ3hlbm9Ka0FFc05QR29rZVVoTVVIS1FTZ0tPdXo5eUdpbjBYdVdDSXFwQVk3elBUX091WEdXX3FyZw?oc=5",
+      "checked_at": "2026-09-05T16:51:34.988354+00:00"
+    },
+    {
+      "key": "2bf4795617a3a4276c15dc1d8a2c00d29b1019d6",
+      "source": "Al Jazeera",
+      "title": "Commercial flights from Tehran’s main airport resume amid cautious normalcy",
+      "reason": "not_today_tehran",
+      "published": "Fri, 01 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxPUEhBVXFOQzR3Z2dqX1MwaGprN2xwUzBMUU12bjc2ZGtkaUQ4c1JiX1d5eEI4RFIwNGtFQ3E3U2pKeDgzWDc2NXBmMWp1SGptZ2ZRVjRobWsxbTByNmE3aHc2a2lhTkxCZ1p1b2JTN0hWaWxSRE4zVDhYUkE1OXpjNVhOZDF5SjVuY3kzN2ZoRHQ1NGUtaURZMWdPcmpTdXJ4WkpJVGxhOFpzZ1FhZE5fSTE5dELSAboBQVVfeXFMTUpiQjNMNzlLVVFLSXQzT24xM3NmR3ZLR19TNzZyeXdMSlYtTU5xWmVvWmNpel9iU2JUVzdLYTNtTlU4UGdjN3hjZkFjVEJzUHBEYTdlOEJzSVRzeHZfZHZtS1NzTHJjZmtUN2c2bFJnTUFjbWV0ekNaaEoyMHRkZUt1dlgwNXFhZFJOSl9xZ3NpWjVsekhEQy1mbVZyT2lLcUdVSTBnOTVFZm9aRE95QjBtY2l2TTRzZk1n?oc=5",
+      "checked_at": "2026-09-05T16:51:34.988354+00:00"
+    },
+    {
+      "key": "f95511e02754a491e12c9c79e635b578593099b2",
+      "source": "NOTAM / Airspace",
+      "title": "Iran Partially Reopens Its Airspace - Caspian Post",
+      "reason": "not_today_tehran",
+      "published": "Sat, 18 Apr 2026 07:17:01 GMT",
+      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE5LenRjWFNFSkROVlkxMktqSGNuM0s4SlFnQ29IUjhEMXVnMS1tSDY5ck54c2c4RE5sSHNzOENDWGxjQlcxLXozZktmbXkwVXRjM3JkTVNkVzJWaU1tZTVaNjcwaDByWWpzZURhVVp0dE1HQQ?oc=5",
+      "checked_at": "2026-09-05T16:51:34.988354+00:00"
+    },
+    {
+      "key": "75a4ea15153b032318f0c28a89c0964edb4106b2",
+      "source": "NOTAM / Airspace",
+      "title": "Nearly 30,000 Passengers Transported After Iran Reopens Its Airspace - WANA News Agency",
+      "reason": "not_today_tehran",
+      "published": "Tue, 12 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNZ3pVX0FjNkpRMXZkV3AzeE5lRko1eDBUbUZIajRXckZSellGQjdLZTk1VFZTTFZVTXRMRmVEdENkcGdIUkZaeHNKUU5fUTNOcXN0TXhFTlVFUWhpS2pwVHJhODhUSmRHdnJpMVBlY0xGcEs2WkI1UXdrbVZRUGRBN0FPZjNXYzNDVGJWSDA0bGk?oc=5",
+      "checked_at": "2026-09-05T16:51:34.988354+00:00"
+    },
+    {
+      "key": "ff136188ec11ffec999a1f158edf82d20566df22",
+      "source": "NOTAM / Airspace",
+      "title": "Gulf States Lift Restrictions That Blocked ‘Project Freedom’ in Strait of Hormuz",
+      "reason": "not_today_tehran",
+      "published": "Thu, 07 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPY05rVzZsTXZMbHZZZ2ZNTUxjc0l0VmxyYU5rOGE3eURMQVVVUFNhWHNUZmY2NERPYmNOSlNaVmhtVHFGcm1KVk5mTkJTeFEwZVNCMjdXV20wZFM4cHI1bDQ3V1RtNnRHeE0yOFZlM0szM0VLbEE5YVFPTkJkVDhHLUpnY1BMSkEyU1pMdVlCcy05NzdQaDh1UnE2amJlTWQtNDhfSEU0bXhES1h2T0RFZTVKWDNuejlmbW5XQnJNVTQtYzg?oc=5",
+      "checked_at": "2026-09-05T16:50:16.078276+00:00"
+    },
+    {
+      "key": "45ddb785b05641e4dd6447e3097a8ba03ac2ee24",
+      "source": "NOTAM / Airspace",
+      "title": "Iran said to completely close its airspace",
+      "reason": "not_today_tehran",
+      "published": "Sun, 14 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxQV1NmRHhOSVlBYk9fakY4MC1qYXZ3a1pVSWx1U0tXNmtSeUo1Vnh6UUJaSmVwMjRucWdMazNrZVJFOVJHV2V2ODlDcnVRa1J1SzZfdDRMSkg5bUVDdG9oa1dXd09UdlNQazREYTB2cGxybU9TZmJvclRRWTVXQXVzZ25RcC12MG1ZbnRCUngtYjI?oc=5",
+      "checked_at": "2026-09-05T16:50:16.078276+00:00"
+    },
+    {
+      "key": "fca37f39c7a0892604af75de603b850e324b7fca",
+      "source": "NOTAM / Airspace",
+      "title": "US citizens urged to leave Iran immediately - NewsNation",
+      "reason": "not_today_tehran",
+      "published": "Sun, 03 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQbkkzZWV6R3BybEthcDU3bmhhSFhSVzdESVd4RzdWN2dzaVhDRUFTYnYySW56Qy11TzZETTBPTDNVZWJGRU5IZnd6VWNBb19GVVQ5SUlBVUU0WjFPV0I3RERxaTVqaUZ2aTB5Y0NERVBxQnhwNEFGQUpnMzBva2VkRFBpZHRneU8yaWFPT2ZXUUpUVWdZVzRmeDRld2EwemfSAaQBQVVfeXFMTWhCUDVlZ2ZIT241dWRnVVU4NGViZ0FUOXEwM1VIMkhzcjRObFhhbkllNWl6cnhqbFg5MHAzV3hXeHViVThGTTE1NzhGUzAyUldvSEdMU2VlRVFjQU9FSzlpbzRsM1ZvTGhURk1vZjRFOHFjTS0zVTlYV05RN1dnNHZBeTdlUXZ2S1Z6di1xNnBaOV9zRkEwendIQ0N2RzZHemYwZXE?oc=5",
+      "checked_at": "2026-09-05T16:50:16.078276+00:00"
+    },
+    {
+      "key": "94294db98b8e298f2f876dd6a81b263ad405fad6",
+      "source": "NOTAM / Airspace",
+      "title": "Spain closes airspace to U.S. planes involved in Iran war - PBS",
+      "reason": "not_today_tehran",
+      "published": "Mon, 30 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQV1JXbWdFdWZhWnlISFJfSUt0TTdDeHcxZzJtVkZpNnprUlZmZjB6XzNoTEVna3JVRHpKdW92cUJzcDFJY0tlZk16Y3J2Ukp3RTFndFZ1cjVJaFJsQjByNmNBUVZyTUgwTzVLVWc5dHFxcm10ckFpQkpQRlF1aURYZWhJSkhvaUFTYzJHWS1Xb185YWxTTkHSAZsBQVVfeXFMT09kRVdzcUdNaTY2XzhMMFVLX2o1QlhiV1o2anMwREUyUjFQcnFNM0FFSXI1VXNzc0ltaERhTS1yLTFDTzBqRXQtdnF4V2hZRncxbFEwT1BhbHU3ZVpJaHhYT1QyUWRnMlJGZmRWMkxvQkc5cnpmZ3hsZldFbFZDMnA1NXZpblN6dGs2MUVtN3RVLU1TSkxBazBidDA?oc=5",
+      "checked_at": "2026-09-05T16:50:16.078276+00:00"
+    },
+    {
+      "key": "f860598b8025ad77427746e3afa13de0611f1a06",
+      "source": "NOTAM / Airspace",
+      "title": "US urges Americans to leave Iran during partial airspace reopening - The Hill",
+      "reason": "not_today_tehran",
+      "published": "Wed, 22 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxQakFyRW9GcjFfXzBBZC15cVdHTUJSa3hqbUkzMk9wb2xWUHJ4ZHlaM3kyNjZtN0VhMzhrQ0dLZFZjZFdaT3N5R1NMM2pwZzY4Q01lUV9VeWRDNE1taFFtQjFwYlFKQzljM3RIb2FHeFJGSktldE9ZOWRPTEdPQTdiSE9n0gGHAUFVX3lxTE5ZU29BVDM4VGwtcElpelNhSWRYU1hmdjA1NFVaRlRUUXppTUJNb05XNHFYV0RPb18taTZNNGhuV0JFVG42ZkVCdWZsQl9EYTg1SlBXSjF5VTkyX21MOEcwVWtVRUZkWGduM3lOOWVNbmJ3cW9tRGlyREF3OVFiNXpGZF9IZ0VjNA?oc=5",
+      "checked_at": "2026-09-05T16:50:16.078276+00:00"
+    },
+    {
+      "key": "5cd09fd956bd7954b061508717b32f9f7ad172c0",
+      "source": "NOTAM / Airspace",
+      "title": "EU aviation agency extends Mideast airspace warning - Iran International",
+      "reason": "not_today_tehran",
+      "published": "Wed, 01 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9Wa0F2WWNreGY3TU1PRDRuTjJUM19NY21DZ25xQTJSQWdNbVFROGlZUXFoNFhmTU51VllYS3NmT0JwcDdKNGtDa3Fsa1hfZEdTelE?oc=5",
+      "checked_at": "2026-09-05T16:50:16.078276+00:00"
+    },
     {
       "key": "6f0b5c240177706c79b1891a77bddecfb11e3267",
       "source": "NOTAM / Airspace",
@@ -2248,96 +2338,6 @@
       "reason": "not_today_tehran",
       "published": "Thu, 03 Sep 2026 23:26:07 +0000",
       "link": "https://x.com/SecScottBessent/status/2095654604943815139",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:SecScottBessent:2095889823177269752",
-      "source": "Scott Bessent / X",
-      "title": "Financial institutions continue to find out the hard way that we are serious about Operation Economic Outcast. While we hope no more banks will need to be sanctioned, that ultimately depends on how quickly the international community comes to its senses and ceases support of the murderous Iranian regime. We know who you are, we know where you are, and we will continue to take action together with our allies and partners until we have buried the head of the Iranian snake.",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 15:00:48 +0000",
-      "link": "https://x.com/SecScottBessent/status/2095889823177269752",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:SecScottBessent:2095907853877874926",
-      "source": "Scott Bessent / X",
-      "title": "Since the U.S. reinstated its blockade, no Iranian crude cargoes have successfully transited the Strait of Hormuz to China. Inventory cannot be replenished as crude piles up aboard vessels trapped inside the strait. Iran’s export lifeline is being cut off: stranded oil, finite storage, and rapidly shrinking revenue.",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 16:12:27 +0000",
-      "link": "https://x.com/SecScottBessent/status/2095907853877874926",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:USTreasury:2095888927215214639",
-      "source": "US Treasury / X",
-      "title": "https://home.treasury.gov/news/press-releases/treasury-severs-iranian-regime-s-financial-lifelines-turkiye/",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 14:57:14 +0000",
-      "link": "https://x.com/USTreasury/status/2095888927215214639",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:USTreasury:2095888925646553249",
-      "source": "US Treasury / X",
-      "title": "Today, as part of Operation Economic Outcast, Treasury severed the Iranian regime’s critical financial lifelines in Türkiye. The Office of Foreign Assets Control designated Türkiye-based Golden Global Bank and its subsidiaries, which have facilitated tens of millions of dollars’ worth of transactions for the Islamic Revolutionary Guard Corps-Qods Force and provide the Iranian regime with key correspondent banking access that allows it to move its funds internationally.",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 14:57:14 +0000",
-      "link": "https://x.com/USTreasury/status/2095888925646553249",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:CENTCOM:2093487410340307396",
-      "source": "CENTCOM / X",
-      "title": "A U.S. Sailor stands lookout watch aboard USS John Paul Jones (DDG 53) as the ship sails in regional waters enforcing the U.S. blockade against Iran. As of Aug. 28, CENTCOM forces have redirected 82 commercial vessels, disabled 3 and boarded 2 to ensure compliance.",
-      "reason": "not_today_tehran",
-      "published": "Fri, 28 Aug 2026 23:54:28 +0000",
-      "link": "https://x.com/CENTCOM/status/2093487410340307396",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:CENTCOM:2094172416750567778",
-      "source": "CENTCOM / X",
-      "title": "A U.S. Sailor directs an MH-60S Sea Hawk helicopter onto the flight deck of USS Delbert D. Black (DDG 119) while the ship sails in the Arabian Sea enforcing the U.S. blockade against Iran. As of Aug. 30, CENTCOM forces have redirected 83 commercial vessels, disabled 3 and boarded 2 to ensure compliance with the blockade.",
-      "reason": "not_today_tehran",
-      "published": "Sun, 30 Aug 2026 21:16:26 +0000",
-      "link": "https://x.com/CENTCOM/status/2094172416750567778",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:CENTCOM:2094228119079067852",
-      "source": "CENTCOM / X",
-      "title": "🚫CLAIM: Iran’s Islamic Revolutionary Guard Corps (IRGC) claimed in a recent statement that strikes by U.S. forces to prevent the IRGC from placing mines in the Strait of Hormuz were an “act of aggression.” This claim is absolutely FALSE. ✅FACT: U.S. forces took limited, precise action against IRGC minelaying forces posing an imminent threat in the Strait of Hormuz. In essence, Iran created the threat and the U.S. military eliminated it to protect civilian mariners, commercial shipping, and the free flow of global commerce.",
-      "reason": "not_today_tehran",
-      "published": "Mon, 31 Aug 2026 00:57:47 +0000",
-      "link": "https://x.com/CENTCOM/status/2094228119079067852",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:CENTCOM:2094411076729262413",
-      "source": "CENTCOM / X",
-      "title": "🚫 CLAIM: Iran’s Islamic Revolutionary Guard Corps (IRGC) claims that a supertanker passing through the southern route of the Strait of Hormuz struck two mines and was brought to a complete stop. This is FALSE. ✅ FACT: No ships have hit mines in the Strait of Hormuz. This is yet another IRGC attempt to intimidate regional commercial shipping through disinformation.",
-      "reason": "not_today_tehran",
-      "published": "Mon, 31 Aug 2026 13:04:47 +0000",
-      "link": "https://x.com/CENTCOM/status/2094411076729262413",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:CENTCOM:2094795462578467050",
-      "source": "CENTCOM / X",
-      "title": "A U.S. Sailor directs the takeoff of a UH-1Y Venom utility helicopter from the flight deck of USS Boxer (LHD 4) as the amphibious assault ship sails in the Arabian Sea enforcing the U.S. blockade against Iran. As of Sept. 1, U.S. forces have redirected 84 commercial vessels, disabled 3 and boarded 2 to ensure compliance.",
-      "reason": "not_today_tehran",
-      "published": "Tue, 01 Sep 2026 14:32:12 +0000",
-      "link": "https://x.com/CENTCOM/status/2094795462578467050",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:CENTCOM:2094826294466810366",
-      "source": "CENTCOM / X",
-      "title": "Today at 12 p.m. ET, U.S. forces began striking Islamic Revolutionary Guard Corps (IRGC) targets in Iran. The strikes follow recent attempted attacks by the IRGC against commercial shipping in the Strait of Hormuz and against American service members deployed to the region.",
-      "reason": "not_today_tehran",
-      "published": "Tue, 01 Sep 2026 16:34:43 +0000",
-      "link": "https://x.com/CENTCOM/status/2094826294466810366",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
