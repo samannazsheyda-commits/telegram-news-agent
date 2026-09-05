@@ -121,9 +121,9 @@ def _custom_x_and_alert_items() -> list:
     merged = {item.key: item for item in _fetch_preserved_special_items()}
     try: custom_items = _original_custom_fetch()
     except Exception as exc:
-        print(f"Custom X source error: {exc}", file=sys.stderr); custom_items = []
+        print(f"Custom source error: {exc}", file=sys.stderr); custom_items = []
     for item in custom_items:
-        if item.source.endswith(" / X"): merged.setdefault(item.key, item)
+        merged.setdefault(item.key, item)
     return list(merged.values())
 
 
