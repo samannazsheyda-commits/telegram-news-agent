@@ -1,6 +1,16 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "18d79aec8ec90a0dcaefd368063929c4a3238ff9",
+    "9919a3e7b9dc875cdb834778beb1827a04aaffcf",
+    "ccd197fa437ba5b6476c182e9c66a68da192504b",
+    "11793538e614e35d40c505011db03cdca00c5744",
+    "3dab26bc356e575606b6b0e0e34804c9ee255666",
+    "04c9e689cefa832263ff2b66498f7183a7ae6bbd",
+    "875b8701be5bf56895ab970caaf781248e650f93",
+    "4c49e7003ec2f42c4edf9370201143f60aa1b8c2",
+    "c407477fd511b756dec01873b08db1b92215ea90",
+    "b8921012ad5f44aaed9e40e057183bd7589868de",
     "5ae94dc5bc69e0022312772764e5812c192cd91c",
     "d899869f6006cffac7f6229fa5bb191c47197cee",
     "163d9fbe1e76be4fef64c72ffee52226b6855107",
@@ -490,17 +500,7 @@
     "232c6eace690d3989d1567638eb60fced22452f1",
     "3ec196a138c0b54dfc34ab582a537f96c51e8f16",
     "9644d28635a09c7e441b7fb67892dfca1b43531c",
-    "4f89aa1b785d2d2f0b05d6d73acaa2e0a0a29589",
-    "e8877423aa3602b0f0fe8634b5fc893141681748",
-    "ed723833bdf7e57e30ffd19c4abf53f22a21ef43",
-    "f330f255b1ea4b539d8e2691ee5351ca7a2fcb3b",
-    "d513a1e66e37a4a3db1723986f8819bf1105bc2c",
-    "a4f05a3a88ff5691d15ec94267cc5c56c01937e9",
-    "eda26a935121db9cba17ec03d2d0664f58713aba",
-    "c87d8f09527e0ee42d97d743fd4e5ec9def84209",
-    "87db87c10563b70600d398ef7b8aa4bf137a6eb8",
-    "a2646b4eb4c94f0e365919a30e627c6b7487598e",
-    "6dc4e4ac919938f5432288a08b35dc5472ee5b68"
+    "4f89aa1b785d2d2f0b05d6d73acaa2e0a0a29589"
   ],
   "market_last_sent_at": "2026-09-05T08:43:54.746517+00:00",
   "next_news_color": "white",
@@ -540,6 +540,96 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "18d79aec8ec90a0dcaefd368063929c4a3238ff9",
+      "source": "NOTAM / Airspace",
+      "title": "Iran denies new NOTAM limiting flights across country - Iran International",
+      "reason": "not_today_tehran",
+      "published": "Sat, 23 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE03NGRpUWZabU5abS1ONlBHUjFlaUE2UjFvdl9iR1pJLXRRSWIzbnpwWlJCTGdsTnR6cmZINFFyT0ZEU2ZlUGdvQkx3c3dwMTVCb1E?oc=5",
+      "checked_at": "2026-09-05T08:48:09.445792+00:00"
+    },
+    {
+      "key": "9919a3e7b9dc875cdb834778beb1827a04aaffcf",
+      "source": "NOTAM / Airspace",
+      "title": "Jordan intercepts, downs four Iranian missiles over its airspace - Egypt Today",
+      "reason": "not_today_tehran",
+      "published": "Mon, 13 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNbGcwMVFwMFRCZFJCc0dkcmtMNUNyMXNVMno2Y0h2dHZhdlBFNFJfT0FYU3MzQ0E4NldtbmpzelVRRnoyV2xtYTRYUVFJM2VJMDBNc3ZjZWVmM293MXNTZnpuR0lBdm1WcXlSRzJvM2J5N2VvemZ4UTBiU2xhXzlWSjVFeG1QYVMzUFpDLXB4R2lTV2JTS0RDSkN3dTEzTkdYRGJCUVBGb2VkM0k?oc=5",
+      "checked_at": "2026-09-05T08:48:09.445792+00:00"
+    },
+    {
+      "key": "ccd197fa437ba5b6476c182e9c66a68da192504b",
+      "source": "Times of Israel",
+      "title": "Kuwait says it shot down Iranian drones that entered its airspace",
+      "reason": "not_today_tehran",
+      "published": "Fri, 31 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNSGZyZVVpOEdvTjhRNnRpaUYtVlM0czVHV1ZNRWw1ZGp2X05JdVZZeV9rVDVjaFhCbHJFOVFtakFLblBmTUtQbmdoQWUzMXpsckdYMEg3bzFLVjRvWWZyZzFmREN5ZEpMOE9LTlZzczh1QTVibWJ3RlVZN0Nya2tvLUhtWGZJOWpFU3E0UTd0ZHpqYVZ1NU9sckpSMzFsMG5NcjBaZVJuakV4X2pqZkZUQg?oc=5",
+      "checked_at": "2026-09-05T08:48:09.445792+00:00"
+    },
+    {
+      "key": "11793538e614e35d40c505011db03cdca00c5744",
+      "source": "NOTAM / Airspace",
+      "title": "Kuwait closes airspace as Iranian attacks disrupt Gulf flights - AeroTime",
+      "reason": "not_today_tehran",
+      "published": "Sat, 18 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxQUldUZjZBS0pxS1ItZFFuX19ZNktVNHVuaURzRko0eHFleWREeDNqSzR4QlpZY09rZlJnZ2NIZGhfNU05Y000ZTJBd3NxZnYwblU2Tks0ZUtIREM2TzRIX1psTkhpc2JGdEEtUE1UdUhiWm81MDlxMm5BQTRGclhLdURLai1sc01DVGFiS2owbk_SAZYBQVVfeXFMTWFMdGhQekRWaXhsLVJNUGZRS2N1WlVGOVZ6d3R0UFZPNFJpbWg5R2RMVWp5TjJsU2RMNEphMHJ6bmJuQTlyWmlIb2pFMF9rejI1M0JWWVFfdklKNU1WR0tPQjcydDYzYXhaZWpsTWV1RHYwaXNWU1VRdXM2Vm1ab3lOeUJyV0tFRjNSODJGNlprb29Mb1hn?oc=5",
+      "checked_at": "2026-09-05T08:48:09.445792+00:00"
+    },
+    {
+      "key": "3dab26bc356e575606b6b0e0e34804c9ee255666",
+      "source": "TankerTrackers",
+      "title": "The VLCC supertanker you see in the video below is BARAKAH (9902615). She is owned by UAE’s Abu Dhabi National Oil Company (ADNOC); the country’s state-owned oil & gas producer. BARAKAH was struck by Iranian drones on 2026-05-04, which is wh",
+      "reason": "not_today_tehran",
+      "published": "Sun, 10 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFB5SGdkdm5GcEcwX0xFSWhJcVgwZUhHcUxXdUpnamlXRjdaRzVxemVGSWxTbFV1Sjk4S3JRUzhrbTBRei15bFpHM0pWQjJFaWJZWnBXSS1fQjFkY1RMVHZaRkpzUHlRdw?oc=5",
+      "checked_at": "2026-09-05T08:48:09.445792+00:00"
+    },
+    {
+      "key": "04c9e689cefa832263ff2b66498f7183a7ae6bbd",
+      "source": "TankerTrackers",
+      "title": "After Tehran initially denied there being a spill, this explanation seems very plausible. Ironically, this was a vessel that they had seized a long time ago.",
+      "reason": "not_today_tehran",
+      "published": "Tue, 12 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1KTnktWkR1S0ZmRDdFMlJuQjdTSlhsMm04amszRWpJek1KQzE5N3BYMXBTdVZLZFVjT0ZYTjRRczlpMU4zRVZndVhFMVpyQ0wwOGU0SEJzUGVKOUh4SHZMSGtzS1JfZw?oc=5",
+      "checked_at": "2026-09-05T08:48:09.445792+00:00"
+    },
+    {
+      "key": "875b8701be5bf56895ab970caaf781248e650f93",
+      "source": "TankerTrackers",
+      "title": "Since the start of this conflict, there have been at least 100 STS (Ship-to-Ship) transfers of oil involving VLCC supertankers; each capable of handling two million barrels of crude oil. Our job has been to identify these vessels and their cargo origins; be it Iran, Ira",
+      "reason": "not_today_tehran",
+      "published": "Fri, 24 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1wWmFYS0doOWlnSU84bFZ2SmhSblRQQ2M2RGlMekZsSkJ2Q1VnZk1uYW81Q1FjMVNQWnlha0Y5S2FiaXpPTXQ4MWRlWmZldWw5NzJ6bFZ2VjlCSlZOOVRFSjF3czNnUQ?oc=5",
+      "checked_at": "2026-09-05T08:48:09.445792+00:00"
+    },
+    {
+      "key": "4c49e7003ec2f42c4edf9370201143f60aa1b8c2",
+      "source": "TankerTrackers",
+      "title": "There were twenty-five tankers that departed Iran with crude oil during April 2026. Of that lot, seven were quickly redirected back to Iran by USA from the Arabian Sea/Indian Ocean. Two were seized by USA in the Indian Ocean. One reached the Far East. #OOT",
+      "reason": "not_today_tehran",
+      "published": "Sun, 03 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE94TFBaYV9XUU93YUtOZnMzRkxFSk8zbUtKa3E5cTV0TzgwWEdtYjFuZm5oNEktdDBuM3U2U2Q4SlhyWGUxSXlwVTl6QmJISGluTmNLaU9mY3JiWFdWbHJmMTEtRnVOZw?oc=5",
+      "checked_at": "2026-09-05T08:48:09.445792+00:00"
+    },
+    {
+      "key": "c407477fd511b756dec01873b08db1b92215ea90",
+      "source": "TankerTrackers",
+      "title": "Although we are unsure whether the container ship EUPHORIA (9235828) has been seized today by Iran in the Strait of Hormuz, we have received reports that she has come under fire. Two other container ships, EPAMINONDAS (9153862) and MSC FRANCE",
+      "reason": "not_today_tehran",
+      "published": "Wed, 22 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE44SktBOXdDSzNZcllQTm1RbVlUZlN5WTVsVS1ZNk1WUngwckhqQzM4R2xwTnVhc3ZGTGlkelhUeXJZUU82OWxJbUpnTjZocDRaRVoxLU5QR21MczJmcm1rYXFBZzAtQQ?oc=5",
+      "checked_at": "2026-09-05T08:48:09.445792+00:00"
+    },
+    {
+      "key": "b8921012ad5f44aaed9e40e057183bd7589868de",
+      "source": "Abbas Araghchi / X",
+      "title": "Despite its defeats on the battlefield, the U.S. opted to test our determination. Our Powerful Armed Forces will leave no attack or threat unanswered. Leave our region if you want to be safe. History of the Persian Gulf has many chapters on dire fates of intruding",
+      "reason": "not_today_tehran",
+      "published": "Tue, 09 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9SeS03WFFfQVpBT3ZnRUhKVV9NTkRCNFV1d0N2emV0R2tXU1l1TDRJc05kUlpQZHJpZlNuVnN4cFRxdVo1SXVrTnpiUnJreUxXZ081aHp3cHhRdnVUc2c?oc=5",
+      "checked_at": "2026-09-05T08:48:09.445792+00:00"
+    },
     {
       "key": "5ae94dc5bc69e0022312772764e5812c192cd91c",
       "source": "Abbas Araghchi / X",
@@ -2249,96 +2339,6 @@
       "published": "Fri, 04 Sep 2026 13:56:30 GMT",
       "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE1CQ25Bb0ROcGhfY3REMUhPUEVBeG14NlpoYW1UblBvSGlfc0FGMEZ5VVVnQ2N4aDkyM0pURFNsQlhqcE1TZ0hoaHhLVkxCLXAzeTlFcUNDRWRzVUZMMzVaQkxmdjNoYVZFazU2RmdobVI0Mm5ZbTZ3?oc=5",
       "checked_at": "2026-09-05T06:21:58.787014+00:00"
-    },
-    {
-      "key": "28248f2d89775b913d117aeb2e49902fdea6ec96",
-      "source": "Reuters / X",
-      "title": "A More Confident Iran Emerges After Six Months of War With the U.S.",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 15:21:43 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOdGh6Z3ViZTAtdGRLRldNc3hwZmhwc2hXWjVyTElFMU9hdUZjRHk5UWtUUXVMT1Y0NmVGcEdvQ2FteGFzUi1zLVdhLS1wNDZZczhPS0tzVUxOMlJPQW9XeE9kUFgtQUl4SEJySkMwbk95Szh1UGNPdmlJaC02T1hiTWE1OE5EN1lT?oc=5",
-      "checked_at": "2026-09-05T06:21:58.787014+00:00"
-    },
-    {
-      "key": "4aabd2529c53341fb2326c48bb06799cc9cd14b4",
-      "source": "Reuters / X",
-      "title": "Arab diplomats fear Iran is widening the war - and there’s no way out - Politico",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 16:01:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPcmRhUTRzcVpZd3lkQUVPV1RxQVpfYWo3ZFlBM2ZSSWo1VUo1SC02ZjVpa21ZVW1SUWF2X0FsTkNfN0otdExhTDA3N3J6bDRRSVBEd3FRelJZaXk0TTRobUQ0ZXNYVmxXdFRLNTFaTW44MENySExOMVk3YTNTZDd2NHNURQ?oc=5",
-      "checked_at": "2026-09-05T06:21:58.787014+00:00"
-    },
-    {
-      "key": "94cd07c4792c8669b8a7be4a940615222d313376",
-      "source": "Reuters / X",
-      "title": "US Air Force speeds Reaper successor timeline after Iran losses - Military Times",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 19:27:23 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxPcVFVRDdSZTJGWkJvTXk1eWZTalJTQnlGV0xneEE1RVkxSGRuWWJlM1lyN3hva0g0OUtWOWRJZmRHY1B1cUJMNkJ6cXA4YVdWeU9RbFVGb0NhT2Q5czBpYmJ5R2ZwZjNyS0FfLXJIaUViS2xNMmRac29ST2cyOUpTZWE3anJ0T0t3UzlJZ3FBOTNTNVpDcWNqa3lGQzdkOUxENlowb2tQY3hwblpjV2VfMTdxVEFmeFEwem9LSnVVajRpUQ?oc=5",
-      "checked_at": "2026-09-05T06:21:58.787014+00:00"
-    },
-    {
-      "key": "f6028d3cddc90cc6ab91cd692a4775c7e1884d92",
-      "source": "Barak Ravid / X",
-      "title": "🇺🇸🇬🇧🇫🇷🇮🇷Trump attacks allies, signals Iran war may end without opening Hormuz. My report on @axios https://t.co/5wTNnUZxNQ",
-      "reason": "not_today_tehran",
-      "published": "Tue, 31 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9DMGxHOUdzZjlCXzJxNVkzNmhaVlJ2cXVwdXJkMnZENm84aWtXbEhueERLdVhLT1RWVTNIYlFxQklaZkJkN2pzcVkzUkFzOWFoRk8zOTBVNHJ2YTlJQ3BhVQ?oc=5",
-      "checked_at": "2026-09-05T06:10:10.179333+00:00"
-    },
-    {
-      "key": "44b5861ead3d0fefd635d005609abd2312adeaa9",
-      "source": "Times of Israel / X",
-      "title": "Thousands of people held a pro-government rally in Tehran overnight following Iran’s renewed strikes on Israel, footage from state and independent media outlets showed. Footage published by Iran’s English-language state outlet Press TV showed masses of",
-      "reason": "not_today_tehran",
-      "published": "Mon, 08 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE54VFF1NUV2czhuVV9NVG9PYWJwNHY1aGlKenhZOFhvQTNiMWlGUWJjRldPZXpjZW1HdmUybjdLWW9FdmJrN3d1S1JzZk1RTjdYMHFHSzJaeEExd3Nfa2xaUUFJWW0?oc=5",
-      "checked_at": "2026-09-05T06:10:10.179333+00:00"
-    },
-    {
-      "key": "2c92114b62e63be7f87a23c74fc0ae3e6c68febf",
-      "source": "Times of Israel / X",
-      "title": "Daily Briefing April 22: Trump’s muddled messaging complicates talks with Iran https://t.co/NxbUASmfsr",
-      "reason": "not_today_tehran",
-      "published": "Wed, 22 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9pVlNMdTk4ekVlQUUwTUpBNlVNamtYTGVaMkFmT191U29uT0dQeWdXcExXNU1Ja09Kc3NrdHN4VXBUMEYtMFotQ0w0YmpreU5OQlZjalY5bEtwQlNySmQtNVFHY1Y?oc=5",
-      "checked_at": "2026-09-05T06:10:10.179333+00:00"
-    },
-    {
-      "key": "0d8ac1a775653b8e2d169c98208a6502d7fdb507",
-      "source": "Times of Israel / X",
-      "title": "“We will ensure that Iran does not obtain a nuclear weapon,” Trump vowed in an address that day, specifying what the campaign would achieve. And “when we are finished, take over your government,” he preemptively urged the Iranian public, assuring them, “",
-      "reason": "not_today_tehran",
-      "published": "Wed, 27 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9qT09LU3lldmR3Zjhkc1BuOGRfZlluN0pDMEFhNmtjWERFYzlzMHpLa2liNVlYeFliaE9zY3pkTzAxWnBicXkxOTJVZVdFQnFXZWlGZmR4ZVdVNVVJMm9aSE9xT0g?oc=5",
-      "checked_at": "2026-09-05T06:10:10.179333+00:00"
-    },
-    {
-      "key": "035642786db1c3042b28252a3b94d2006982bd88",
-      "source": "Times of Israel / X",
-      "title": "POLL: A television poll published Thursday found that only a sliver of Israelis feel their country won the Iran war, or trust US President Donald Trump to look out for their interests as he negotiates a deal with the Islamic Republic. In addition, most feel that Prime",
-      "reason": "not_today_tehran",
-      "published": "Fri, 19 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1yaDF5Sm5TemVUN09ISGg1N3d3NDRpd0lFN0w0dnBEaURMRUI4V3d0dmZPVkZ4YW96eHNiNko3OUlMQzJKMk91Z3lvXzdJOTRCU0VqYVhWMnZZczdzX1Nzd2ZyVDY?oc=5",
-      "checked_at": "2026-09-05T06:10:10.179333+00:00"
-    },
-    {
-      "key": "ee5ae2415f8d020fa42a754d265667c9d76847fe",
-      "source": "Times of Israel / X",
-      "title": "One hundred days after they went to war together to thwart Iran’s rogue nuclear weapons program, radically degrade its ballistic missile industry, end its support for the Hezbollah and Hamas terror armies, and create the conditions for the fall of the regime, the",
-      "reason": "not_today_tehran",
-      "published": "Sun, 07 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBQVGEwNzdMaWxuVVV2V09EM3VfMGNNbkVtS0JfRlVkbW5ZSXBPWnZERC1leDJIdmc4N3hwUGp6Q0dVWlh5QkpVVHdpTjBQby1fVE1BUkllWUVtUjE4VjI2QTh4LXc?oc=5",
-      "checked_at": "2026-09-05T06:10:10.179333+00:00"
-    },
-    {
-      "key": "00041968f4177392a8945a1956fe1d1a55df3182",
-      "source": "Times of Israel / X",
-      "title": "Iran reopens most entrances to 18 underground missile sites struck in war - report https://t.co/Mma8inC2Ma",
-      "reason": "not_today_tehran",
-      "published": "Sun, 31 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFA3QmJtenFTVmhmSEhBaUdKYjJnZHlyTGZ5X1JKVGxCYzY4ZWlfNW0tSU1VLUNDRmo1d3BEQmptN0k2b2hIN3puRHdCeW0zNGpSTkxua1hFM195bXE4TThyNEI2cHI?oc=5",
-      "checked_at": "2026-09-05T06:10:10.179333+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
