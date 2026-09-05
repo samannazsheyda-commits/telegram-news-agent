@@ -1,6 +1,10 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:marklevinshow:2096319696668925982",
+    "x:AJEnglish:2096310785924538686",
+    "f2acdc54df70320ee16afb81f7f5afad9d4df278",
+    "82f596233c7833e7ca9ab067b9737f2b44a11767",
     "x:mdubowitz:2096296663375581225",
     "x:AJEnglish:2096293665690046953",
     "2788b1b07651259360bb6b6d757e623470e9632f",
@@ -496,13 +500,9 @@
     "ca33220c905d2624f87af3d0984a14aeae5edb10",
     "cbcdd9073145fb18186df25575b00b050cfaee23",
     "b585f1d09c7899f97455d00978fbe2e70988e545",
-    "1ca079bbdfd4aff2fc5f21648601626f10c02b80",
-    "d861c60b008153b6c7eae70970d794a7672941d4",
-    "e00cb6b1262b5abd0137d7abd74f23b1ebc442c5",
-    "0f59a60774a1da0c101ca3d0b600c54d96c47a31",
-    "28248f2d89775b913d117aeb2e49902fdea6ec96"
+    "1ca079bbdfd4aff2fc5f21648601626f10c02b80"
   ],
-  "market_last_sent_at": "2026-09-05T16:50:16.078276+00:00",
+  "market_last_sent_at": "2026-09-05T19:32:05.566713+00:00",
   "next_news_color": "white",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
@@ -531,15 +531,33 @@
   "market_day_prices": {
     "date": "2026-09-05",
     "first_usd": 221060,
-    "last_usd": 227200,
+    "last_usd": 227205,
     "first_gold": 23518800,
-    "last_gold": 23670100,
+    "last_gold": 23674400,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "f2acdc54df70320ee16afb81f7f5afad9d4df278",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Netanyahu on Iran: If we had not acted against Iran, Iran would today have atomic bombs intended to destroy us. Now they will try again. They are trying again, and they will try again to rebuild the axis that we broke.",
+      "reason": "bundled_or_multi_headline",
+      "published": "Sat, 05 Sep 2026 19:30:43 +0000",
+      "link": "https://t.me/ClashReport/95205",
+      "checked_at": "2026-09-05T19:32:05.566713+00:00"
+    },
+    {
+      "key": "82f596233c7833e7ca9ab067b9737f2b44a11767",
+      "source": "Reuters",
+      "title": "Airlines should still avoid airspace over Iran after framework deal, EU agency warns",
+      "reason": "not_today_tehran",
+      "published": "Wed, 24 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiywFBVV95cUxQSzlhYTFUZFlsTXhncS1GM19jblhhazNKQm1lQmRMWG5TWTZIRkQzTFpsZTAtcGZWb0N6MGtmdGt6aklHdWktNURibU9ieFc4YlBaYXBRZlpWRThNZXpnOTlRcWtuRXp6S0c3Um4tOTB6ejB6dUZmZnVpenlvcHdxLXF5ZXlON1h5azg4RnFLaHBhN09hY3NBS0M0dVBBWUphZzM1eURQVFVMeDM1d0VGX3YxSU9VQmpVeXk5THZtNGpua0s2ai0tNllWcw?oc=5",
+      "checked_at": "2026-09-05T19:32:05.566713+00:00"
+    },
     {
       "key": "2788b1b07651259360bb6b6d757e623470e9632f",
       "source": "NOTAM / Airspace",
@@ -2321,28 +2339,30 @@
       "published": "Fri, 04 Sep 2026 14:49:52 +0000",
       "link": "https://x.com/JasonMBrodsky/status/2095887071613190529",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:JasonMBrodsky:2095889532616900608",
-      "source": "Jason Brodsky / X",
-      "title": "Long overdue. Comes as #France assumes the presidency of the UN Security Council for September and has wanted to shine a spotlight on the #Iran nuclear issue as a priority for its term. We'll likely hear threats to leave the NPT from a variety of Iranian regime officials in response.",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 14:59:38 +0000",
-      "link": "https://x.com/JasonMBrodsky/status/2095889532616900608",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:JasonMBrodsky:2095897761962959227",
-      "source": "Jason Brodsky / X",
-      "title": "The Iranian regime, which is more risk-ready, keeps hanging its hat on markets, munitions, the media, and midterms. The regime has long viewed American public opinion as an unwitting ally in protecting the regime in #Iran. But there is no happy ending here as long as the regime remains in power. https://www.nytimes.com/2026/09/04/us/politics/iran-war-intelligence-reports.html?unlocked_article_code=1.-lA.HcZp.tXqVPqvtVu9Q&smid=url-share",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 15:32:21 +0000",
-      "link": "https://x.com/JasonMBrodsky/status/2095897761962959227",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2096310785924538686",
+      "source": "Al Jazeera English / X",
+      "title": "BREAKING: Iran’s Foreign Ministry has condemned what it called an “aggressive” US attack on Iranian commercial vessels, describing the action as illegal and a war crime.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096310785924538686",
+      "published": "Sat, 05 Sep 2026 18:53:33 +0000",
+      "sent_at": "2026-09-05T19:33:33.569403+00:00",
+      "fingerprint": "breaking iran s foreign ministry has condemned what it called an aggressive us attack on iranian commercial vessels describing the action as illegal and a war crime"
+    },
+    {
+      "key": "x:marklevinshow:2096319696668925982",
+      "source": "Mark Levin / X",
+      "title": "Getting close to the most important economic target in Iran, the mother lode",
+      "summary": "",
+      "link": "https://x.com/marklevinshow/status/2096319696668925982",
+      "published": "Sat, 05 Sep 2026 19:28:58 +0000",
+      "sent_at": "2026-09-05T19:33:33.569403+00:00",
+      "fingerprint": "getting close to the most important economic target in iran the mother lode"
+    },
     {
       "key": "x:mdubowitz:2096296663375581225",
       "source": "Mark Dubowitz / X",
