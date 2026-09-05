@@ -72,6 +72,13 @@ OPERATIONAL_SECURITY_TERMS = (
     "پهپاد", "انفجار", "تحریم", "توقیف",
 )
 
+BOILERPLATE_TERMS = (
+    "comprehensive up-to-date news coverage",
+    "aggregated from sources all over the world by google news",
+    "پوشش جامع و به‌روز اخبار",
+    "جمع‌آوری‌شده از منابع مختلف در سراسر جهان توسط گوگل نیوز",
+)
+
 
 def _normalize(value: str) -> str:
     text = re.sub(r"\s+", " ", (value or "").lower()).strip()
@@ -134,16 +141,21 @@ def is_duplicate_story(left: NewsItem, right: NewsItem) -> bool:
     cb = _concepts(right)
     concept_common = ca & cb
     if len(concept_common) >= 3:
-        # Require some lexical confirmation so two unrelated Iran stories do not collapse together.
         return len(common) >= 2 or overlap >= 0.28
     return False
 
 
 def is_priority_security_news(item: NewsItem) -> bool:
     text = _normalize(f"{item.title} {item.summary}")
-    if not any(term in text for term in PRIORITY_TERMS):
+    capability_hit = (
+        ("ballistic" in text and ("missile" in text or "موشک" in text))
+        or ("cruise" in text and ("missile" in text or "موشک" in text))
+        or ("موشک" in text and any(term in text for term in ("بالستیک", "کروز")))
+        or ("drone" in text and any(ctx in text for ctx in IRAN_CONTEXT))
+        or ("پهپاد" in text and any(ctx in text for ctx in IRAN_CONTEXT))
+    )
+    if not capability_hit and not any(term in text for term in PRIORITY_TERMS):
         return False
-    # Netanyahu/Katz and energy-infrastructure mentions matter when tied to Iran/war/Lebanon security.
     if any(name in text for name in ("netanyahu", "نتانیاهو", "israel katz", "یسرائیل کاتز", "اسرائیل کاتز", "energy infrastructure", "زیرساخت انرژی", "زیرساخت‌های انرژی")):
         return any(ctx in text for ctx in IRAN_CONTEXT) or any(
             term in text for term in ("war", "attack", "missile", "hezbollah", "lebanon", "جنگ", "حمله", "موشک", "حزب‌الله", "لبنان")
@@ -165,6 +177,8 @@ def is_low_value_company_news(item: NewsItem) -> bool:
 def editorial_detail(value: str, max_chars: int = 1100) -> str:
     """Keep useful source detail without forcing a fixed sentence count."""
     text = re.sub(r"\s+", " ", (value or "").strip())
+    if any(term in text.lower() for term in BOILERPLATE_TERMS):
+        return ""
     if len(text) <= max_chars:
         return text
     cut = text[:max_chars].rsplit(" ", 1)[0].strip()
@@ -186,7 +200,6 @@ def fetch_priority_news_items(session=requests) -> list[NewsItem]:
     merged: dict[str, NewsItem] = {}
     for label, query in priority_search_queries():
         try:
-            # allow_special_source=False keeps output tied to the approved media source rather than the query label.
             items = _fetch_google_news_query(session, label, query, "en", allow_special_source=False)
         except Exception:
             continue
