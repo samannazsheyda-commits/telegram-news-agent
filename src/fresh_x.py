@@ -12,10 +12,8 @@ from .newsroom_x import builtin_x_news_sources, is_monitored_x_topic
 from .sources import NewsItem, USER_AGENT
 
 FXTWITTER_TIMELINE = "https://api.fxtwitter.com/2/profile/{handle}/statuses"
+_X_MEDIA_URLS: dict[str, str] = {}
 
-# Extra first-party / high-signal accounts for the near-realtime Iran monitor.
-# CENTCOM, White House, State Department, State spokesperson, SecRubio, SecDef,
-# Treasury, VP and IDF are already included by builtin_x_news_sources().
 _EXTRA_X_SOURCES = (
     {"name": "Barak Ravid", "handle": "@BarakRavid"},
     {"name": "Abbas Araghchi", "handle": "@araghchi"},
@@ -62,26 +60,13 @@ _EXTRA_SOURCE_FA = {
 for _key, _value in _EXTRA_SOURCE_FA.items():
     formatters.SOURCE_FA.setdefault(_key, _value)
 
-# Broad words such as "sanctions", "missile" or "nuclear" are useful secondary
-# topic signals, but are not enough by themselves: otherwise unrelated Cuba/Ukraine
-# posts leak into an Iran-only channel. At least one Iran anchor must also be present.
 _IRAN_ANCHORS = (
     "iran", "iranian", "tehran", "irgc", "quds force", "sepah", "hormuz",
     "persian gulf", "kharg", "fordow", "natanz", "isfahan nuclear", "arak reactor",
     "ایران", "ایرانی", "تهران", "سپاه", "نیروی قدس", "هرمز", "خلیج فارس",
     "خارک", "فردو", "نطنز", "تأسیسات اصفهان", "راکتور اراک",
 )
-
-# The Telegram newsroom currently publishes X items as text + source link only.
-# If the claim explicitly depends on watching a video/clip/footage, publishing only
-# the prose is misleading and incomplete. Suppress it until the media itself can be
-# attached to the Telegram post.
 _VIDEO_DEPENDENT_RE = re.compile(r"\b(?:video|footage|clip)\b|ویدیو|ويديو|تصاویر\s+ویدیویی", re.IGNORECASE)
-
-# News outlets often use Iran-related posts to promote panels, podcasts, festivals,
-# interviews or subscriptions. Those are not news events. Keep the filter narrow:
-# only explicit promotional calls-to-action are blocked, while factual reports and
-# attributable statements remain eligible.
 _PROMO_CTA_RE = re.compile(
     r"\b(?:catch\s+(?:the|their|our)|watch\s+(?:the|our|their|full|live)|"
     r"listen\s+(?:to|now)|join\s+us|register\s+(?:now|here|for)|subscribe\b|"
@@ -118,6 +103,45 @@ def _normalise_created_at(value: object) -> str:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
     return format_datetime(dt.astimezone(timezone.utc))
+
+
+def _photo_url_from_row(row: dict) -> str:
+    media = row.get("media")
+    if isinstance(media, dict):
+        photos = media.get("photos")
+        if isinstance(photos, list):
+            for photo in photos:
+                if isinstance(photo, dict):
+                    url = str(photo.get("url") or photo.get("media_url_https") or photo.get("media_url") or "").strip()
+                else:
+                    url = str(photo or "").strip()
+                if url.startswith("https://"):
+                    return url
+        all_media = media.get("all")
+        if isinstance(all_media, list):
+            for entry in all_media:
+                if not isinstance(entry, dict):
+                    continue
+                kind = str(entry.get("type") or "").lower()
+                if kind not in {"photo", "image"}:
+                    continue
+                url = str(entry.get("url") or entry.get("media_url_https") or entry.get("media_url") or "").strip()
+                if url.startswith("https://"):
+                    return url
+    photos = row.get("photos")
+    if isinstance(photos, list):
+        for photo in photos:
+            if isinstance(photo, dict):
+                url = str(photo.get("url") or photo.get("media_url_https") or photo.get("media_url") or "").strip()
+            else:
+                url = str(photo or "").strip()
+            if url.startswith("https://"):
+                return url
+    return ""
+
+
+def media_url_for_item(item: NewsItem) -> str:
+    return _X_MEDIA_URLS.get(str(getattr(item, "key", "")), "")
 
 
 def parse_fxtwitter_timeline(payload: object, source_name: str, handle: str) -> list[NewsItem]:
@@ -160,10 +184,17 @@ def parse_fxtwitter_timeline(payload: object, source_name: str, handle: str) -> 
             print(f"NEWS_SUPPRESSED promotional_post source={source!r} post_id={post_id!r}")
             continue
 
+        key = f"x:{screen_name}:{post_id}"
+        photo_url = _photo_url_from_row(row)
+        if photo_url:
+            _X_MEDIA_URLS[key] = photo_url
+        else:
+            _X_MEDIA_URLS.pop(key, None)
+
         seen.add(post_id)
         items.append(
             NewsItem(
-                f"x:{screen_name}:{post_id}",
+                key,
                 source,
                 text,
                 "",
@@ -187,7 +218,6 @@ def fetch_profile_timeline(source: dict[str, str], *, session=requests) -> list[
 
 
 def fetch_fresh_x_news_items(*, session=requests) -> list[NewsItem]:
-    """Fetch monitored X timelines through the public FxTwitter proxy, not X API."""
     merged: dict[str, NewsItem] = {}
     sources = monitored_x_sources()
     failures = 0
