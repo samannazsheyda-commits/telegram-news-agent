@@ -1,6 +1,10 @@
 {
   "truth_last_id": "41523",
   "news_seen": [
+    "c6ab17945c40614e82ad2ab653e07ccaa09546d8",
+    "78bbb1e3861478ba5743e2375b7623d68bccb66f",
+    "a01e6461aa753c50706844916861ef67f1094d67",
+    "6eec7a405d12453079d089bd59bb1080f76bd866",
     "06da1645959ca9e810f850decd7121e92a1906c6",
     "1e83f70f7ccdd42ac157a4a8a4912d03200a6b39",
     "8753c9a679418f6c18c03a00a5eaff8093cd35cb",
@@ -496,11 +500,7 @@
     "0e93822fb3b76cb181ddba59c882d28f8e97865b",
     "c467d188548ae0247919bbb4145530f3a3f0075a",
     "775285a7831fc24bf780c1b57f89c2a3338f31bf",
-    "20a756f2366de8aaca2ac963221f159b85ad057b",
-    "f32f28af8fdd48e8ab6e8a0473fdd4b97eaf6a6e",
-    "7400b668305f70196a3cea1743c07b4d9e69d67a",
-    "e2f0b5a7d894bc8d89c1f46993c25a529e992bdd",
-    "8c1aa1a7a64b925db648627ec238b51417cd3115"
+    "20a756f2366de8aaca2ac963221f159b85ad057b"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "white",
@@ -530,6 +530,24 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "a01e6461aa753c50706844916861ef67f1094d67",
+      "source": "Abbas Araghchi / X",
+      "title": "Months after initiation of war on Iran, US Congress acknowledges loss of dozens of aircraft worth billions. Our powerful Armed Forces are confirmed as 1st to strike down a touted F-35. With lessons learned and knowledge we gained, return to war will feature m",
+      "reason": "not_today_tehran",
+      "published": "Tue, 19 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxPVGFJdVR3RnRzMTZZOTNtZnYxUUU5TWRQY3hvWU1kbnpqcktXNzRZenl5eGw1dHU4bE1Nd1EwM2M4MllTWlZJR3pJU0s3Y0N1OUFhRXM4alV3R1cwYVlYZzNuSXpTTlFjblczZUR4Y2hZYVZ4U3Rtbkc3OTlybWZraklqdmF2SzR5dzBQZlA3MFNUTjg2d0YybFlSdkZxeFhiMU9OaGx4V2xHdFgyUTN4YjlhNnNyeWF3a2h4X3VVZDloSndyT19RbUJzeTRJVzk4TnVWSW83TmM4LVBEeFpz?oc=5",
+      "checked_at": "2026-09-05T04:04:01.153281+00:00"
+    },
+    {
+      "key": "6eec7a405d12453079d089bd59bb1080f76bd866",
+      "source": "Associated Press",
+      "title": "US strikes Iranian rocket launchers on the Strait of Hormuz in first military action in weeks",
+      "reason": "not_today_tehran",
+      "published": "Mon, 31 Aug 2026 01:38:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNVGpkelhtWHpKQXVxRDdydU9CekxJS2FnYzFHcklqek5leUhjLUMwdGlJN2dIYzlrbG12UGY2QTNjd2ZMeW1IckUwYi14R0xabVpreXI4LUhLYnc3cHFWbG5ZWnp4bXJTdVdqWVRsbEJFNzFkcW41U3FEU3UycTVFcVlvUVZRVktJanBMWGl0d3otT2RLdnB0ZXUxR0xHMXM5?oc=5",
+      "checked_at": "2026-09-05T04:04:01.153281+00:00"
+    },
     {
       "key": "06da1645959ca9e810f850decd7121e92a1906c6",
       "source": "Barak Ravid / X",
@@ -2311,28 +2329,28 @@
       "published": "Tue, 07 Jul 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBnMTh4NWVQYWR2cjMzbks1UHRGNTN5WUh3RHUxOHZmTzkwX0hIcXVscmVsWnhPbUZ2U2NkTFgtY1I5eDhWZmx6M0ZUNWtQdEktdjhBMmNEUlBRNlozeDV2eg?oc=5",
       "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "76f111399efde368e33610ea5a4cbf665bf8ce55",
-      "source": "Barak Ravid / X",
-      "title": "🚨Exclusive: President Trump told me in an interview on Tuesday that he's considering sending a second aircraft carrier strike group to the Middle East to prepare for military action if negotiations with Iran fail. My story on @axios https://t.co/JRpkoERtHw",
-      "reason": "not_today_tehran",
-      "published": "Tue, 10 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5VV3g0NFN0WmdNOGo2aEd3ajR2a256UG5hSExYNHBLd1dSUWVrQTQ0VG9kcE5iX21aYXJtTGNSY2Rra2lRaVRWSVZPUnNNb3cyelhINUFyc3FXZGFEWkhESQ?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "ed06d4a7374f040657b0ad21b0019e8a75c4d05c",
-      "source": "Barak Ravid / X",
-      "title": "🇺🇸🇮🇷🇵🇰Iranian foreign minister says deal with U.S. \"never been closer\". The official mediator Pakistani prime minister Sharif says \"an agreed upon text of the peace deal has been reached\". My story on @axios https://t.co/FbDiLdzEIv",
-      "reason": "not_today_tehran",
-      "published": "Fri, 12 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9BUlJYRVZwUEw1V2hSYldoQkNQWGNWa2JtM20xZGVUOEQ2YU1LNGFuUmpPYm1fTE9NMlIzZERJSktUdjc2RXlqWkpjNUtDTEdNcEFWUVlBUjNvOGYxcVBOTg?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "c6ab17945c40614e82ad2ab653e07ccaa09546d8",
+      "source": "CNBC",
+      "title": "Etihad CEO says airline is doubling down on growth despite Iran war",
+      "summary": "Etihad CEO says airline is doubling down on growth despite Iran war CNBC",
+      "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9aZEFEWm1kTGxMTk9oaDBHeHpMbDlqMERjWG94dV9JcWJBRDFqVHFDbVRlVTRHWXBqRS1iYW1DWlI3Rkh3LTQyT29Wa0FheW42Rld5R0xENVM0X0RXLU4wR0RoY3F1WHN6cmNDRmZMRENJYktJWXNUYWFKY1IzQQ?oc=5",
+      "published": "Sat, 05 Sep 2026 04:00:04 GMT",
+      "sent_at": "2026-09-05T04:07:27.733056+00:00"
+    },
+    {
+      "key": "78bbb1e3861478ba5743e2375b7623d68bccb66f",
+      "source": "Haaretz",
+      "title": "NYT: U.S. Intelligence Believes Iran Wants to Escalate War Before Midterms",
+      "summary": "NYT: U.S. Intelligence Believes Iran Wants to Escalate War Before Midterms Haaretz",
+      "link": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxOdncyNl9xZUlfVUpadG50TG5wYVRFeTFRSTB1RU56TGFMeE5Jc2ViY3Vub3NkRXVFSURFbHM1OFNsRTdYLTEyekQ4SG5mWmxnZkhhNmdhUFRxYzBqUHBSbXVKdlNxRDEtNmZkRm5ldDNWTjFndGtEVWlyUGNnZC15TE5Fb2R0QVlnempzS2VlSUFuWjdhbEM1VFVxN1pQZlBuTG9MZkt1d0pCbnpUYjlsMFdYa2dKZml0WG9iaVRxU0taOWk2Um9ycjRMTzNIS3c2V2plb1l4ajRjZGlveWhoWXpmYVN1UHBKcGFibHRVUjlwVm5yM1M5Mm9ScVZjeVFOOHlpa2lIOUc?oc=5",
+      "published": "Sat, 05 Sep 2026 03:51:00 GMT",
+      "sent_at": "2026-09-05T04:04:29.378464+00:00"
+    },
     {
       "key": "1beba5f6815493599b888e2816d336df3d316ff4",
       "source": "Times of Israel",
