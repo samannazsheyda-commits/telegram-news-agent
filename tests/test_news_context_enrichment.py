@@ -1,4 +1,5 @@
-from src.sources import NewsItem, fetch_news_detail
+from src.news_context import fetch_news_detail_enriched
+from src.sources import NewsItem
 
 
 class _Response:
@@ -34,7 +35,7 @@ def test_detail_combines_subheadline_with_body_fact_needed_to_answer_where():
       <p>The statement said the four were members of the force stationed in the province.</p>
     </body></html>
     """
-    detail = fetch_news_detail(item, session=_Session(html))
+    detail = fetch_news_detail_enriched(item, session=_Session(html))
     assert "western province" in detail
     assert "Kermanshah province" in detail
 
@@ -56,7 +57,7 @@ def test_detail_keeps_multiple_nonredundant_explanatory_facts_for_context_heavy_
       <p>Community members said they were trying to avoid political discussions and keep a low profile.</p>
     </body></html>
     """
-    detail = fetch_news_detail(item, session=_Session(html))
+    detail = fetch_news_detail_enriched(item, session=_Session(html))
     assert "increased scrutiny" in detail
     assert "legal status and travel" in detail
     assert "avoid political discussions" in detail
@@ -79,7 +80,7 @@ def test_detail_keeps_evidence_and_claim_context_for_disputed_attack_story():
       <p>The material was compared with the public claims made about the alleged US strike.</p>
     </body></html>
     """
-    detail = fetch_news_detail(item, session=_Session(html))
+    detail = fetch_news_detail_enriched(item, session=_Session(html))
     assert "reviewed videos from the scene" in detail
     assert "images of debris" in detail
     assert "public claims" in detail
