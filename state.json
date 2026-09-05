@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:mdubowitz:2096296663375581225",
+    "x:AJEnglish:2096293665690046953",
+    "2788b1b07651259360bb6b6d757e623470e9632f",
     "c4cf6792498b24673362334ce9122e04bb978cbc",
     "14be1a9d08c2a4390afff5fef73a3912f53f7868",
     "5390a15f6ca1320c2de73019845487baf4f50813",
@@ -497,10 +500,7 @@
     "d861c60b008153b6c7eae70970d794a7672941d4",
     "e00cb6b1262b5abd0137d7abd74f23b1ebc442c5",
     "0f59a60774a1da0c101ca3d0b600c54d96c47a31",
-    "28248f2d89775b913d117aeb2e49902fdea6ec96",
-    "4aabd2529c53341fb2326c48bb06799cc9cd14b4",
-    "94cd07c4792c8669b8a7be4a940615222d313376",
-    "f6028d3cddc90cc6ab91cd692a4775c7e1884d92"
+    "28248f2d89775b913d117aeb2e49902fdea6ec96"
   ],
   "market_last_sent_at": "2026-09-05T16:50:16.078276+00:00",
   "next_news_color": "white",
@@ -540,6 +540,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "2788b1b07651259360bb6b6d757e623470e9632f",
+      "source": "NOTAM / Airspace",
+      "title": "Kuwait reopens airspace following Iranian attacks on US bases - Українські Національні Новини (УНН)",
+      "reason": "not_today_tehran",
+      "published": "Thu, 11 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNN3g5UkJVYmRqSG5xOUFhaWZZbzJCUXFxbVRHQjZFWHVyZndfMDNFUHdRNzlaNVlSelpEbzJZRXhsZ29tUmo4aEdBa1pNSFV5ejAzSGFyMGU3Y0VZRkgzc3BPMEx2Q2hpY1J3aE83Zmo1U0VlUHhUa0w0TlI3SnI5VWZTX2JXdXNETm9SdtIBiwFBVV95cUxNRXdYT09WMld0cGxnR3lKUms5UVE0aVlfa3lpckdxclFOY3BJWmZ2MTV4MV9kbzc5S1RmWjlFOU1GZ0RCSjFBejVFU205R3VhZTJwSmxRX3Jqb0VIZm9IU2Z6ZjVVOTBrUlJnRXpUMkJoWVdNcHdHQklfX0dFLW55OHUwWGgxSlVYLVpJ?oc=5",
+      "checked_at": "2026-09-05T17:54:54.221176+00:00"
+    },
     {
       "key": "c4cf6792498b24673362334ce9122e04bb978cbc",
       "source": "تبز لایو / Telegram",
@@ -2330,19 +2339,30 @@
       "published": "Fri, 04 Sep 2026 15:32:21 +0000",
       "link": "https://x.com/JasonMBrodsky/status/2095897761962959227",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:JasonMBrodsky:2095884456905056435",
-      "source": "Jason Brodsky / X",
-      "title": "#BREAKING: @USTreasury is sanctioning #Turkey's Golden Global Bank under E.O. 13902 for facilitating millions of dollars in transactions for #Iran's regime's #IRGCterrorists. Golden Global Bank is Turkey's first investment bank. https://home.treasury.gov/news/press-releases/treasury-severs-iranian-regime-s-financial-lifelines-turkiye/",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 14:39:28 +0000",
-      "link": "https://x.com/JasonMBrodsky/status/2095884456905056435",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:mdubowitz:2096296663375581225",
+      "source": "Mark Dubowitz / X",
+      "title": "Those of us who argued for months that the trend was turning decisively against Tehran were criticized and dismissed. Now, more and more people are coming to the same conclusion.",
+      "summary": "",
+      "link": "https://x.com/mdubowitz/status/2096296663375581225",
+      "published": "Sat, 05 Sep 2026 17:57:26 +0000",
+      "sent_at": "2026-09-05T17:59:07.119093+00:00",
+      "fingerprint": "those of us who argued for months that the trend was turning decisively against tehran were criticized and dismissed now more and more people are coming to the same conclusion"
+    },
+    {
+      "key": "x:AJEnglish:2096293665690046953",
+      "source": "Al Jazeera English / X",
+      "title": "BREAKING: At least 11 people killed after a fuel tanker caught fire in an accident on the Hamadan–Sanandaj road in Iran’s Kurdistan Province, according to the local Red Crescent.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096293665690046953",
+      "published": "Sat, 05 Sep 2026 17:45:31 +0000",
+      "sent_at": "2026-09-05T17:56:21.564250+00:00",
+      "fingerprint": "breaking at least 11 people killed after a fuel tanker caught fire in an accident on the hamadan sanandaj road in iran s kurdistan province according to the local red crescent"
+    },
     {
       "key": "5390a15f6ca1320c2de73019845487baf4f50813",
       "source": "کلش ریپورت / Telegram",
