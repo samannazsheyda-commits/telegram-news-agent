@@ -18,13 +18,14 @@ STOPWORDS = {
 }
 
 SOURCE_WORDS = {
-    "reuters", "bbc", "cnn", "haaretz", "axios", "bloomberg", "cnbc", "nyt", "times", "israel",
-    "jazeera", "arabiya", "associated", "press", "news", "sky", "financial", "france", "dw",
+    "reuters", "bbc", "cnn", "haaretz", "axios", "bloomberg", "cnbc", "nyt", "times", "jazeera",
+    "arabiya", "associated", "press", "news", "sky", "financial", "france", "dw", "ap", "afp",
     "رویترز", "بی‌بی‌سی", "سی‌ان‌ان", "هاآرتص", "اکسیوس", "بلومبرگ", "الجزیره", "العربیه",
 }
 
 CANONICAL_REPLACEMENTS = (
-    (r"\b(united states|u\.?s\.?|washington)\b", "usa"),
+    (r"\b(united states|u\.?s\.?|america|american|washington)\b", "usa"),
+    (r"\b(israeli defense chief|israeli defence chief|israeli defense minister|israeli defence minister)\b", "israel_katz"),
     (r"\b(post[- ]?war|after the war)\b", "postwar"),
     (r"\b(alliance|coalition|bloc)\b", "coalition"),
     (r"\b(expand|expansion|broaden|broader|wider|widen)\b", "expand"),
@@ -36,6 +37,10 @@ CANONICAL_REPLACEMENTS = (
     (r"\b(ballistic missiles?)\b", "ballistic_missile"),
     (r"\b(cruise missiles?)\b", "cruise_missile"),
     (r"\b(drones?|uavs?|unmanned aerial vehicles?)\b", "drone"),
+    (r"\b(atomic facilities|nuclear facilities|nuclear sites?)\b", "nuclear_site"),
+    (r"\b(rebuild|rebuilds|rebuilding|restore|restores|restoring|reconstruct|reconstructing)\b", "rebuild"),
+    (r"\b(warn|warns|warned|threaten|threatens|threatened)\b", "warn"),
+    (r"\b(strike|strikes|struck|attack|attacks|attacked)\b", "strike"),
 )
 
 PRIORITY_TERMS = (
@@ -84,17 +89,13 @@ def _normalize(value: str) -> str:
     text = re.sub(r"\s+", " ", (value or "").lower()).strip()
     for pattern, replacement in CANONICAL_REPLACEMENTS:
         text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
-    text = text.replace("ي", "ی").replace("ك", "ک")
-    return text
+    return text.replace("ي", "ی").replace("ك", "ک")
 
 
 def _tokens(item: NewsItem) -> set[str]:
     text = _normalize(f"{item.title} {item.summary}")
     tokens = re.findall(r"[a-z0-9_\u0600-\u06ff]+", text)
-    return {
-        token for token in tokens
-        if len(token) > 2 and token not in STOPWORDS and token not in SOURCE_WORDS
-    }
+    return {token for token in tokens if len(token) > 2 and token not in STOPWORDS and token not in SOURCE_WORDS}
 
 
 def _concepts(item: NewsItem) -> set[str]:
@@ -103,21 +104,24 @@ def _concepts(item: NewsItem) -> set[str]:
     groups = {
         "iran": ("iran", "iranian", "tehran", "ایران", "ایرانی", "تهران"),
         "usa": ("usa",),
-        "postwar": ("postwar",),
-        "coalition": ("coalition",),
+        "israel": ("israel", "israeli", "اسرائیل"),
+        "israel_katz": ("israel katz", "israel_katz", "یسرائیل کاتز", "اسرائیل کاتز"),
+        "netanyahu": ("netanyahu", "نتانیاهو"),
+        "postwar": ("postwar",), "coalition": ("coalition",),
         "abraham": ("abraham accords", "توافق ابراهیم", "پیمان ابراهیم"),
-        "intel": ("intel",),
-        "midterms": ("midterms",),
-        "escalate": ("escalate",),
+        "intel": ("intel",), "midterms": ("midterms",), "escalate": ("escalate",),
         "sanctions": ("sanction", "sanctions", "تحریم"),
         "talks": ("talks", "negotiation", "negotiations", "مذاکره", "مذاکرات"),
-        "irgc": ("irgc", "سپاه", "سپاه پاسداران"),
-        "quds": ("quds", "نیروی قدس"),
-        "hezbollah": ("hezbollah", "حزب‌الله"),
-        "lebanon": ("lebanon", "لبنان"),
+        "irgc": ("irgc", "سپاه", "سپاه پاسداران"), "quds": ("quds", "نیروی قدس"),
+        "hezbollah": ("hezbollah", "حزب‌الله"), "lebanon": ("lebanon", "لبنان"),
         "ballistic": ("ballistic_missile", "موشک بالستیک", "موشک‌های بالستیک"),
         "cruise": ("cruise_missile", "موشک کروز", "موشک‌های کروز"),
         "drone": ("drone", "پهپاد"),
+        "nuclear": ("nuclear", "atomic", "هسته‌ای", "اتمی"),
+        "nuclear_site": ("nuclear_site", "تأسیسات هسته‌ای", "تاسیسات هسته‌ای"),
+        "rebuild": ("rebuild", "بازسازی", "بازسازی کند"),
+        "warn": ("warn", "هشدار", "تهدید"),
+        "strike": ("strike", "حمله", "حملات"),
         "energy": ("energy infrastructure", "oil infrastructure", "gas infrastructure", "زیرساخت انرژی", "زیرساخت‌های انرژی"),
     }
     for name, aliases in groups.items():
@@ -126,22 +130,40 @@ def _concepts(item: NewsItem) -> set[str]:
     return concepts
 
 
+def _specific_facts(item: NewsItem) -> set[str]:
+    """Facts whose appearance usually means a materially newer development."""
+    text = _normalize(f"{item.title} {item.summary}")
+    facts = set(re.findall(r"\b(?:[01]?\d|2[0-3]):[0-5]\d\b", text))
+    facts.update(re.findall(r"\b(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b", text))
+    for location in ("fordow", "natanz", "isfahan", "arak", "فردو", "نطنز", "اصفهان", "اراک"):
+        if location in text:
+            facts.add(location)
+    return facts
+
+
 def is_duplicate_story(left: NewsItem, right: NewsItem) -> bool:
     """Treat the same underlying event/claim as duplicate regardless of outlet wording."""
-    a = _tokens(left)
-    b = _tokens(right)
+    a, b = _tokens(left), _tokens(right)
     if not a or not b:
         return False
+
+    left_facts, right_facts = _specific_facts(left), _specific_facts(right)
+    if (left_facts or right_facts) and left_facts != right_facts:
+        # A precise new time/day/site is a meaningful update, not a duplicate.
+        if left_facts - right_facts or right_facts - left_facts:
+            return False
+
     common = a & b
     overlap = len(common) / max(1, min(len(a), len(b)))
     if len(common) >= 5 and overlap >= 0.42:
         return True
 
-    ca = _concepts(left)
-    cb = _concepts(right)
+    ca, cb = _concepts(left), _concepts(right)
     concept_common = ca & cb
+    if len(concept_common) >= 4:
+        return True
     if len(concept_common) >= 3:
-        return len(common) >= 2 or overlap >= 0.28
+        return len(common) >= 2 or overlap >= 0.24
     return False
 
 
@@ -165,24 +187,17 @@ def is_priority_security_news(item: NewsItem) -> bool:
 
 def is_low_value_company_news(item: NewsItem) -> bool:
     text = _normalize(f"{item.title} {item.summary}")
-    if not any(term in text for term in COMPANY_TERMS):
-        return False
-    if any(term in text for term in OPERATIONAL_SECURITY_TERMS):
-        return False
-    if is_priority_security_news(item):
-        return False
+    if not any(term in text for term in COMPANY_TERMS): return False
+    if any(term in text for term in OPERATIONAL_SECURITY_TERMS): return False
+    if is_priority_security_news(item): return False
     return True
 
 
 def editorial_detail(value: str, max_chars: int = 1100) -> str:
-    """Keep useful source detail without forcing a fixed sentence count."""
     text = re.sub(r"\s+", " ", (value or "").strip())
-    if any(term in text.lower() for term in BOILERPLATE_TERMS):
-        return ""
-    if len(text) <= max_chars:
-        return text
-    cut = text[:max_chars].rsplit(" ", 1)[0].strip()
-    return cut + "…"
+    if any(term in text.lower() for term in BOILERPLATE_TERMS): return ""
+    if len(text) <= max_chars: return text
+    return text[:max_chars].rsplit(" ", 1)[0].strip() + "…"
 
 
 def priority_search_queries() -> tuple[tuple[str, str], ...]:
@@ -196,15 +211,11 @@ def priority_search_queries() -> tuple[tuple[str, str], ...]:
 
 
 def fetch_priority_news_items(session=requests) -> list[NewsItem]:
-    """Targeted searches so critical Iran-security subjects are not dependent on generic headlines."""
     merged: dict[str, NewsItem] = {}
     for label, query in priority_search_queries():
-        try:
-            items = _fetch_google_news_query(session, label, query, "en", allow_special_source=False)
-        except Exception:
-            continue
-        for item in items[:20]:
-            merged.setdefault(item.key, item)
+        try: items = _fetch_google_news_query(session, label, query, "en", allow_special_source=False)
+        except Exception: continue
+        for item in items[:20]: merged.setdefault(item.key, item)
     return list(merged.values())
 
 
@@ -212,7 +223,6 @@ def dedupe_items(items: Iterable[NewsItem], references: Iterable[NewsItem] = ())
     kept: list[NewsItem] = []
     refs = list(references)
     for item in items:
-        if any(is_duplicate_story(item, previous) for previous in refs + kept):
-            continue
+        if any(is_duplicate_story(item, previous) for previous in refs + kept): continue
         kept.append(item)
     return kept
