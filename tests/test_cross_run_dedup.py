@@ -50,6 +50,7 @@ def test_same_trump_quote_from_new_source_is_suppressed_across_runs(tmp_path, mo
     monkeypatch.setattr(runtime.agent, "STATE_PATH", str(state_path))
     monkeypatch.setattr(runtime, "_original_fetch_news_items", lambda: [duplicate])
     monkeypatch.setattr(runtime, "fetch_custom_news_items", lambda: [])
+    monkeypatch.setattr(runtime, "fetch_priority_news_items", lambda: [])
     monkeypatch.setattr(runtime, "_terminal_manual_keys", lambda: set())
 
     items = runtime._combined_fetch_news_items()
@@ -86,6 +87,7 @@ def test_distinct_new_trump_development_is_not_suppressed(tmp_path, monkeypatch)
     monkeypatch.setattr(runtime.agent, "STATE_PATH", str(state_path))
     monkeypatch.setattr(runtime, "_original_fetch_news_items", lambda: [new_story])
     monkeypatch.setattr(runtime, "fetch_custom_news_items", lambda: [])
+    monkeypatch.setattr(runtime, "fetch_priority_news_items", lambda: [])
     monkeypatch.setattr(runtime, "_terminal_manual_keys", lambda: set())
 
     items = runtime._combined_fetch_news_items()
