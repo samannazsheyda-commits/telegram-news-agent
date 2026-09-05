@@ -2,7 +2,6 @@
   "truth_last_id": "41529",
   "news_seen": [
     "x:AJEnglish:2096219775902892094",
-    "583b9814f26fe38fcbcbb405aa5fd98207294721",
     "x:TankerTrackers:2096215788063498460",
     "636ce9e89fc0a11b01afffc822502f7717791e46",
     "x:haaretzcom:2096210523033403406",
@@ -500,7 +499,8 @@
     "ea7400718e87964b5a2c2483e03f3a288ca04e3b",
     "178935397b2becb00fc2c7f99dfac200dc82631c",
     "c602c7e71b9c2cb313b38a3a07ead04e8937bdd0",
-    "bf8b48d6e1f74c820cf911904a7406586f3f0d70"
+    "bf8b48d6e1f74c820cf911904a7406586f3f0d70",
+    "9c3627c5b2fa51f5cb00b9b9a506dfd1878d9886"
   ],
   "market_last_sent_at": "2026-09-05T12:47:38.071885+00:00",
   "next_news_color": "red",
@@ -540,15 +540,6 @@
     "last_wti": 91.48
   },
   "news_rejections": [
-    {
-      "key": "583b9814f26fe38fcbcbb405aa5fd98207294721",
-      "source": "NOTAM / Airspace",
-      "title": "Iran closes western airspace until Monday as Trump administration mulls strikes",
-      "reason": "not_today_tehran",
-      "published": "Fri, 22 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQamZXLVdEMmlQVnlvNUZqdHc1X0lhTldqd3JDY2lKT1lhUmJLREJQOGROUlI1YmEydEpBd2d1YlRGVWtIVm84elg4WlFtaUpZU3RMaTJUdUhZOTM1RVJHTkJLOG0ya2tGdEY5T0p2TmZXaE9DZHo1Qk9xcDhua1BoTFhEODNhcVltLTdwR2hpZkFTU3JUS3d4Z3luMGw?oc=5",
-      "checked_at": "2026-09-05T12:52:16.662386+00:00"
-    },
     {
       "key": "636ce9e89fc0a11b01afffc822502f7717791e46",
       "source": "NOTAM / Airspace",
@@ -2339,6 +2330,15 @@
       "published": "Fri, 17 Jul 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFBvcjRrMmlyTjBsUHNUTC15NlFPTmtQWFpuTFhUQ2diXzhvLXFuRUNyMV9SM2lReUxLa1daTmc3UEZjYVU1RTFGRlg2TzZ3dVhpb05Dc2tUNzlvVHg5Q1E?oc=5",
       "checked_at": "2026-09-05T08:33:07.353938+00:00"
+    },
+    {
+      "key": "4ea65c00fe2b9a1254a2d843218774b2f0a35b44",
+      "source": "Abbas Araghchi / X",
+      "title": "Fulfilling our pledge of full transparency towards our own people, Iran's Government has already published a comprehensive list of all 3117 victims of recent terrorist operation, including about 200 officers. If anyone disputes accuracy of our data, please share",
+      "reason": "not_today_tehran",
+      "published": "Fri, 20 Feb 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE94ZzhOdjE2OWxoQ1Q2VjNQUFhBNTNGN0tmWENtQVdsbXVkWTVsVHVYcG4wR1ZzYmZDSDhwUndqVkxUbjZ2TFlfTjVxX1J1ZDBrbzdJdzlzMnFKSzg3dWc?oc=5",
+      "checked_at": "2026-09-05T08:33:07.353938+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
@@ -2350,7 +2350,7 @@
       "summary": "",
       "link": "https://x.com/AJEnglish/status/2096219775902892094",
       "published": "Sat, 05 Sep 2026 12:51:55 +0000",
-      "sent_at": "2026-09-05T12:53:13.863700+00:00"
+      "sent_at": "2026-09-05T12:57:38.813926+00:00"
     },
     {
       "key": "x:TankerTrackers:2096215788063498460",
