@@ -7,14 +7,33 @@ def _x(key: str, published: str, title: str = "Iran update") -> NewsItem:
     return NewsItem(key, "Reuters / X", title, "", f"https://x.com/Reuters/status/{key.split(':')[-1]}", published)
 
 
-def test_easy_flow_accepts_x_without_editorial_rejection(monkeypatch):
+def test_easy_flow_accepts_x_without_editorial_rejection():
     from src import runtime_v7 as v7
 
     item = _x("x:Reuters:2", "Thu, 03 Sep 2026 08:00:00 +0000")
-    monkeypatch.setattr(v7.v6.v5.v4.v3.v2.base.agent, "_news_rejection_reason", lambda _item, _now: "not_today_tehran")
+    assert v7._easy_rejection_reason(item, datetime(2026, 9, 5, tzinfo=timezone.utc)) is None
 
-    v7.install_easy_news_flow()
-    assert v7.v6.v5.v4.v3.v2.base.agent._news_rejection_reason(item, datetime(2026, 9, 5, tzinfo=timezone.utc)) is None
+
+def test_install_easy_flow_wires_policy_without_leaking_after_test(monkeypatch):
+    from src import runtime_v7 as v7
+
+    original_reason = v7.v2.base.agent._news_rejection_reason
+    original_selector = v7.v2.base.agent._select_top_stories
+    original_translate = v7.v2.translate_news_to_fa
+    original_strict = v7.v2._strict_rejection_reason
+    original_flag = v7._easy_news_flow_installed
+
+    try:
+        v7._easy_news_flow_installed = False
+        v7.install_easy_news_flow()
+        assert v7.v2.base.agent._news_rejection_reason is v7._easy_rejection_reason
+        assert v7.v2.base.agent._select_top_stories is v7._select_one_story
+    finally:
+        v7.v2.base.agent._news_rejection_reason = original_reason
+        v7.v2.base.agent._select_top_stories = original_selector
+        v7.v2.translate_news_to_fa = original_translate
+        v7.v2._strict_rejection_reason = original_strict
+        v7._easy_news_flow_installed = original_flag
 
 
 def test_easy_flow_selects_only_one_newest_story_per_cycle():
