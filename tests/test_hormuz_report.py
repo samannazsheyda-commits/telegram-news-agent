@@ -114,8 +114,12 @@ def test_runtime_sends_previous_day_report_once_after_noon(tmp_path, monkeypatch
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token")
     monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
     requested_dates = []
-    monkeypatch.setattr(runtime, "fetch_hormuz_traffic_report", lambda report_date: requested_dates.append(report_date) or object())
-    monkeypatch.setattr(runtime, "format_hormuz_report", lambda report: "HORMUZ REPORT\nمنابع: Kpler، Reuters")
+    report = HormuzTrafficReport(
+        report_date=date(2026, 9, 4), observed_count=4, previous_count=9, rolling_average=15,
+        vessel_details=(), notes=(), sources=("Kpler", "Reuters"),
+    )
+    monkeypatch.setattr(runtime, "fetch_hormuz_traffic_report", lambda report_date: requested_dates.append(report_date) or report)
+    monkeypatch.setattr(runtime, "format_hormuz_report", lambda value: "HORMUZ REPORT\nمنابع: Kpler، Reuters")
     sent = []
     monkeypatch.setattr(runtime.agent, "send_telegram", lambda text, token, chat: sent.append(text))
 
