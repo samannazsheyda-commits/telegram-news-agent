@@ -1,4 +1,4 @@
-name: Car Bidi Tests
+name: Car Output Tests
 
 on:
   push:
@@ -6,7 +6,10 @@ on:
       - fix/x-publish-all
     paths:
       - "src/cars.py"
+      - "src/runtime_v4.py"
+      - "assets/car_price_banner.svg"
       - "tests/test_car_bidi.py"
+      - "tests/test_car_telegraph.py"
       - ".github/workflows/car-bidi-tests.yml"
 
 jobs:
@@ -18,4 +21,4 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
-      - run: python -m pytest -q tests/test_car_bidi.py
+      - run: python -m pytest -q tests/test_car_bidi.py tests/test_car_telegraph.py
