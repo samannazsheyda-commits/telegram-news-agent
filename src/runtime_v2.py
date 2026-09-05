@@ -15,7 +15,7 @@ _original_priority_score = base._priority_event_priority
 _x_news_keys: set[str] = set()
 
 
-def translate_news_to_fa(text: str) -> str:
+def translate_news_to_fa(text: str, session=None) -> str:
     """Translate mixed English/Persian headlines instead of accepting them as Persian."""
     value = (text or "").strip()
     if not value:
@@ -24,11 +24,12 @@ def translate_news_to_fa(text: str) -> str:
     words = re.findall(r"[A-Za-z\u0600-\u06FF]+", value)
     mostly_latin = bool(latin_words) and (not words or len(latin_words) / len(words) > 0.30)
     if not mostly_latin:
-        return services.translate_to_fa(value)
+        return services.translate_to_fa(value, session=session or services.requests)
 
+    translation_session = session or services.requests
     for translator in (services._google_translate, services._mymemory_translate):
         try:
-            translated = services._polish_fa(translator(value))
+            translated = services._polish_fa(translator(value, session=translation_session))
             translated = services._repair_news_idioms(value, translated)
             if services._translation_quality_ok(value, translated):
                 return translated
@@ -53,8 +54,9 @@ def _x_first_fetch_news_items():
 
 
 def _strict_rejection_reason(item, now: datetime):
-    # Publication is only for the current Iran-calendar news cycle. Priority
-    # searches may use older material for context, but cannot republish it as fresh.
+    # Priority searches may use older material for context, but old articles/posts
+    # cannot be republished as fresh news. The base rule allows only today's Iran
+    # calendar cycle plus the short after-midnight grace window.
     return base._original_news_rejection_reason(item, now)
 
 
