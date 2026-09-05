@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "6dc4e4ac919938f5432288a08b35dc5472ee5b68",
+    "338224d9dcb2ee93c7e85bae510b2a5ffa870b8c",
     "18d79aec8ec90a0dcaefd368063929c4a3238ff9",
     "9919a3e7b9dc875cdb834778beb1827a04aaffcf",
     "ccd197fa437ba5b6476c182e9c66a68da192504b",
@@ -498,9 +500,7 @@
     "f3c67be6ee7b1e04f91f4b5a6d584cf4328d996e",
     "6bf8844b452289795c24b4a4e8b42f8bb875439d",
     "232c6eace690d3989d1567638eb60fced22452f1",
-    "3ec196a138c0b54dfc34ab582a537f96c51e8f16",
-    "9644d28635a09c7e441b7fb67892dfca1b43531c",
-    "4f89aa1b785d2d2f0b05d6d73acaa2e0a0a29589"
+    "3ec196a138c0b54dfc34ab582a537f96c51e8f16"
   ],
   "market_last_sent_at": "2026-09-05T08:43:54.746517+00:00",
   "next_news_color": "white",
@@ -540,6 +540,24 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "6dc4e4ac919938f5432288a08b35dc5472ee5b68",
+      "source": "NOTAM / Airspace",
+      "title": "Iran says airspace returns to normal after flight restrictions lifted - Anadolu Ajansı",
+      "reason": "not_today_tehran",
+      "published": "Mon, 08 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNNm1JY0Z6ZGktMG9vdWVhUldTTHNQZU9SY0lOelZVUVlIWmhaZXRfMUxKWFBKN19BUkdfS21VQjZ1OUlnTlNCdTA3aXFaTlVKR240NnRSN1Ytam1BOVdod3BHd25ldmhvYUVVZDM0X0d0elg3VnV1NGFPaTY1a1Iwd2hiVXYwdk16SU5JbWJCTkc2X3ByWHJmaXh0dmFOSzg3a0FlRDBNdGFaM29fMTN4cnhUU2I?oc=5",
+      "checked_at": "2026-09-05T08:56:42.751352+00:00"
+    },
+    {
+      "key": "338224d9dcb2ee93c7e85bae510b2a5ffa870b8c",
+      "source": "NOTAM / Airspace",
+      "title": "flydubai and Air Arabia resume ops through Iran airspace - ch-aviation",
+      "reason": "not_today_tehran",
+      "published": "Thu, 20 Aug 2026 07:23:06 GMT",
+      "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPa0N6RkI4Y0ZHdU9kN1NyajRCZDFGYnYzanBWOVlHWExSVzdZU04tRWhIZ2FUSDNBdGFQTWQ4eHd3T3pJTDE1YWl3Ylg1T2FHREt5Q2RkcHVMTl93WDROejgwb1JxQVNleThDRDdjVGhLMGp4RkR6OWU2X2l0Y2F1WVdPVWJpbXBxNXpYWmpEd3BpbE9UcVZDQVlMTTk?oc=5",
+      "checked_at": "2026-09-05T08:56:42.751352+00:00"
+    },
     {
       "key": "18d79aec8ec90a0dcaefd368063929c4a3238ff9",
       "source": "NOTAM / Airspace",
@@ -2320,24 +2338,6 @@
       "reason": "not_today_tehran",
       "published": "Fri, 04 Sep 2026 14:45:30 GMT",
       "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNSzJWcmVEeGZUdnNJbkdEZXJVSXdZSHJTNUphSjBXRDNLbnBqbTNXYm1jM25LU0gtelZ0d2FTX2FNRHFGQTc2OUN5TnhibUpWbU1aQ2xZcjdYX2UyaDNJOVhjOU5CZWI4MlJkWF9wOEp3U1pHVTF4V0ZCcDZCTTVHZWVlYVF5aHFyX1hlbU94UW1ya0tibllWMmpMaEd4VE5Oc3BZ0gGoAUFVX3lxTE5GVnZNemM2TUZwdTF2c0ZPeUV2T1NjbGxZOFc4Vk12OFVjUEF2LXJZbzdNajhlYnFBcldmYWhUalZfZ01HZE1TakpsaHV4SkttOEFrQWNUejlINngteDRRTFNVNGQyQ2Q1UXhQeXhKZDhNSkRweXpybW84NFhFUzUyMGFNUUQ0NUNteUdiVFM0bHR3b3c4Mjdtb2JvQ2ZPNGJuSWkwRy1mVg?oc=5",
-      "checked_at": "2026-09-05T06:21:58.787014+00:00"
-    },
-    {
-      "key": "e00cb6b1262b5abd0137d7abd74f23b1ebc442c5",
-      "source": "Reuters / X",
-      "title": "Trump says US may hit Iran's Pickaxe Mountain soon",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 20:11:43 GMT",
-      "link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNZmd2SXBwYUJhclYxN0pLMDhjUXVmeHhzUTRPY0FsM3hPZlN4YkprT2Y0R0l6Z3U5UXNWVjRDcFJUN2NNa1FsaXlIejlDUXVpbWh4UWJNdUZzZUZpdGN5WkxQa24zYkktU191MTZsV0VwNXcwRzVPRHA4YjlCUUwwajE4akV3Y3pLX0thQXEtTTlSRkJRMGc?oc=5",
-      "checked_at": "2026-09-05T06:21:58.787014+00:00"
-    },
-    {
-      "key": "0f59a60774a1da0c101ca3d0b600c54d96c47a31",
-      "source": "Reuters / X",
-      "title": "The coming verdict on Trump's Strait of Hormuz claims",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 13:56:30 GMT",
-      "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE1CQ25Bb0ROcGhfY3REMUhPUEVBeG14NlpoYW1UblBvSGlfc0FGMEZ5VVVnQ2N4aDkyM0pURFNsQlhqcE1TZ0hoaHhLVkxCLXAzeTlFcUNDRWRzVUZMMzVaQkxmdjNoYVZFazU2RmdobVI0Mm5ZbTZ3?oc=5",
       "checked_at": "2026-09-05T06:21:58.787014+00:00"
     }
   ],
