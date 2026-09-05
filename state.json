@@ -3304,5 +3304,8 @@
       "fingerprint": "five anti ship cruise missile launches from sirik towards the strait of hormuz five anti ship cruise missile launches from sirik towards the strait of hormuz"
     }
   ],
-  "hormuz_last_sent_date": "2026-09-05"
+  "hormuz_last_sent_date": "2026-09-05",
+  "one_off_posts_sent": [
+    "manual_market_summary_2026-09-05_2330_simple"
+  ]
 }
