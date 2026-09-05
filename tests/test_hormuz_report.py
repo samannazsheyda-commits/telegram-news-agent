@@ -1,7 +1,12 @@
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
-from src.hormuz import HormuzTrafficReport, format_hormuz_report, hormuz_report_due
+from src.hormuz import (
+    HormuzTrafficReport,
+    format_hormuz_report,
+    hormuz_report_due,
+    parse_hormuz_source_text,
+)
 
 
 TEHRAN = ZoneInfo("Asia/Tehran")
@@ -53,3 +58,18 @@ def test_report_does_not_invent_missing_count():
     assert "آمار دقیق و قابل استناد کشتی‌ها منتشر نشده" in text
     assert "کشتی‌های عبوری مشاهده‌شده:" not in text
     assert "منابع: Kpler" in text
+
+
+def test_source_text_parser_extracts_counts_types_and_data_provider():
+    text = (
+        "Only 4 cargo ships transited the Strait of Hormuz on Thursday, down from 9 a day earlier, "
+        "according to Kpler data. The 10-day average was 15 vessels per day. "
+        "The four ships were two medium-range product tankers, one Kamsarmax bulk carrier and one Handysize vessel."
+    )
+    parsed = parse_hormuz_source_text(text, publisher="Reuters")
+    assert parsed.observed_count == 4
+    assert parsed.previous_count == 9
+    assert parsed.rolling_average == 15
+    assert any("medium-range product tankers" in item for item in parsed.vessel_details)
+    assert "Kpler" in parsed.sources
+    assert "Reuters" in parsed.sources
