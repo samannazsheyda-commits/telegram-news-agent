@@ -1,65 +1,52 @@
 from src.cars import format_car_prices, parse_car_prices
 
 
-def test_parse_expanded_popular_car_prices_from_market_table():
+def test_parse_car_prices_keeps_every_source_row_and_exact_source_name():
     rows = [
-        ("پراید 151 SE", "620,000,000"),
-        ("پژو 207 دنده‌ای (برقی)", "2,210,000,000"),
-        ("پژو 207 اتوماتیک", "2,810,000,000"),
-        ("پژو 207 TU3", "1,980,000,000"),
-        ("دنا پلاس اتوماتیک", "3,230,000,000"),
-        ("دنا پلاس MT6", "2,440,000,000"),
-        ("تارا دستی V1", "2,275,000,000"),
-        ("تارا اتوماتیک V4", "3,085,000,000"),
-        ("سورن پلاس XU7P", "1,800,000,000"),
-        ("سورن پلاس دوگانه سوز", "1,950,000,000"),
-        ("رانا پلاس", "1,750,000,000"),
-        ("شاهین G", "2,100,000,000"),
-        ("شاهین اتوماتیک", "2,350,000,000"),
-        ("شاهین پلاس", "2,750,000,000"),
-        ("کوییک S", "1,020,000,000"),
-        ("کوییک GX", "1,050,000,000"),
-        ("کوییک GXR", "1,080,000,000"),
-        ("ساینا S", "1,020,000,000"),
-        ("ساینا GX", "1,100,000,000"),
-        ("اطلس G", "1,250,000,000"),
-        ("سهند S", "1,150,000,000"),
-        ("ری را", "3,650,000,000"),
-        ("هایما S5", "3,900,000,000"),
-        ("هایما S7", "4,350,000,000"),
-        ("هایما 8S", "4,850,000,000"),
-        ("فیدلیتی پرایم", "4,400,000,000"),
-        ("دیگنیتی پرایم", "4,300,000,000"),
-        ("آریزو 5", "3,700,000,000"),
-        ("X22 Pro", "2,900,000,000"),
-        ("آریسان 2", "1,300,000,000"),
+        ("سایپا 151 GX", "1,275,000,000"),
+        ("پژو 207 دنده‌ای هیدرولیک", "2,210,000,000"),
+        ("تارا اتوماتیک V4 LX", "3,085,000,000"),
+        ("سهند S", "1,510,000,000"),
+        ("ری را", "4,070,000,000"),
+        ("آریزو 5 FL", "3,700,000,000"),
+        ("آریسان 2", "1,629,000,000"),
+        ("مدل واقعی دیگر", "9,999,000,000"),
     ]
-    html = "<table>" + "".join(f"<tr><td>{n}</td><td>{p}</td><td>0</td></tr>" for n, p in rows) + "</table>"
+    html = "<table>" + "".join(
+        f"<tr><td>{name}</td><td>{price}</td><td>0</td></tr>"
+        for name, price in rows
+    ) + "</table>"
+
     prices = parse_car_prices(html)
-    assert len(prices) >= 25
-    names = {p.name for p in prices}
-    assert "پراید ۱۵۱" in names
-    assert "ری‌را" in names
-    assert "هایما S7" in names
-    assert "فیدلیتی پرایم" in names
+
+    assert [(p.name, p.market_toman) for p in prices] == [
+        (name, int(price.replace(",", ""))) for name, price in rows
+    ]
+    assert all("پراید" not in p.name for p in prices)
 
 
-def test_car_post_has_change_source_and_blank_line_between_rows():
+def test_car_post_uses_exact_source_names_and_source_link():
     html = "<table>" + "".join(
         f"<tr><td>{name}</td><td>{1_000_000_000 + i * 10_000_000:,}</td></tr>"
         for i, name in enumerate([
-            "پراید 151 SE", "پژو 207 دنده‌ای (برقی)", "پژو 207 اتوماتیک", "پژو 207 TU3",
-            "دنا پلاس اتوماتیک", "دنا پلاس MT6", "تارا دستی V1", "تارا اتوماتیک V4",
-            "سورن پلاس XU7P", "سورن پلاس دوگانه سوز", "رانا پلاس", "شاهین G",
-            "شاهین اتوماتیک", "شاهین پلاس", "کوییک S", "کوییک GX", "کوییک GXR",
-            "ساینا S", "ساینا GX", "اطلس G", "سهند S", "ری را", "هایما S5", "هایما S7",
-            "هایما 8S", "فیدلیتی پرایم", "دیگنیتی پرایم", "آریزو 5", "X22 Pro", "آریسان 2",
+            "سایپا 151 GX",
+            "پژو 207 دنده‌ای هیدرولیک",
+            "تارا اتوماتیک V4 LX",
+            "سهند S",
+            "ری را",
+            "آریزو 5 FL",
+            "آریسان 2",
+            "مدل واقعی دیگر",
         ])
     ) + "</table>"
     prices = parse_car_prices(html)
     previous = {p.name: p.market_toman - 10_000_000 for p in prices}
     text = format_car_prices(prices, previous)
+
     assert "▲" in text
     assert "منبع: ماشین۳" in text
     assert "قیمت روز خودرو" in text
     assert "\n\n▫️" in text
+    assert "سایپا 151 GX" in text
+    assert "مدل واقعی دیگر" in text
+    assert "پراید ۱۵۱" not in text
