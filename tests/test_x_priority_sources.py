@@ -1,6 +1,6 @@
-from src.custom_sources import builtin_x_news_sources, fetch_builtin_x_news_items
+from src.newsroom_x import builtin_x_news_sources, fetch_builtin_x_news_items
 from src.sources import NewsItem
-import src.runtime as runtime
+import src.runtime_v2 as runtime
 
 
 CORE_HANDLES = {
@@ -14,7 +14,7 @@ def test_builtin_x_sources_cover_core_world_newsrooms():
     assert CORE_HANDLES <= handles
 
 
-def test_builtin_x_fetch_uses_x_scoped_queries_and_labels_items_as_x():
+def test_builtin_x_fetch_uses_x_source_labels():
     calls = []
 
     def searcher(source):
