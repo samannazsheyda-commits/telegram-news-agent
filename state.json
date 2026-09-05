@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41523",
   "news_seen": [
+    "06da1645959ca9e810f850decd7121e92a1906c6",
+    "1e83f70f7ccdd42ac157a4a8a4912d03200a6b39",
     "8753c9a679418f6c18c03a00a5eaff8093cd35cb",
     "5857d479bc0c8d0acdb87dc0933135c92f4e6feb",
     "0781fdf5782c7ba7574fad60af04fcea15b940bf",
@@ -498,9 +500,7 @@
     "f32f28af8fdd48e8ab6e8a0473fdd4b97eaf6a6e",
     "7400b668305f70196a3cea1743c07b4d9e69d67a",
     "e2f0b5a7d894bc8d89c1f46993c25a529e992bdd",
-    "8c1aa1a7a64b925db648627ec238b51417cd3115",
-    "49eb717c82e416052929cf3000656e047350d0ee",
-    "f4606b1fdc60f48e0299b6808d1d0c66049fb0af"
+    "8c1aa1a7a64b925db648627ec238b51417cd3115"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "white",
@@ -530,6 +530,24 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "06da1645959ca9e810f850decd7121e92a1906c6",
+      "source": "Barak Ravid / X",
+      "title": "Trump on Truth Social: The Islamic Republic of Iran shot at least four One Way Attack Drones at Ships transversing the Strait of Hormuz. One of the Drones solidly hit the upper deck of a large and very expensive Cargo Carrying Ship. Damage was done, but th",
+      "reason": "not_today_tehran",
+      "published": "Fri, 26 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9FNFlUcEdkYzdkblVDMnFPMFR6QjAxU1RZd0M0RE0ycFBpUTFIcDk1RUFSUGpoSTJjRzNMNC1GaUJlSU9TeWtHYVVRVGppY1ZOdFdfUV83OVdJTV9VdFliOVYtcE1hVDh0dzAw?oc=5",
+      "checked_at": "2026-09-05T03:39:30.936926+00:00"
+    },
+    {
+      "key": "1e83f70f7ccdd42ac157a4a8a4912d03200a6b39",
+      "source": "Associated Press",
+      "title": "Trump used to say he saw a quick end to his Iran war, but 6 months later he claims he's in no hurry",
+      "reason": "not_today_tehran",
+      "published": "Fri, 28 Aug 2026 15:53:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNUk44eE5qY2RCRDlrV18zU1A2dWFJWkJDdGVPWmpTNzlBRDMtZGpXakVucS01WFRkaVU1Z192cV9zbFI1SkRCSThzZWNlQkR1LVAzUnZrRE0yVkFtV2c1SzlOdXBiWm9obFhWMFJvVjh6RE10T3pLblA3dnBMZFZyOEZicS1mOU9vZHl4dUNMdldiMG9sZWVDTFFabUJwdHY3VXR5SHl3dw?oc=5",
+      "checked_at": "2026-09-05T03:39:30.936926+00:00"
+    },
     {
       "key": "8753c9a679418f6c18c03a00a5eaff8093cd35cb",
       "source": "Financial Times",
@@ -2310,24 +2328,6 @@
       "reason": "not_today_tehran",
       "published": "Fri, 12 Jun 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9BUlJYRVZwUEw1V2hSYldoQkNQWGNWa2JtM20xZGVUOEQ2YU1LNGFuUmpPYm1fTE9NMlIzZERJSktUdjc2RXlqWkpjNUtDTEdNcEFWUVlBUjNvOGYxcVBOTg?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "80ca9858e1ef024b8265c73889c8d259e7d8bbe1",
-      "source": "Barak Ravid / X",
-      "title": "CENTCOM: At the direction of the Commander in Chief, U.S. Central Command forces have started conducting additional strikes against Iran to further degrade their ability to threaten freedom of navigation in the Strait of Hormuz. The United States is holding Ir",
-      "reason": "not_today_tehran",
-      "published": "Wed, 08 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9JUEVFM09WbmEtWjhXaXJQVXNzR0RVb3RhVmZWejFWbXJGNmt5bHN2RkU0UlZ4NXZ5N1dFREJWMmYwQ1NzU29RTUFFbU4yVDIxM0NIWUJ5U1dYRjZPSE0zeg?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "0fd5a8d47bdac05fff4c57fb0a1f08cf24bd291b",
-      "source": "Barak Ravid / X",
-      "title": "🚨🇺🇸🇮🇱🇮🇷New: Trump and Netanyahu held \"tough\" call on new Iran peace proposal. My story on @axios https://t.co/C8PWSuIpXv",
-      "reason": "not_today_tehran",
-      "published": "Wed, 20 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9kNWhvamlfUXFNWWxZZFUwT0VreENDVVg0SDN5V1lidjlocnBGVy1sM3ZIOWc3T0NibVl6RDY0OXV5LVlVZzNPLXFYRXdRVmtFTWJSM1lzWGg0U0I3QkpvZw?oc=5",
       "checked_at": "2026-09-05T01:46:46.148951+00:00"
     }
   ],
