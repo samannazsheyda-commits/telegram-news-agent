@@ -92,8 +92,15 @@ def monitored_x_sources() -> tuple[dict[str, str], ...]:
 
 
 def is_fresh_iran_topic(text: str) -> bool:
+    """Broad Iran relevance gate for curated X sources.
+
+    The account list is already curated. Requiring both an Iran anchor and a second
+    security keyword was dropping legitimate fresh Iran developments, so an Iran/
+    Hormuz/nuclear-site anchor is now sufficient. Editorial promo and duplicate
+    filters still run later.
+    """
     value = (text or "").lower()
-    return is_monitored_x_topic(value) and any(anchor in value for anchor in _IRAN_ANCHORS)
+    return any(anchor in value for anchor in _IRAN_ANCHORS)
 
 
 def _normalise_created_at(value: object) -> str:
