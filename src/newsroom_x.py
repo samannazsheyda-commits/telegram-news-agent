@@ -6,6 +6,7 @@ from .sources import NewsItem, _fetch_google_news_query
 
 
 _BUILTIN_X_NEWSROOMS = (
+    # Global newsrooms
     ("Reuters", "@Reuters"), ("Associated Press", "@AP"), ("AFP", "@AFP"),
     ("BBC World", "@BBCWorld"), ("CNN", "@CNN"), ("France 24", "@FRANCE24"),
     ("Al Jazeera English", "@AJEnglish"), ("Al Arabiya English", "@AlArabiya_Eng"),
@@ -14,16 +15,26 @@ _BUILTIN_X_NEWSROOMS = (
     ("NBC News", "@NBCNews"), ("CBS News", "@CBSNews"), ("ABC News", "@ABC"),
     ("Fox News", "@FoxNews"), ("DW News", "@dwnews"), ("The Guardian", "@guardian"),
     ("Washington Post", "@washingtonpost"), ("Wall Street Journal", "@WSJ"),
+    ("The Economist", "@TheEconomist"),
+    # Israeli newsrooms and official sources
     ("Times of Israel", "@TimesofIsrael"), ("Haaretz", "@haaretzcom"), ("Axios", "@axios"),
     ("Jerusalem Post", "@Jerusalem_Post"), ("Israel Hayom", "@IsraelHayomEng"),
     ("Benjamin Netanyahu", "@netanyahu"), ("Israel Katz", "@Israel_katz"),
     ("KAN 11", "@kann_news"), ("N12", "@N12News"), ("Channel 13", "@newsisrael13"),
     ("Channel 14", "@C14_news"), ("IDF", "@IDF"),
+    # US officials and institutions relevant to Iran/security/sanctions
     ("CENTCOM", "@CENTCOM"), ("US Treasury", "@USTreasury"),
-    ("Scott Bessent", "@SecScottBessent"), ("US Secretary of Defense", "@SecDef"),
+    ("Scott Bessent", "@SecScottBessent"), ("Pete Hegseth", "@SecDef"),
+    ("Marco Rubio", "@SecRubio"), ("JD Vance", "@VP"),
     ("US State Department", "@StateDept"), ("State Department Spokesperson", "@statedeptspox"),
     ("White House", "@WhiteHouse"),
+    # Foreign reporters/analysts with recurring Iran, military, nuclear or sanctions coverage
     ("Mark Levin", "@marklevinshow"), ("Jason Brodsky", "@JasonMBrodsky"),
+    ("Mark Dubowitz", "@mdubowitz"), ("Emanuel Fabian", "@manniefabian"),
+    ("Seth Frantzman", "@sfrantzman"), ("Jonathan Conricus", "@jconricus"),
+    ("Michael Doran", "@Doranimated"), ("Jennifer Hansler", "@jmhansler"),
+    ("Joe Truzman", "@JoeTruzman"),
+    # Iranian newsrooms only — no Iranian commentators
     ("Tasnim Persian", "@Tasnimnews_Fa"), ("Tasnim English", "@Tasnimnews_EN"),
 )
 
@@ -40,14 +51,16 @@ _X_IRAN_QUERY = (
 
 _MONITORED_TERMS = (
     "iran", "iranian", "tehran", "irgc", "quds force", "hormuz", "persian gulf", "gulf of oman",
-    "arabian sea", "abraham lincoln", "uss boxer", "carrier strike group", "fifth fleet", "navcent",
-    "minelaying", "mine laying", "naval mine", "mine countermeasures", "al udeid", "al dhafra",
-    "diego garcia", "fordow", "natanz", "isfahan", "arak", "iaea", "grossi", "centrifuge",
-    "enrichment", "uranium", "ofac", "frozen funds", "blocked funds", "ballistic missile",
-    "cruise missile", "netanyahu", "israel katz", "hezbollah", "notam",
-    "ایران", "تهران", "سپاه", "نیروی قدس", "هرمز", "خلیج فارس", "ناوگان پنجم", "مین دریایی",
-    "فردو", "نطنز", "اصفهان", "اراک", "آژانس", "گروسی", "غنی‌سازی", "اورانیوم", "تحریم",
-    "پول بلوکه", "موشک بالستیک", "موشک کروز", "نتانیاهو", "اسرائیل کاتز", "حزب‌الله", "نوتام",
+    "arabian sea", "abraham lincoln", "uss boxer", "carrier strike group", "carrier", "destroyer", "submarine",
+    "fifth fleet", "navcent", "minelaying", "mine laying", "naval mine", "mine countermeasures",
+    "al udeid", "al dhafra", "diego garcia", "bahrain", "qatar", "kuwait", "fordow", "natanz",
+    "isfahan", "arak", "iaea", "grossi", "inspector", "centrifuge", "enrichment", "uranium", "ofac",
+    "sanctions", "frozen funds", "blocked funds", "ballistic missile", "cruise missile", "drone",
+    "netanyahu", "israel katz", "hezbollah", "notam", "tanker", "shipping",
+    "ایران", "تهران", "سپاه", "نیروی قدس", "هرمز", "خلیج فارس", "ناو هواپیمابر", "ناو آب‌خاکی",
+    "ناوشکن", "زیردریایی", "ناوگان پنجم", "مین‌گذاری", "مین دریایی", "مین‌روبی", "فردو", "نطنز",
+    "اصفهان", "اراک", "آژانس", "گروسی", "بازرس", "غنی‌سازی", "اورانیوم", "تحریم", "پول بلوکه",
+    "موشک بالستیک", "موشک کروز", "پهپاد", "نتانیاهو", "اسرائیل کاتز", "حزب‌الله", "نوتام", "نفتکش",
 )
 
 
