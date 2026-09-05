@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from email.utils import format_datetime, parsedate_to_datetime
 
@@ -13,6 +14,12 @@ from .sources import NewsItem, USER_AGENT
 
 FXTWITTER_TIMELINE = "https://api.fxtwitter.com/2/profile/{handle}/statuses"
 _X_MEDIA_URLS: dict[str, str] = {}
+
+
+@dataclass(frozen=True)
+class MediaNewsItem(NewsItem):
+    media_url: str = ""
+
 
 _EXTRA_X_SOURCES = (
     {"name": "Barak Ravid", "handle": "@BarakRavid"},
@@ -141,6 +148,9 @@ def _photo_url_from_row(row: dict) -> str:
 
 
 def media_url_for_item(item: NewsItem) -> str:
+    direct = str(getattr(item, "media_url", "") or "").strip()
+    if direct:
+        return direct
     return _X_MEDIA_URLS.get(str(getattr(item, "key", "")), "")
 
 
@@ -193,13 +203,14 @@ def parse_fxtwitter_timeline(payload: object, source_name: str, handle: str) -> 
 
         seen.add(post_id)
         items.append(
-            NewsItem(
+            MediaNewsItem(
                 key,
                 source,
                 text,
                 "",
                 f"https://x.com/{screen_name}/status/{post_id}",
                 published,
+                photo_url,
             )
         )
     return items
