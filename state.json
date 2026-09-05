@@ -502,7 +502,7 @@
     "9c3627c5b2fa51f5cb00b9b9a506dfd1878d9886",
     "0ebb7f92c31a2959f50d0b6b0a88c551ce49457f"
   ],
-  "market_last_sent_at": "2026-09-05T10:44:48.152950+00:00",
+  "market_last_sent_at": "2026-09-05T12:47:38.071885+00:00",
   "next_news_color": "white",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
@@ -531,9 +531,9 @@
   "market_day_prices": {
     "date": "2026-09-05",
     "first_usd": 221060,
-    "last_usd": 224520,
+    "last_usd": 225815,
     "first_gold": 23518800,
-    "last_gold": 23614900,
+    "last_gold": 23697500,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
