@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "c4cf6792498b24673362334ce9122e04bb978cbc",
+    "14be1a9d08c2a4390afff5fef73a3912f53f7868",
     "5390a15f6ca1320c2de73019845487baf4f50813",
     "x:SkyNews:2096289453287350440",
     "4a3f2911f63a776028e6d16d5884778b9dec1e56",
@@ -498,9 +500,7 @@
     "28248f2d89775b913d117aeb2e49902fdea6ec96",
     "4aabd2529c53341fb2326c48bb06799cc9cd14b4",
     "94cd07c4792c8669b8a7be4a940615222d313376",
-    "f6028d3cddc90cc6ab91cd692a4775c7e1884d92",
-    "44b5861ead3d0fefd635d005609abd2312adeaa9",
-    "2c92114b62e63be7f87a23c74fc0ae3e6c68febf"
+    "f6028d3cddc90cc6ab91cd692a4775c7e1884d92"
   ],
   "market_last_sent_at": "2026-09-05T16:50:16.078276+00:00",
   "next_news_color": "white",
@@ -540,6 +540,24 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "c4cf6792498b24673362334ce9122e04bb978cbc",
+      "source": "تبز لایو / Telegram",
+      "title": "🇮🇷 ❌ 🇺🇸 — Iran’s Khatam al-Anbiya Central HQ warns that Iranian strikes on U.S. Navy vessels in the region will intensify and could expand if Washington continues its \"hostile actions, harassment of Iranian ships, and its naval blockade...",
+      "reason": "bundled_or_multi_headline",
+      "published": "Sat, 05 Sep 2026 17:38:36 +0000",
+      "link": "https://t.me/tabzlive/101890",
+      "checked_at": "2026-09-05T17:42:21.211529+00:00"
+    },
+    {
+      "key": "14be1a9d08c2a4390afff5fef73a3912f53f7868",
+      "source": "Reuters",
+      "title": "As Iran war jolts Air India, Lufthansa and Cathay pounce on fast-growing market",
+      "reason": "not_today_tehran",
+      "published": "Wed, 13 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxPTVlMeXRCMkViOHg2cWhxU0Rmekd1U3ZQNFNnWGV1XzQwWGZtOXlHWWVKdlA1cmRuUVdoeGozLVNremFVZG5GXzJTTWdQSENzRkRuVGhZM1M0X2k3MVdhWGN3ajdBNEMwYVAwY0FGc1NXdGUyVFlxblNvTXAzUGprcHY5ay1OZ1dtamRjVGFqNzJWT0ZMN2QteWw2ZzR3VzdWWk9Zd2gxbkFsc1JRNEVMNnlZdHZISDg?oc=5",
+      "checked_at": "2026-09-05T17:41:14.319468+00:00"
+    },
     {
       "key": "4a3f2911f63a776028e6d16d5884778b9dec1e56",
       "source": "NOTAM / Airspace",
@@ -2320,24 +2338,6 @@
       "reason": "not_today_tehran",
       "published": "Fri, 04 Sep 2026 14:39:28 +0000",
       "link": "https://x.com/JasonMBrodsky/status/2095884456905056435",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:JasonMBrodsky:2095941291506823422",
-      "source": "Jason Brodsky / X",
-      "title": "Washington has no indication at this stage that American military bases in Jordan had come under fire, Israel’s Channel 12 reported citing a senior US official, after Arab media reported the interception of Iranian missiles over Jordan. “At this stage, we are not aware of any firing at American bases in Jordan,” the official was quoted as saying. https://www.iranintl.com/en/202609046773",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 18:25:19 +0000",
-      "link": "https://x.com/JasonMBrodsky/status/2095941291506823422",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:marklevinshow:2095896137794281475",
-      "source": "Mark Levin / X",
-      "title": "I predict a likely Netanyahu victory in the October Israeli elections. The Iranian regime, Arab Islamist dictatorships, the Marxists-Islamists, the Democrat Party, the Woke Reich antisemites, the UN, podcasters, and bot farm operators, will all be upset. And that is a great thing. Of course, it's up to the Israeli people. But it is my hope, my belief, that the Israelis will not do to Netanyahu what the British people did to Churchill after WWII -- that is, vote Churchill and his party out of power. A Netanyahu victory is also important for our country. We are in the middle of a war with Iran, and there is no more steadfast ally anywhere in the world than Netanyahu and Israel. And despite the usual media efforts to divide our countries, Trump and Netanyahu have been incredibly strong leaders and long-time friends. The relationship is special and critical. We don't need or want allies in name only, which best defines many of the countries and their leaders in NATO and elsewhere. A Netanyahu loss will make matters more difficult for us and the Iranian regime, in particular, will see it as a huge victory on many levels.",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 15:25:53 +0000",
-      "link": "https://x.com/marklevinshow/status/2095896137794281475",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
