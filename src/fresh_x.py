@@ -78,6 +78,18 @@ _IRAN_ANCHORS = (
 # attached to the Telegram post.
 _VIDEO_DEPENDENT_RE = re.compile(r"\b(?:video|footage|clip)\b|ویدیو|ويديو|تصاویر\s+ویدیویی", re.IGNORECASE)
 
+# News outlets often use Iran-related posts to promote panels, podcasts, festivals,
+# interviews or subscriptions. Those are not news events. Keep the filter narrow:
+# only explicit promotional calls-to-action are blocked, while factual reports and
+# attributable statements remain eligible.
+_PROMO_CTA_RE = re.compile(
+    r"\b(?:catch\s+(?:the|their|our)|watch\s+(?:the|our|their|full|live)|"
+    r"listen\s+(?:to|now)|join\s+us|register\s+(?:now|here|for)|subscribe\b|"
+    r"weekend\s+festival\s+session|festival\s+session|read\s+more\s+at)\b|"
+    r"تماشا\s+کنید|گوش\s+دهید|همراه\s+ما\s+باشید|ثبت.?نام\s+کنید|مشترک\s+شوید",
+    re.IGNORECASE,
+)
+
 
 def monitored_x_sources() -> tuple[dict[str, str], ...]:
     merged: dict[str, dict[str, str]] = {}
@@ -143,6 +155,9 @@ def parse_fxtwitter_timeline(payload: object, source_name: str, handle: str) -> 
             continue
         if _VIDEO_DEPENDENT_RE.search(text):
             print(f"NEWS_SUPPRESSED video_without_channel_media source={source!r} post_id={post_id!r}")
+            continue
+        if _PROMO_CTA_RE.search(text):
+            print(f"NEWS_SUPPRESSED promotional_post source={source!r} post_id={post_id!r}")
             continue
 
         seen.add(post_id)
