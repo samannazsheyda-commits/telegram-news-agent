@@ -1,6 +1,10 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:mdubowitz:2096239461386391790",
+    "x:AP:2096238474458198517",
+    "x:business:2096238199907443181",
+    "x:Reuters:2096237064454840370",
     "x:JasonMBrodsky:2096236068605489648",
     "x:Jerusalem_Post:2096235638844481952",
     "x:ABC:2096233947432632693",
@@ -496,11 +500,7 @@
     "4d0f8e9be90f4e7229187e89008cf22e1d0e711f",
     "aa014e27cfe0a969a4bb60aeca65505a9d0619fa",
     "de985b10869f1d37f5fc739dd4fb9214f1d1e078",
-    "02f83825a0a3c1691f284bc23314c68cdf30da5a",
-    "bca31812f91c8bcf14503625e755cbe0f2db4f97",
-    "f8e779c120c3b20dfdb6f8997128d342d2c26f46",
-    "b5c00534b981b30fb1118f3924e08f95fc6b16b3",
-    "13ca27e81a8f0a0136f0b380b6cf1a3ffb0ea004"
+    "02f83825a0a3c1691f284bc23314c68cdf30da5a"
   ],
   "market_last_sent_at": "2026-09-05T12:47:38.071885+00:00",
   "next_news_color": "red",
@@ -2343,6 +2343,46 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:mdubowitz:2096239461386391790",
+      "source": "Mark Dubowitz / X",
+      "title": "Time is no longer on Iran’s side as the U.S. is helping Gulf states move significant amounts of oil out of the region while thwarting Tehran’s shipments.",
+      "summary": "",
+      "link": "https://x.com/mdubowitz/status/2096239461386391790",
+      "published": "Sat, 05 Sep 2026 14:10:08 +0000",
+      "sent_at": "2026-09-05T14:11:05.517536+00:00",
+      "fingerprint": "time is no longer on iran s side as the u s is helping gulf states move significant amounts of oil out of the region while thwarting tehran s shipments"
+    },
+    {
+      "key": "x:Reuters:2096237064454840370",
+      "source": "Reuters / X",
+      "title": "US military strikes three Iranian crude oil carriers, Central Command says",
+      "summary": "",
+      "link": "https://x.com/Reuters/status/2096237064454840370",
+      "published": "Sat, 05 Sep 2026 14:00:37 +0000",
+      "sent_at": "2026-09-05T14:10:12.560341+00:00",
+      "fingerprint": "us military strikes three iranian crude oil carriers central command says"
+    },
+    {
+      "key": "x:business:2096238199907443181",
+      "source": "Bloomberg / X",
+      "title": "The US military said it launched strikes against three Iranian crude oil tankers in retaliation for the Islamic Revolutionary Guard Corps targeting two US Navy warships with ballistic missiles",
+      "summary": "",
+      "link": "https://x.com/business/status/2096238199907443181",
+      "published": "Sat, 05 Sep 2026 14:05:07 +0000",
+      "sent_at": "2026-09-05T14:10:12.560341+00:00",
+      "fingerprint": "the us military said it launched strikes against three iranian crude oil tankers in retaliation for the islamic revolutionary guard corps targeting two us navy warships with ballistic missiles"
+    },
+    {
+      "key": "x:AP:2096238474458198517",
+      "source": "Associated Press / X",
+      "title": "BREAKING: U.S. military says it struck three Iranian oil tankers after Navy warships were targeted with missiles.",
+      "summary": "",
+      "link": "https://x.com/AP/status/2096238474458198517",
+      "published": "Sat, 05 Sep 2026 14:06:13 +0000",
+      "sent_at": "2026-09-05T14:10:12.560341+00:00",
+      "fingerprint": "breaking u s military says it struck three iranian oil tankers after navy warships were targeted with missiles"
+    },
     {
       "key": "x:JasonMBrodsky:2096236068605489648",
       "source": "Jason Brodsky / X",
