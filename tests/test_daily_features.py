@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 import src.main as main
 from src.cars import CarPrice
@@ -107,3 +107,26 @@ def test_every_distinct_trump_statement_about_iran_bypasses_importance_filter(tm
     assert len(news) == 2
     assert any("spoke about Iran" in x for x in news)
     assert any("Iran remains" in x for x in news)
+
+
+def test_hormuz_report_sends_once_after_noon_for_previous_day(tmp_path, monkeypatch):
+    state_path = tmp_path / "state.json"
+    state_path.write_text(
+        _base_state('"market_last_sent_at":"2026-09-05T08:00:00+00:00","car_last_sent_date":"2026-09-05","weather_noon_last_sent_date":"2026-09-05"'),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(main, "STATE_PATH", str(state_path))
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token"); monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
+    _quiet_news(monkeypatch)
+    requested_dates = []
+    monkeypatch.setattr(main, "fetch_hormuz_traffic_report", lambda report_date: requested_dates.append(report_date) or object())
+    monkeypatch.setattr(main, "format_hormuz_report", lambda report: "HORMUZ REPORT\nمنابع: Kpler، Reuters")
+    sent = []
+    monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
+    now = datetime(2026, 9, 5, 8, 31, tzinfo=timezone.utc)
+    assert main.run(now) == 0
+    assert requested_dates == [date(2026, 9, 4)]
+    assert sent == ["HORMUZ REPORT\nمنابع: Kpler، Reuters"]
+    assert main.load_state(state_path)["hormuz_last_sent_date"] == "2026-09-05"
+    assert main.run(now) == 0
+    assert sent == ["HORMUZ REPORT\nمنابع: Kpler، Reuters"]
