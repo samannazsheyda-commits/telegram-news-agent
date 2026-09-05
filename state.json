@@ -1,6 +1,15 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "5093c35c0a22149ed36a4544a7e8cea1c8d30d42",
+    "0a3d6c54b420dfc5c030cda165d3e27ecb722106",
+    "c8cfae484e130fa2623103653635b4523c799281",
+    "bf1a670d6f64cd42c9c3b28e140de7ffbca4be63",
+    "3c5b21c86a9edfd8d64f970b31773ebfc473ea8a",
+    "16c40389131bf4aade0a4ad9dbe599854079e6f6",
+    "20c9fe7ce72dfd4592c8757557b0b1bba574f56a",
+    "fc702f38f38f16850f5d7532d750d2cca885149a",
+    "5fd65f93077cb76b0dbcdfb53eb4c4c03dde3811",
     "ca83413f968d16eb517c1ac051e98ad6aac7c25c",
     "469dc94e9c5de8384bc391702e590d5ba9ac0741",
     "e0cf08d952598dca107733f85068fc40b3718e2c",
@@ -491,16 +500,7 @@
     "ea1db3ce1a050b53ef158a993b49093ecd2a2f81",
     "469321255f888ec166a8ce5807c63a467fcaa9c9",
     "6fa949721e0dd1a9ee933d51dd8bfd1b3ad59160",
-    "d3c27bde7561977d6f4860b6f9d0391eb31b6bc2",
-    "37351fe08aef8ca94454d7f30d60e2e4946b5b5d",
-    "5093c35c0a22149ed36a4544a7e8cea1c8d30d42",
-    "921bf0d3cb0fcf64e5674329ac3e7747c3af2e66",
-    "0a3d6c54b420dfc5c030cda165d3e27ecb722106",
-    "c8cfae484e130fa2623103653635b4523c799281",
-    "f3fcb5e3e56de5fffd54dba0b9f00ebb98437da8",
-    "767733cd10ce1bc7d5666166f8da22160da67a5e",
-    "7e7cfeccb45b71a3f70b8af2b2aae55c3b8ca9eb",
-    "6b2819d2d52978fc434998ae9ba968d354170af1"
+    "d3c27bde7561977d6f4860b6f9d0391eb31b6bc2"
   ],
   "market_last_sent_at": "2026-09-05T04:34:33.611150+00:00",
   "next_news_color": "white",
@@ -530,6 +530,87 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "5093c35c0a22149ed36a4544a7e8cea1c8d30d42",
+      "source": "France 24",
+      "title": "Trump says Iran war is 'small potatoes', Israel strikes southern Lebanon",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 02:56:56 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxORllqbFpONlAxU2MzT19MRGl1YmNKQ3JNUWxFb1BEOEV2TVdPOWNQUllVN3JoV3pDVjVaOF9jWHVycF96N1RHdFp2S1cyQW1XbHlMbVB6QlFobVNFc0ZxTm1nNlVqRHFXbld1LTZQVXBwdmlCb1JydU5WU21YZVRQbGtGeEYzYU90U0RtTGZ5cF9FM0d5bW9SYXVzcXpDc2dKa0VQN21yVkw0UHZNMEpwWTRfMXZ4Y0ZnSjhNTFhSbkkwcko1RE1EUTR3?oc=5",
+      "checked_at": "2026-09-05T04:48:54.099415+00:00"
+    },
+    {
+      "key": "0a3d6c54b420dfc5c030cda165d3e27ecb722106",
+      "source": "Al Arabiya",
+      "title": "New blasts heard in Kuwait City - Banglanews24",
+      "reason": "not_today_tehran",
+      "published": "Fri, 06 Mar 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE5SRHlFcjJ6UnliOVVsd0NBZmJ6WjBmc0phY1I4eGZ3cDBLRllEN3BoTWRaRTRRV1k5Rk1mRWRYaW5FbkFNZWtxRnlTZEhtd2I5YWQtd2EtU1QxazlzT19KRGNlR2JNSXQwYTdBa2lvWHo3QQ?oc=5",
+      "checked_at": "2026-09-05T04:47:54.099297+00:00"
+    },
+    {
+      "key": "c8cfae484e130fa2623103653635b4523c799281",
+      "source": "Abbas Araghchi / X",
+      "title": "Strait of Hormuz is not closed. Ships hesitate because insurers fear the war of choice you initiated—not Iran - No insurer—and no Iranian—will be swayed by more threats. Try respect - Freedom of Navigation cannot exist without Freedom of Trade. Respect b",
+      "reason": "not_today_tehran",
+      "published": "Sun, 22 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFBsUFNJal9qcGlWcUQtcldrLVJFelpHSjZEWndlOHN0LW55S09PN1p1TEhSekZSOG02M2c4M0ZfcEVXb3RzUTFNSWkyR3FJaWhsV3dwZEc2Qm02RnFMbnc?oc=5",
+      "checked_at": "2026-09-05T04:47:54.099297+00:00"
+    },
+    {
+      "key": "bf1a670d6f64cd42c9c3b28e140de7ffbca4be63",
+      "source": "Barak Ravid / X",
+      "title": "🚨🚨🚨Trump on Truth Social: Moments ago, at my direction, the United States Central Command executed one of the most powerful bombing raids in the History of the Middle East, and totally obliterated every MILITARY target in Iran’s crown jewel, Kharg Island.",
+      "reason": "not_today_tehran",
+      "published": "Fri, 13 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE82MFZEZGVhS0c0R09WdzhpWmpwaFc3OW5tUTlFZy1heTBnN3g3S1E2VmhDcHFfZmo2ZEliU18tTWdvS0NqbXVmQVd6MDBVYklGVmJvZllFU2dqRHYtNTM0eg?oc=5",
+      "checked_at": "2026-09-05T04:46:54.099164+00:00"
+    },
+    {
+      "key": "3c5b21c86a9edfd8d64f970b31773ebfc473ea8a",
+      "source": "Barak Ravid / X",
+      "title": "🇺🇸🇦🇪🇮🇷New: White House envoy Steve Witkoff met last weekend with the powerful UAE national security adviser Sheikh Tahnoon Bin Zayed in the Mediterranean island of Sardinia and discussed next steps on Iran. My story on @axios https://t.co/5NLXELIljI",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 21:56:58 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5NTXRIX3VPcDdYSHhfTmZtTE5ZYjY4VmVzMjMwN0dhaWxuWVppelJrRmJTMjQyZzlUWmtzY0VuX2JSdU91a2xFMDdoVTJMS3dVX0JOWGh2ZVh6WHljUFVTSg?oc=5",
+      "checked_at": "2026-09-05T04:46:54.099164+00:00"
+    },
+    {
+      "key": "16c40389131bf4aade0a4ad9dbe599854079e6f6",
+      "source": "Barak Ravid / X",
+      "title": "Update: Vice President Vance is expected to travel to Switzerland on Saturday to participate in the negotiations tomorrow. Iranian speaker of Parliament Ghalibaf also expected to attend",
+      "reason": "not_today_tehran",
+      "published": "Sat, 20 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBXbEpoWTRWaURieUlSRHl0ZXBCVzlOV2NETWdfekpnY2ExdDZIVEgxOG5pcU5XODJMTlJqZk43Vm5EQU1HazR0YXJkNUpaTmVrczlDd1Y1TkFDR0xaTHJpYzN3cmR4YTR0Y0JR?oc=5",
+      "checked_at": "2026-09-05T04:46:54.099164+00:00"
+    },
+    {
+      "key": "20c9fe7ce72dfd4592c8757557b0b1bba574f56a",
+      "source": "Barak Ravid / X",
+      "title": "🚨Iranian media reported that one U.S. strike hit a wedding ceremony in the town of Kuhestak, killing at least four people and wounding at least 35 🚨CENTCOM spokesman Capt. Tim Hawkins responded: \"We're aware of the reports, which originated from Irania",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 01:38:13 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFB0aGRHR3dqUThtWTU4eTFQYzE2eHhoTlc3c0JHQ2p2dzRCUWwzdWx1U0tpN0VkQkFUMEZSVkxQMnRUY3hNNFlEWk1GOHc2OTViZW5saXFjNjBXR0tMWk9teg?oc=5",
+      "checked_at": "2026-09-05T04:46:54.099164+00:00"
+    },
+    {
+      "key": "fc702f38f38f16850f5d7532d750d2cca885149a",
+      "source": "Barak Ravid / X",
+      "title": "🚨🇺🇸🇮🇷President Trump has been considering a CENTCOM plan for waging limited strikes in the Strait of Hormuz to prevent Iran from reconstituting its radar and missile capabilities to attack ships, according to three U.S. officials. My story on @axios https://t.c",
+      "reason": "not_today_tehran",
+      "published": "Mon, 31 Aug 2026 18:14:43 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1zd0xjOHQ4NDlTZjlRRml4NTB1d3lsdExRVDhiVmpVTFRybFFFalhSWGFoM2UycFBNVnlrVTZXaVVmOTZCZlZhQlloblQtcnF3SHF2Ql9XQ1dkQk1mWURTeA?oc=5",
+      "checked_at": "2026-09-05T04:46:54.099164+00:00"
+    },
+    {
+      "key": "5fd65f93077cb76b0dbcdfb53eb4c4c03dde3811",
+      "source": "Reuters",
+      "title": "US launches new strikes on Iran and Tehran hits back in widening conflict",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 11:13:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxOYWVYQlZISm1jT2ZUaUZ4bDJ2ZE10ZEpaeXo5MnBPQTJYS0ZJNDFjNmdBNGlPQjdyRTIxMVJWeDYzTlFEZi1wVm55eUJTUjkxSjB2WnVVU3NLaEtjTWlMTFFXZlZuTDYyNzREc3hxWnpxRzdUV2MtRUdhei12TE9TQ0Rrc1hTMEN4alFnS1VFcVRzSEM1dmVxR2FYbzZXb1B2a254Y2FlVXlNMFBhQVlFRTAyNzdoaE1FN2Q5dFF0LS1PZDR3bm1PS2JR?oc=5",
+      "checked_at": "2026-09-05T04:45:54.099003+00:00"
+    },
     {
       "key": "ca83413f968d16eb517c1ac051e98ad6aac7c25c",
       "source": "Barak Ravid / X",
@@ -2247,87 +2328,6 @@
       "reason": "not_today_tehran",
       "published": "Mon, 23 Mar 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5aYVFwMVU1WHVfRnJfYmxpTndPREQxam1HYlhFNHBQM1ltZWM3OFNtSE9mQ0NqX3RpYzJRRTJhUWZRTlRJZmEzRHBDYmp4QV9KTk5JOThkLTVNckttTW42dg?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "fe7ec0578043f395d0d930f8624edd84b0297f25",
-      "source": "Barak Ravid / X",
-      "title": "🇺🇸🇮🇷White House downplays reports Iran rejected Trump peace proposal. My report on @axios",
-      "reason": "not_today_tehran",
-      "published": "Wed, 25 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1YWnNySDlZLUhUbkV6aHJuVkQ0Um5hSGxWU3pnNDlMWFJ1anRZZ3VqUDRBdFF1V2N1cHhwT0VLWEgzdnFFdTB4ZGtTa3RyUTg1V09xMmNKZWhYZEYxRjliUg?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "d18453bd839f1ccfd34c4ccfc3a4e838b7197f5f",
-      "source": "Barak Ravid / X",
-      "title": "🇮🇷🇺🇸Iran suspects Trump's peace talk push is another trick. The U.S. made clear to the Iranians that Trump is serious and floated Vice President Vance's possible involvement in the talks as proof. @MarcACaputo and I write for @axios https://t.co/DqY7aZMvQ",
-      "reason": "not_today_tehran",
-      "published": "Tue, 24 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9GZVJCeldvRmFPa2JiZnVGX0xpd05PQ3haaGZFQkNtSk04WThTd1hYZXZTZWZGT21hTmkzbUI3UFNyMUo3dk40dkQyWjkzLWM3V3AwWU5UX3ljbmxieUc5OA?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "13ba0b4a2e408af69976087364bc4fa686ffd10a",
-      "source": "Barak Ravid / X",
-      "title": "A U.S. official details the U.S. \"red lines\" in the talks with Iran: ☢️Ending all uranium enrichment ☢️Dismantle all major nuclear enrichment facilities (which are mostly destroyed) ☢️Retrieve highly enriched uranium 📄Accept a broader peace, security and de-e",
-      "reason": "not_today_tehran",
-      "published": "Sun, 12 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5EcFlwbDIwTDF6UVpmRU95S1BlY2lBX2gyVXNsSFpLSWVYTEZzVzh3Z0F6aFFQcURCMUg0Wl9iRTEzWGhHdVVYZGpuM1NmTVZXTjNzNXgtZFVmaGVBZF9LRQ?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "8bb3128249385dc64e89e6baa2df41e4c9f0a7b2",
-      "source": "Barak Ravid / X",
-      "title": "🚨🇺🇸🇮🇷U.S. and Iran made progress in talks on Tuesday, moving closer to a framework agreement to end the war, two U.S. officials said. @MarcACaputo and I report for @axios https://t.co/9SMkwnJiGX",
-      "reason": "not_today_tehran",
-      "published": "Wed, 15 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9nWHdrekN2YlYweTFuVzhfQUs2Y25iZjJsdDZqU1ExaGdUR0VtUnFTTjdxN0Nsb1BuTVNLZjgtSjkxOURjYXFUeDJQVllfSE9uRHo5a3poeXBqVmR4bW1oRw?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "9f7d9983e91d04112d1dcc234859060b41c5d8e3",
-      "source": "Barak Ravid / X",
-      "title": "🚨🇺🇸🇮🇷Trump on Truth Social: Iranian Patriots, KEEP PROTESTING - TAKE OVER YOUR INSTITUTIONS!!! Save the names of the killers and abusers. They will pay a big price. I have cancelled all meetings with Iranian Officials until the senseless killing of prot",
-      "reason": "not_today_tehran",
-      "published": "Tue, 13 Jan 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBqX0hSMEwtbl9WX2laM0U0MllpUnJGTjB1V1Z1VExRNjZkOXNuXzVaU2FEcTlXRUt3cWR0dHJXdWdIU3pYR0N0TkVJOGQ2ZjdNLWdlM2x3cTFic2prOEZoaQ?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "30a6ba006580d65f5f664f017122b6ee52a6e75d",
-      "source": "Barak Ravid / X",
-      "title": "Trump on Truth Social: Fake News Reports that the Islamic Republic of Iran, and the U.S.A., stopped speaking a few days ago are false and erroneous. The conversations between us have been going on continuously, including four days ago, three days ago, t",
-      "reason": "not_today_tehran",
-      "published": "Tue, 02 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1pTmttX0ctSnFYeGxXb2tGdDB2N00wVjVmZ0NrTlVfOW1MOUtPczJNVVZkQmk2aFBSRlU0NWNqc1dPY2xiMU0yQ3NNY3dNVmszc1dETVFJWmFNenpGSHFBYg?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "d737534fd2f114c34cc5b0cef034b26f56e86fbc",
-      "source": "Barak Ravid / X",
-      "title": "🚨🚨Trump on Truth Social: I AM PLEASE TO REPORT THAT THE UNITED STATES OF AMERICA, AND THE COUNTRY OF IRAN, HAVE HAD, OVER THE LAST TWO DAYS, VERY GOOD AND PRODUCTIVE CONVERSATIONS REGARDING A COMPLETE A",
-      "reason": "not_today_tehran",
-      "published": "Mon, 23 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE11VlEyM2x6d1N3eXdqWG5TOTBHVkpIeUUwTWhzWjVkRmVhc0dRVXYwTWQxNjVhMTREUkpOMktlU0p6Z0ZMMUlNVWx4azhpUlVkUkhQX3dOZU5uVXQwOU4yUQ?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "9438902f771c883cd4359f1bdf6f957e63aa00a9",
-      "source": "Barak Ravid / X",
-      "title": "⏰🇺🇸🇮🇷Trump tells me \"clock is ticking\" for Iran and warns of more massive U.S. military attack. My story on @axios https://t.co/LxRxZiV58e",
-      "reason": "not_today_tehran",
-      "published": "Sun, 17 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9NMnNISGJ4Ync0SE5MVjQ1QlZqQVo4THg4bWwwajdmZEhKZEc2T3d3TUFqSlVRWWo5aFk1NC1MdTZfVmRpVFhTYVRxdDkyTVNYOEplWnRvb3Z6MG41SWFxTQ?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "08f201f0c92aee4ef45a2955bb251f52c5734107",
-      "source": "Barak Ravid / X",
-      "title": "🚨In a brief call on Sunday, Trump told me he \"feels fine\" about the negotiations with Iran 🚨\"The concept of the deal is done. I think we have a very good chance to get it completed,\" he said 🚨Yes, but: The Iranians, on the other hand, are lowering expectations a",
-      "reason": "not_today_tehran",
-      "published": "Sun, 19 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE00SWNYUzR2OG90RWZtU1NzZm54elBCOTI0Wm51UEMxQ20yYldwTWpKNXQ5THUxRG9faVVlU0xTMnYxbFBUcGlNTDR0SXF3UTB4SU5HdlBJSmdIckdWd2h5Mw?oc=5",
       "checked_at": "2026-09-05T01:46:46.148951+00:00"
     }
   ],
