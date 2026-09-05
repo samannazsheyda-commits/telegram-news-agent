@@ -44,3 +44,39 @@ def test_parser_rejects_status_from_wrong_profile():
         }],
     }
     assert parse_fxtwitter_timeline(payload, "Reuters", "@Reuters") == []
+
+
+def test_parser_suppresses_video_dependent_x_post_when_channel_has_no_video_attachment():
+    payload = {
+        "code": 200,
+        "results": [{
+            "type": "status",
+            "id": "2096215788063498460",
+            "url": "https://x.com/TankerTrackers/status/2096215788063498460",
+            "text": "Video shows an Iranian NITC VLCC fully loaded at Kharg Island.",
+            "created_at": "Sat Sep 05 12:36:00 +0000 2026",
+            "author": {"screen_name": "TankerTrackers"},
+            "media": {
+                "videos": [{"type": "video", "url": "https://video.example/test.mp4"}],
+            },
+        }],
+    }
+
+    assert parse_fxtwitter_timeline(payload, "TankerTrackers", "@TankerTrackers") == []
+
+
+def test_parser_keeps_same_tanker_claim_when_it_does_not_depend_on_video():
+    payload = {
+        "code": 200,
+        "results": [{
+            "type": "status",
+            "id": "2096215788063498461",
+            "url": "https://x.com/TankerTrackers/status/2096215788063498461",
+            "text": "An Iranian NITC VLCC is fully loaded at Kharg Island.",
+            "created_at": "Sat Sep 05 12:37:00 +0000 2026",
+            "author": {"screen_name": "TankerTrackers"},
+        }],
+    }
+
+    items = parse_fxtwitter_timeline(payload, "TankerTrackers", "@TankerTrackers")
+    assert len(items) == 1
