@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-RUNTIME_COMMAND = 'python -m src.runtime_v8 --monitor'
+RUNTIME_COMMAND = 'python -m src.runtime_v9 --monitor'
 
 
 def _workflow_text() -> str:
