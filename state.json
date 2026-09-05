@@ -1,10 +1,34 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:haaretzcom:2096240722630320212",
+    "x:mdubowitz:2096240556946886696",
+    "b39477140dde2423c06b0603ff54f23fb15bc46a",
     "x:mdubowitz:2096239461386391790",
     "x:AP:2096238474458198517",
     "x:business:2096238199907443181",
     "x:Reuters:2096237064454840370",
+    "x:MFAIRAN:445202070266580993",
+    "x:USABehFarsi:2094850273667625068",
+    "x:USABehFarsi:2095162419823743478",
+    "x:USABehFarsi:2095182033840472470",
+    "x:USABehFarsi:2095182155093582068",
+    "x:USABehFarsi:2095258391216079287",
+    "x:USABehFarsi:2095536839499071649",
+    "x:USABehFarsi:2095591407159226474",
+    "x:USABehFarsi:2095625383408173222",
+    "x:USABehFarsi:2095632934267183366",
+    "x:USABehFarsi:2095874522796720274",
+    "x:CENTCOMFarsi:2093044283079065713",
+    "x:CENTCOMFarsi:2093500829131042935",
+    "x:CENTCOMFarsi:2094190257985945947",
+    "x:CENTCOMFarsi:2094420310934097926",
+    "x:CENTCOMFarsi:2094426034560995637",
+    "x:CENTCOMFarsi:2094823494722658683",
+    "x:CENTCOMFarsi:2094830138944884803",
+    "x:CENTCOMFarsi:2095279362002010427",
+    "x:CENTCOMFarsi:2095650197766304188",
+    "x:RapidResponse47:2095948372632834364",
     "x:JasonMBrodsky:2096236068605489648",
     "x:Jerusalem_Post:2096235638844481952",
     "x:ABC:2096233947432632693",
@@ -476,31 +500,7 @@
     "9f15e924de0e1941a252e0f4c265344829713888",
     "2f3732000ea538854d68cead83728e390f0e996e",
     "efaf52e11e2e73f1d01e800ad36fc94975ec1cce",
-    "c74b2988c238bc63b7173baf1730349209e21ab0",
-    "12e8cbc3b4c0ff6e3795a7bacd32d2e0b55f6b12",
-    "bc1808c5cbeaa0d96bf7ab69f8a0c48344572e8a",
-    "256e4b6112e1215b8e149588b5bf2deea99d1b47",
-    "e5506f28aac21874eb11363721f13d82c2f85bc9",
-    "e5c7f0dd179230433ec2d468f1638f28d6f709ce",
-    "b77f51b3a9ea81f60644cc3cb29379b667794d87",
-    "d9c38a9a5aba9bc91b14f90af7dfa6be81c5b098",
-    "5247a75b0ecfee07fa506e0d4484261958c1a0a0",
-    "f13dfbc1ebdedd096614a90c7232e9ea532de3af",
-    "f871d9833129e84b17805be3500b593c09d82c08",
-    "af6a9361fec24dee3774dc083f925850c04b9848",
-    "452652f84fe27bf106da090bf604a58068884a01",
-    "c4cdebef0da511817e7bf88b87d0be5cf3916081",
-    "a1dd5e7ca64ff81531f4cf0007a07198fce55944",
-    "b1c5fd8e75153785ad47669db314e7d28bbe92d7",
-    "76c60cb858f258122fcc31e6a343587defc3341b",
-    "76f111399efde368e33610ea5a4cbf665bf8ce55",
-    "d70d8e0103454193e5286a5c8b8edd9251f3fb79",
-    "2e1d6a509d2c1bb52458d635cf098b546d3423fe",
-    "120e641a2c71779d5ed632a2326498afb890cf29",
-    "4d0f8e9be90f4e7229187e89008cf22e1d0e711f",
-    "aa014e27cfe0a969a4bb60aeca65505a9d0619fa",
-    "de985b10869f1d37f5fc739dd4fb9214f1d1e078",
-    "02f83825a0a3c1691f284bc23314c68cdf30da5a"
+    "c74b2988c238bc63b7173baf1730349209e21ab0"
   ],
   "market_last_sent_at": "2026-09-05T12:47:38.071885+00:00",
   "next_news_color": "red",
@@ -540,6 +540,204 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "b39477140dde2423c06b0603ff54f23fb15bc46a",
+      "source": "NOTAM / Airspace",
+      "title": "Iran Civil Aviation Authority: Iranian airspace is open to overflights, arrivals, and departures, and airports continue to provide their services - MTV Lebanon",
+      "reason": "not_today_tehran",
+      "published": "Sat, 15 Aug 2026 22:51:25 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE55bktwUmE0bFR3MlFKalY0Vnh5WlNvM09qbDh0UzZPMnUxNmlUTFRZZ0RFdV94WVRBcUhoc1JvZUJJcGtLd29YX1BiTHJCTjA?oc=5",
+      "checked_at": "2026-09-05T14:14:43.806121+00:00"
+    },
+    {
+      "key": "x:MFAIRAN:445202070266580993",
+      "source": "Iran Foreign Ministry / X",
+      "title": "First Official acc. of MFA @IRAN that will be up and running, soon enough! Be patient till the media-confirm!",
+      "reason": "not_today_tehran",
+      "published": "Sun, 16 Mar 2014 14:16:59 +0000",
+      "link": "https://x.com/MFAIRAN/status/445202070266580993",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:USABehFarsi:2094850273667625068",
+      "source": "USA Beh Farsi / X",
+      "title": "خاورمیانه: با توجه به تنش‌ها در خاورمیانه، شرایط امنیتی همچنان پیچیده است و احتمال تشدید پیش‌بینی‌نشده تنش‌ها وجود دارد. شهروندان آمریکایی که در حال حاضر در خاورمیانه حضور دارند باید هوشیاری بیشتری به خرج دهند و نسبت به احتمال لغو پروازها، بسته شدن حریم هوایی و اختلال در سفرها آگاه باشند. شهروندان آمریکایی که به منطقه سفر می‌کنند یا از آن خارج می‌شوند، باید اطلاعات مربوط به فعالیت فرودگاه‌ها و شرکت‌های هواپیمایی را به‌طور مستمر دنبال کنند. ایران و گروه‌های حامی ایران ممکن است منافع ایالات متحده در خارج از کشور یا مکان‌های مرتبط با ایالات متحده و شهروندان آمریکایی را در سراسر جهان، از جمله شرکت‌ها و سایر مؤسسات آمریکایی، هدف قرار دهند. آخرین هشدارهای مربوط به هر کشور را در این نشانی بخوانید: Consular Information for Americans in the Middle East",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 18:10:00 +0000",
+      "link": "https://x.com/USABehFarsi/status/2094850273667625068",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:USABehFarsi:2095162419823743478",
+      "source": "USA Beh Farsi / X",
+      "title": "اسکات بسنت، وزیر خزانه‌داری ایالات متحده درباره «عملیات انزوای اقتصادی»: «ما می‌دانیم چه کسانی به ایرانی‌ها کمک می‌کنند؛ خودشان هم می‌دانند چه کسانی هستند و این کمک‌ها متوقف خواهد شد. این، پس از ۴۷ سال، حرکت نهایی علیه این رژیم است.»",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 14:50:21 +0000",
+      "link": "https://x.com/USABehFarsi/status/2095162419823743478",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:USABehFarsi:2095182033840472470",
+      "source": "USA Beh Farsi / X",
+      "title": "اسکات بسنت، وزیر خزانه‌داری ایالات متحده: «ما تمام ارتباطات [ایران] با جهان خارج را قطع خواهیم کرد... همه نیروها و امکانات برای این کار بسیج شده‌اند.»",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 16:08:18 +0000",
+      "link": "https://x.com/USABehFarsi/status/2095182033840472470",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:USABehFarsi:2095182155093582068",
+      "source": "USA Beh Farsi / X",
+      "title": "دونالد ترامپ، رئیس‌جمهور ایالات متحده: اگر ما این کار را انجام نداده بودیم، ایران همین حالا سلاح هسته‌ای داشت؛ و اگر سلاح هسته‌ای داشتند، از آن استفاده می‌کردند، چون دیوانه‌اند.",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 16:08:47 +0000",
+      "link": "https://x.com/USABehFarsi/status/2095182155093582068",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:USABehFarsi:2095258391216079287",
+      "source": "USA Beh Farsi / X",
+      "title": "دونالد ترامپ، رئیس‌جمهور ایالات متحده درباره ایران: «دیشب ضربه بسیار سنگینی به آنها وارد کردیم. تمام تجهیزات جدیدی را که تلاش کرده بودند در امتداد تنگه هرمز مستقر کنند، از بین بردیم... حمله دیشب بسیار سنگین بود و هر زمان که بخواهیم، آماده‌ایم حمله دیگری انجام دهیم.»",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 21:11:43 +0000",
+      "link": "https://x.com/USABehFarsi/status/2095258391216079287",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:USABehFarsi:2095536839499071649",
+      "source": "USA Beh Farsi / X",
+      "title": "نیروی دریایی ایالات متحده همچنان محاصره دریایی آمریکا علیه ایران را با جدیت اجرا می‌کند. تا دوم سپتامبر، نیروهای ایالات متحده برای اطمینان از رعایت محاصره، مسیر ۸۶ کشتی تجاری را تغییر داده‌اند، ۳ کشتی را از کار انداخته‌اند و وارد ۲ کشتی شده و آنها را بازرسی کرده‌اند.",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 15:38:10 +0000",
+      "link": "https://x.com/USABehFarsi/status/2095536839499071649",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:USABehFarsi:2095591407159226474",
+      "source": "USA Beh Farsi / X",
+      "title": "«برای آن اوباش خائنی که از گزارش دقیق درباره عملیات نظامی ما در ایران خودداری می‌کنند، باید بگویم که ما عملاً مقادیر نامحدودی مهمات با درجه متوسط تا بالا در اختیار داریم؛ بسیار بیشتر از آنچه بتوانیم در این عملیات یا هر جنگ دیگری (که وقوع آن بسیار بعید است!) استفاده کنیم...» — رئیس‌جمهور دونالد جی. ترامپ 🇺🇸",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 19:15:00 +0000",
+      "link": "https://x.com/USABehFarsi/status/2095591407159226474",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:USABehFarsi:2095625383408173222",
+      "source": "USA Beh Farsi / X",
+      "title": "رئیس‌جمهور ترامپ درباره سایت‌های هسته‌ای ایران: «آنها سه سایت داشتند و حالا ممکن است کوه کلنگ گزلا را داشته باشند. آن سه سایت کاملاً نابود شده‌اند... ما بر تمام مناطق اصلی آن سه سایت دوربین داریم و بر کوه کلنگ گزلا نیز دوربین داریم. می‌دانیم چه کسی وارد می‌شود و چه کسی خارج می‌شود.»",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 21:30:00 +0000",
+      "link": "https://x.com/USABehFarsi/status/2095625383408173222",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:USABehFarsi:2095632934267183366",
+      "source": "USA Beh Farsi / X",
+      "title": "دونالد ترامپ، رئیس‌جمهورایالات متحده: «ما باید مانع دستیابی ایران به سلاح هسته‌ای می‌شدیم و این کار را انجام داده‌ایم. نیروی دریایی، نیروی هوایی و ساختار رهبری آنها را شکست داده‌ایم. کنترل تنگه هرمز را در دست داریم. پول آنها بی‌ارزش شده است. آنها در دردسر بزرگی هستند.»",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 22:00:01 +0000",
+      "link": "https://x.com/USABehFarsi/status/2095632934267183366",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:USABehFarsi:2095874522796720274",
+      "source": "USA Beh Farsi / X",
+      "title": "یک ملوان آمریکایی در حال مراقبت از عرشه ناوشکن موشک‌انداز یو‌اس‌اس جان پاول جونز (DDG 53) است، در حالی که این ناوشکن مجهز به موشک‌های هدایت‌شونده همچنان از محاصره دریایی آمریکا علیه ایران در آب‌های منطقه‌ای حمایت می‌کند. تا تاریخ ۱۲ شهریور، نیروهای سنتکام ۸۷ کشتی تجاری را تغییر مسیر داده، ۳ کشتی را از کار انداخته و ۲ کشتی را توقیف کرده‌اند تا از رعایت کامل این تحریم‌ها اطمینان حاصل شود.",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 14:00:00 +0000",
+      "link": "https://x.com/USABehFarsi/status/2095874522796720274",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:CENTCOMFarsi:2093044283079065713",
+      "source": "CENTCOM Farsi / X",
+      "title": "هواپیماهای جنگ الکترونیک E/A 18G نیروی دریایی ایالات متحده در حالی که ایالات متحده همچنان به اعمال محاصره علیه ایران ادامه می‌دهد، بر فراز آسمان خاورمیانه گشت‌زنی می‌کنند. تا 5 شهریور، نیروهای سنتکام ۷۵ کشتی تجاری را تغییر مسیر داده، ۳ کشتی را از کار انداخته و ۲ کشتی را توقیف کرده‌اند تا از رعایت مقررات اطمینان حاصل شود.",
+      "reason": "not_today_tehran",
+      "published": "Thu, 27 Aug 2026 18:33:38 +0000",
+      "link": "https://x.com/CENTCOMFarsi/status/2093044283079065713",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:CENTCOMFarsi:2093500829131042935",
+      "source": "CENTCOM Farsi / X",
+      "title": "یک ملوان آمریکایی در حالی که ناوشکن یو اس اس جان پاول جونز (DDG 53) در آب‌های منطقه‌ای در حال حرکت است و محاصره دریایی ایالات متحده علیه ایران را اعمال می‌کند، بر عرشه آن نظارت می‌کند. تا 6 شهریور، نیروهای سنتکام 82 کشتی تجاری را تغییر مسیر داده، 3 کشتی را غیرفعال کرده و 2 کشتی دیگر را توقیف کرده‌اند تا از رعایت قوانین اطمینان حاصل کنند.",
+      "reason": "not_today_tehran",
+      "published": "Sat, 29 Aug 2026 00:47:47 +0000",
+      "link": "https://x.com/CENTCOMFarsi/status/2093500829131042935",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:CENTCOMFarsi:2094190257985945947",
+      "source": "CENTCOM Farsi / X",
+      "title": "یک ملوان آمریکایی یک هلیکوپترسی هاوک MH-60H را به سمت عرشه پرواز ناوشکن دیلبرت دی بلک (DDG 119) هدایت می‌کند، در حالی که این کشتی در دریای عرب در حال حرکت است و محاصره دریایی ایالات متحده علیه ایران را اجرا می‌کند. تا 8 شهریور، نیروهای سنتکام 83 کشتی تجاری را تغییر مسیر داده، 3 کشتی را غیرفعال کرده و 2 کشتی را توقیف کرده‌اند تا از رعایت محاصره دریایی اطمینان حاصل کنند.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 30 Aug 2026 22:27:20 +0000",
+      "link": "https://x.com/CENTCOMFarsi/status/2094190257985945947",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:CENTCOMFarsi:2094420310934097926",
+      "source": "CENTCOM Farsi / X",
+      "title": "🚫ادعا: سپاه پاسداران انقلاب اسلامی ایران در بیانیه اخیر خود ادعا کرد که حملات نیروهای آمریکایی برای جلوگیری از مین‌گذاری سپاه در تنگه هرمز، یک «عمل تجاوزکارانه» بوده است. این ادعا کاملاً نادرست است. ✅واقعیت: نیروهای آمریکایی اقدامات محدود و دقیقی علیه نیروهای مین‌گذار سپاه که تهدیدی قریب‌الوقوع در تنگه هرمز ایجاد کرده بودند، انجام دادند. در اصل، ایران این تهدید را ایجاد کرد و ارتش ایالات متحده آن را از بین برد تا از دریانوردان غیرنظامی، کشتیرانی تجاری و جریان آزاد تجارت جهانی محافظت کند.",
+      "reason": "not_today_tehran",
+      "published": "Mon, 31 Aug 2026 13:41:29 +0000",
+      "link": "https://x.com/CENTCOMFarsi/status/2094420310934097926",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:CENTCOMFarsi:2094426034560995637",
+      "source": "CENTCOM Farsi / X",
+      "title": "🚫 ادعا: سپاه پاسداران انقلاب اسلامی ایران ادعا می‌کند که یک نفتکش غول‌پیکر که از مسیر جنوبی تنگه هرمز عبور می‌کرد، با دو مین برخورد کرده و کاملاً متوقف شده است. این ادعا نادرست است. ✅ واقعیت: هیچ کشتی‌ای در تنگه هرمز با مین برخورد نکرده است. این تلاش دیگری از سوی سپاه برای ارعاب کشتیرانی تجاری منطقه‌ای از طریق انتشار اطلاعات نادرست است.",
+      "reason": "not_today_tehran",
+      "published": "Mon, 31 Aug 2026 14:04:13 +0000",
+      "link": "https://x.com/CENTCOMFarsi/status/2094426034560995637",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:CENTCOMFarsi:2094823494722658683",
+      "source": "CENTCOM Farsi / X",
+      "title": "یک ملوان آمریکایی بر خاستن یک بالگرد (UH-1Y) ونم از عرشه ناو یو اس اس باکسر(LHD 4) را هدایت می کند در حالی که این کشتی تهاجمی آبی-خاکی در دریای عرب در حال حرکت است و محاصره ایران توسط آمریکا را اجرا می‌کند. تا دهم شهریور نیروهای آمریکایی ۸۴ کشتی تجاری را تغییر مسیر داده، ۳ کشتی را غیرفعال کرده و ۲ کشتی را توقیف کرده‌اند تا از رعایت قوانین اطمینان حاصل کنند.",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 16:23:35 +0000",
+      "link": "https://x.com/CENTCOMFarsi/status/2094823494722658683",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:CENTCOMFarsi:2094830138944884803",
+      "source": "CENTCOM Farsi / X",
+      "title": "امروز ساعت 12:00 به وقت شرق آمریکا، نیروهای آمریکایی حمله به اهداف سپاه پاسداران انقلاب اسلامی در ایران را آغاز کردند. این حملات پس از حملات اخیر سپاه پاسداران علیه کشتی‌های تجاری در تنگه هرمز و علیه نیروهای نظامی آمریکایی مستقر در منطقه انجام شد.",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 16:49:59 +0000",
+      "link": "https://x.com/CENTCOMFarsi/status/2094830138944884803",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:CENTCOMFarsi:2095279362002010427",
+      "source": "CENTCOM Farsi / X",
+      "title": "نیروی دریایی ایالات متحده همچنان به اجرای دقیق محاصره دریایی علیه ایران ادامه می‌دهد. تا تاریخ 11 شهریور، نیروهای آمریکایی برای اطمینان از رعایت این تحریم‌ها، مسیر ۸۶ کشتی تجاری را تغییر داده، ۳ کشتی را از کار انداخته و ۲ کشتی را توقیف کرده‌اند.",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 22:35:02 +0000",
+      "link": "https://x.com/CENTCOMFarsi/status/2095279362002010427",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:CENTCOMFarsi:2095650197766304188",
+      "source": "CENTCOM Farsi / X",
+      "title": "یک ملوان آمریکایی در حال مراقبت از عرشه ناوشکن موشک‌انداز یو‌اس‌اس جان پاول جونز (DDG 53) است، در حالی که این ناوشکن مجهز به موشک‌های هدایت‌شونده همچنان از محاصره دریایی آمریکا علیه ایران در آب‌های منطقه‌ای حمایت می‌کند. تا تاریخ 12 شهریور، نیروهای سنتکام ۸۷ کشتی تجاری را تغییر مسیر داده، ۳ کشتی را از کار انداخته و ۲ کشتی را توقیف کرده‌اند تا از رعایت کامل این تحریم‌ها اطمینان حاصل شود.",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 23:08:37 +0000",
+      "link": "https://x.com/CENTCOMFarsi/status/2095650197766304188",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
+    {
+      "key": "x:RapidResponse47:2095948372632834364",
+      "source": "White House Rapid Response / X",
+      "title": ".@POTUS schools a very rude Fake News hack on Iran: \"Iran will not have a nuclear weapon — because if they did, you probably wouldn't be standing here very long.\"",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 18:53:27 +0000",
+      "link": "https://x.com/RapidResponse47/status/2095948372632834364",
+      "checked_at": "2026-09-05T14:13:21.999002+00:00"
+    },
     {
       "key": "583b9814f26fe38fcbcbb405aa5fd98207294721",
       "source": "NOTAM / Airspace",
@@ -2141,217 +2339,29 @@
       "published": "Sat, 10 Jan 2026 08:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFBjZGJGVm1SUTdLQTRSSldpMFVzbzA4MlJBcXI5ZnRkckhqaEhwSS1PSGV5a0twcUtVVUw3UWd4clNSR2d1NUVmSEQwVzdDSmx6cEhsNW84eF84dXVMOVE?oc=5",
       "checked_at": "2026-09-05T08:43:54.746517+00:00"
-    },
-    {
-      "key": "f94b9415c4741c2e56b90615a26a226ba1f9a9b7",
-      "source": "Abbas Araghchi / X",
-      "title": "In very productive call with FM @badralbusaidi, expressed Iran's solidarity with Oman in face of any threat. We discussed Hormuz and its future administration in line with our sovereign responsibilities and international law. We welcome consultation with all nei",
-      "reason": "not_today_tehran",
-      "published": "Fri, 29 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1WaFhfblJDU1o2SzYyc1lCNGJDN1hsbW5CNnQzckYyRXBSNzBVWFVZOVJOZmFEazIybUZQUG81LWgxdl9zZFZRek81MGhZWmIxbDVjZDJTWm9oeHBSclE?oc=5",
-      "checked_at": "2026-09-05T08:43:54.746517+00:00"
-    },
-    {
-      "key": "7f2c40a9c99f1a977e97ff4044340c5e24af1e66",
-      "source": "Abbas Araghchi / X",
-      "title": "The U.S. spent months on bullying India into ending oil imports from Russia. After two weeks of war with Iran, White House is now begging the world—incl India—to buy Russian crude. Europe thought backing illegal war on Iran would win U.S. support against",
-      "reason": "not_today_tehran",
-      "published": "Fri, 13 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9UQnhTakhiRzRSV2xhUE1WZmtIZzlWZzN6YXlHTDBGYlN3VElaQmZIOVZhU2U5dkQ3eTQ4aFZ1UGRxOUlRRWJpMzhFdHpOQWZmU0txUTVYR05yYkVkQlE?oc=5",
-      "checked_at": "2026-09-05T08:43:54.746517+00:00"
-    },
-    {
-      "key": "69235737464999dbc94d4d14a27d68bb7d9b5cd2",
-      "source": "Abbas Araghchi / X",
-      "title": "U.S. officials are posting fake news to manipulate markets. It won't protect them from inflationary tsunami they've imposed on Americans. Markets are facing biggest shortfall in HISTORY: bigger than Arab Oil Embargo, Iran's Islamic Revolution and the Kuwait in",
-      "reason": "not_today_tehran",
-      "published": "Tue, 10 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9LcHQ5MDNQSmxLZUg5VWdKcXVNazRHS0VHQnJGNzkzdmxRdHJkWjJxZzR1eEk1MmlVWEloTUdXclNacUxBVjd5OUhLSEE2WlhVcEpmdTVXeDlsZ183VUE?oc=5",
-      "checked_at": "2026-09-05T08:43:54.746517+00:00"
-    },
-    {
-      "key": "6f17e16872244d66d3ef2f3ac15156015ece9e8f",
-      "source": "Abbas Araghchi / X",
-      "title": "Events in Hormuz make clear that there's no military solution to a political crisis. As talks are making progress with Pakistan's gracious effort, the U.S. should be wary of being dragged back into quagmire by ill-wishers. So should the UAE. Project Freedom is Pr",
-      "reason": "not_today_tehran",
-      "published": "Mon, 04 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE5IUUxNLUdqMUlnRFp3aDBMV0NjaWRDVWxNcTA2SmFFSGM4SExUNWREQmVzMEstakRUWUo0bjhJTHJqM2JvNmEwd1ZGeUZmMy1NQVU1RlRDVVNoQ3h6dHc?oc=5",
-      "checked_at": "2026-09-05T08:43:54.746517+00:00"
-    },
-    {
-      "key": "509321aef79537936c2dc1538897ee4ed9fbe0fa",
-      "source": "Abbas Araghchi / X",
-      "title": "2/4 Our fundamental convictions are crystal clear: Iran will under no circumstances ever develop a nuclear weapon; neither will we Iranians ever forgo our right to harness the dividends of peaceful nuclear technology for our people.",
-      "reason": "not_today_tehran",
-      "published": "Tue, 24 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE4zSjl6bFZfSzdmcUNvd2RmY0RWRmdqYjRXVFBubG5qQlhackJJNUVYWVNuNGthRUdwcVpNbmlIUEhkV3h0aHNzeVFCNDg5dXpwOVEzaUdtZW9MbGVvR2c?oc=5",
-      "checked_at": "2026-09-05T08:43:54.746517+00:00"
-    },
-    {
-      "key": "156833b2eab003115561894db9931bdf5861050e",
-      "source": "Abbas Araghchi / X",
-      "title": "Delighted to welcome Field Marshal Munir to Iran. Expressed gratitude for Pakistan's gracious hosting of dialogue, emphasizing that it reflects our deep and great bilateral relationship. Our commitment to promoting peace and stability in the region remains stro",
-      "reason": "not_today_tehran",
-      "published": "Wed, 15 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE56VzBRWC1TOU4xRV9BTHdsRnZjNXBocUZ1VVRCdzFoajNKY3Jabm9vb1lQb2RGb2NsZzg4cVI0bDdDdGQweUYwVk5mSWc0QURNNGVJRVNCYkFFNEpBSXc?oc=5",
-      "checked_at": "2026-09-05T08:43:54.746517+00:00"
-    },
-    {
-      "key": "ee8e4a21c3d17ea3799c9f7f4482599b88dd879a",
-      "source": "Abbas Araghchi / X",
-      "title": "Told CBS: Iran has neither sought a truce nor talks. Such claims are delusional. Our Powerful Armed Forces will keep firing until POTUS realizes that illegal war he's imposing on both Americans and Iranians is wrong and must never be repeated. Victims must",
-      "reason": "not_today_tehran",
-      "published": "Sun, 15 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE5vMUllYkRvT1A3NDNVLVg3M295ZmtQTk5iRXVJSUdYT040bi11eVMyMlJuVHd2TnZhVnJpaXVLZVRwbGkzOTVuOUI4bHJ3b1hmdV8wMFJUMzhMVkhTX3c?oc=5",
-      "checked_at": "2026-09-05T08:43:54.746517+00:00"
-    },
-    {
-      "key": "503683e132e918f8e109418361cebaa5b64aa40c",
-      "source": "Abbas Araghchi / X",
-      "title": "Millions of Iranians thronged our streets today to celebrate the 47th anniversary of what scholars call \"The Last Great Revolution of the 20th Century\". Much has happened in the decades since the Islamic Revolution, and particularly the past twelve months. Ov",
-      "reason": "not_today_tehran",
-      "published": "Wed, 11 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE44aEVqbTJHNGc0bnJkcVlldUhtUnZITG1ob3IyblBRWXlHNmIteXM3MElETFctQVhieXA3SGFDX3UtZXNhT0R3Y0QtdjVhZnFzYnZLejgyQnNBbVk2SHc?oc=5",
-      "checked_at": "2026-09-05T08:43:54.746517+00:00"
-    },
-    {
-      "key": "cccd09dd6f579e570119f227daf91dce87be9974",
-      "source": "Abbas Araghchi / X",
-      "title": "In my visit to Baghdad, I met President, PM, Speaker, FM, and other dignitaries of Iraq. Like Iran, Iraq is preparing for a mass funeral for Grand Ayatollah Khamenei—an event that will undoubtedly be remembered by history and further strengthen the bonds bet",
-      "reason": "not_today_tehran",
-      "published": "Tue, 30 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE85R1NIU1Etam1od19JeThtUW5MRHkyVy1SRnptOVBEOHRwUl9xdDg2ZkRqZnk4VjAyX1U0cktUOS1oWWljcXFuSlNCM1FmcDZtcVd3bnlLTU1BMkxGYkE?oc=5",
-      "checked_at": "2026-09-05T08:43:54.746517+00:00"
-    },
-    {
-      "key": "6a7da106a52fb3a20a7f69648503fa981e6bc1d6",
-      "source": "Abbas Araghchi / X",
-      "title": "Blockading Iranian ports is an act of war and thus a violation of the ceasefire. Striking a commercial vessel and taking its crew hostage is an even greater violation. Iran knows how to neutralize restrictions, how to defend its interests, and how to resist bullying.",
-      "reason": "not_today_tehran",
-      "published": "Tue, 21 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFA2aEdITXQ5OElQYjkxM3BOeEZnMnZGVkE3aTVjM3FJZ2JEZ1NmUThxTk51WmJWemdsSldMRGIwRzhxek1JS2kwb2N6ZFYxekRhcng1ZzBVSU85cDRSTWc?oc=5",
-      "checked_at": "2026-09-05T08:43:54.746517+00:00"
-    },
-    {
-      "key": "cf314cb2369de9fe3f0b85f78fe267b74c8f6ddf",
-      "source": "Abbas Araghchi / X",
-      "title": "Netanyahu has now publicly revealed what Iran's security services long ago conveyed to our leadership. Enmity with the Great People of Iran is a foolish gamble. Collusion with Israel in doing so: unforgivable. Those colluding with Israel to sow division will be",
-      "reason": "not_today_tehran",
-      "published": "Wed, 13 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE0wbjUwazNJZEVNcXZpWWM0TGcxMlAwNXoxWHppaGYxa1dIcXJ4UEdydWctd0xUTVNFdmRsc2Y5LU1xV2xiLTh1SThZdlYxM3VOZ3l1cTUzWkw0R0FQZWc?oc=5",
-      "checked_at": "2026-09-05T08:43:54.746517+00:00"
-    },
-    {
-      "key": "f7c58011aa25ca020705143fc973173f46b101c1",
-      "source": "Abbas Araghchi / X",
-      "title": "The United States, a permanent member of the United Nations Security Council, has committed a grave violation of the UN Charter, international law and the NPT by attacking Iran's peaceful nuclear installations. The events this morning are outrageous and wil",
-      "reason": "not_today_tehran",
-      "published": "Sat, 21 Jun 2025 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1VamdCdTVqME05dTRFY1lNYzFvNFlIT3Q2alc2MG1Lek1UM0JFSThsZUxwU2NHMUhJampQenpvQk92UVRpQXpwNWcwWi12cTBVSDhrSzFfZXk5dGVFNFE?oc=5",
-      "checked_at": "2026-09-05T08:43:54.746517+00:00"
-    },
-    {
-      "key": "9ccf59d2faf2f5b01757aa101a1e8d5cf36d6b18",
-      "source": "Abbas Araghchi / X",
-      "title": "Israel and its partner-in-crime believe that knowledge can be bombed away. It's reflected in the murders of Iran's scientists and attacks on Iran's nuclear sites, and now universities. Reality check: your actions ooze of desperation and only inspire more pursuit of",
-      "reason": "not_today_tehran",
-      "published": "Sun, 29 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFA5VGNveTVMTlNwdGJkeHVmaERTeGhxcE9zTW1WeDZocG1QTUkwTlBwQ0JCUWZtWjh0Qi1kMjdENjNhZHA5cHBlNWlzZldybl93MlRqY01tZVlJa1hXd1E?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "569d485f2421936cfa4438fcb36dba26ca09e542",
-      "source": "Abbas Araghchi / X",
-      "title": "The failure of Israel's terrorist killings is reflected in how Iran's state institutions continue to act with unity, purpose, and discipline. The battlefield and diplomacy are fully coordinated fronts in the same war. Iranians are all united, more than ever before.",
-      "reason": "not_today_tehran",
-      "published": "Thu, 23 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE5SdjZIbzdOOXJONkxyZkVFSjZsSzJfTG42b3hZWGNScjBPeDU0QlEzM1p1ajl0cy0zbldqbm1xZjh2STcydWRBU2hYUWxBYzZqQ1QtYTU0MHgtakZ6TVE?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "0a69014c200b91532ba709d4559a0c95ea05c0db",
-      "source": "Abbas Araghchi / X",
-      "title": "Iran's national infrastructure is under attack. This time, a branch of my country's oldest bank was bombed while full of employees. They were laboring to ensure Iranians have food on the table ahead of our New Year. Our Powerful Armed Forces will exact retrib",
-      "reason": "not_today_tehran",
-      "published": "Wed, 11 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFBqWXdJVEt0MmtabXBaVlVabjJiXzdhbXAtX21IMXdPNzFxNVhWSEpWc2tZMkhWUm1rSV8zMDFkeGhObFZYU2oyRjdkTHhzOVkzdjNqNk0wZW90VW9HYmc?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "7339324ab78ed6524779a957e88676fd14e5c64f",
-      "source": "Abbas Araghchi / X",
-      "title": "The claim that Iran was planning on attacking the U.S. or U.S. Forces, whether preventively or preemptively, is a sheer and utter lie. The sole purpose of that lie is to justify Operation Epic Mistake, a misadventure engineered by Israel and paid for by ordinary A",
-      "reason": "not_today_tehran",
-      "published": "Tue, 10 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1NaVdjWkJ6eWwxd3RTMlFZbnM3dWl5dEs2Z2lSZmsxT2k5N1VIVEFBbzk4OGhwNzY0R3lUMExMT0YxVk9oSGtRX3ZTeXhyc3c4aFMzRmFZWUhsenQzR3c?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "f1ed9f42d4b6e2591d5188a7402c9b76c4a1d104",
-      "source": "Abbas Araghchi / X",
-      "title": "The destroyed building is a primary school for girls in the south of Iran. It was bombed in broad daylight, when packed with young pupils. Dozens of innocent children have been murdered at this site alone. These crimes against the Iranian People will not go un",
-      "reason": "not_today_tehran",
-      "published": "Sat, 28 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1CU3lYVDl5eTktWDNJQU5DZ2ZQTEN2bnp4VVM3VlhORHNLNkY5OGJJY1dKUVVyRjFKU2FwRjNtMF9QSjNOdlpXVTNwUUlKSnJCT2k1dzhTYXhWUlRkLXc?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "e28107bd1323418e4e4ea987271a053d3e4e62a6",
-      "source": "Abbas Araghchi / X",
-      "title": "While my people are facing reckless aggression, I wish all those celebrating Happy Eid Al-Fitr and Nowruz. Our ancient civilization has three millennia of history of defending Iranians and the region from outsiders. We are now writing a new chapter in that story.",
-      "reason": "not_today_tehran",
-      "published": "Sat, 21 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1XN19BMUFoMDBoeHdUaGdJbTk0WjZpeXZVRnpTVmVUVDFHRkhtTktEbmNKbVVGcXd6Zks1V2NEbHdLNjJBYmNUVDlUWWtIdFpKaXFNQlVzdGt2N0V5bEE?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "650f5f150b6d3c877cae78b9b50e1464781b097c",
-      "source": "Abbas Araghchi / X",
-      "title": "As Iranians grieve their loved ones and rebuild what has been destroyed by terrorists, another threat looms: the final failure of diplomacy. An all-out confrontation will certainly be messy, ferocious, and drag on far, far longer than the fantasy timelines that Israel",
-      "reason": "not_today_tehran",
-      "published": "Wed, 21 Jan 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE5ObFlDdFhLVXZIMlVtR2NZQnNjb2lMSjRSQURmaEtLX2VVc25VYWtNZUowZjJOUVJYcGJIQmUyMlkzY29tUmN1VXlJQ3h4WHVrWDJqeFZ0Y2RzcHJBY1E?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "273d08b5d3dc1708dd398f84ceface276d8de637",
-      "source": "Abbas Araghchi / X",
-      "title": "By now, the whole world should know that: (1) Iran solely acts in self-defense. Even in the face of the most outrageous aggression against our people, Iran has so far only retaliated against the Israeli regime and not those who are aiding and abetting it. Just like",
-      "reason": "not_today_tehran",
-      "published": "Wed, 18 Jun 2025 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9Hb01KZFB2TVEyb2VDMFYwSFQxUVpJaDk5RDBrNUxDdjRpbFAxYWtBNWNKSDZUYlQzc1dHWF9mbERYcVhNQTQzMnI2dDlmS0l3TllGejFDMXpKa29hYXc?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "8e4eb776d4cf93d479cc8e4ff1480a6a00268a78",
-      "source": "Abbas Araghchi / X",
-      "title": "Iran extends its deep gratitude to the Government of Egypt for its profound role in facilitating diplomacy. The framework for our collaboration with the IAEA, while hinging on our good will being reciprocated through the avoidance of unlawful and provocative ste",
-      "reason": "not_today_tehran",
-      "published": "Tue, 09 Sep 2025 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1xTWlLTmRCOG5tSVg1WmZUN3JoNXFsWHpQQWVraFVMT19HdlY2a2t5N2RNbUprRDZMS1U2UE5Gdy1sOThEU0dsTURLVFpWT3dlRjZpTk5sWmUtLXJhS3c?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "e416b3b5aeaaaa446584ad7be0900fd5b70c322b",
-      "source": "Abbas Araghchi / X",
-      "title": "3 villagers were martyred while crossing the Bandar Khamir Bridge. They were absolutely innocent, and we will never allow their blood to be in vain. Iran is our homeland—from south to north, and from east to west. We will defend every inch of our land until ou",
-      "reason": "not_today_tehran",
-      "published": "Fri, 17 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFBvcjRrMmlyTjBsUHNUTC15NlFPTmtQWFpuTFhUQ2diXzhvLXFuRUNyMV9SM2lReUxLa1daTmc3UEZjYVU1RTFGRlg2TzZ3dVhpb05Dc2tUNzlvVHg5Q1E?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
     {
-      "key": "x:mdubowitz:2096239461386391790",
-      "source": "Mark Dubowitz / X",
-      "title": "Time is no longer on Iran’s side as the U.S. is helping Gulf states move significant amounts of oil out of the region while thwarting Tehran’s shipments.",
+      "key": "x:haaretzcom:2096240722630320212",
+      "source": "Haaretz / X",
+      "title": "NYT: U.S. intelligence believes Iran wants to escalate war before Midterms",
       "summary": "",
-      "link": "https://x.com/mdubowitz/status/2096239461386391790",
-      "published": "Sat, 05 Sep 2026 14:10:08 +0000",
-      "sent_at": "2026-09-05T14:11:05.517536+00:00",
-      "fingerprint": "time is no longer on iran s side as the u s is helping gulf states move significant amounts of oil out of the region while thwarting tehran s shipments"
+      "link": "https://x.com/haaretzcom/status/2096240722630320212",
+      "published": "Sat, 05 Sep 2026 14:15:09 +0000",
+      "sent_at": "2026-09-05T14:16:59.051342+00:00",
+      "fingerprint": "nyt u s intelligence believes iran wants to escalate war before midterms"
+    },
+    {
+      "key": "x:mdubowitz:2096240556946886696",
+      "source": "Mark Dubowitz / X",
+      "title": "The Islamic Republic of Iran currency hits historic low of 2,283,000 to the USD. The rial is heading towards 3,000,000, possibly before year end.",
+      "summary": "",
+      "link": "https://x.com/mdubowitz/status/2096240556946886696",
+      "published": "Sat, 05 Sep 2026 14:14:29 +0000",
+      "sent_at": "2026-09-05T14:15:51.492731+00:00",
+      "fingerprint": "the islamic republic of iran currency hits historic low of 2 283 000 to the usd the rial is heading towards 3 000 000 possibly before year end"
     },
     {
       "key": "x:Reuters:2096237064454840370",
@@ -2360,7 +2370,7 @@
       "summary": "",
       "link": "https://x.com/Reuters/status/2096237064454840370",
       "published": "Sat, 05 Sep 2026 14:00:37 +0000",
-      "sent_at": "2026-09-05T14:10:12.560341+00:00",
+      "sent_at": "2026-09-05T14:14:43.802255+00:00",
       "fingerprint": "us military strikes three iranian crude oil carriers central command says"
     },
     {
@@ -2370,7 +2380,7 @@
       "summary": "",
       "link": "https://x.com/business/status/2096238199907443181",
       "published": "Sat, 05 Sep 2026 14:05:07 +0000",
-      "sent_at": "2026-09-05T14:10:12.560341+00:00",
+      "sent_at": "2026-09-05T14:14:43.802255+00:00",
       "fingerprint": "the us military said it launched strikes against three iranian crude oil tankers in retaliation for the islamic revolutionary guard corps targeting two us navy warships with ballistic missiles"
     },
     {
@@ -2380,8 +2390,18 @@
       "summary": "",
       "link": "https://x.com/AP/status/2096238474458198517",
       "published": "Sat, 05 Sep 2026 14:06:13 +0000",
-      "sent_at": "2026-09-05T14:10:12.560341+00:00",
+      "sent_at": "2026-09-05T14:14:43.802255+00:00",
       "fingerprint": "breaking u s military says it struck three iranian oil tankers after navy warships were targeted with missiles"
+    },
+    {
+      "key": "x:mdubowitz:2096239461386391790",
+      "source": "Mark Dubowitz / X",
+      "title": "Time is no longer on Iran’s side as the U.S. is helping Gulf states move significant amounts of oil out of the region while thwarting Tehran’s shipments.",
+      "summary": "",
+      "link": "https://x.com/mdubowitz/status/2096239461386391790",
+      "published": "Sat, 05 Sep 2026 14:10:08 +0000",
+      "sent_at": "2026-09-05T14:14:43.802255+00:00",
+      "fingerprint": "time is no longer on iran s side as the u s is helping gulf states move significant amounts of oil out of the region while thwarting tehran s shipments"
     },
     {
       "key": "x:JasonMBrodsky:2096236068605489648",
