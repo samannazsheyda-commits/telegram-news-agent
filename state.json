@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:Jerusalem_Post:2096322012713013719",
+    "8853d883ce80d973aee224d751f69647a8257840",
     "x:marklevinshow:2096319696668925982",
     "x:AJEnglish:2096310785924538686",
     "f2acdc54df70320ee16afb81f7f5afad9d4df278",
@@ -498,12 +500,10 @@
     "ac31093e645c9c14bba50829a929c15622b356a9",
     "a562677bd50abd6978c6a04b352d9f51e469a864",
     "ca33220c905d2624f87af3d0984a14aeae5edb10",
-    "cbcdd9073145fb18186df25575b00b050cfaee23",
-    "b585f1d09c7899f97455d00978fbe2e70988e545",
-    "1ca079bbdfd4aff2fc5f21648601626f10c02b80"
+    "cbcdd9073145fb18186df25575b00b050cfaee23"
   ],
   "market_last_sent_at": "2026-09-05T19:32:05.566713+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -540,6 +540,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "8853d883ce80d973aee224d751f69647a8257840",
+      "source": "NOTAM / Airspace",
+      "title": "EASA Urges Airlines to Avoid Iranian Airspace Amid Ongoing Risks - Global Banking & Finance Review",
+      "reason": "not_today_tehran",
+      "published": "Wed, 24 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOc2ZkVjFtN0ROSlZ3ckRHZDZrMWJpWUx6cGlDMEJ6YmdlWmplbjYtVE5LWXphY1Q4cnp3c1dPeVNPY2tLVzJKaUFyOExSVzlhZURrYy0tVUtQWmxpRnpGMnVTcFNybFZCRW83alNYWFdSUTNLVU1ZelFEczdPNGh1N0MzWmo5cWd4TmxldmI2NWxtSWU4TTBrNE5xU3RGTGc?oc=5",
+      "checked_at": "2026-09-05T19:38:58.453399+00:00"
+    },
     {
       "key": "f2acdc54df70320ee16afb81f7f5afad9d4df278",
       "source": "کلش ریپورت / Telegram",
@@ -2330,19 +2339,20 @@
       "published": "Fri, 04 Sep 2026 13:53:57 +0000",
       "link": "https://x.com/JasonMBrodsky/status/2095873000092373105",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:JasonMBrodsky:2095887071613190529",
-      "source": "Jason Brodsky / X",
-      "title": "#BREAKING: The U.S. and its allies ​Britain, France and Germany are pushing other countries IAEA's board to pass a resolution next week reporting #Iran to the U.N. Security Council for the first time in 20 years, diplomats said on Friday. https://www.reuters.com/world/europe/us-allies-want-iaea-board-report-iran-un-security-council-diplomats-say-2026-09-04/",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 14:49:52 +0000",
-      "link": "https://x.com/JasonMBrodsky/status/2095887071613190529",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:Jerusalem_Post:2096322012713013719",
+      "source": "Jerusalem Post / X",
+      "title": "JD Vance defended US efforts to secure shipping through the Strait of Hormuz, saying Iran must stop attacking commercial vessels and warning that withdrawal could cause a global energy crisis.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096322012713013719",
+      "published": "Sat, 05 Sep 2026 19:38:10 +0000",
+      "sent_at": "2026-09-05T19:40:28.677097+00:00",
+      "fingerprint": "jd vance defended us efforts to secure shipping through the strait of hormuz saying iran must stop attacking commercial vessels and warning that withdrawal could cause a global energy crisis"
+    },
     {
       "key": "x:AJEnglish:2096310785924538686",
       "source": "Al Jazeera English / X",

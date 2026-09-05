@@ -1,5 +1,23 @@
 [
   {
+    "id": "990c4442f3932bc833d5592c28f53263cca64019",
+    "news_key": "8853d883ce80d973aee224d751f69647a8257840",
+    "source": "NOTAM / Airspace",
+    "source_url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOc2ZkVjFtN0ROSlZ3ckRHZDZrMWJpWUx6cGlDMEJ6YmdlWmplbjYtVE5LWXphY1Q4cnp3c1dPeVNPY2tLVzJKaUFyOExSVzlhZURrYy0tVUtQWmxpRnpGMnVTcFNybFZCRW83alNYWFdSUTNLVU1ZelFEczdPNGh1N0MzWmo5cWd4TmxldmI2NWxtSWU4TTBrNE5xU3RGTGc?oc=5",
+    "original_title": "EASA Urges Airlines to Avoid Iranian Airspace Amid Ongoing Risks - Global Banking & Finance Review",
+    "original_summary": "EASA Urges Airlines to Avoid Iranian Airspace Amid Ongoing Risks Global Banking & Finance Review",
+    "persian_title": "",
+    "persian_body": "",
+    "published_at_source": "Wed, 24 Jun 2026 07:00:00 GMT",
+    "discovered_at": "2026-09-05T19:38:58.453399+00:00",
+    "rejection_reason": "not_today_tehran",
+    "status": "superseded",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-05T19:40:17.905827+00:00"
+  },
+  {
     "id": "6c6203e38e69fb0404049ca778ce1f84e3f5b0a6",
     "news_key": "82f596233c7833e7ca9ab067b9737f2b44a11767",
     "source": "Reuters",
