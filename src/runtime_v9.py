@@ -8,6 +8,7 @@ from dataclasses import replace
 
 from . import runtime_v7 as v7
 from . import runtime_v8 as v8
+from .market_policy import market_summary_day, regular_market_allowed
 
 _installed = False
 _original_v7_formatter = v7._format_news_with_footer_icons
@@ -51,6 +52,8 @@ def _format_persian_only(item, title_fa: str, summary_fa: str, marker_override=N
     )
     if not message:
         return ""
+    # The pointing-hand decoration is intentionally forbidden in the final card.
+    message = message.replace("👉🏻 ", "").replace("👉 ", "")
     visible = _visible_text(message)
     if _LATIN_VISIBLE_RE.search(visible):
         print(
@@ -70,6 +73,10 @@ def _newsroom_low_value_company_news(item) -> bool:
     return _original_low_value_company(item)
 
 
+def _market_quiet_hours(now) -> bool:
+    return not regular_market_allowed(now)
+
+
 def install_persian_only_output() -> None:
     global _installed
     if _installed:
@@ -82,6 +89,10 @@ def install_persian_only_output() -> None:
     v7.v2._format_news_with_flags = _format_persian_only
     # The production fetcher resolves this global at runtime; keep security/airspace news.
     v7.v2.base.is_low_value_company_news = _newsroom_low_value_company_news
+    # Market policy: ordinary cards 08:00-22:00, daily recap at 23:00,
+    # no market posts on Fridays or official Iranian holidays.
+    v7.v2.base.agent._market_quiet_hours = _market_quiet_hours
+    v7.v2.base.agent._market_summary_day = market_summary_day
     _installed = True
 
 
