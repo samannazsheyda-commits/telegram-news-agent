@@ -54,6 +54,7 @@ def install_easy_news_flow() -> None:
     v6.install_output_policy()
     v2._strict_rejection_reason = _easy_rejection_reason
     v2.translate_news_to_fa = _translate_or_original
+    v2.base.agent._news_rejection_reason = _easy_rejection_reason
     v2.base.agent._select_top_stories = _select_one_story
     _easy_news_flow_installed = True
 
