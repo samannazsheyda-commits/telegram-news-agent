@@ -16,5 +16,5 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
-      - name: Run X-only regression tests
-        run: python -m pytest -q tests/test_x_priority_sources.py
+      - name: Run full test suite
+        run: python -m pytest -q
