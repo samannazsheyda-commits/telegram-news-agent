@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:AJEnglish:2096264844135858592",
     "x:CENTCOMFarsi:2096255895445373362",
     "x:JasonMBrodsky:2096249240812957763",
     "55c6d35889d4ca0ed6c848616049e18d66ad5658",
@@ -499,11 +500,10 @@
     "44e421038abd57b99985eda3161ff7e2cdbc5d9d",
     "5d61a7c1036bfcd0b971eb9e63bae2b531ed5c91",
     "044e83f0fc892a8fbb34c5dd1d9a7a20e8847e40",
-    "8bb4e81c020c1d8768da38664e6c9cd691776abf",
-    "07b36e841147bdc7ad2c122f0e1bd9549517ae27"
+    "8bb4e81c020c1d8768da38664e6c9cd691776abf"
   ],
   "market_last_sent_at": "2026-09-05T14:48:33.575362+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -2343,6 +2343,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2096264844135858592",
+      "source": "Al Jazeera English / X",
+      "title": "'The enemies seek to create division' Amid rising public discontent, Iran accuses adversaries of encouraging unrest. President Masoud Pezeshkian says Iranians will stand united against US economic pressure. 🔗:",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096264844135858592",
+      "published": "Sat, 05 Sep 2026 15:51:00 +0000",
+      "sent_at": "2026-09-05T15:55:01.052081+00:00",
+      "fingerprint": "the enemies seek to create division amid rising public discontent iran accuses adversaries of encouraging unrest president masoud pezeshkian says iranians will stand united against us economic pressure"
+    },
     {
       "key": "x:CENTCOMFarsi:2096255895445373362",
       "source": "CENTCOM Farsi / X",
