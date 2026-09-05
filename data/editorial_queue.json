@@ -1,5 +1,23 @@
 [
   {
+    "id": "00cf806d56515f5e4f271d22651be9bd0a247d4a",
+    "news_key": "af6a9361fec24dee3774dc083f925850c04b9848",
+    "source": "تبز لایو / Telegram",
+    "source_url": "https://t.me/tabzlive/101806",
+    "original_title": "🇹🇷 📞 🇦🇪 — Turkish President Erdoğan discussed bilateral relations and regional tensions with UAE President Sheikh Mohamed bin Zayed Al Nahyan in a phone call. Erdoğan said cooperation between Türkiye and the UAE would continue to expand,...",
+    "original_summary": "🇹🇷 📞 🇦🇪 — Turkish President Erdoğan discussed bilateral relations and regional tensions with UAE President Sheikh Mohamed bin Zayed Al Nahyan in a phone call. Erdoğan said cooperation between Türkiye and the UAE would continue to expand, particularly in the defense and economic sectors. The two leaders also discussed recent regional developments, with Erdoğan saying Türkiye was working to ease tensions between Iran and the U.S. and resolve other conflicts.",
+    "persian_title": "🇹🇷 📞 🇦🇪 — اردوغان، رئیس جمهور ترکیه، در یک تماس تلفنی با شیخ محمد بن زاید آل نهیان، رئیس جمهور امارات متحده عربی، درباره روابط دوجانبه و تنش‌های منطقه‌ای گفتگو کرد. اردوغان گفت همکاری بین ترکیه و امارات متحده عربی همچنان گسترش خواهد یافت...",
+    "persian_body": "",
+    "published_at_source": "Sat, 05 Sep 2026 00:16:30 +0000",
+    "discovered_at": "2026-09-05T02:28:56.285529+00:00",
+    "rejection_reason": "low_signal_or_unapproved_source",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-05T02:29:02.711349+00:00"
+  },
+  {
     "id": "167e29ebad15418b5c7b77dcb81898e0285195dd",
     "news_key": "be30f546a6d9df4fa691370b0785d4adef52befd",
     "source": "Associated Press",
@@ -196,24 +214,6 @@
     "final_persian_body": "",
     "decision_at": "",
     "updated_at": "2026-09-05T00:34:59.319277+00:00"
-  },
-  {
-    "id": "00cf806d56515f5e4f271d22651be9bd0a247d4a",
-    "news_key": "af6a9361fec24dee3774dc083f925850c04b9848",
-    "source": "تبز لایو / Telegram",
-    "source_url": "https://t.me/tabzlive/101806",
-    "original_title": "🇹🇷 📞 🇦🇪 — Turkish President Erdoğan discussed bilateral relations and regional tensions with UAE President Sheikh Mohamed bin Zayed Al Nahyan in a phone call. Erdoğan said cooperation between Türkiye and the UAE would continue to expand,...",
-    "original_summary": "🇹🇷 📞 🇦🇪 — Turkish President Erdoğan discussed bilateral relations and regional tensions with UAE President Sheikh Mohamed bin Zayed Al Nahyan in a phone call. Erdoğan said cooperation between Türkiye and the UAE would continue to expand, particularly in the defense and economic sectors. The two leaders also discussed recent regional developments, with Erdoğan saying Türkiye was working to ease tensions between Iran and the U.S. and resolve other conflicts.",
-    "persian_title": "🇹🇷 📞 🇦🇪 — اردوغان، رئیس جمهور ترکیه، در یک تماس تلفنی با شیخ محمد بن زاید آل نهیان، رئیس جمهور امارات متحده عربی، درباره روابط دوجانبه و تنش‌های منطقه‌ای گفتگو کرد. اردوغان گفت همکاری بین ترکیه و امارات متحده عربی همچنان گسترش خواهد یافت...",
-    "persian_body": "",
-    "published_at_source": "Sat, 05 Sep 2026 00:16:30 +0000",
-    "discovered_at": "2026-09-05T00:34:29.808093+00:00",
-    "rejection_reason": "low_signal_or_unapproved_source",
-    "status": "pending",
-    "final_persian_title": "",
-    "final_persian_body": "",
-    "decision_at": "",
-    "updated_at": "2026-09-05T00:34:57.647827+00:00"
   },
   {
     "id": "ad17153973ef9a2adda5785e0dfa6cc5b2d7ab4e",
