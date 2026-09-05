@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41523",
   "news_seen": [
+    "0781fdf5782c7ba7574fad60af04fcea15b940bf",
+    "f0b416480a1f4bb83db71f65b9710ac25ca21580",
+    "4fc9f03c89e8bd0d2dd4484b780735a99f70c5c8",
     "513c9c30e3df4a423ae7af016f2e0ad451086aba",
     "0041aa68eaffaaa4be9fe6e056bf99e85811f1ff",
     "66e682a7b25da458aa7c15dc66a19bc8f022aabb",
@@ -497,10 +500,7 @@
     "49eb717c82e416052929cf3000656e047350d0ee",
     "f4606b1fdc60f48e0299b6808d1d0c66049fb0af",
     "7eb6ee1949520bae75806ac99c4bc3c53ad6e59f",
-    "69bab2d5d4697d6ee436546ae74cef118d93ae7b",
-    "d8146ca2086ccae2bc398d978a91cec636e1ae78",
-    "05b8ec323838f06547dc4b944617c68542965d2c",
-    "9e2920cc3f8fe339323ec86d07c2d4906ffb7ce2"
+    "69bab2d5d4697d6ee436546ae74cef118d93ae7b"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "white",
@@ -530,6 +530,33 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "0781fdf5782c7ba7574fad60af04fcea15b940bf",
+      "source": "Reuters",
+      "title": "US-Iran strikes raise fears of renewed war across the Middle East",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 21:06:12 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxORjZ4d3JRTk1WcXR6eThpVm1wcVpzQV8wMm42eDB4bDJRMVhxelJpdmZTYXVPQ0JTUmtiNXFVWEZyb1NBTTZibmZJTkk4bjlRNGwtWTU1OF8zXzhENVZhWDN4TUwzekdfVG8xWUpmY3hmcHBDQk5TUzBLSERGbFJ0c05nekFpclo3cFdMcm93dHlEUXctVTY2MjJIMkkxSTRGWnc?oc=5",
+      "checked_at": "2026-09-05T02:56:49.371098+00:00"
+    },
+    {
+      "key": "f0b416480a1f4bb83db71f65b9710ac25ca21580",
+      "source": "Al Arabiya",
+      "title": "Saudi Arabia affirms its full support, solidarity with Lebanon after Beirut blasts - muslimnews.com.ng",
+      "reason": "not_today_tehran",
+      "published": "Tue, 04 Aug 2020 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNZU9FTWc4R1YtSFVPQm9fMHREeHk3ZWpEX2FFOTg0bDlaRGExcWFLaEZPSjhhcFJiQkttZ01taU1RTjNPanFKRmxNdWpaOW1fVEN3UHNiLXJHenpEc0pBX1ZiWVRpMVc2MXEwRURFb2hZMEoxQmZJV29CbGtWRG5qRnVudTZkQ0Y4aUdLZk5fNnY1T2hlNWxhd2dTSEoyS3VtOElsTXQ4ajFfLTNwdldySmU2WHFGUTJwaHlF?oc=5",
+      "checked_at": "2026-09-05T02:53:49.370715+00:00"
+    },
+    {
+      "key": "4fc9f03c89e8bd0d2dd4484b780735a99f70c5c8",
+      "source": "ABC News",
+      "title": "US vice-president says Iran conflict not a war - ABC News & Headlines - Australian Broadcasting Corporation",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 22:32:59 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOa1FCbUhna1pGME5ZbWVuSS1rNll2STB4amlvOFJHc0stanJmd09BZEd5S19oYmVSREU3bjFIRE5PdkZBUE54TnI0ZzNfNVFtSTJ1NDdRRDZUeWRBSFM4VEh0QllSOWNVRjc5X2N5N2hKRkZ5dkt0cTZoTDg1S3VUTmxjam92dkJ2?oc=5",
+      "checked_at": "2026-09-05T02:53:49.370715+00:00"
+    },
     {
       "key": "513c9c30e3df4a423ae7af016f2e0ad451086aba",
       "source": "Reuters",
@@ -2302,33 +2329,6 @@
       "published": "Tue, 09 Jun 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1RUzRUX1g1bUF1WGpvXzQ0SVJ0dENMczYwWTFsV3NVdm5VMXdsLU9id2hKYTZ2TUk0ZUxDX1NRcWhKdGpPcldleUt1NjZZeldObG1NbGduOFU4cWhqbUtTVw?oc=5",
       "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "50cdf4cf3a20f1b3677238da76772056680de481",
-      "source": "Al Arabiya",
-      "title": "Hormuz Strait to remain closed until US meets interim deal conditions: Ghalibaf",
-      "reason": "not_today_tehran",
-      "published": "Tue, 18 Aug 2026 08:31:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxPVVdsZkFEUXBHZmZrSzE5d01RNS02dzBUeFNDdkV6MmY0Rm9scWo3OHAyV2ROb0xHNjlJU3FBT0N4R2w3MzlOcC1Wb3c1elNsQkF1N1VwSU9EcFdzSTBTM3ZtSWMxai0xVlJGZmJNamVOVkVpMlRfVDU0N3Rnbkl3VHdQMXVjcmoyc2NQaXhGTTdXeDFfYWw1NGFOeXI5bmNDRHdNbTV1S29BWFJ4NEpxT2FGM1ZUSDQyX05ucmJuYmtuTlBkb3ljMTF3SGtLQ2FWVm8w0gHYAUFVX3lxTE53Y2gwU25Pb3VienVoVm1nMWNKV2JZVGFlZnFUdVd4RWpHVUJLNGVsX1JycTlabzNBUVJXbl8xZ2Z1VlZSMFNDeEVxaXhhLTVNdXNIZ1JnSi0tZ0JhbHpialBJTnp2OEp1VldKMjZJdWdzR0NaNExKWC1GcHBva3lpOWtSMnlNV1pmVHhqeGxScDYxdEJYd0Z2Q3lyYWRDNUtUNVdhcFI5ek9UV1Y1YjExTFhPdHVicDl2ci13ZjdnN1JjRk56bksxQ2s3OXpESWhNZXQwNHNwZQ?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "38eb433999b0dfc7d81388041a9d1019f9cbfdc9",
-      "source": "NOTAM / Airspace",
-      "title": "Kuwait Temporarily Closes Airspace After Iranian Attacks",
-      "reason": "not_today_tehran",
-      "published": "Thu, 11 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9scE5oUmpFWHo5NkZfaFA5NmFMWXBZNWpyWUJ0QVVlUk90VW1RZXlEeEk5T1VCdzlYUmNnZk9sT2ZkOVJ2S0FucDZ6bUhxWmtTa1FONmFTTGw3T0pLTFdoZ1FJYkhVOEZub2ZZSVZxX2xWRi1OTmZfRERR0gF_QVVfeXFMUE9jQXlqc1lVc3Jfb2RDOWRITFdfcVB2XzhNaXEwcV9qWTk3LUNJUWNZUWdQd1FEckdWUzZYYnA2RGlrREcxZnA3UHdYQTFXNXNtQy1DRjlldWZmMzhfeDBkb0RGRDdpaHZrSlhMQ2lwbmNTNHd3WjNYQjNXcmhlOA?oc=5",
-      "checked_at": "2026-09-05T01:45:46.148799+00:00"
-    },
-    {
-      "key": "636ce9e89fc0a11b01afffc822502f7717791e46",
-      "source": "NOTAM / Airspace",
-      "title": "Flights To UAE, Kuwait Affected, Bahrain Closes Airspace After Iran Launches Attack - NDTV Profit",
-      "reason": "not_today_tehran",
-      "published": "Wed, 03 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNZUhBLVNrZnVQVTRVMmxZdTYwQzVVZ3dVbHkzamhFdHpmdEZiM1RTNWY5LVQ5dElfTGJkM0ZqNU9KdVl4a2YwOG1RM3JRak9hSUNtN1NHUEVtNEUyVWpudzNjQWpKb0lqZ05mbUJNb3JVeVRWM054dFI4Unh5YUd6a2diMXRHalhUR2ZmMW9JZEF4ZE5YX2FCNnpOM1d0MllqOXJ6MUFXNzFaTkJ1YWU3ck16dzlRMUtXMFBnQXo0QkEzYlh3SEhMMNIB0AFBVV95cUxQeHUyT3I3MTE0ejYzTi1DV3pJV2hZUHZKYkRWZWc5S2hLblpvNkhsajJNWnZDZG1wM1p3VUJQVGZDZFRmUksyUmJUYWNNaVJXMnd6YTI5V2ZSZ1hjTFc0YldvNzhqRFFsa0RseUc5bnBRWnU3VnYxOURYblJXTTNkYmtLSXlEUUJqTjEyUTh5c0tBMFgwQjVSVWVjN1FxdWN6Z3NWNzAycDdOQkY1VXF5Ull0TUMtTkZtMkZ4alFuSF9WNnVtZEthSEdTek45Q2Q3?oc=5",
-      "checked_at": "2026-09-05T01:45:46.148799+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
