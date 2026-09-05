@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import re
 import sys
+from dataclasses import replace
 from datetime import datetime, timezone
 
 from . import runtime_v2 as v2
@@ -12,10 +13,11 @@ from .fresh_x import is_fresh_iran_topic
 _easy_news_flow_installed = False
 _original_strict_rejection = v2._strict_rejection_reason
 _original_translate = v2.translate_news_to_fa
-_RLM = "\u200f"
 _X_STATUS_RE = re.compile(r"^https?://(?:www\.)?(?:x\.com|twitter\.com)/[A-Za-z0-9_]+/status/\d+(?:[/?#].*)?$", re.I)
 _WEB_LINK_RE = re.compile(r"^https?://", re.I)
 _HEBREW_RE = re.compile(r"[\u0590-\u05FF]")
+_FLAG_RE = re.compile(r"[\U0001F1E6-\U0001F1FF]{2}")
+_VISUAL_EMOJI_RE = re.compile(r"[\U0001F1E6-\U0001F1FF\U0001F300-\U0001FAFF\u2600-\u27BF\uFE0F\u200D]")
 _translation_cache: dict[str, str] = {}
 
 _TOPIC_ICONS = (
@@ -50,13 +52,7 @@ def _published_dt(item):
 
 
 def _select_one_story(candidates, references):
-    """Choose up to five publishable candidates, prioritizing X posts first.
-
-    Exact already-published keys are blocked upstream. Distinct X status IDs are not
-    semantically deduplicated here. Within each source class, newest items come first.
-    If a title cannot be translated or would format to an empty card, skip it and
-    continue down the queue in the same cycle.
-    """
+    """Choose up to five publishable candidates, prioritizing X posts first."""
     _translation_cache.clear()
     if not candidates:
         return [], []
@@ -84,8 +80,6 @@ def _has_valid_source_link(item) -> bool:
 
 
 def _easy_rejection_reason(item, now):
-    # The feed is permissive on editorial scoring, but not on provenance, freshness,
-    # or Iran relevance. Old indexed/timeline rows must never refill the channel.
     if _is_x_item(item):
         if not _has_valid_source_link(item):
             return "missing_direct_source_link"
@@ -108,9 +102,24 @@ def _is_persian_output(value: str) -> bool:
     letter_count = len(persian_letters) + len(latin_letters)
     if len(persian_letters) < 4 or letter_count == 0:
         return False
-    # Allow normal acronyms/names such as IAEA or IRGC, but never an English body
-    # containing only one Persian word.
     return len(persian_letters) / letter_count >= 0.55
+
+
+def _persian_digits(value: str) -> str:
+    return str(value).translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"))
+
+
+def _repair_precise_translation(source: str, translated: str) -> str:
+    """Repair known literal machine translations where location meaning is distorted."""
+    source_l = re.sub(r"\s+", " ", str(source or "").lower()).strip()
+    tanker = re.search(r"\b(\d+)\s+tankers?\s+(?:above|near|around)\s+(?:the\s+)?strait of hormuz\b", source_l)
+    qatar_israel = re.search(r"\b(\d+)\s+from qatar\s*[,;]\s*(\d+)\s+from israel\b", source_l)
+    if tanker and qatar_israel:
+        total = _persian_digits(tanker.group(1))
+        qatar = _persian_digits(qatar_israel.group(1))
+        israel = _persian_digits(qatar_israel.group(2))
+        return f"{total} نفتکش در محدوده تنگه هرمز؛ {qatar} نفتکش از قطر و {israel} نفتکش از اسرائیل."
+    return str(translated or "").strip()
 
 
 def _translate_or_original(value, session=None):
@@ -124,15 +133,27 @@ def _translate_or_original(value, session=None):
         translated = str(_original_translate(text, session=session) or "").strip()
     except Exception:
         translated = ""
+    translated = _repair_precise_translation(text, translated)
     if translated and _is_persian_output(translated):
         _translation_cache[text] = translated
         return translated
-    # Persian source posts can pass untouched. English/Hebrew or bad translator
-    # fallbacks are withheld and retried instead of leaking into the channel.
     if _is_persian_output(text):
         _translation_cache[text] = text
         return text
     return ""
+
+
+def _strip_visual_emojis(value: str) -> str:
+    text = _VISUAL_EMOJI_RE.sub(" ", str(value or ""))
+    text = re.sub(r"\s+", " ", text).strip()
+    text = re.sub(r"^[\s\-–—:|]+", "", text).strip()
+    return text
+
+
+def _display_item(item):
+    source = str(getattr(item, "source", "") or "")
+    display_source = source.replace(" / Telegram", " / تلگرام")
+    return replace(item, source=display_source) if display_source != source else item
 
 
 def _topic_icons(item, title_fa: str, summary_fa: str) -> str:
@@ -141,32 +162,50 @@ def _topic_icons(item, title_fa: str, summary_fa: str) -> str:
     return " ".join(dict.fromkeys(icons))
 
 
+def _literal_flags(item) -> list[str]:
+    text = f"{getattr(item, 'title', '')} {getattr(item, 'summary', '')}"
+    return list(dict.fromkeys(_FLAG_RE.findall(text)))
+
+
 def _country_flags(item, title_fa: str, summary_fa: str) -> str:
     text = f" {item.title} {item.summary} {title_fa} {summary_fa} ".lower()
     base_flags = v2._country_flags(item, title_fa, summary_fa).split()
     extra = [flag for flag, terms in _EXTRA_COUNTRY_FLAGS if any(term in text for term in terms)]
-    return " ".join(dict.fromkeys([*base_flags, *extra]))
+    return " ".join(dict.fromkeys([*_literal_flags(item), *base_flags, *extra]))
 
 
 def _format_news_with_footer_icons(item, title_fa: str, summary_fa: str, marker_override=None) -> str:
-    # Every published news card must have a real source URL and a Persian headline.
-    # This is the last safety gate before Telegram formatting.
     if not _has_valid_source_link(item) or not _is_persian_output(title_fa):
         return ""
     if summary_fa and not _is_persian_output(summary_fa):
         summary_fa = ""
 
-    text = v2._original_news_format(item, title_fa, summary_fa, marker_override=marker_override)
+    clean_title = _strip_visual_emojis(title_fa)
+    clean_summary = _strip_visual_emojis(summary_fa)
+    display_item = _display_item(item)
+    text = v2._original_news_format(display_item, clean_title, clean_summary, marker_override=marker_override)
     if not text:
         return text
 
-    flags = _country_flags(item, title_fa, summary_fa)
-    icons = _topic_icons(item, title_fa, summary_fa)
-    meta = " ".join(part for part in (flags, icons) if part)
-    if not meta:
-        return text
+    marker_match = re.match(r"^(🛑|🔺|🟥|⚪️)\s+", text)
+    marker = marker_match.group(1) if marker_match else ""
+    if marker_match:
+        text = text[marker_match.end():]
+    text = re.sub(r"\n\n(?:▫️|🟥)\s+(?=<b>)", "\n\n", text)
 
-    return f"{text.rstrip()}\n\n{_RLM}{meta}"
+    flags = _country_flags(item, clean_title, clean_summary)
+    icons = _topic_icons(item, clean_title, clean_summary)
+    bottom_parts = []
+    if marker and marker != "⚪️":
+        bottom_parts.append(marker)
+    if flags:
+        bottom_parts.extend(flags.split())
+    if icons:
+        bottom_parts.extend(icons.split())
+    bottom = " ".join(dict.fromkeys(bottom_parts))
+    if not bottom:
+        return text
+    return f"{text.rstrip()}\n\n{bottom}"
 
 
 def install_easy_news_flow() -> None:
