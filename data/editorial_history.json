@@ -1,5 +1,23 @@
 [
   {
+    "id": "33d69f7e39fbda2dbe6e90102442149507e77998",
+    "news_key": "583b9814f26fe38fcbcbb405aa5fd98207294721",
+    "source": "NOTAM / Airspace",
+    "source_url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQamZXLVdEMmlQVnlvNUZqdHc1X0lhTldqd3JDY2lKT1lhUmJLREJQOGROUlI1YmEydEpBd2d1YlRGVWtIVm84elg4WlFtaUpZU3RMaTJUdUhZOTM1RVJHTkJLOG0ya2tGdEY5T0p2TmZXaE9DZHo1Qk9xcDhua1BoTFhEODNhcVltLTdwR2hpZkFTU3JUS3d4Z3luMGw?oc=5",
+    "original_title": "Iran closes western airspace until Monday as Trump administration mulls strikes",
+    "original_summary": "Iran closes western airspace until Monday as Trump administration mulls strikes washingtonexaminer.com",
+    "persian_title": "",
+    "persian_body": "",
+    "published_at_source": "Fri, 22 May 2026 07:00:00 GMT",
+    "discovered_at": "2026-09-05T12:52:16.662386+00:00",
+    "rejection_reason": "not_today_tehran",
+    "status": "superseded",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-05T12:53:08.408003+00:00"
+  },
+  {
     "id": "a47fb0b8a5bd45e276694eb3bf11b979b4b1815e",
     "news_key": "636ce9e89fc0a11b01afffc822502f7717791e46",
     "source": "NOTAM / Airspace",
@@ -8674,24 +8692,6 @@
     "final_persian_body": "",
     "decision_at": "",
     "updated_at": "2026-09-05T05:48:15.213496+00:00"
-  },
-  {
-    "id": "33d69f7e39fbda2dbe6e90102442149507e77998",
-    "news_key": "583b9814f26fe38fcbcbb405aa5fd98207294721",
-    "source": "NOTAM / Airspace",
-    "source_url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQamZXLVdEMmlQVnlvNUZqdHc1X0lhTldqd3JDY2lKT1lhUmJLREJQOGROUlI1YmEydEpBd2d1YlRGVWtIVm84elg4WlFtaUpZU3RMaTJUdUhZOTM1RVJHTkJLOG0ya2tGdEY5T0p2TmZXaE9DZHo1Qk9xcDhua1BoTFhEODNhcVltLTdwR2hpZkFTU3JUS3d4Z3luMGw?oc=5",
-    "original_title": "Iran closes western airspace until Monday as Trump administration mulls strikes - Washington Examiner",
-    "original_summary": "Iran closes western airspace until Monday as Trump administration mulls strikes Washington Examiner",
-    "persian_title": "",
-    "persian_body": "",
-    "published_at_source": "Fri, 22 May 2026 07:00:00 GMT",
-    "discovered_at": "2026-09-05T05:47:05.823045+00:00",
-    "rejection_reason": "not_today_tehran",
-    "status": "superseded",
-    "final_persian_title": "",
-    "final_persian_body": "",
-    "decision_at": "",
-    "updated_at": "2026-09-05T05:48:15.161065+00:00"
   },
   {
     "id": "740b6b7d3e0694403672c16a4603cf38a6e2a995",
