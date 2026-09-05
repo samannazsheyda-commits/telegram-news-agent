@@ -14,30 +14,22 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
-      - name: Probe public X proxy APIs
+      - name: Live FxTwitter timeline diagnostic
         run: |
           python - <<'PY'
-          import requests
-          urls = [
-            'https://api.fxtwitter.com/Reuters',
-            'https://api.fxtwitter.com/user/Reuters',
-            'https://api.fxtwitter.com/users/Reuters',
-            'https://api.vxtwitter.com/Reuters',
-            'https://api.vxtwitter.com/user/Reuters',
-            'https://api.vxtwitter.com/users/Reuters',
-            'https://twitterviewer.io/profile/Reuters',
-          ]
-          ok = []
-          for url in urls:
-              try:
-                  r = requests.get(url, headers={'User-Agent':'Mozilla/5.0'}, timeout=20)
-                  print('\nURL', url, 'status', r.status_code, 'type', r.headers.get('content-type'), 'bytes', len(r.content))
-                  print(r.text[:3000])
-                  if r.status_code == 200 and ('status' in r.text.lower() or 'tweet' in r.text.lower()):
-                      ok.append(url)
-              except Exception as exc:
-                  print('ERR', url, exc)
-          assert ok, 'No usable public X proxy profile endpoint found'
-          print('usable', ok)
+          import requests, json
+          url = 'https://api.fxtwitter.com/2/profile/Reuters/statuses?count=20'
+          r = requests.get(url, headers={'User-Agent':'Mozilla/5.0','Accept':'application/json'}, timeout=30)
+          print('status', r.status_code, 'type', r.headers.get('content-type'), 'bytes', len(r.content))
+          print(r.text[:10000])
+          r.raise_for_status()
+          data = r.json()
+          results = data.get('results') or []
+          assert results, 'FxTwitter v2 returned no statuses'
+          first = results[0]
+          print('first keys', sorted(first.keys()))
+          print('first', json.dumps(first, ensure_ascii=False)[:4000])
+          assert str(first.get('id') or first.get('id_str') or ''), 'missing status id'
+          assert str(first.get('text') or first.get('full_text') or first.get('raw_text') or ''), 'missing status text'
           PY
-      - run: python -m pytest -q
+      - run: python -m pytest -q tests/test_x_syndication.py tests/test_expanded_x_monitoring.py tests/test_x_publish_all.py
