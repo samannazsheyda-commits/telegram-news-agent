@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:Jerusalem_Post:2096233356946006101",
+    "x:WSJ:2096232931391897853",
     "x:Reuters:2096226878893756830",
     "583b9814f26fe38fcbcbb405aa5fd98207294721",
     "x:AJEnglish:2096219775902892094",
@@ -498,9 +500,7 @@
     "ea4cb0d02b481806b4594934cbdd002abe4e88c2",
     "526d8258bd77ee6a9a371a120375105e706787d8",
     "3909ab6e651ead62976895a42cfeaea4c90b01aa",
-    "ea7400718e87964b5a2c2483e03f3a288ca04e3b",
-    "178935397b2becb00fc2c7f99dfac200dc82631c",
-    "c602c7e71b9c2cb313b38a3a07ead04e8937bdd0"
+    "ea7400718e87964b5a2c2483e03f3a288ca04e3b"
   ],
   "market_last_sent_at": "2026-09-05T12:47:38.071885+00:00",
   "next_news_color": "white",
@@ -2343,6 +2343,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:Jerusalem_Post:2096233356946006101",
+      "source": "Jerusalem Post / X",
+      "title": "US forces struck three Iranian crude oil carriers on Saturday after the Islamic Revolutionary Guard Corps (IRGC) launched ballistic missiles toward two US Navy warships in regional waters, US Central Command (CENTCOM) announced.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096233356946006101",
+      "published": "Sat, 05 Sep 2026 13:45:53 +0000",
+      "sent_at": "2026-09-05T13:46:51.040254+00:00",
+      "fingerprint": "us forces struck three iranian crude oil carriers on saturday after the islamic revolutionary guard corps irgc launched ballistic missiles toward two us navy warships in regional waters us central command centcom announced"
+    },
+    {
+      "key": "x:WSJ:2096232931391897853",
+      "source": "Wall Street Journal / X",
+      "title": "By squeezing the Strait of Hormuz, both the U.S. and Iran expected to outlast their foe, believing time would work in their favor. Now, it looks like the trend is moving against Tehran.",
+      "summary": "",
+      "link": "https://x.com/WSJ/status/2096232931391897853",
+      "published": "Sat, 05 Sep 2026 13:44:11 +0000",
+      "sent_at": "2026-09-05T13:45:49.166367+00:00",
+      "fingerprint": "by squeezing the strait of hormuz both the u s and iran expected to outlast their foe believing time would work in their favor now it looks like the trend is moving against tehran"
+    },
     {
       "key": "x:Reuters:2096226878893756830",
       "source": "Reuters / X",
