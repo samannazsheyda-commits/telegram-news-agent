@@ -3,10 +3,12 @@ from zoneinfo import ZoneInfo
 
 from src.hormuz import (
     HormuzTrafficReport,
+    fetch_hormuz_traffic_report,
     format_hormuz_report,
     hormuz_report_due,
     parse_hormuz_source_text,
 )
+from src.sources import NewsItem
 
 
 TEHRAN = ZoneInfo("Asia/Tehran")
@@ -73,3 +75,32 @@ def test_source_text_parser_extracts_counts_types_and_data_provider():
     assert any("medium-range product tankers" in item for item in parsed.vessel_details)
     assert "Kpler" in parsed.sources
     assert "Reuters" in parsed.sources
+
+
+def test_daily_fetch_builds_report_from_reliable_source_without_oil_volume():
+    item = NewsItem(
+        "hormuz-4",
+        "Reuters",
+        "Gulf shipping traffic via Hormuz stays below average",
+        "Only 4 cargo ships transited the Strait of Hormuz, down from 9 a day earlier, according to Kpler data.",
+        "https://example.com/hormuz",
+        "Fri, 04 Sep 2026 20:00:00 GMT",
+    )
+
+    def searcher(label, query):
+        return [item]
+
+    def detail_fetcher(news_item):
+        return (
+            "The 10-day average was 15 vessels per day. The four ships were two medium-range product tankers, "
+            "one Kamsarmax bulk carrier and one Handysize vessel."
+        )
+
+    report = fetch_hormuz_traffic_report(date(2026, 9, 4), searcher=searcher, detail_fetcher=detail_fetcher)
+    assert report.observed_count == 4
+    assert report.previous_count == 9
+    assert report.rolling_average == 15
+    assert "Kpler" in report.sources
+    assert "Reuters" in report.sources
+    rendered = format_hormuz_report(report)
+    assert "میلیون بشکه" not in rendered
