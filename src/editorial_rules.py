@@ -71,10 +71,11 @@ COMPANY_TERMS = (
 OPERATIONAL_SECURITY_TERMS = (
     "suspend flights", "suspends flights", "suspended flights", "cancelled flights", "canceled flights",
     "flight cancellation", "airspace closure", "airspace closed", "closes airspace", "closed airspace",
+    "avoid airspace", "avoid iranian airspace", "avoid iran airspace", "aviation warning", "security risk", "security risks",
     "notam", "evacuation", "attack", "attacked", "strike", "struck", "missile", "drone", "explosion",
     "sanction", "sanctions", "seized", "shutdown", "shut down", "facility hit", "infrastructure hit",
-    "تعلیق پرواز", "لغو پرواز", "بسته شدن حریم", "حریم هوایی بسته", "نوتام", "تخلیه", "حمله", "موشک",
-    "پهپاد", "انفجار", "تحریم", "توقیف",
+    "تعلیق پرواز", "لغو پرواز", "بسته شدن حریم", "حریم هوایی بسته", "اجتناب از حریم هوایی", "هشدار هوانوردی",
+    "نوتام", "تخلیه", "حمله", "موشک", "پهپاد", "انفجار", "تحریم", "توقیف",
 )
 
 BOILERPLATE_TERMS = (
@@ -149,7 +150,6 @@ def is_duplicate_story(left: NewsItem, right: NewsItem) -> bool:
 
     left_facts, right_facts = _specific_facts(left), _specific_facts(right)
     if (left_facts or right_facts) and left_facts != right_facts:
-        # A precise new time/day/site is a meaningful update, not a duplicate.
         if left_facts - right_facts or right_facts - left_facts:
             return False
 
@@ -187,16 +187,21 @@ def is_priority_security_news(item: NewsItem) -> bool:
 
 def is_low_value_company_news(item: NewsItem) -> bool:
     text = _normalize(f"{item.title} {item.summary}")
-    if not any(term in text for term in COMPANY_TERMS): return False
-    if any(term in text for term in OPERATIONAL_SECURITY_TERMS): return False
-    if is_priority_security_news(item): return False
+    if not any(term in text for term in COMPANY_TERMS):
+        return False
+    if any(term in text for term in OPERATIONAL_SECURITY_TERMS):
+        return False
+    if is_priority_security_news(item):
+        return False
     return True
 
 
 def editorial_detail(value: str, max_chars: int = 1100) -> str:
     text = re.sub(r"\s+", " ", (value or "").strip())
-    if any(term in text.lower() for term in BOILERPLATE_TERMS): return ""
-    if len(text) <= max_chars: return text
+    if any(term in text.lower() for term in BOILERPLATE_TERMS):
+        return ""
+    if len(text) <= max_chars:
+        return text
     return text[:max_chars].rsplit(" ", 1)[0].strip() + "…"
 
 
@@ -213,9 +218,12 @@ def priority_search_queries() -> tuple[tuple[str, str], ...]:
 def fetch_priority_news_items(session=requests) -> list[NewsItem]:
     merged: dict[str, NewsItem] = {}
     for label, query in priority_search_queries():
-        try: items = _fetch_google_news_query(session, label, query, "en", allow_special_source=False)
-        except Exception: continue
-        for item in items[:20]: merged.setdefault(item.key, item)
+        try:
+            items = _fetch_google_news_query(session, label, query, "en", allow_special_source=False)
+        except Exception:
+            continue
+        for item in items[:20]:
+            merged.setdefault(item.key, item)
     return list(merged.values())
 
 
@@ -223,6 +231,7 @@ def dedupe_items(items: Iterable[NewsItem], references: Iterable[NewsItem] = ())
     kept: list[NewsItem] = []
     refs = list(references)
     for item in items:
-        if any(is_duplicate_story(item, previous) for previous in refs + kept): continue
+        if any(is_duplicate_story(item, previous) for previous in refs + kept):
+            continue
         kept.append(item)
     return kept
