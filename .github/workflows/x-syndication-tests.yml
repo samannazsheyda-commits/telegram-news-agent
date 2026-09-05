@@ -14,4 +14,18 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
-      - run: python -m pytest -q tests/test_x_syndication.py tests/test_expanded_x_monitoring.py tests/test_x_publish_all.py
+      - name: Live X syndication smoke
+        run: |
+          python - <<'PY'
+          import json, re, requests
+          url = 'https://syndication.twitter.com/srv/timeline-profile/screen-name/Reuters'
+          r = requests.get(url, headers={'User-Agent':'Mozilla/5.0'}, timeout=20)
+          r.raise_for_status()
+          m = re.search(r'<script[^>]+id=["\']__NEXT_DATA__["\'][^>]*>(.*?)</script>', r.text, re.S|re.I)
+          assert m, 'missing __NEXT_DATA__'
+          data = json.loads(m.group(1))
+          entries = data['props']['pageProps']['timeline']['entries']
+          assert isinstance(entries, list) and entries, 'missing timeline entries'
+          print('live entries:', len(entries))
+          PY
+      - run: python -m pytest -q
