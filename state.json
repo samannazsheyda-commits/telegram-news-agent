@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41516",
   "news_seen": [
+    "f871d9833129e84b17805be3500b593c09d82c08",
     "7fbd2b3558f3a4ac889a8ee560e941b7e89e3101",
     "0781fdf5782c7ba7574fad60af04fcea15b940bf",
     "897aa19da00ce091fefeb3dacc05ecc19577f2b4",
@@ -499,8 +500,7 @@
     "84953cb863f4bd5a5b23d47c0c31449d076929d4",
     "5cdfdf8a4d2821ded272ebc53eb19c3142743c81",
     "fe6964bcf660ad53bfd7f3ec5aed1c39bdeb9210",
-    "f8a11da6c26e45cccd1f843d57406b3408fda539",
-    "eb454ec3544d264d3195056f281a405395667c9f"
+    "f8a11da6c26e45cccd1f843d57406b3408fda539"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "red",
@@ -530,6 +530,15 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "f871d9833129e84b17805be3500b593c09d82c08",
+      "source": "CNBC",
+      "title": "Iran strikes Kuwait as Trump says renewed Mideast hostilities will not last 'too long'",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 02:26:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNaE5KOWRmZmI1OElBb1Fna0FCWlZqZkNfbWh0RDN1cHdvT3lqc1p6Y3ZuQm9lSWRtVFliajlSYnFZZHdMM1dOWGhUeWZVa0FkX18tOTdCRVc1V29NeWN1aWpjWlNQYkZLeVp6bTI4UU9uZnFCXzR5ZTlBUF9aMFQzcEZnbzlIcFJnbm9naVN3alozSUdyUlpNVmxR0gGfAUFVX3lxTE9aQnE4dkJ0b1E4MVB6V3pLaE5xYzBBOHR2WVlocFRmS1kwTDB3Zi0wS2tHSkU1Yk9ndHUySW9ZcDFwQS1QVUo0VktGQ0tUQk9kR01BbEo2QjNHVjZCYjF6ZjdzRzdJa05BU3JhRVYxR2pZQ29xTmpiZmFaOVBkSndMaGNUSjI5cVNUNnBteWRNa3R3VVZDaERIZk1nS29IMA?oc=5",
+      "checked_at": "2026-09-05T00:08:16.372841+00:00"
+    },
     {
       "key": "7fbd2b3558f3a4ac889a8ee560e941b7e89e3101",
       "source": "BBC News",
@@ -2319,15 +2328,6 @@
       "reason": "not_today_tehran",
       "published": "Wed, 10 Jun 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNSVRBeTJ2TWR4SElud2NBSEFUa2ZUbXFkZVlIWklCN3l5aHdReC1aNzZ2QjZrYjhTOWVFU3VENXBZTlltZm9oSDdRTHlGU3NwLWV3TG5aN01ER2JCZnltNHdONWE5cTlwb1FoR2Zjd1ppdkREUHZMU0pfUlY1dnVTMXVmTF9kcWN6OG5tZ20zeW95SkJ0OFM3T2FNSW9qc194aF8tX21n0gGrAUFVX3lxTFBWNDh5Z2dsTGV5U3l2SGU2ekZXZDFSaWNFc3dkZFN1UmZnQTJvV1JyajZiYjR0QjVwZmVjOHZsdk11Y3ZFNzZEMHVCVjlaX2NXVmdnNDZOMGxfOGxtNVRqUVVYVGJiMDRqenp0VGo0aXNZc3d4WW45bTViOGpPS1Z5MEFhaTZldDJRLXN5bXAxaGQyLV9OWGxXb0NZNjh5YXl0d1ZvQ3FKVUV4OA?oc=5",
-      "checked_at": "2026-09-04T22:26:40.315321+00:00"
-    },
-    {
-      "key": "7d47c7290d9f86db41d38b2cf7894e53c045beea",
-      "source": "NOTAM / Airspace",
-      "title": "War warning: Trump weighs immediate strikes as Iran shuts down airspace - Container News",
-      "reason": "not_today_tehran",
-      "published": "Sat, 23 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQZnBqR1ZTM3JkVkJwT0c0UnFLZGV6YW85WmNzRHBGZkNZRXhvbGtScU5TZ18yZW50dHZnS2JOVWtoQzhlQWhnR1NEcmNOb2VOVVJtVFBPR3A3cE9zLTNtUmxaR2VCVzBOVzNqQmI0UHdkbHU1dUI0anZCeDc2UGlodmIzcXlXaGxvV1I0TnFHczhWYzBOSVRVZ3Jtc3dTZ1k?oc=5",
       "checked_at": "2026-09-04T22:26:40.315321+00:00"
     }
   ],
