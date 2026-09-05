@@ -1,5 +1,23 @@
 [
   {
+    "id": "70eaa69b155d97198685b72e7ee31ac65652c79b",
+    "news_key": "2e1d3eb72a24cbc70f83b9de149100c3879cba68",
+    "source": "ژئوپی واچ / Telegram",
+    "source_url": "https://t.me/GeoPWatch/39512",
+    "original_title": "⚡️ 🇮🇱 – Netanyahu posted an AI-generated video of New York Mayor Zohran Mamdani, Turkish President Erdogan, an injured Iranian Ayatollah Khamenei and President of the Palestinian Authority Mahmoud Abbas celebrating at the prospect of the...",
+    "original_summary": "⚡️ 🇮🇱 – Netanyahu posted an AI-generated video of New York Mayor Zohran Mamdani, Turkish President Erdogan, an injured Iranian Ayatollah Khamenei and President of the Palestinian Authority Mahmoud Abbas celebrating at the prospect of the Israeli PM losing the upcoming election, and then being sad when he unexpectedly wins. @GeoPWatch",
+    "persian_title": "⚡️ 🇮🇱 – نتانیاهو ویدئویی از زهران ممدانی شهردار نیویورک، رئیس جمهور ترکیه اردوغان، آیت الله خامنه ای مجروح ایرانی و محمود عباس رئیس تشکیلات خودگردان فلسطینی را منتشر کرد که در حال جشن گرفتن در چشم انداز...",
+    "persian_body": "",
+    "published_at_source": "Fri, 04 Sep 2026 20:59:59 +0000",
+    "discovered_at": "2026-09-05T16:44:46.685583+00:00",
+    "rejection_reason": "bundled_or_multi_headline",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-05T16:46:04.628953+00:00"
+  },
+  {
     "id": "9b7edbdb6514b1e6348068b52dbda33a3673836f",
     "news_key": "e1de45950983c6a520b18f42df3db5686deb4d32",
     "source": "کلش ریپورت / Telegram",
@@ -250,24 +268,6 @@
     "final_persian_body": "",
     "decision_at": "",
     "updated_at": "2026-09-05T05:46:56.074184+00:00"
-  },
-  {
-    "id": "70eaa69b155d97198685b72e7ee31ac65652c79b",
-    "news_key": "2e1d3eb72a24cbc70f83b9de149100c3879cba68",
-    "source": "ژئوپی واچ / Telegram",
-    "source_url": "https://t.me/GeoPWatch/39512",
-    "original_title": "⚡️ 🇮🇱 – Netanyahu posted an AI-generated video of New York Mayor Zohran Mamdani, Turkish President Erdogan, an injured Iranian Ayatollah Khamenei and President of the Palestinian Authority Mahmoud Abbas celebrating at the prospect of the...",
-    "original_summary": "⚡️ 🇮🇱 – Netanyahu posted an AI-generated video of New York Mayor Zohran Mamdani, Turkish President Erdogan, an injured Iranian Ayatollah Khamenei and President of the Palestinian Authority Mahmoud Abbas celebrating at the prospect of the Israeli PM losing the upcoming election, and then being sad when he unexpectedly wins. @GeoPWatch",
-    "persian_title": "⚡️ 🇮🇱 – نتانیاهو ویدئویی از زهران ممدانی شهردار نیویورک، رئیس جمهور ترکیه اردوغان، آیت الله خامنه ای مجروح ایرانی و محمود عباس رئیس تشکیلات خودگردان فلسطینی را منتشر کرد که در حال جشن گرفتن در چشم انداز...",
-    "persian_body": "",
-    "published_at_source": "Fri, 04 Sep 2026 20:59:59 +0000",
-    "discovered_at": "2026-09-05T05:16:44.208814+00:00",
-    "rejection_reason": "bundled_or_multi_headline",
-    "status": "pending",
-    "final_persian_title": "",
-    "final_persian_body": "",
-    "decision_at": "",
-    "updated_at": "2026-09-05T05:17:40.867511+00:00"
   },
   {
     "id": "b06218151d9b7843ec1a05147ce58e258e99cedc",
