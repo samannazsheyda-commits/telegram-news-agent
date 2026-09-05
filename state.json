@@ -1,6 +1,20 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "f6028d3cddc90cc6ab91cd692a4775c7e1884d92",
+    "44b5861ead3d0fefd635d005609abd2312adeaa9",
+    "2c92114b62e63be7f87a23c74fc0ae3e6c68febf",
+    "0d8ac1a775653b8e2d169c98208a6502d7fdb507",
+    "035642786db1c3042b28252a3b94d2006982bd88",
+    "ee5ae2415f8d020fa42a754d265667c9d76847fe",
+    "00041968f4177392a8945a1956fe1d1a55df3182",
+    "1f604ad950069882b872a12749d28ce7dcddcd81",
+    "87ba9ada61906abf442b0c29073f32cf667d48ab",
+    "29278ca1c172238cb020f377471a787f63c18601",
+    "7f0dd58d0d6ee362ba004eda7038346fdf68fb61",
+    "65319cbd7bfecad16a0d9eb078f3faed6f79d253",
+    "2fcb81bff353cf658bb283e6c7111a1778652a8c",
+    "4a3f2911f63a776028e6d16d5884778b9dec1e56",
     "02e1d124bc4aae53ca8109b1489187f80a75f307",
     "c8cfae484e130fa2623103653635b4523c799281",
     "06da1645959ca9e810f850decd7121e92a1906c6",
@@ -486,21 +500,7 @@
     "40a5ea135a3a8f75cc53bc660bd74ac2cf939b94",
     "2f8add98b95d4ad27b88cb050a33cf73cfe1d528",
     "684d1eaa3831ab823e7470d20c10f54589d5ad86",
-    "21cf940047c934a901fd92650ee05a61b7ce0374",
-    "b537eed363da83538f25f93b3d5f4d54f89eafa6",
-    "b9dff4615af4ad3e78a9b8209ea68119c37df7b9",
-    "7b73e12c9b7daa51cef88b6d7c7615233fd4478e",
-    "1eec9fcb58f7726fae1f4d8924bbcdf6007b3bd9",
-    "4bd4d2a5edb004754d7403e05aff6c786b737ebd",
-    "98308b50977a4199d3bc35e36d7e57a6bca4ca34",
-    "df0f780a641aacea9b05630b24888fd75d0b1153",
-    "f8f66ff23d1832dc25da044171af483c67a15bd2",
-    "65c6a90274d4f117158c0e5ecbd1908d69652a70",
-    "212dfe38e73578da8a4db182829e48b3f1e259ab",
-    "9633259587b530a0d6c719433549d588e374cf94",
-    "18c051ad3b64d2e8f3abc5a24c5d3599d67b4b2b",
-    "9ffcc873decba63399e64fef831d183b2250fb8f",
-    "dc197730ad4c48c8d0221827dcc714b82353c3c3"
+    "21cf940047c934a901fd92650ee05a61b7ce0374"
   ],
   "market_last_sent_at": "2026-09-05T04:34:33.611150+00:00",
   "next_news_color": "red",
@@ -530,6 +530,132 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "f6028d3cddc90cc6ab91cd692a4775c7e1884d92",
+      "source": "Barak Ravid / X",
+      "title": "🇺🇸🇬🇧🇫🇷🇮🇷Trump attacks allies, signals Iran war may end without opening Hormuz. My report on @axios https://t.co/5wTNnUZxNQ",
+      "reason": "not_today_tehran",
+      "published": "Tue, 31 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9DMGxHOUdzZjlCXzJxNVkzNmhaVlJ2cXVwdXJkMnZENm84aWtXbEhueERLdVhLT1RWVTNIYlFxQklaZkJkN2pzcVkzUkFzOWFoRk8zOTBVNHJ2YTlJQ3BhVQ?oc=5",
+      "checked_at": "2026-09-05T06:10:10.179333+00:00"
+    },
+    {
+      "key": "44b5861ead3d0fefd635d005609abd2312adeaa9",
+      "source": "Times of Israel / X",
+      "title": "Thousands of people held a pro-government rally in Tehran overnight following Iran’s renewed strikes on Israel, footage from state and independent media outlets showed. Footage published by Iran’s English-language state outlet Press TV showed masses of",
+      "reason": "not_today_tehran",
+      "published": "Mon, 08 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE54VFF1NUV2czhuVV9NVG9PYWJwNHY1aGlKenhZOFhvQTNiMWlGUWJjRldPZXpjZW1HdmUybjdLWW9FdmJrN3d1S1JzZk1RTjdYMHFHSzJaeEExd3Nfa2xaUUFJWW0?oc=5",
+      "checked_at": "2026-09-05T06:10:10.179333+00:00"
+    },
+    {
+      "key": "2c92114b62e63be7f87a23c74fc0ae3e6c68febf",
+      "source": "Times of Israel / X",
+      "title": "Daily Briefing April 22: Trump’s muddled messaging complicates talks with Iran https://t.co/NxbUASmfsr",
+      "reason": "not_today_tehran",
+      "published": "Wed, 22 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9pVlNMdTk4ekVlQUUwTUpBNlVNamtYTGVaMkFmT191U29uT0dQeWdXcExXNU1Ja09Kc3NrdHN4VXBUMEYtMFotQ0w0YmpreU5OQlZjalY5bEtwQlNySmQtNVFHY1Y?oc=5",
+      "checked_at": "2026-09-05T06:10:10.179333+00:00"
+    },
+    {
+      "key": "0d8ac1a775653b8e2d169c98208a6502d7fdb507",
+      "source": "Times of Israel / X",
+      "title": "“We will ensure that Iran does not obtain a nuclear weapon,” Trump vowed in an address that day, specifying what the campaign would achieve. And “when we are finished, take over your government,” he preemptively urged the Iranian public, assuring them, “",
+      "reason": "not_today_tehran",
+      "published": "Wed, 27 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9qT09LU3lldmR3Zjhkc1BuOGRfZlluN0pDMEFhNmtjWERFYzlzMHpLa2liNVlYeFliaE9zY3pkTzAxWnBicXkxOTJVZVdFQnFXZWlGZmR4ZVdVNVVJMm9aSE9xT0g?oc=5",
+      "checked_at": "2026-09-05T06:10:10.179333+00:00"
+    },
+    {
+      "key": "035642786db1c3042b28252a3b94d2006982bd88",
+      "source": "Times of Israel / X",
+      "title": "POLL: A television poll published Thursday found that only a sliver of Israelis feel their country won the Iran war, or trust US President Donald Trump to look out for their interests as he negotiates a deal with the Islamic Republic. In addition, most feel that Prime",
+      "reason": "not_today_tehran",
+      "published": "Fri, 19 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1yaDF5Sm5TemVUN09ISGg1N3d3NDRpd0lFN0w0dnBEaURMRUI4V3d0dmZPVkZ4YW96eHNiNko3OUlMQzJKMk91Z3lvXzdJOTRCU0VqYVhWMnZZczdzX1Nzd2ZyVDY?oc=5",
+      "checked_at": "2026-09-05T06:10:10.179333+00:00"
+    },
+    {
+      "key": "ee5ae2415f8d020fa42a754d265667c9d76847fe",
+      "source": "Times of Israel / X",
+      "title": "One hundred days after they went to war together to thwart Iran’s rogue nuclear weapons program, radically degrade its ballistic missile industry, end its support for the Hezbollah and Hamas terror armies, and create the conditions for the fall of the regime, the",
+      "reason": "not_today_tehran",
+      "published": "Sun, 07 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBQVGEwNzdMaWxuVVV2V09EM3VfMGNNbkVtS0JfRlVkbW5ZSXBPWnZERC1leDJIdmc4N3hwUGp6Q0dVWlh5QkpVVHdpTjBQby1fVE1BUkllWUVtUjE4VjI2QTh4LXc?oc=5",
+      "checked_at": "2026-09-05T06:10:10.179333+00:00"
+    },
+    {
+      "key": "00041968f4177392a8945a1956fe1d1a55df3182",
+      "source": "Times of Israel / X",
+      "title": "Iran reopens most entrances to 18 underground missile sites struck in war - report https://t.co/Mma8inC2Ma",
+      "reason": "not_today_tehran",
+      "published": "Sun, 31 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFA3QmJtenFTVmhmSEhBaUdKYjJnZHlyTGZ5X1JKVGxCYzY4ZWlfNW0tSU1VLUNDRmo1d3BEQmptN0k2b2hIN3puRHdCeW0zNGpSTkxua1hFM195bXE4TThyNEI2cHI?oc=5",
+      "checked_at": "2026-09-05T06:10:10.179333+00:00"
+    },
+    {
+      "key": "1f604ad950069882b872a12749d28ce7dcddcd81",
+      "source": "Times of Israel / X",
+      "title": "Magen David Adom says that minutes after a paramedic helped a woman through an emergency birth at her home in Tel Aviv this morning, a siren signaling an Iranian ballistic missile sounded. MDA paramedic Dr. Gal Rosen, the EMT team, the parents, Violet",
+      "reason": "not_today_tehran",
+      "published": "Thu, 26 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9XSzQxc3VTbnlKbHZ0UHlvSkxKY05hZGVTdzhiT0l0bzI4V3hydkJ5MVBibnRZWm5kS25aeDVtSTlaM0Z2UkhJZ21kM19zbUV4LUVReE9IbjBiclFzOWVGdEFyWVQ?oc=5",
+      "checked_at": "2026-09-05T06:10:10.179333+00:00"
+    },
+    {
+      "key": "87ba9ada61906abf442b0c29073f32cf667d48ab",
+      "source": "Times of Israel / X",
+      "title": "Iran fired several salvos of ballistic missiles at Israel on Saturday, causing extensive damage to homes and lightly wounding six people, officials said, as the Israeli Air Force carried out a wave of strikes against Iranian infrastructure targets in Tehran and beyon",
+      "reason": "not_today_tehran",
+      "published": "Sat, 04 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1yMHQ0dEtUZ2ZBUW1OMmdYdDk4STJkb2I1UjExWGRnMkh2UkRzRHMtbTN0SEJsRUh1d3Z5SVdHNUlNQ1VwdXo3eTh0QjNoWkduSmdJckZURTJjV0xxN0NNVm0ydW4?oc=5",
+      "checked_at": "2026-09-05T06:10:10.179333+00:00"
+    },
+    {
+      "key": "29278ca1c172238cb020f377471a787f63c18601",
+      "source": "Times of Israel / X",
+      "title": "While much of the attention during the ongoing war with Iran has focused on ballistic missiles and their destructive potential, Tehran’s drones pose a different - and in some ways more complex - challenge. Since the war began on February 28, Iran has laun",
+      "reason": "not_today_tehran",
+      "published": "Fri, 27 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE5sN2piMUNwNnZlWGtQVTBudllIVmdZS1B4QlQzNTlDdWZPODVSeE9aYTltUEh2UXpiMEVGVmg1RzRSWWpUOEtXcWo0WXJMTjVNeTVVazloVnZLZ2ZqUkJDMkszSDY?oc=5",
+      "checked_at": "2026-09-05T06:10:10.179333+00:00"
+    },
+    {
+      "key": "7f0dd58d0d6ee362ba004eda7038346fdf68fb61",
+      "source": "Times of Israel / X",
+      "title": "Turkey and Saudi Arabia signed landmark agreements Tuesday for a new railway line connecting the countries via Syria and Jordan, aiming to extend it in the future to Oman to serve as an overland trade route bypassing the Strait of Hormuz, a central oil trade",
+      "reason": "not_today_tehran",
+      "published": "Wed, 10 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE01d1RFZWVnSVZKRVppT2V4RVdhTG5RV0dOZFZNOTRNSS1jZUVLTGg1VXN6ZlBqUHpXU0NiNDZ0MHVaRzdMMXdnSzA2WDI4TTU2WGt4OS1Ub1IxR20zNWt5dGFhUV8?oc=5",
+      "checked_at": "2026-09-05T06:10:10.179333+00:00"
+    },
+    {
+      "key": "65319cbd7bfecad16a0d9eb078f3faed6f79d253",
+      "source": "Times of Israel / X",
+      "title": "IDF chief Zamir is latest top Israeli official said to have visited UAE amid Iran war https://t.co/4oipyRnZIv",
+      "reason": "not_today_tehran",
+      "published": "Fri, 15 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1OakxnVzFRNDRMeWpRSEtZWXl5NWNQZjRGQnpCNXBfamg3RHVtRnlnVm1lMWZQOWd4Y2JIYVFHZkp4T3dLR1hDNXRnSEViVlZwNTI1NjMzNEpDMldZOC1JazFpMFo?oc=5",
+      "checked_at": "2026-09-05T06:10:10.179333+00:00"
+    },
+    {
+      "key": "2fcb81bff353cf658bb283e6c7111a1778652a8c",
+      "source": "Associated Press / X",
+      "title": "BREAKING: Sirens sound in central Israel and the Israeli government urges the public to seek shelter, saying Iran has launched missiles targeting it. Iran did not immediately acknowledge the attack. Follow AP's live updates. https://t.co/KJD9okZbgB",
+      "reason": "not_today_tehran",
+      "published": "Sun, 07 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE84WWxLTENtTDFrbVVlSGVwYlVwTlRxak81ajRKYmRYYVZlWmh5dmdaenBLRVQtWkFzd09UeXhvLXVjZ0tZUDg1SHNmRjh5QXpMMjE3R2JR?oc=5",
+      "checked_at": "2026-09-05T06:10:10.179333+00:00"
+    },
+    {
+      "key": "4a3f2911f63a776028e6d16d5884778b9dec1e56",
+      "source": "NOTAM / Airspace",
+      "title": "Jordan says sirens sound after missiles from Iran detected in airspace",
+      "reason": "not_today_tehran",
+      "published": "Thu, 09 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQSDI5U2NBbVpLcnVqSTEwNXhBNDE4emlWUmZ6UXRjNC1tSUxEdzc2eEloaXA2MGxhY0hzdW9JQjBBNzluOUNTUzhtd3JUUHJWZGVYZC1zZDJHdDlnbHRVMXlKeHZCUXl2Vzl2TkJCUTUxWTU4U2R3WWJXUnRwb1RndnhjWjhScUlTQXh4VEJhZG1raWw3dTFnUmxEZlppRC1XZ1paTUF1YmNtMkx0SjUxWUU0SFJwdDNwY0s4?oc=5",
+      "checked_at": "2026-09-05T06:07:10.178740+00:00"
+    },
     {
       "key": "02e1d124bc4aae53ca8109b1489187f80a75f307",
       "source": "Reuters / X",
@@ -2202,132 +2328,6 @@
       "reason": "not_today_tehran",
       "published": "Thu, 17 Jul 2025 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE16c1hZY0JISXFmRGx0dzYtS1I4MVJpc054VG1TTi1lR2g3ZE50WnFFa0RKRUFyT1JQaDdxZWtRMDFOUEwxLTFpcThuZnNtMDFkWjlEVWZJYzUtSFFpWnN0YjlfdGZkclAtZDRj?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "eec21dee2e35d657cc2be1adb293ae2d5cff98c0",
-      "source": "Haaretz / X",
-      "title": "Iran's Supreme Leader Khamenei not in Tehran, transferred to secure location, official says Join live updates: https://t.co/21lkkhf2o6",
-      "reason": "not_today_tehran",
-      "published": "Fri, 27 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBQUGRwWWRKQjBDN2ZLcE1yXzVWYTVmNUM2bGRObXU0SmsyQkNEbWVRZ0t5eVc0WG5iXzhLYnhPY2xydXFKdEp4WE8wdFNWNTVvUzI3dkVqMFJ0Y0RjRm4zNmhYT0FYYkV0dVJF?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "1b797c971d41a27acb34fde96ac8cda2c35c3a81",
-      "source": "Times of Israel / X",
-      "title": "The IDF says it will “continue to act with force” against Hezbollah, after the Iran-backed group joined the ongoing fighting against Israel in support of the Islamic Regime. Stay up to date with The Times of Israel.",
-      "reason": "not_today_tehran",
-      "published": "Sat, 14 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1OQngtZy1leEdKekJET2lTaDlVSzV5UWo4b0NRc01zX3pWQWh5NHhocDR1a0ttVUpkLTN5VWl5eG1lT3NRbkktcVBvUXBfN1VuYXVhb3dhU29ob2Z6VW42S0xPZnU?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "255f0cdc605fda296ae4a7af2e20c5a901a4432c",
-      "source": "Times of Israel / X",
-      "title": "The US-Israeli campaign against Iran reached its five-week mark on Saturday, with no clear mechanism to end the conflict in sight. Five weeks of running to shelters and mass casualty events from Iranian missiles seems like an eternity to many Israelis, but it is",
-      "reason": "not_today_tehran",
-      "published": "Sun, 05 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBRYUl3SG1FdDZWTHhMQUpPV0tUbUg4V3AzS0tsS0V0U240bXZHanY4b2o4Uk5wbU8wMVNBbmUxSnNVak1RSXRTUTg5V01IYTB3ODctMVJNMDlsVWhodTJjVlBpSDY?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "40cf19298ea321ce128e60753d55a147cbab1fa5",
-      "source": "Times of Israel / X",
-      "title": "Culture events called off in wake of Iranian missile attacks https://t.co/qv2Ry76w1u",
-      "reason": "not_today_tehran",
-      "published": "Mon, 08 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1DMUUxbEVWMzRUVmJDSm8tcl9vMVBTXzY3a2pIMXc2dnVJOW5LYzNuTElqQXVoc1hIT2RuT1FGSkotbUgxREJIRFhIU1JFZVFmc2ljQnRjbm9YS09QR2QxbFR1Qno?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "91b93c840e076576b6d5479c9306a2edf017d17f",
-      "source": "Times of Israel / X",
-      "title": "Several hurt as Iranian missile hits Jerusalem-area town; Hezbollah continues to strike north https://t.co/aLefsKTHsw",
-      "reason": "not_today_tehran",
-      "published": "Sat, 28 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9jYWxwaWIwQ0FFSTltWmJQX1pNTTFjdUpCRWswVW8tdEVZQWtKejBUMzltZHFUeF9mNlFTSlcyejVGYW1LSVRlakVPT3h2ZUUySE5fSlgyVlVsWG1GYzlucVFTQW8?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "3d5f68848ddab2af98b01373e085b6bd46f15f90",
-      "source": "Times of Israel / X",
-      "title": "Israeli who survived 9/11 and October 7 now faces down Iranian missiles in Dubai https://t.co/DNSXbO1rFZ",
-      "reason": "not_today_tehran",
-      "published": "Sun, 01 Mar 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBkb2tkaW5Bd3FQZkZVZ3RwQlJqS1cyNDkySE1CaWlhLWZLOUJ3RlZWWjlmRFN5cnh5QVFoZUNoVThFRGpnZVlOT3hKQkZlakZQMldsWGxZb1NZaEozSUU5djgzOVRTeHUyS1dPa0Rjaw?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "4e72c61c986d58c8a3ffbc21d7d44d179b0d0562",
-      "source": "Times of Israel / X",
-      "title": "Pakistan says army chief’s talks in Iran focused on preventing further escalation, reopening Hormuz https://t.co/XJly4VHyzx",
-      "reason": "not_today_tehran",
-      "published": "Tue, 25 Aug 2026 07:59:40 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE53amQzY01fOUd4cURCai01UnFjVDBMNXlGejIxTk9Tdk5JTDV2TmhHVlQzSi1hNTFtRDNBNnFIdVZybGRIVVQxUXV2cU9aUVRNV3ZIdmVpWS14QjhySkZCVFMtLWs?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "8ff28b20e1a50bf80d0a7a5f2ff11f9388e47499",
-      "source": "Times of Israel / X",
-      "title": "Israel said to convey message to Iran it is seeking to end war within days https://t.co/yUXTxS1pVf",
-      "reason": "not_today_tehran",
-      "published": "Mon, 23 Jun 2025 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5oUW5uWk4xV0xVQjVaSDd2aUFHT0l1TGdjZjRPV0pucnJ6Uk80VGhWNUtWTTdob05idnpyOFV1NGZzQmRPU3hpVXVkdy1PdVMzeE1mRjNhOGlLTDdGcS1rTXU2dU1WTV9pcm1aRzNWOA?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "a727c70328a4b33c12e5e3312a02faee01c1b792",
-      "source": "Times of Israel / X",
-      "title": "Sources: Iran warned US against Israeli operation on strategic ridge in south Lebanon https://t.co/GSK92nb761",
-      "reason": "not_today_tehran",
-      "published": "Thu, 03 Sep 2026 10:21:56 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1RbHVlYm5meWxqS2sweDJtc2RmX0M0SG1GMDJUM3N2M0hQdkxhZjF4aEpleUZEWVFzelNyRmo1TWV0V2hQbzU3X0FiSS1nZnY0OXlfRDRjSWR3bEdWTUNpQTZ0anY?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "a46c0323779a54654562623a59648d65ccdf3005",
-      "source": "Times of Israel / X",
-      "title": "In a missive to soldiers on Tuesday, Israeli Air Force chief Maj. Gen. Omer Tischler confirmed that a planned large wave of strikes on Iran was called off during the recent round of fighting. Before the cancellation, the Air Force did strike some targets in Iran last",
-      "reason": "not_today_tehran",
-      "published": "Tue, 16 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBMeWhtdk1JOTcwSHJXRDR2SHlkTUVoWHZEejg5NnR3VG83OGJldGFuRndVQlkwaVRzOWlYbExYQVg1cnFDeWdVRzZTSGxibDBiV3RPWGN1aW1VYW9WaUIwdnVzMXRqS1lQeVB3YjhSTQ?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "8ba3315e186924fb856606e1bcf74a54b32d2f5e",
-      "source": "Times of Israel / X",
-      "title": "US President Donald Trump on Monday sought to justify a broad, open-ended war on Iran, offering his most extensive public comments yet on an operation whose stated aims and timeline have shifted since it began over the weekend. Trump, who was back at",
-      "reason": "not_today_tehran",
-      "published": "Tue, 03 Mar 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE11VHZyZi0yVGQya0k4dF9KNWhyMEp5WXZmemtrRkl5ZzhQY2dFSWp3akYyWFRGbzJ0cUVFSmpvUFYxSVZQUWNQU1VHNGRSeXNubWJ0cG16dU9qNTBYektEbUNmdE9BSmZUenZMa3Rkdw?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "d725dff7cbad1de7951ecf6464dd7653d792786d",
-      "source": "Times of Israel / X",
-      "title": "An IDF soldier was killed and an officer was seriously wounded in a Hezbollah anti-tank missile attack in southern Lebanon yesterday, the IDF announces. The slain soldier is named as Sgt. Liran Ben Zion, 19, of the 401st Armored Brigade’s 9th Battalion, from",
-      "reason": "not_today_tehran",
-      "published": "Mon, 30 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFAxMkZMRWtTVW80TVFNNHFKWC1qaC05VEJ3c0NsVTVyT09MVC05RUFtRDJKeWM2ZlZuU1RfR3BtVlVhZ2JuZEpyN2Rsb2E5M0Zkb0xHOGV1cGl2cmoxQzNJX05wdWJiX3E1TUxnTHZmNA?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "90e564024cedcc1bc15d9afe8ef4d3fbcf7c7d30",
-      "source": "Times of Israel / X",
-      "title": "The IDF says it is prepared for Iranian missile fire on Israel in the coming hours following the strike on Hezbollah in Beirut earlier. The military says IDF Chief of Staff Lt. Gen. Eyal Zamir is conducting an assessment “with all relevant commanders” following the s",
-      "reason": "not_today_tehran",
-      "published": "Sun, 14 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1mODQ4OER4a3plNW1FMVM2eXNWWHpXclJMczQ5bW1TSlpOcUVCUHZzX0ZwbWxPMUZoRmtSLVN6VWt5VktsZzlxM05tOVY5MzY1Wk03QXg3Z0RCelQ4ZnRELV9NcVJsVlp6UVBCWm00WQ?oc=5",
-      "checked_at": "2026-09-05T05:45:24.497687+00:00"
-    },
-    {
-      "key": "7317de4085b5bb265100b2b2e9aaeddc01d3fc8d",
-      "source": "Al Arabiya English / X",
-      "title": "🔴 Former Iranian President Mohammad Khatami says the memorandum of understanding with the US is a great opportunity that should not be wasted 🔴 He adds If we waste the opportunity provided by the memorandum of understanding, we will face problem",
-      "reason": "not_today_tehran",
-      "published": "Tue, 18 Aug 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9XMFdzVHdXTVdDcEExUy02aVZaelZMVXM3S1JwVTZIaHNQMWpTXzQwYk1wck9OX2FpUExKRTFoMmJBaUJQZE9LQjRXYVlIMllsUGNTcmgycWJsZlFJblpEcUVBMDk?oc=5",
       "checked_at": "2026-09-05T05:45:24.497687+00:00"
     }
   ],
