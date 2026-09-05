@@ -31,6 +31,15 @@ _TOPIC_ICONS = (
     ("🕊️", ("ceasefire", "talks", "negotiation", "deal", "آتش‌بس", "مذاکره", "توافق")),
 )
 
+_EXTRA_COUNTRY_FLAGS = (
+    ("🇾🇪", ("yemen", "yemeni", "houthi", "houthis", "یمن", "یمنی", "حوثی")),
+    ("🇵🇸", ("palestine", "palestinian", "gaza", "west bank", "فلسطین", "فلسطینی", "غزه", "کرانه باختری")),
+    ("🇸🇾", ("syria", "syrian", "damascus", "سوریه", "سوری", "دمشق")),
+    ("🇹🇷", ("turkey", "turkish", "ankara", "ترکیه", "ترک", "آنکارا")),
+    ("🇵🇰", ("pakistan", "pakistani", "islamabad", "پاکستان", "پاکستانی", "اسلام‌آباد")),
+    ("🇦🇫", ("afghanistan", "afghan", "kabul", "افغانستان", "افغان", "کابل")),
+)
+
 
 def _is_x_item(item) -> bool:
     return str(getattr(item, "source", "")).endswith(" / X")
@@ -41,19 +50,24 @@ def _published_dt(item):
 
 
 def _select_one_story(candidates, references):
-    """Choose one newest candidate whose Persian headline is actually usable.
+    """Choose one newest candidate whose Persian card is actually publishable.
 
     Exact already-published keys are blocked upstream. Distinct X status IDs are not
-    semantically deduplicated here. If the newest title cannot be translated, continue
-    down the queue in the same cycle instead of letting one bad item starve the feed.
+    semantically deduplicated here. If the newest title cannot be translated or would
+    format to an empty card, continue down the queue in the same cycle instead of
+    letting one bad item starve the feed.
     """
     _translation_cache.clear()
     if not candidates:
         return [], []
     ordered = sorted(candidates, key=_published_dt, reverse=True)
     for item in ordered:
-        if _translate_or_original(getattr(item, "title", "")):
-            return [item], []
+        title_fa = _translate_or_original(getattr(item, "title", ""))
+        if not title_fa:
+            continue
+        if not v2._original_news_format(item, title_fa, ""):
+            continue
+        return [item], []
     return [], []
 
 
@@ -124,6 +138,13 @@ def _topic_icons(item, title_fa: str, summary_fa: str) -> str:
     return " ".join(dict.fromkeys(icons))
 
 
+def _country_flags(item, title_fa: str, summary_fa: str) -> str:
+    text = f" {item.title} {item.summary} {title_fa} {summary_fa} ".lower()
+    base_flags = v2._country_flags(item, title_fa, summary_fa).split()
+    extra = [flag for flag, terms in _EXTRA_COUNTRY_FLAGS if any(term in text for term in terms)]
+    return " ".join(dict.fromkeys([*base_flags, *extra]))
+
+
 def _format_news_with_footer_icons(item, title_fa: str, summary_fa: str, marker_override=None) -> str:
     # Every published news card must have a real source URL and a Persian headline.
     # This is the last safety gate before Telegram formatting.
@@ -136,7 +157,7 @@ def _format_news_with_footer_icons(item, title_fa: str, summary_fa: str, marker_
     if not text:
         return text
 
-    flags = v2._country_flags(item, title_fa, summary_fa)
+    flags = _country_flags(item, title_fa, summary_fa)
     icons = _topic_icons(item, title_fa, summary_fa)
     meta = " ".join(part for part in (flags, icons) if part)
     if not meta:
