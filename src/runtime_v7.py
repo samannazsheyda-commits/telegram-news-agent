@@ -50,16 +50,17 @@ def _published_dt(item):
 
 
 def _select_one_story(candidates, references):
-    """Choose up to five newest candidates whose Persian cards are publishable.
+    """Choose up to five publishable candidates, prioritizing X posts first.
 
     Exact already-published keys are blocked upstream. Distinct X status IDs are not
-    semantically deduplicated here. If a title cannot be translated or would format
-    to an empty card, skip it and continue down the queue in the same cycle.
+    semantically deduplicated here. Within each source class, newest items come first.
+    If a title cannot be translated or would format to an empty card, skip it and
+    continue down the queue in the same cycle.
     """
     _translation_cache.clear()
     if not candidates:
         return [], []
-    ordered = sorted(candidates, key=_published_dt, reverse=True)
+    ordered = sorted(candidates, key=lambda item: (_is_x_item(item), _published_dt(item)), reverse=True)
     selected = []
     for item in ordered:
         title_fa = _translate_or_original(getattr(item, "title", ""))
