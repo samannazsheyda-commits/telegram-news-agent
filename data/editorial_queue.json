@@ -1,5 +1,23 @@
 [
   {
+    "id": "91241690cf56e1bf5f2dab8061577fc4b88ffefd",
+    "news_key": "eef920ea5a6597e13e158ef8009fe59eab9d7ff0",
+    "source": "NBC News",
+    "source_url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNZzhNWHVlS2JpVEJNWjdsM0FkVXlaOXFPWlhKVXNBSWJDcE1RdVRqY0NGSmhMNERYd2pCSVZMdUs3dDdKM3JKclQ2c25hR3hseWpTUTVDTERjM2lDaW8xRkZaZVdMb2FVcW5UbkF4dzF3ZHZ2c3VnbFhrMXBqX3pZNE50OF9GaXRudEJ3T0xLNk5HTi1YM3RjaUxOdnhpcGc?oc=5",
+    "original_title": "Trump calls war with Iran ‘small potatoes’ for U.S.",
+    "original_summary": "Trump calls war with Iran ‘small potatoes’ for U.S. NBC News",
+    "persian_title": "ترامپ جنگ با ایران را «مسئله‌ای کم‌اهمیت» برای آمریکا خواند",
+    "persian_body": "",
+    "published_at_source": "Sat, 05 Sep 2026 00:35:02 GMT",
+    "discovered_at": "2026-09-05T01:58:47.493770+00:00",
+    "rejection_reason": "duplicate_or_redundant",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-05T01:59:09.663217+00:00"
+  },
+  {
     "id": "70eaa69b155d97198685b72e7ee31ac65652c79b",
     "news_key": "2e1d3eb72a24cbc70f83b9de149100c3879cba68",
     "source": "ژئوپی واچ / Telegram",
@@ -196,24 +214,6 @@
     "final_persian_body": "",
     "decision_at": "",
     "updated_at": "2026-09-04T23:41:04.534626+00:00"
-  },
-  {
-    "id": "91241690cf56e1bf5f2dab8061577fc4b88ffefd",
-    "news_key": "eef920ea5a6597e13e158ef8009fe59eab9d7ff0",
-    "source": "NBC News",
-    "source_url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxObVF5Tkl2TWRGVFRUT2I3OXlDUm92c1dCMjVHMDNrN2V1UFdBMU5KWnZDdDY5b3lRaVdSUTc5VDd5T01Uakk1SGc5ZGZKLVZ5bVBLcTk4U3RpQklUMUhLeXh5S1F2OExUU1hLUGdBQXZSZFB3R0RNQnNDNy1uTkdNTzNZTVp3b29jTmFVem9FTHNoLVJLd2tyd1NBNldON1M5ZGFwcks4SQ?oc=5",
-    "original_title": "Trump calls war with Iran ‘small potatoes’ for U.S.",
-    "original_summary": "Trump calls war with Iran ‘small potatoes’ for U.S. NBC News",
-    "persian_title": "ترامپ جنگ با ایران را «مسئله‌ای کم‌اهمیت» برای آمریکا خواند",
-    "persian_body": "",
-    "published_at_source": "Fri, 04 Sep 2026 23:18:45 GMT",
-    "discovered_at": "2026-09-04T23:21:36.824903+00:00",
-    "rejection_reason": "duplicate_or_redundant",
-    "status": "pending",
-    "final_persian_title": "",
-    "final_persian_body": "",
-    "decision_at": "",
-    "updated_at": "2026-09-04T23:21:57.416315+00:00"
   },
   {
     "id": "ad17153973ef9a2adda5785e0dfa6cc5b2d7ab4e",
