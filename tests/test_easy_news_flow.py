@@ -141,42 +141,77 @@ def test_install_easy_flow_wires_policy_without_leaking_after_test(monkeypatch):
     original_selector = v7.v2.base.agent._select_top_stories
     original_translate = v7.v2.translate_news_to_fa
     original_strict = v7.v2._strict_rejection_reason
-    original_limit = getattr(v7.v2.base.agent, "NEWS_PER_CYCLE", None)
     original_flag = v7._easy_news_flow_installed
 
     try:
         v7._easy_news_flow_installed = False
         v7.install_easy_news_flow()
         assert v7.v2.base.agent._news_rejection_reason is v7._easy_rejection_reason
-        assert v7.v2.base.agent._select_top_stories is v7._select_news_queue
-        assert v7.v2.base.agent.NEWS_PER_CYCLE == 1
+        assert v7.v2.base.agent._select_top_stories is v7._select_one_story
     finally:
         v7.v2.base.agent._news_rejection_reason = original_reason
         v7.v2.base.agent._select_top_stories = original_selector
-        v7.v2.base.agent.NEWS_PER_CYCLE = original_limit
         v7.v2.translate_news_to_fa = original_translate
         v7.v2._strict_rejection_reason = original_strict
         v7._easy_news_flow_installed = original_flag
 
 
-def test_easy_flow_orders_full_queue_oldest_to_newest_for_main_reverse_loop():
+def test_easy_flow_selects_only_newest_translatable_story_per_cycle(monkeypatch):
     from src import runtime_v7 as v7
 
+    monkeypatch.setattr(v7, "_original_translate", lambda value, session=None: "ترجمه فارسی ایران")
+    v7._translation_cache.clear()
     items = [
-        _x("x:Reuters:3", "Sat, 05 Sep 2026 08:02:00 +0000"),
         _x("x:Reuters:1", "Sat, 05 Sep 2026 08:00:00 +0000"),
         _x("x:Reuters:2", "Sat, 05 Sep 2026 08:01:00 +0000"),
+        _x("x:Reuters:3", "Sat, 05 Sep 2026 08:02:00 +0000"),
     ]
-    selected, skipped = v7._select_news_queue(items, [])
-    assert [item.key for item in selected] == ["x:Reuters:1", "x:Reuters:2", "x:Reuters:3"]
+    selected, skipped = v7._select_one_story(items, [])
+    assert [item.key for item in selected] == ["x:Reuters:3"]
     assert skipped == []
 
 
-def test_distinct_x_posts_are_not_semantically_deduped():
+def test_translation_failure_on_newest_does_not_starve_older_story(monkeypatch):
     from src import runtime_v7 as v7
 
+    newest = _x("x:Reuters:3", "Sat, 05 Sep 2026 08:02:00 +0000", "Newest Iran update")
+    older = _x("x:Reuters:2", "Sat, 05 Sep 2026 08:01:00 +0000", "Older Iran update")
+
+    def translator(value, session=None):
+        return "" if value.startswith("Newest") else "خبر فارسی معتبر درباره ایران"
+
+    monkeypatch.setattr(v7, "_original_translate", translator)
+    v7._translation_cache.clear()
+    selected, skipped = v7._select_one_story([older, newest], [])
+    assert [item.key for item in selected] == ["x:Reuters:2"]
+    assert skipped == []
+
+
+def test_selector_caches_successful_translation_for_main_send(monkeypatch):
+    from src import runtime_v7 as v7
+
+    calls = []
+
+    def translator(value, session=None):
+        calls.append(value)
+        return "خبر فارسی معتبر درباره ایران"
+
+    monkeypatch.setattr(v7, "_original_translate", translator)
+    v7._translation_cache.clear()
+    item = _x("x:Reuters:9", "Sat, 05 Sep 2026 08:02:00 +0000", "Iran update from Reuters")
+    selected, _ = v7._select_one_story([item], [])
+    assert selected == [item]
+    assert v7._translate_or_original(item.title) == "خبر فارسی معتبر درباره ایران"
+    assert calls == [item.title]
+
+
+def test_distinct_x_posts_are_not_semantically_deduped(monkeypatch):
+    from src import runtime_v7 as v7
+
+    monkeypatch.setattr(v7, "_original_translate", lambda value, session=None: "خبر فارسی معتبر درباره ایران")
+    v7._translation_cache.clear()
     older = _x("x:Reuters:1", "Sat, 05 Sep 2026 08:00:00 +0000", "Iran tanker hit near Kharg")
     newer = _x("x:Reuters:2", "Sat, 05 Sep 2026 08:01:00 +0000", "Iran tanker hit near Kharg")
-    selected, skipped = v7._select_news_queue([newer], [older])
+    selected, skipped = v7._select_one_story([newer], [older])
     assert [item.key for item in selected] == ["x:Reuters:2"]
     assert skipped == []
