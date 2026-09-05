@@ -7,6 +7,10 @@ def _x(key: str, published: str, title: str = "Iran update") -> NewsItem:
     return NewsItem(key, "Reuters / X", title, "", f"https://x.com/Reuters/status/{key.split(':')[-1]}", published)
 
 
+def _web(key: str, published: str, title: str = "Iran web update") -> NewsItem:
+    return NewsItem(key, "Reuters", title, "", f"https://example.com/{key}", published)
+
+
 def test_easy_flow_accepts_current_x_without_editorial_rejection():
     from src import runtime_v7 as v7
 
@@ -173,6 +177,21 @@ def test_easy_flow_selects_up_to_five_newest_translatable_stories_per_cycle(monk
         "x:Reuters:4",
         "x:Reuters:3",
     ]
+    assert skipped == []
+
+
+def test_x_posts_have_priority_over_newer_non_x_news(monkeypatch):
+    from src import runtime_v7 as v7
+
+    monkeypatch.setattr(v7, "_original_translate", lambda value, session=None: "خبر فارسی معتبر درباره ایران")
+    v7._translation_cache.clear()
+    items = [
+        _web("web:newer", "Sat, 05 Sep 2026 08:10:00 +0000"),
+        _x("x:Reuters:100", "Sat, 05 Sep 2026 08:01:00 +0000"),
+        _web("web:older", "Sat, 05 Sep 2026 08:00:00 +0000"),
+    ]
+    selected, skipped = v7._select_one_story(items, [])
+    assert [item.key for item in selected] == ["x:Reuters:100", "web:newer", "web:older"]
     assert skipped == []
 
 
