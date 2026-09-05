@@ -3,25 +3,52 @@ from __future__ import annotations
 import re
 
 _LATIN_WORD_RE = re.compile(r"\b[A-Za-z]{2,}\b")
-_SENTENCE_END_RE = re.compile(r"[.!؟!?…](?:[\"'»”)]*)$")
-_LEADING_DECOR_RE = re.compile(r"^[\s\u200e\u200f]*(?:[\U0001F1E6-\U0001F1FF]{2}|[\U0001F300-\U0001FAFF]|[❌❗‼️⚠️✅☑️✳️✴️⭐️•▪️▫️◾️◽️]+|[-–—|:])+[\s\u200e\u200f]*")
+_LEADING_DECOR_RE = re.compile(
+    r"^[\s\u200e\u200f]*(?:[\U0001F1E6-\U0001F1FF]{2}|[\U0001F300-\U0001FAFF]|"
+    r"[❌❗‼️⚠️✅☑️✳️✴️⭐️•▪️▫️◾️◽️]+|[-–—|:])+[\s\u200e\u200f]*"
+)
 _PROMO_PATTERNS = (
-    r"\bwatch\b.*\bsession\b", r"\bcatch\b.*\bsession\b", r"\bweekend festival\b",
-    r"\bjoin us\b", r"\bregister now\b", r"\bsign up\b", r"\bsubscribe\b",
-    r"\blisten to (?:our|the) podcast\b", r"\bwatch (?:the|our|their) (?:full )?(?:video|interview|conversation)\b",
-    r"تماشا کنید", r"ثبت.?نام کنید", r"مشترک شوید", r"پادکست را بشنوید", r"جشنواره",
+    r"\bwatch\b.*\bsession\b",
+    r"\bcatch\b.*\bsession\b",
+    r"\bweekend festival\b",
+    r"\bjoin us\b",
+    r"\bregister now\b",
+    r"\bsign up\b",
+    r"\bsubscribe\b",
+    r"\blisten to (?:our|the) podcast\b",
+    r"\bwatch (?:the|our|their) (?:full )?(?:video|interview|conversation)\b",
+    r"تماشا کنید",
+    r"ثبت.?نام کنید",
+    r"مشترک شوید",
+    r"پادکست را بشنوید",
+    r"جشنواره",
 )
 
 _PERSIAN_REPAIRS = (
-    ("بالای تنگه هرمز", "در محدوده تنگه هرمز"),
     ("در بالای تنگه هرمز", "در محدوده تنگه هرمز"),
+    ("بالای تنگه هرمز", "در محدوده تنگه هرمز"),
     ("ایالات متحده", "آمریکا"),
     ("اسرائيل", "اسرائیل"),
     ("ي", "ی"),
     ("ك", "ک"),
 )
 
-_ALLOWED_LATIN = {"X"}
+_KNOWN_LATIN = {
+    "US": "آمریکا",
+    "USA": "آمریکا",
+    "CENTCOM": "سنتکام",
+    "IRGC": "سپاه پاسداران",
+    "IAEA": "آژانس بین‌المللی انرژی اتمی",
+    "BBC": "بی‌بی‌سی",
+    "CNN": "سی‌ان‌ان",
+    "NBC": "ان‌بی‌سی",
+    "ABC": "ای‌بی‌سی",
+    "CBS": "سی‌بی‌اس",
+    "FT": "فایننشال تایمز",
+    "IDF": "ارتش اسرائیل",
+    "UAV": "پهپاد",
+    "NOTAM": "نوتام",
+}
 
 
 def strip_leading_decorative_emoji(text: str) -> str:
@@ -38,8 +65,15 @@ def is_promotional_news_text(text: str) -> bool:
     return any(re.search(pattern, value, flags=re.I) for pattern in _PROMO_PATTERNS)
 
 
+def _replace_known_latin(text: str) -> str:
+    value = text or ""
+    for latin, persian in sorted(_KNOWN_LATIN.items(), key=lambda item: len(item[0]), reverse=True):
+        value = re.sub(rf"\b{re.escape(latin)}\b", persian, value, flags=re.I)
+    return value
+
+
 def _normalize_persian(text: str) -> str:
-    value = (text or "").strip()
+    value = _replace_known_latin((text or "").strip())
     for old, new in _PERSIAN_REPAIRS:
         value = value.replace(old, new)
     value = re.sub(r"\s+([،؛:.!?؟])", r"\1", value)
@@ -62,10 +96,7 @@ def trim_to_complete_sentences(text: str, max_chars: int | None = None) -> str:
 
 
 def has_forbidden_latin_body(text: str) -> bool:
-    for word in _LATIN_WORD_RE.findall(text or ""):
-        if word not in _ALLOWED_LATIN:
-            return True
-    return False
+    return bool(_LATIN_WORD_RE.search(text or ""))
 
 
 def _protected_numbers(text: str) -> list[str]:
@@ -73,21 +104,24 @@ def _protected_numbers(text: str) -> list[str]:
 
 
 def _preserves_numbers(source: str, edited: str) -> bool:
-    src = _protected_numbers(source)
-    if not src:
+    source_numbers = _protected_numbers(source)
+    if not source_numbers:
         return True
-    return all(n in edited or n.translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")) in edited for n in src)
+    trans = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
+    return all(number in edited or number.translate(trans) in edited for number in source_numbers)
 
 
-def edit_news_text(source_text: str, translated_text: str) -> str:
+def edit_news_text(source_text: str, translated_text: str, *, max_chars: int = 700) -> str:
     source = strip_leading_decorative_emoji(source_text)
     translated = strip_leading_decorative_emoji(translated_text)
     if not source or not translated:
         return ""
     if is_promotional_news_text(source) or is_promotional_news_text(translated):
         return ""
+
     value = _normalize_persian(translated)
-    # Never publish an obviously cut-off final clause produced by an upstream hard limit.
+    if len(value) > max_chars:
+        value = trim_to_complete_sentences(value, max_chars=max_chars)
     if value.endswith(("...", "…")):
         value = trim_to_complete_sentences(value[:-1].rstrip(), max_chars=len(value))
     if not value:
