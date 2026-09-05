@@ -225,16 +225,15 @@ def format_market(snapshot: MarketSnapshot, now: datetime | None = None) -> str:
 def _daily_change(label: str, emoji: str, first: int, last: int, suffix: str = "تومان") -> list[str]:
     diff = last - first
     pct = 0.0 if first == 0 else abs(diff) / first * 100
-    first_fa = _to_persian_digits(f"{first:,}")
     last_fa = _to_persian_digits(f"{last:,}")
-    diff_fa = _to_persian_digits(f"{abs(diff):,}")
+    pct_fa = _to_persian_digits(f"{pct:.2f}")
     if diff > 0:
-        change = f"▲ {diff_fa} {suffix} | {pct:.2f}٪ افزایش"
+        change = f"🔺 {pct_fa}٪"
     elif diff < 0:
-        change = f"▼ {diff_fa} {suffix} | {pct:.2f}٪ کاهش"
+        change = f"🔻 {pct_fa}٪"
     else:
-        change = "— بدون تغییر"
-    return [f"{emoji} <b>{label}</b>", f"{first_fa} ← {last_fa} {suffix}", change]
+        change = "➖ بدون تغییر"
+    return [f"{emoji} <b>{label}</b>", f"{last_fa} {suffix}", change]
 
 
 def format_market_daily_summary(first_usd: int, last_usd: int, first_gold: int, last_gold: int, now: datetime | None = None) -> str:
