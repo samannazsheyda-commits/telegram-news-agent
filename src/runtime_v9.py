@@ -11,6 +11,7 @@ from . import runtime_v8 as v8
 
 _installed = False
 _original_v7_formatter = v7._format_news_with_footer_icons
+_original_low_value_company = v7.v2.base.is_low_value_company_news
 _LATIN_VISIBLE_RE = re.compile(r"\b[A-Za-z]{2,}\b")
 
 _SOURCE_OVERRIDES = {
@@ -19,6 +20,12 @@ _SOURCE_OVERRIDES = {
     "Al Jazeera English / X": "الجزیره انگلیسی / ایکس",
     "Al Arabiya English / X": "العربیه انگلیسی / ایکس",
 }
+
+_AIRSPACE_SECURITY_TERMS = (
+    "airspace", "notam", "flight ban", "avoid iranian airspace", "avoid airspace",
+    "aviation agency", "security risk", "military action", "حریم هوایی", "نوتام",
+    "هشدار هوانوردی", "خطر امنیتی",
+)
 
 
 def _persian_source_item(item):
@@ -54,6 +61,15 @@ def _format_persian_only(item, title_fa: str, summary_fa: str, marker_override=N
     return message
 
 
+def _newsroom_low_value_company_news(item) -> bool:
+    """Keep direct Iran security/airspace developments even when airlines are mentioned."""
+    text = f"{getattr(item, 'title', '')} {getattr(item, 'summary', '')}".lower()
+    if "iran" in text or "iranian" in text or "ایران" in text:
+        if any(term in text for term in _AIRSPACE_SECURITY_TERMS):
+            return False
+    return _original_low_value_company(item)
+
+
 def install_persian_only_output() -> None:
     global _installed
     if _installed:
@@ -64,6 +80,8 @@ def install_persian_only_output() -> None:
     v8.install_strict_dedup_policy()
     # v7 may already have installed its formatter during v8 setup; force the final gate.
     v7.v2._format_news_with_flags = _format_persian_only
+    # The production fetcher resolves this global at runtime; keep security/airspace news.
+    v7.v2.base.is_low_value_company_news = _newsroom_low_value_company_news
     _installed = True
 
 
