@@ -2,6 +2,7 @@
   "truth_last_id": "41529",
   "news_seen": [
     "x:AJEnglish:2096219775902892094",
+    "583b9814f26fe38fcbcbb405aa5fd98207294721",
     "x:TankerTrackers:2096215788063498460",
     "636ce9e89fc0a11b01afffc822502f7717791e46",
     "x:haaretzcom:2096210523033403406",
@@ -499,8 +500,7 @@
     "ea7400718e87964b5a2c2483e03f3a288ca04e3b",
     "178935397b2becb00fc2c7f99dfac200dc82631c",
     "c602c7e71b9c2cb313b38a3a07ead04e8937bdd0",
-    "bf8b48d6e1f74c820cf911904a7406586f3f0d70",
-    "9c3627c5b2fa51f5cb00b9b9a506dfd1878d9886"
+    "bf8b48d6e1f74c820cf911904a7406586f3f0d70"
   ],
   "market_last_sent_at": "2026-09-05T12:47:38.071885+00:00",
   "next_news_color": "red",
@@ -540,6 +540,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "583b9814f26fe38fcbcbb405aa5fd98207294721",
+      "source": "NOTAM / Airspace",
+      "title": "Iran closes western airspace until Monday as Trump administration mulls strikes",
+      "reason": "not_today_tehran",
+      "published": "Fri, 22 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQamZXLVdEMmlQVnlvNUZqdHc1X0lhTldqd3JDY2lKT1lhUmJLREJQOGROUlI1YmEydEpBd2d1YlRGVWtIVm84elg4WlFtaUpZU3RMaTJUdUhZOTM1RVJHTkJLOG0ya2tGdEY5T0p2TmZXaE9DZHo1Qk9xcDhua1BoTFhEODNhcVltLTdwR2hpZkFTU3JUS3d4Z3luMGw?oc=5",
+      "checked_at": "2026-09-05T12:52:16.662386+00:00"
+    },
     {
       "key": "636ce9e89fc0a11b01afffc822502f7717791e46",
       "source": "NOTAM / Airspace",
@@ -2330,15 +2339,6 @@
       "published": "Fri, 17 Jul 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFBvcjRrMmlyTjBsUHNUTC15NlFPTmtQWFpuTFhUQ2diXzhvLXFuRUNyMV9SM2lReUxLa1daTmc3UEZjYVU1RTFGRlg2TzZ3dVhpb05Dc2tUNzlvVHg5Q1E?oc=5",
       "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "4ea65c00fe2b9a1254a2d843218774b2f0a35b44",
-      "source": "Abbas Araghchi / X",
-      "title": "Fulfilling our pledge of full transparency towards our own people, Iran's Government has already published a comprehensive list of all 3117 victims of recent terrorist operation, including about 200 officers. If anyone disputes accuracy of our data, please share",
-      "reason": "not_today_tehran",
-      "published": "Fri, 20 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE94ZzhOdjE2OWxoQ1Q2VjNQUFhBNTNGN0tmWENtQVdsbXVkWTVsVHVYcG4wR1ZzYmZDSDhwUndqVkxUbjZ2TFlfTjVxX1J1ZDBrbzdJdzlzMnFKSzg3dWc?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
@@ -2350,7 +2350,8 @@
       "summary": "",
       "link": "https://x.com/AJEnglish/status/2096219775902892094",
       "published": "Sat, 05 Sep 2026 12:51:55 +0000",
-      "sent_at": "2026-09-05T12:57:38.813926+00:00"
+      "sent_at": "2026-09-05T12:53:13.863700+00:00",
+      "fingerprint": "fitch ratings has removed qatar from rating watch negative while maintaining its sovereign rating at aa amid the us israel war on iran and the strait of hormuz blockade"
     },
     {
       "key": "x:TankerTrackers:2096215788063498460",
@@ -2359,7 +2360,8 @@
       "summary": "",
       "link": "https://x.com/TankerTrackers/status/2096215788063498460",
       "published": "Sat, 05 Sep 2026 12:36:04 +0000",
-      "sent_at": "2026-09-05T12:39:02.194706+00:00"
+      "sent_at": "2026-09-05T12:39:02.194706+00:00",
+      "fingerprint": "video shows a national iranian tanker company vlcc there are only two that fit that exact layout load condition at kharg right now she s laden with cargo and that s not the usual target criteria as centcom mostly retaliate against empty nitc tankers no visible smoke either"
     },
     {
       "key": "x:haaretzcom:2096210523033403406",
@@ -2368,7 +2370,8 @@
       "summary": "",
       "link": "https://x.com/haaretzcom/status/2096210523033403406",
       "published": "Sat, 05 Sep 2026 12:15:09 +0000",
-      "sent_at": "2026-09-05T12:22:27.237030+00:00"
+      "sent_at": "2026-09-05T12:22:27.237030+00:00",
+      "fingerprint": "iran accuses u s of striking oil tanker near key persian gulf terminal"
     },
     {
       "key": "x:JasonMBrodsky:2096198565404025262",
@@ -2377,7 +2380,8 @@
       "summary": "",
       "link": "https://x.com/JasonMBrodsky/status/2096198565404025262",
       "published": "Sat, 05 Sep 2026 11:27:38 +0000",
-      "sent_at": "2026-09-05T11:28:43.937871+00:00"
+      "sent_at": "2026-09-05T11:28:43.937871+00:00",
+      "fingerprint": "can t make it up iran s regime s chief justice gholamhossein mohseni ejei one of the most notorious islamic republic officials who has carried out record levels of executions and once bit a reporter is in india for a brics judicial summit lecturing on human dignity sadly unsurprising india gave him a visa as india abstained from even voting for an unhrc fact finding mission into mahsa amini s murder but still this is shameless"
     },
     {
       "key": "x:JasonMBrodsky:2096190282983247876",
@@ -2386,7 +2390,8 @@
       "summary": "",
       "link": "https://x.com/JasonMBrodsky/status/2096190282983247876",
       "published": "Sat, 05 Sep 2026 10:54:43 +0000",
-      "sent_at": "2026-09-05T11:22:39.934142+00:00"
+      "sent_at": "2026-09-05T11:22:39.934142+00:00",
+      "fingerprint": "iran s rial fell to a new record low of about 2 25 million to the us dollar on saturday extending a sharp decline in recent weeks"
     },
     {
       "key": "x:business:2096191671138451479",
@@ -2395,7 +2400,8 @@
       "summary": "",
       "link": "https://x.com/business/status/2096191671138451479",
       "published": "Sat, 05 Sep 2026 11:00:14 +0000",
-      "sent_at": "2026-09-05T11:21:41.885467+00:00"
+      "sent_at": "2026-09-05T11:21:41.885467+00:00",
+      "fingerprint": "after 286 days at sea thousands of sailors aboard the uss abraham lincoln finally got a brief respite in thailand their grueling deployment shows the mounting strain on the us navy as the war with iran drags on"
     },
     {
       "key": "x:JasonMBrodsky:2096189697013793139",
@@ -2404,7 +2410,8 @@
       "summary": "",
       "link": "https://x.com/JasonMBrodsky/status/2096189697013793139",
       "published": "Sat, 05 Sep 2026 10:52:23 +0000",
-      "sent_at": "2026-09-05T10:53:02.079715+00:00"
+      "sent_at": "2026-09-05T10:53:02.079715+00:00",
+      "fingerprint": "an iranian tanker was hit by u s forces on saturday near iran s key oil export hub kharg island in the gulf the semi official iranian news agency tasnim reported"
     },
     {
       "key": "x:AJEnglish:2096189272189526020",
@@ -2413,7 +2420,8 @@
       "summary": "",
       "link": "https://x.com/AJEnglish/status/2096189272189526020",
       "published": "Sat, 05 Sep 2026 10:50:42 +0000",
-      "sent_at": "2026-09-05T10:52:02.320929+00:00"
+      "sent_at": "2026-09-05T10:52:02.320929+00:00",
+      "fingerprint": "us president donald trump says washington may strike iran s pickaxe mountain very soon in the latest in a series of threats he has made against the heavily fortified underground site so why is trump threatening to strike it again"
     },
     {
       "key": "x:kann_news:2096188326730494125",
@@ -2422,7 +2430,8 @@
       "summary": "",
       "link": "https://x.com/kann_news/status/2096188326730494125",
       "published": "Sat, 05 Sep 2026 10:46:57 +0000",
-      "sent_at": "2026-09-05T10:47:40.088647+00:00"
+      "sent_at": "2026-09-05T10:47:40.088647+00:00",
+      "fingerprint": "liranharoni"
     },
     {
       "key": "x:TankerTrackers:2096031376487133584",
@@ -2431,7 +2440,8 @@
       "summary": "",
       "link": "https://x.com/TankerTrackers/status/2096031376487133584",
       "published": "Sat, 05 Sep 2026 00:23:17 +0000",
-      "sent_at": "2026-09-05T10:45:40.708446+00:00"
+      "sent_at": "2026-09-05T10:45:40.708446+00:00",
+      "fingerprint": "we ve now tagged 17 crude oil and gas lng lpg ship to ship transfers which took place yesterday 2026 09 04 in the gulf of oman at least 24 million barrels were being exchanged we also identified many more oil laden tankers waiting for a dance partner in those waters it appears that the dance floor itself is the limitation it s getting quite crowded and port services are kept busy around the clock to ensure smooth and safe transfers in addition we spotted at least 7 25 million barrels along with two more lng tankers assembling to transit the soh into the goo under the protection of us centcom busy day oott iranwar tankers"
     },
     {
       "key": "x:AlArabiya_Eng:2096175236408344804",
@@ -2440,7 +2450,8 @@
       "summary": "",
       "link": "https://x.com/AlArabiya_Eng/status/2096175236408344804",
       "published": "Sat, 05 Sep 2026 09:54:56 +0000",
-      "sent_at": "2026-09-05T10:44:33.300077+00:00"
+      "sent_at": "2026-09-05T10:44:33.300077+00:00",
+      "fingerprint": "iranian experts are taking part in directing houthi military operations in yemen s southwestern province of taiz yemeni military sources tell al arabiya english the sources said dozens of houthi fighters had been killed in intense battles as yemeni armed forces made advances on several fronts over the past few hours yemen s air force also carried out a series of airstrikes against houthi positions in taiz and the western province of hodeidah according to the sources the strikes helped thwart houthi attempts to advance along several axes the sources added"
     },
     {
       "key": "x:AlArabiya_Eng:2096182873434800389",
@@ -2449,7 +2460,8 @@
       "summary": "",
       "link": "https://x.com/AlArabiya_Eng/status/2096182873434800389",
       "published": "Sat, 05 Sep 2026 10:25:16 +0000",
-      "sent_at": "2026-09-05T10:43:34.879022+00:00"
+      "sent_at": "2026-09-05T10:43:34.879022+00:00",
+      "fingerprint": "breaking four iranian and lebanese experts were killed in a strike targeting a houthi command center in yemen s northern al jawf province yemeni military sources say"
     },
     {
       "key": "d67f6153077252082556849d7dbbb76c6a18a21b",
@@ -2458,7 +2470,8 @@
       "summary": "Iranian strikes on Kuwait disrupt flights across Gulf hubs thetraveler.org",
       "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxQVnZEeFFpNGQ3QW1PRllLTm1qS29GYk9UQjVUbjV2N1E2bjJ3LUM5a1g1WURBNmdSSXFSanVuTFBzOW5yVVFpdFdMQmo1a0ZySzUxeWs2WDJqYVBVdkNHczVCU3ZkMHd3UWtTMWhtdWlyR3BXS2dBRk1CQl9vYUxidWpVME8ycURqYzdLNVA2a2U?oc=5",
       "published": "Sat, 05 Sep 2026 06:47:02 GMT",
-      "sent_at": "2026-09-05T10:09:30.317853+00:00"
+      "sent_at": "2026-09-05T10:09:30.317853+00:00",
+      "fingerprint": "iranian strikes on kuwait disrupt flights across gulf hubs iranian strikes on kuwait disrupt flights across gulf hubs thetraveler org"
     },
     {
       "key": "x:NBCNews:2095995361173139672",
@@ -2467,7 +2480,8 @@
       "summary": "",
       "link": "https://x.com/NBCNews/status/2095995361173139672",
       "published": "Fri, 04 Sep 2026 22:00:10 +0000",
-      "sent_at": "2026-09-05T09:05:26.562700+00:00"
+      "sent_at": "2026-09-05T09:05:26.562700+00:00",
+      "fingerprint": "days of leave in pattaya are a welcome break this week for the thousands of u s sailors and marines after a record long deployment their arrival is also welcome for many locals battered by the economic impact of the iran war https www nbcnews com world asia uss abraham lincoln sailors pattaya thailand iran war rcna595854 cid sm npd nn tw ma taid 6a9b3f6a271c1300017e7587 utm campaign trueanthem utm medium social utm source twitter"
     },
     {
       "key": "x:ABC:2096116416256598069",
@@ -2476,7 +2490,8 @@
       "summary": "",
       "link": "https://x.com/ABC/status/2096116416256598069",
       "published": "Sat, 05 Sep 2026 06:01:12 +0000",
-      "sent_at": "2026-09-05T09:05:26.562700+00:00"
+      "sent_at": "2026-09-05T09:05:26.562700+00:00",
+      "fingerprint": "diesel prices hit a record high in the u s jumping to an average of 5 85 a gallon as the iran war choked global oil supply read more https abcnews link idmj2ui"
     },
     {
       "key": "x:TheEconomist:2096156413575716874",
@@ -2485,7 +2500,8 @@
       "summary": "",
       "link": "https://x.com/TheEconomist/status/2096156413575716874",
       "published": "Sat, 05 Sep 2026 08:40:08 +0000",
-      "sent_at": "2026-09-05T09:05:26.562700+00:00"
+      "sent_at": "2026-09-05T09:05:26.562700+00:00",
+      "fingerprint": "the axis of resistance may struggle to rebuild itself as a consortium the parent company in tehran is bankrupt and many of its subsidiaries are poorly run https www economist com middle east and africa 2026 09 03 irans proxies are going their own way taid 6a9bd568ae1ff00001c209d9 utm campaign trueanthem utm medium social utm source twitter"
     },
     {
       "key": "x:Jerusalem_Post:2095996925795258559",
@@ -2494,7 +2510,8 @@
       "summary": "",
       "link": "https://x.com/Jerusalem_Post/status/2095996925795258559",
       "published": "Fri, 04 Sep 2026 22:06:23 +0000",
-      "sent_at": "2026-09-05T09:05:26.562700+00:00"
+      "sent_at": "2026-09-05T09:05:26.562700+00:00",
+      "fingerprint": "us president trump warns iran over pickaxe mountain and says us forces have removed mines from the strait of hormuz https www jpost com middle east iran news article 907610"
     },
     {
       "key": "x:WSJ:2096097004812132790",
@@ -2503,7 +2520,8 @@
       "summary": "",
       "link": "https://x.com/WSJ/status/2096097004812132790",
       "published": "Sat, 05 Sep 2026 04:44:04 +0000",
-      "sent_at": "2026-09-05T09:05:26.562700+00:00"
+      "sent_at": "2026-09-05T09:05:26.562700+00:00",
+      "fingerprint": "by squeezing the strait of hormuz both the u s and iran expected to outlast their foe believing time would work in their favor now it looks like the trend is moving against tehran https on wsj com 4xdvvjn"
     },
     {
       "key": "x:NBCNews:2096070875636236603",
@@ -2512,7 +2530,8 @@
       "summary": "",
       "link": "https://x.com/NBCNews/status/2096070875636236603",
       "published": "Sat, 05 Sep 2026 03:00:14 +0000",
-      "sent_at": "2026-09-05T09:05:26.562700+00:00"
+      "sent_at": "2026-09-05T09:05:26.562700+00:00",
+      "fingerprint": "new the price of diesel fuel hits an all time high as wars on two continents and a global refinery shortage combined with higher seasonal demand to push prices upward https www nbcnews com business energy diesel hits all time high iran ukraine trump rcna595998 cid sm npd nn tw ma taid 6a9b85be271c1300017e77ad utm campaign trueanthem utm medium social utm source twitter"
     },
     {
       "key": "x:AP:2095996244455792731",
@@ -2521,7 +2540,8 @@
       "summary": "",
       "link": "https://x.com/AP/status/2095996244455792731",
       "published": "Fri, 04 Sep 2026 22:03:41 +0000",
-      "sent_at": "2026-09-05T09:05:26.562700+00:00"
+      "sent_at": "2026-09-05T09:05:26.562700+00:00",
+      "fingerprint": "a local resident described heartbreaking scenes after a u s strike killed five people in kuhestak on tuesday including some attending a wedding celebration according to rights group and iranian media"
     },
     {
       "key": "x:AlArabiya_Eng:2096131070928249270",
@@ -2530,7 +2550,8 @@
       "summary": "",
       "link": "https://x.com/AlArabiya_Eng/status/2096131070928249270",
       "published": "Sat, 05 Sep 2026 06:59:26 +0000",
-      "sent_at": "2026-09-05T09:05:26.562700+00:00"
+      "sent_at": "2026-09-05T09:05:26.562700+00:00",
+      "fingerprint": "breaking iranian media report the sound of explosions heard near kharg island"
     },
     {
       "key": "x:AFP:2096153142488403991",
@@ -2539,7 +2560,8 @@
       "summary": "",
       "link": "https://x.com/AFP/status/2096153142488403991",
       "published": "Sat, 05 Sep 2026 08:27:08 +0000",
-      "sent_at": "2026-09-05T09:05:26.562700+00:00"
+      "sent_at": "2026-09-05T09:05:26.562700+00:00",
+      "fingerprint": "iranian media on saturday reported several explosions near the major oil hub of kharg island in the gulf days after renewed fighting broke out with the us fars news agency said blasts were heard by its correspondents but no smoke was visible https arynews tv iranian media report explosions kharg island area gulf"
     },
     {
       "key": "x:AlArabiya_Eng:2096158601412772116",
@@ -2548,7 +2570,8 @@
       "summary": "",
       "link": "https://x.com/AlArabiya_Eng/status/2096158601412772116",
       "published": "Sat, 05 Sep 2026 08:48:49 +0000",
-      "sent_at": "2026-09-05T09:05:26.562700+00:00"
+      "sent_at": "2026-09-05T09:05:26.562700+00:00",
+      "fingerprint": "iran has grown more confident in its ability to attack targets across the middle east and appears determined to continue the conflict for months to frustrate the us the new york times reports citing recent us intelligence reports"
     },
     {
       "key": "x:Reuters:2096158936885874844",
@@ -2557,7 +2580,8 @@
       "summary": "",
       "link": "https://x.com/Reuters/status/2096158936885874844",
       "published": "Sat, 05 Sep 2026 08:50:09 +0000",
-      "sent_at": "2026-09-05T09:05:26.562700+00:00"
+      "sent_at": "2026-09-05T09:05:26.562700+00:00",
+      "fingerprint": "blasts heard near iran s kharg island in gulf amid reports tanker hit https reut rs 4zvt503 https reut rs 4zvt503"
     },
     {
       "key": "x:AJEnglish:2096159651028934757",
@@ -2566,7 +2590,8 @@
       "summary": "",
       "link": "https://x.com/AJEnglish/status/2096159651028934757",
       "published": "Sat, 05 Sep 2026 08:53:00 +0000",
-      "sent_at": "2026-09-05T09:05:26.562700+00:00"
+      "sent_at": "2026-09-05T09:05:26.562700+00:00",
+      "fingerprint": "iran s judiciary chief gholam hossein mohseni ejei has urged fellow brics members to condemn attacks on tehran s sovereignty and pursue legal action against those responsible for carrying out alleged war crimes against iran live updates https aje news x2mcr3"
     },
     {
       "key": "17a1b6c578e1f774e8ebe8e985d13da6659e145e",
@@ -2575,7 +2600,8 @@
       "summary": "WATCH: Trump calls Iran war 'small potatoes' and 'very intermittent' PBS",
       "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNVVZreDV1RGNKR2wyWnJleUxEOVZDNklEeDBaZ0l6Nk51aWhxcXkwSHE2aHFHX0dMUnVKeVRtN1UzLUVyM052MkMxTzJVM1pMTUloTmJRbEVtdkhYSzZKRjhEZ2JIZFI3MGNOZER4eElHNU1YaHVrSkp3T21GUDUwd2NCM0pYUkNLM0Rfam1zR3U0N2Z5amlZU3lBMmpYUWPSAaQBQVVfeXFMTl9YNnNNblRUVnI5Q1NLZ0ZPcUlmdFd3LTBOZ0cwb3p4QnZHdV9SeHVkbEpXYnNXS25pVUFJSlBFTGplV0JvV1k2SGI0OWlYVXlVS3lXNjF0U1ZyelJsUzA1b0kzTmo1SnN4WDlQeTQyc3dpVWlUd29veDF0VVMwLWRaMWw0d0NWSU5jcllGaXJmWC12WGZkVFNzblRESzFRV1k1ZEI?oc=5",
       "published": "Fri, 04 Sep 2026 21:18:55 GMT",
-      "sent_at": "2026-09-05T06:23:14.816328+00:00"
+      "sent_at": "2026-09-05T06:23:14.816328+00:00",
+      "fingerprint": "watch trump calls iran war small potatoes and very intermittent pbs watch trump calls iran war small potatoes and very intermittent pbs"
     },
     {
       "key": "955c85171f69f38009034bda32f754f72368065a",
@@ -2584,7 +2610,8 @@
       "summary": "Report: Iran increasingly confident in its military strength, may be considering major escalation i24NEWS",
       "link": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxNNXNaWFVwTnRNOW9ibzgyZjFjQ3RjTVVFdDcycXd1MDcwcWxLYXBYM3dUWHZ3UUF0ZjRDclJZY3JBYjctZFhpSUo4UTZDLUd6RnNSOFhHOFZsTWdIY3RSaGU2bU5TeE5TZVU2dmNpRl9OTVlmblJXNHRTZF9FS3NieFhtQXc3WDY2MlY3c1JFay1vNjRXbk8ybGVtTDRxc0VqTzlDcDZhbU4yYkVOMEhJaXJzX3dlM3lzQzFJQllPc0NQeHd2NmdrQW1UVzhfbXZJUGlxNDJXX1N2c1l2X0dyeEV2YVNacG5CX3FQZHJxVnk5ampGSzU3dHBaOGNkUQ?oc=5",
       "published": "Fri, 04 Sep 2026 23:40:24 GMT",
-      "sent_at": "2026-09-05T06:23:14.816328+00:00"
+      "sent_at": "2026-09-05T06:23:14.816328+00:00",
+      "fingerprint": "report iran increasingly confident in its military strength may be considering major escalation i24news report iran increasingly confident in its military strength may be considering major escalation i24news"
     },
     {
       "key": "aa8cadb0f01281467b8da2a7bda1c584c26a189b",
@@ -2593,7 +2620,8 @@
       "summary": "Time Is No Longer on Iran’s Side in the Battle of the Blockades WSJ",
       "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQRzRQS1c4Q0tHekN1NEpjdDJJaUh3aHNra0VNZjI4NnZRMThTQ2hkODlUbnlMQ2pHb2Z4RTU3T1BCVE9NdHhUWGpGdnFJS0JoVEtYdG1YYmRaNEtIcUlPeHJtMVNKd05YZUFkcXI4bHdFVDFQRm9yMTB5d3BKbWFXMzlRMk9xVEZNc1BzamFMS1daQ0sxVldZVVU0MURDLU4xTjdaU3hSYWdxTmVYU2c?oc=5",
       "published": "Sat, 05 Sep 2026 01:00:00 GMT",
-      "sent_at": "2026-09-05T06:23:14.816328+00:00"
+      "sent_at": "2026-09-05T06:23:14.816328+00:00",
+      "fingerprint": "time is no longer on iran s side in the battle of the blockades wsj time is no longer on iran s side in the battle of the blockades wsj"
     },
     {
       "key": "0636e0167d804365e5b1ec7ceebf09ef772545e3",
@@ -2602,7 +2630,8 @@
       "summary": "Iran foreign ministry spokesperson Esmaeil Baqaei has criticised a Jerusalem Post op-ed urging US student debt forgiveness for fighting in the war on Iran. \"Your lives. Your taxes. Someone else's war,\" he wrote on X. 🔴 LIVE updates: https://t.co/vQNcOw7h42 x.com",
       "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE5qd04zZlZvY0lwQUpoM3dsQWJHVVprS0d0X2oxUC1XVDFiaHhWaXE4TWtTSDBOVGdOQ21qNVRHanNzbzlBWHpPTFNpYlVTWV9SOE5WNUg5ZFlTaUFpTXVv?oc=5",
       "published": "Fri, 04 Sep 2026 23:45:00 GMT",
-      "sent_at": "2026-09-05T05:47:05.819669+00:00"
+      "sent_at": "2026-09-05T05:47:05.819669+00:00",
+      "fingerprint": "iran foreign ministry spokesperson esmaeil baqaei has criticised a jerusalem post op ed urging us student debt forgiveness for fighting in the war on iran your lives your taxes someone else s war he wrote on x live updates https t co vqncow7h42 iran foreign ministry spokesperson esmaeil baqaei has criticised a jerusalem post op ed urging us student debt forgiveness for fighting in the war on iran your lives your taxes someone else s war he wrote on x live updates https t co vqncow7h42 x com"
     },
     {
       "key": "589bafd7d7eb8392e943f7c0b88bc00be5e80e85",
@@ -2611,7 +2640,8 @@
       "summary": "Bahrain, Kuwait and Jordan intercept Iranian missile and drone attacks سانا",
       "link": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE9JcTI0ekQ5Vm9kZEItOWlaQXRsYlZtcHpvWHhIUzVGSXRBTmxpWjlNcHBFRTFRMEVKQWhMbXR4MzlCcnV4Mmk0TExncUFRTkZx?oc=5",
       "published": "Wed, 02 Sep 2026 07:10:51 GMT",
-      "sent_at": "2026-09-05T05:30:50.721646+00:00"
+      "sent_at": "2026-09-05T05:30:50.721646+00:00",
+      "fingerprint": "bahrain kuwait and jordan intercept iranian missile and drone attacks سانا bahrain kuwait and jordan intercept iranian missile and drone attacks سانا"
     },
     {
       "key": "9128b78e3fdccd761368ec17e5bdee74dd095655",
@@ -2620,7 +2650,8 @@
       "summary": "Iran says US strike killed four at wedding in 'war crime' as US denies targeting civilians BBC",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFByamU5TjBFcHB1R2ZhQ0UtQ2pKTHY1Y09IQ045YlRBNEtMUjV3MVJISGdMZ0dLZ0lzTkR3QTRNdGo2ZDBSVFdObXhySXBvNVYyeDBHLXptQXBxUQ?oc=5",
       "published": "Wed, 02 Sep 2026 15:33:19 GMT",
-      "sent_at": "2026-09-05T05:24:35.009936+00:00"
+      "sent_at": "2026-09-05T05:24:35.009936+00:00",
+      "fingerprint": "iran says us strike killed four at wedding in war crime as us denies targeting civilians iran says us strike killed four at wedding in war crime as us denies targeting civilians bbc"
     },
     {
       "key": "ec4309d5c373345f3c0dbe7c77bd113c65cfc997",
@@ -2629,7 +2660,8 @@
       "summary": "What is Iran’s Castle Breaker missile, used against US bases? Al Jazeera",
       "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNQjNPU1A3WjhsUjRqWjRYSFl1NW1NOGY2anEyX1d3UDVSSmxQUFBUTVlRNWZwcV8tWUY1TXdtMk1EYWhOMVBNSTY4MjZFUm43Y1VMSk50VjZ2VDJvRWlyVklDamNfNlJEZUpzN0o3ZEJwUzlNNnhKWXU1SzJjcFZiZmUyX0l6NWtXbWtVSTlaNWJxamE0TFZ0SXRsWXczdjTSAaQBQVVfeXFMT1VNX2JMblFhZjkxY1ZteHAtaUF1b1k4WmdSaXgtM1k3Q0E2SlFKSzRNT3lILWxPZFhDaWl5UTZrV3d5MEhiMjRCR0c3RnFTcnZoVmR4bEFxenJtb2xiQVBBRTVCZjhITU1EM19CRjRvSVN1UmszMFk0cEJMMWwxcXkxaEhLVkdmMTdfVzgwUzJ6dlFXbXpfY1VGZ0tvS2M5SGpFdjg?oc=5",
       "published": "Wed, 02 Sep 2026 12:43:26 GMT",
-      "sent_at": "2026-09-05T05:17:50.475467+00:00"
+      "sent_at": "2026-09-05T05:17:50.475467+00:00",
+      "fingerprint": "what is iran s castle breaker missile used against us bases what is iran s castle breaker missile used against us bases al jazeera"
     },
     {
       "key": "bf10ea8ab9eea8384dc95c1cb9490d156b97dd0e",
@@ -2638,7 +2670,8 @@
       "summary": "#Yemen 🇾🇪 : Ansar Allah ( #Houthis ) struck Main Battle Tank and numerous vehicles belonging to Saudi-backed PLC Forces with Drones. Fighters used Hexacopter “Rajum” Drones; seemingly armed with various mortar bombs —appear to be mostly Iranian M48 HE Bombs and Improvised HE Bombs. https://x.com/war_noir/status/2095563503960490460",
       "link": "https://t.me/war_noir/25071",
       "published": "Thu, 03 Sep 2026 17:29:37 +0000",
-      "sent_at": "2026-09-05T05:17:50.475467+00:00"
+      "sent_at": "2026-09-05T05:17:50.475467+00:00",
+      "fingerprint": "yemen ansar allah houthis struck main battle tank and numerous vehicles belonging to saudi backed plc forces with drones fighters used hexacopter rajum drones seemingly armed with various mortar bombs appear to be mostly yemen ansar allah houthis struck main battle tank and numerous vehicles belonging to saudi backed plc forces with drones fighters used hexacopter rajum drones seemingly armed with various mortar bombs appear to be mostly iranian m48 he bombs and improvised he bombs https x com war noir status 2095563503960490460"
     },
     {
       "key": "4368ec7b8a620a79f6dae1941e00fa1ab00f4203",
@@ -2647,7 +2680,8 @@
       "summary": "Trump downplays Iran ‘military conflict’ as war shows no signs of ending before midterms NBC News",
       "link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPal90WEFPVUFPa2NUMlFuNEdHX2RnTWJEY2NBOWZaTXJNLWU0d0t3bzgxaHdQa21Sdl9YMDN5UW5qRVZhNVU3bDJoUlFHOElQQ0FlRDczSXNpdkdrdUY1bU1LVmJNeVctb0l3bHBLUTNJTEVFcFdHTDZiMjJMeUlMWm8yaEFxcVVPRGQtclB0QmRhMzVtdW1oaVlYOHBGYk42YWNvSVBRUTY4U0dqaDE2R3M3b1hQVUc5TDNPZEV3MXdIV01UeWc?oc=5",
       "published": "Fri, 04 Sep 2026 21:54:51 GMT",
-      "sent_at": "2026-09-05T05:08:15.870405+00:00"
+      "sent_at": "2026-09-05T05:08:15.870405+00:00",
+      "fingerprint": "trump downplays iran military conflict as war shows no signs of ending before midterms trump downplays iran military conflict as war shows no signs of ending before midterms nbc news"
     },
     {
       "key": "4bd4d2a5edb004754d7403e05aff6c786b737ebd",
@@ -2656,7 +2690,8 @@
       "summary": "Israeli PM says Israel is working to overthrow Iran’s government Al Jazeera",
       "link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOR0xKaFlrSV84MmlTUC1mekhRWV90RkJzWXRDUDJQVWhfNFlwRjh4cDlmemhBSzVPNzdidVVHN1QwcDVzdUNHWlFJOVRUbUtuOElkQThFTnZDa1UyRmpDRkJ0QVBxX1N4anBRcnZyY0hOY0xGSXZ1M2EtSmVYRTQyTFA3V1g0eU4wTWdiZ0RSTExTa3RVRHJnZExtTTdoZFRhMHRuSy1GWDJoenJaT1RWWkZPLW1yampE0gG4AUFVX3lxTE5HTEpoWWtJXzgyaVNQLWZ6SFFZX3RGQnNZdENQMlBVaF80WXBGOHhwOWZ6aEFLNU83N2J1VUc3VDBwNXN1Q0daUUk5VFRtS244SWRBOEVOdkNrVTJGakNGQnRBUHFfU3hqcFFydnJjSE5jTEZJdnUzYS1KZVhFNDJMUDdXWDR5TjBNZ2JnRFJMTFNrdFVEcmdkTG1NN2hkVGEwdG5LLUZYMmh6clpPVFZaRk8tbXJqakQ?oc=5",
       "published": "Wed, 02 Sep 2026 21:24:33 GMT",
-      "sent_at": "2026-09-05T05:06:17.526476+00:00"
+      "sent_at": "2026-09-05T05:06:17.526476+00:00",
+      "fingerprint": "israeli pm says israel is working to overthrow iran s government israeli pm says israel is working to overthrow iran s government al jazeera"
     },
     {
       "key": "1eec9fcb58f7726fae1f4d8924bbcdf6007b3bd9",
@@ -2665,7 +2700,8 @@
       "summary": "Lloyd’s of London faces £1.4bn losses in Gulf from US-Iran war Financial Times",
       "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQNWJvM3ZFQ1p4bF8zZENSOXRPbngySjJrMktLY0dOMEQxYTNPUTFGZXBIS3F4am96ajd0LURJT0txbVdZVXRkQzhOYmZNa09YUS1WTFBYSUM4TXBnczRQbUxVdzNQd3VXMGxiYzRqdzl0d296YW1Jc3BKbHJfMF9HZHY5ZUw?oc=5",
       "published": "Thu, 03 Sep 2026 10:35:59 GMT",
-      "sent_at": "2026-09-05T05:06:17.526476+00:00"
+      "sent_at": "2026-09-05T05:06:17.526476+00:00",
+      "fingerprint": "lloyd s of london faces 1 4bn losses in gulf from us iran war lloyd s of london faces 1 4bn losses in gulf from us iran war financial times"
     },
     {
       "key": "7b73e12c9b7daa51cef88b6d7c7615233fd4478e",
@@ -2674,7 +2710,8 @@
       "summary": "Kuwait's Iranians under pressure since start of war France 24",
       "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOeUR3WE5lWG1iYW1IbmV4ZDA5Uk1Vb0x3Zl9zZzRWVUp6YnRqeDN2eXRXRWIxNTc0LXpDLWowa2dqcGN1SEMtMF84MnpKQzJQZU5kZEpDUjNadHd2UEFhckhYME56Y1VFSUxFVFJEWlhOTnhPc1pxSXBSZGFaekFubDEzTGVSRXEzR3lrZlE0ZDhFYnl2TVhJcTRBbndrRzg?oc=5",
       "published": "Thu, 03 Sep 2026 10:41:12 GMT",
-      "sent_at": "2026-09-05T05:06:17.526476+00:00"
+      "sent_at": "2026-09-05T05:06:17.526476+00:00",
+      "fingerprint": "kuwait s iranians under pressure since start of war kuwait s iranians under pressure since start of war france 24"
     },
     {
       "key": "b9dff4615af4ad3e78a9b8209ea68119c37df7b9",
@@ -2683,7 +2720,8 @@
       "summary": "Netanyahu: Toppling Iranian regime is Israel’s ‘central mission,’ goal ‘within reach’ The Times of Israel",
       "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPa0xkNkJHRlJIOUVMb2o4SlZfNlZjaWFwUTlFb3BoY2VqaDJuX2ZndlZJMVZoVkhFdEhfZWh1S1BMRU84SkJhT2dIUXVSTnN4cm1SRUZsWklld1B3eGVoNFN6RXJtRnBCVXZhU2sxbHFpU1FjYks5am5VZmo3OFBUWThfSDZoVnNINzljVWlfREMzTnBGZE01NG9rc010ZUJqTTlNb0pXMTIzV0ZqR2fSAbMBQVVfeXFMUHhKQ0ZjdkZJV280bjlvNWVLZzFZM0EyTFhCNmY5bU9SRmhrS2pDdVlVQjc4SWk0WWNwLXpZdjh6V0h6YlBDWmc0Q09HRnluRjhVZlRLZjRpc2NpTVNJdXFfaU5KQmxuVGFWdGNqdWpNZk1OdUdVTzZKRDJ1UThRWG8wRm9oTldkNGpocy1nSTJTRTJGOUxYU3NQS3cwQmRnRS12S1RSMkMteUExejl2T2R5SGs?oc=5",
       "published": "Fri, 04 Sep 2026 00:33:00 GMT",
-      "sent_at": "2026-09-05T05:06:17.526476+00:00"
+      "sent_at": "2026-09-05T05:06:17.526476+00:00",
+      "fingerprint": "netanyahu toppling iranian regime is israel s central mission goal within reach netanyahu toppling iranian regime is israel s central mission goal within reach the times of israel"
     },
     {
       "key": "b537eed363da83538f25f93b3d5f4d54f89eafa6",
@@ -2692,7 +2730,8 @@
       "summary": "IRGC says four personnel killed in US attack in western province Al Arabiya English",
       "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxOMFdnOTg2UjlLSS1XWjRzbGpsYTN6UkFrWHFXZEdlQnBybjFlTkRzdjNzREZnT0pDM0pXc0dXOVNvWHhvMzFjdWxpdExWLUNpMEx5UmJDWGRuajZIb3ZlejVCMFNvVUVEVHdUQ25tQTducXhnVEc0RHJIcUZUbkNXakFwa0p6VE9DTUx5Rm5ZQkpyM3A2RjNwT1lXRHh2TUM2WTcxWi1kVHkzWXNVNzA2TEhOSExwdG96WjZFZnZ5c9IBxAFBVV95cUxNVEVQWkNxWkFkTWxYa2lfZ1RtYkpVLVJWSVctNmptckhaaHh5V1dVbmN1SmlCX2lsYU8ycnVXTURoOTNmdndBbm9BWkswVE44empjUnJXdFNJcnI5UHdmWU9mNWNUUllpdHpIMzNHYzVwdGFiYXFvLWtOeGRndUU3X2ZyY0lhWlJ4NGlqYm5QNGRqMEU5SFdPQ0x2OVFpbGk2TzRvSktNNTY1dFBUT3NvMm9FcVZPYzJnWTRvT2JBckhSMTVD?oc=5",
       "published": "Wed, 02 Sep 2026 08:46:00 GMT",
-      "sent_at": "2026-09-05T05:06:17.526476+00:00"
+      "sent_at": "2026-09-05T05:06:17.526476+00:00",
+      "fingerprint": "irgc says four personnel killed in us attack in western province irgc says four personnel killed in us attack in western province al arabiya english"
     },
     {
       "key": "21cf940047c934a901fd92650ee05a61b7ce0374",
@@ -2701,7 +2740,8 @@
       "summary": "Iran, US exchange new attacks: Who was hit in latest strikes? Al Jazeera",
       "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQR3h3Q3czNUdSME4tbUc1Y3BMREVOSEgybjhDbnZ0ZHRXRllCdnZSN19mQUZDTGNPN1RYUkxMUG5MYUlKYkQ3TXJhVTk4WUpNTTBjbl9FMGpmTmlTRmVEOUNOT2hwcEFpX0FLTHhFbjFpWEhodm1jM1dycWUzTjlaNmh1ckwzOTNSTGt2RFNteHo3SGZJNGVZZWxIbUxqQm_SAaQBQVVfeXFMUEprUWViUHBaanlJLUxlZWxOcks0VGRxYVhhS3ZWRWdQREJJa3BpNnpSUERfLTJXc0FQd25BMXRvb01aYk9sUU9UQktsNlYzb1dCZmxiOVVqSVd3TnlSRlRYMGx6UVJfVEhWQ1NxVDZtazhFOUdzZEhzZnlKYTlwejV6cUNBdE9XMUJSelgzemV2b1NGaWFfbjRUdUkwTWEzY3dhODc?oc=5",
       "published": "Wed, 02 Sep 2026 08:57:30 GMT",
-      "sent_at": "2026-09-05T05:06:17.526476+00:00"
+      "sent_at": "2026-09-05T05:06:17.526476+00:00",
+      "fingerprint": "iran us exchange new attacks who was hit in latest strikes iran us exchange new attacks who was hit in latest strikes al jazeera"
     },
     {
       "key": "684d1eaa3831ab823e7470d20c10f54589d5ad86",
@@ -2710,7 +2750,8 @@
       "summary": "Israel says it’s ready to ‘decisively’ strike Iran if attacked during upcoming holidays The Times of Israel",
       "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNakpMX0l5UUpad1hVR2xCVVhHSXhIWGMtSmtiUFZTcF9GSHdLWFF6eXpkZERoOFhNdzhQZUg3dmFvMXZBX0VudV9ESF8wRVhZU2RMXy12VmVSZFBPc2RFZy0tbHpiSEwxM0RiaExad1piVkplT3BpSVhoTHBFV3dpbDB0TmV3TkgySGs2NzN2dmJnSlhsdkIwc0sxLXVhWHJWeVNqZXYxZTJ3YnFPZ0dfelBGSmo0Z9IBuwFBVV95cUxPZ2NtRHZpM0JfYkNoYlZTTXp2d0ZKV29pbzg0aENTakZzX2lzYmZNME52dWhHNERLeEdURlo0MDhKdGZoNVBkVTMxdlZkdmpvbklUN2tPTUxCaFBLbUJ1ZkRzTkkzbDA2U1k4STAxZ3E1TzBob0xxUk5selFwS015T3k4OEVqeXVUUFNld3lURU9RaG5La2lYZ0ctZlhqT25FUWQ4bWhETjIwRDhMOUJEVmljX0NxMURxUF84?oc=5",
       "published": "Wed, 02 Sep 2026 13:37:00 GMT",
-      "sent_at": "2026-09-05T05:06:17.526476+00:00"
+      "sent_at": "2026-09-05T05:06:17.526476+00:00",
+      "fingerprint": "israel says it s ready to decisively strike iran if attacked during upcoming holidays israel says it s ready to decisively strike iran if attacked during upcoming holidays the times of israel"
     },
     {
       "key": "2f8add98b95d4ad27b88cb050a33cf73cfe1d528",
@@ -2719,7 +2760,8 @@
       "summary": "Videos and debris raise questions over alleged US strike on Iranian wedding France 24",
       "link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNX3ZjS2prczRSekoycXZLVGxobU9BTWJYbW1aNWFYTjd1UHBMV0hyZVJoLTQ1SlRMcF9rb25vQVRMWmJybWVjY3FCbDQtWXZ3bnBsSkdrMlBGQ0dhMVFjcWFCVUdITXJIeE91QUwyZXBqUG4xbW5iT0pHOTJjdndwbC1Zd1ZydDgxQmhoc1VOMDRoN056d29wUlNhUXZYWGU4NFNpYnVKVUcxVGFTT29JTGYtaFBCc1BNeGdGRkM0R3RpQQ?oc=5",
       "published": "Wed, 02 Sep 2026 17:31:06 GMT",
-      "sent_at": "2026-09-05T05:06:17.526476+00:00"
+      "sent_at": "2026-09-05T05:06:17.526476+00:00",
+      "fingerprint": "videos and debris raise questions over alleged us strike on iranian wedding videos and debris raise questions over alleged us strike on iranian wedding france 24"
     },
     {
       "key": "40a5ea135a3a8f75cc53bc660bd74ac2cf939b94",
@@ -2728,7 +2770,8 @@
       "summary": "Truth or Fake - US-Iran war: Old videos falsely claim to show new attacks on American bases France 24",
       "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQVkh0bFAzdUhvME11OXdlQjJCdjF0OG5zMm9uNHc4Sm1kYmNKdUhBMFhBYjlQTzNsRlAzRmpVRXhKRGYwWTJ6VzlXZ2tHVEJnQTAxbGlrcjc5N1Q2Ukt5bUhub1llVEFOdGVJcVBPa25NdGFHelhtRVVaNTQ2TDRBWGRGVmtlU25PYnE3SGd3UU4ySk8yRDA5QmpLTkV0eFZCaTB5VWVCRQ?oc=5",
       "published": "Wed, 02 Sep 2026 20:57:27 GMT",
-      "sent_at": "2026-09-05T05:06:17.526476+00:00"
+      "sent_at": "2026-09-05T05:06:17.526476+00:00",
+      "fingerprint": "truth or fake us iran war old videos falsely claim to show new attacks on american bases truth or fake us iran war old videos falsely claim to show new attacks on american bases france 24"
     },
     {
       "key": "11b4602ebde24bf12350dd13a57f6c44e8c1636c",
@@ -2737,7 +2780,8 @@
       "summary": "Katz: If Iran attacks, Israel will be ‘free from all constraints’ and strike energy infrastructure The Times of Israel",
       "link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOMWFBVHJmTWN6Y3ZsSG1MdUIwQXFqM2Vib2NTWFF2RzY2WlBiY3N4SmQzamE1WVY2eFY1eUtnWm8zVFVTUkVrRkktbGNLRmlReF94QkROT2pBN2ktUjBNX1RLdHhVdFdOclFnSTg5SUYwbnotcU9NcWJzb0ZSZlVoRmswT0Z0Uml2WXZKdDdNWVhpdkhPMGs4TWpuM3hMYVdEbTB5YWtlYnRSTW94MWtDcm1LUi04eGxnZldxTjNpT2RETXVaTmRGOUh5UHVRbEF2ejNqRnB1dw?oc=5",
       "published": "Thu, 03 Sep 2026 10:09:15 GMT",
-      "sent_at": "2026-09-05T05:06:17.526476+00:00"
+      "sent_at": "2026-09-05T05:06:17.526476+00:00",
+      "fingerprint": "katz if iran attacks israel will be free from all constraints and strike energy infrastructure katz if iran attacks israel will be free from all constraints and strike energy infrastructure the times of israel"
     },
     {
       "key": "7eebdd5e6827c7000e8dd87b8bdfde453e21a471",
@@ -2746,7 +2790,8 @@
       "summary": "Iranian drone damages residential building in Kuwait City Al Jazeera",
       "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxNSlNfZTFTUjIzbi1nOVVZQWc4ZDU0aW9WcEstNHd2RE9WcVY4MkJlYzRReXUycEszVnNobXRmYjJfR0ZsYjhVZVloajNoOTItVDlKZUZzZUdZRDBLVWVJalFya2hRaUFxQ1Z6bDlHTldrZm1qWFpDMUxDeW00dmdSR2VGeTB5MXFkOFBNcGVfS2tvZ1Vu0gGaAUFVX3lxTE9LUFZEWVNFSlhYbGRnd1VRMkUtSnFsckdneGgwMzlKS2dvUWZoU3FPalAyZE5kQkNXOG1LNnBFWlNBamtfRC1PNVNSS2tEREZ1ZE9MTmphNGo3TjU4RnZ6ZFlMSUt2UEw4dHVUblc1RTRBdVppSnFfb09UWHBwYlhvd2daLUNJN2hiVDl2TmRjbmdKbmJlbXlTUXc?oc=5",
       "published": "Thu, 03 Sep 2026 15:18:55 GMT",
-      "sent_at": "2026-09-05T05:06:17.526476+00:00"
+      "sent_at": "2026-09-05T05:06:17.526476+00:00",
+      "fingerprint": "iranian drone damages residential building in kuwait city iranian drone damages residential building in kuwait city al jazeera"
     },
     {
       "key": "c6ab17945c40614e82ad2ab653e07ccaa09546d8",
@@ -2755,7 +2800,8 @@
       "summary": "Etihad CEO says airline is doubling down on growth despite Iran war CNBC",
       "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9aZEFEWm1kTGxMTk9oaDBHeHpMbDlqMERjWG94dV9JcWJBRDFqVHFDbVRlVTRHWXBqRS1iYW1DWlI3Rkh3LTQyT29Wa0FheW42Rld5R0xENVM0X0RXLU4wR0RoY3F1WHN6cmNDRmZMRENJYktJWXNUYWFKY1IzQQ?oc=5",
       "published": "Sat, 05 Sep 2026 04:00:04 GMT",
-      "sent_at": "2026-09-05T04:07:27.733056+00:00"
+      "sent_at": "2026-09-05T04:07:27.733056+00:00",
+      "fingerprint": "etihad ceo says airline is doubling down on growth despite iran war etihad ceo says airline is doubling down on growth despite iran war cnbc"
     },
     {
       "key": "78bbb1e3861478ba5743e2375b7623d68bccb66f",
@@ -2764,7 +2810,8 @@
       "summary": "NYT: U.S. Intelligence Believes Iran Wants to Escalate War Before Midterms Haaretz",
       "link": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxOdncyNl9xZUlfVUpadG50TG5wYVRFeTFRSTB1RU56TGFMeE5Jc2ViY3Vub3NkRXVFSURFbHM1OFNsRTdYLTEyekQ4SG5mWmxnZkhhNmdhUFRxYzBqUHBSbXVKdlNxRDEtNmZkRm5ldDNWTjFndGtEVWlyUGNnZC15TE5Fb2R0QVlnempzS2VlSUFuWjdhbEM1VFVxN1pQZlBuTG9MZkt1d0pCbnpUYjlsMFdYa2dKZml0WG9iaVRxU0taOWk2Um9ycjRMTzNIS3c2V2plb1l4ajRjZGlveWhoWXpmYVN1UHBKcGFibHRVUjlwVm5yM1M5Mm9ScVZjeVFOOHlpa2lIOUc?oc=5",
       "published": "Sat, 05 Sep 2026 03:51:00 GMT",
-      "sent_at": "2026-09-05T04:04:29.378464+00:00"
+      "sent_at": "2026-09-05T04:04:29.378464+00:00",
+      "fingerprint": "nyt u s intelligence believes iran wants to escalate war before midterms nyt u s intelligence believes iran wants to escalate war before midterms haaretz"
     },
     {
       "key": "1beba5f6815493599b888e2816d336df3d316ff4",
@@ -2773,7 +2820,8 @@
       "summary": "US said drafting postwar plan to create alliance against Iran, expand Abraham Accords The Times of Israel",
       "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQXy0xVk1BUHBONW4zRUlmX3JGUmdQYVR3dFoxaW5QdHFQaEhiVjBnSmlTSld1b0lFWHlJbDJnR2l3V2NROVMxSHB1b0czZWFQYllHbzhaRUI3UHRxTzRtYUItSUc0QUFxYnFhbmphM1ZMaG1YTFVXMVlnNUdKWkV2WTMzMC10akJvU0dNbWphUmhuZjM0YU1CRkI2VUpvN2xlcDRiRm5wejJ3WmFLM19FR0k5SDluUdIBuwFBVV95cUxQVVNPNi1tMTRQb1g2ZmpvTkE2Q1BxV3hrVlB3b3B5Qk9KdS1nUXB1R0R1NUwwYWJhbWx5ZTdtbDZRQVJQM0ZEWmJlTmFIQThKVEFPTGFhVEFsd25tSzJtWUFUVGFOM0RuZmJjalIzVHdqc0M0VzhiNGNVTHI1bGJQR2Z5UzBhcXI5SmszaFoyX0dsbDRGYnVoc3M2aWJ1MUZfVGFMV1dvX0Yxd051Vk1KaUpmeUFBX1ZmZVpB?oc=5",
       "published": "Fri, 04 Sep 2026 20:53:00 GMT",
-      "sent_at": "2026-09-05T01:20:22.366768+00:00"
+      "sent_at": "2026-09-05T01:20:22.366768+00:00",
+      "fingerprint": "us said drafting postwar plan to create alliance against iran expand abraham accords us said drafting postwar plan to create alliance against iran expand abraham accords the times of israel"
     },
     {
       "key": "921bf0d3cb0fcf64e5674329ac3e7747c3af2e66",
@@ -2782,7 +2830,8 @@
       "summary": "🇺🇸 ⚡️ — U.S. government investigators subjected around 50 members of the military’s Joint Staff to polygraph examinations in August as part of an investigation into leaks of classified information to journalists, according to NYT. Military officers and civilian employees were questioned about whether they had disclosed classified material to the media, including information about dwindling U.S. munitions stockpiles amid the war with Iran.",
       "link": "https://t.me/tabzlive/101811",
       "published": "Sat, 05 Sep 2026 01:10:22 +0000",
-      "sent_at": "2026-09-05T01:19:32.097279+00:00"
+      "sent_at": "2026-09-05T01:19:32.097279+00:00",
+      "fingerprint": "u s government investigators subjected around 50 members of the military s joint staff to polygraph examinations in august as part of an investigation into leaks of classified information to journalists according to nyt milita u s government investigators subjected around 50 members of the military s joint staff to polygraph examinations in august as part of an investigation into leaks of classified information to journalists according to nyt military officers and civilian employees were questioned about whether they had disclosed classified material to the media including information about dwindling u s munitions stockpiles amid the war with iran"
     },
     {
       "key": "69faa894fd0aa5ca4c4fe38c07f9385b17e1d596",
@@ -2791,7 +2840,8 @@
       "summary": "Trump Administration Live Updates: Vance Says ‘I Don’t Know’ if Iran War Will Be Over by Midterms nytimes.com",
       "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE5CYmZlT3B0akpuUHViOXdkT2t3M29uX01vTzJZREJ1SGVoaEloWk1Rc2NzaGFScFZJeFdXQ3p1NE5ubVBMMHN3bkRsSXRwNVk5djZJQVFpajJGd3dKU2p6Yk4ydw?oc=5",
       "published": "Fri, 04 Sep 2026 21:22:17 GMT",
-      "sent_at": "2026-09-05T00:50:50.678728+00:00"
+      "sent_at": "2026-09-05T00:50:50.678728+00:00",
+      "fingerprint": "trump administration live updates vance says i don t know if iran war will be over by midterms trump administration live updates vance says i don t know if iran war will be over by midterms nytimes com"
     },
     {
       "key": "7cff5f8f33694c0b7ec693a4c9d1e33867cd25c9",
@@ -2800,7 +2850,8 @@
       "summary": "⚡️ 🇮🇷 🛢 – The New York Post claims Iran has only 2 months worth of fuel left in its reserves, due to a combination of the U.S. blockade and additional sanctions that have cut off Tehran from the resources needed to repair its energy infrastructure. Another \"crushing loss\", as the NYP puts it, was the loss of the UAE as a primary trading partner. Keep in mind this same article claims \"the global flow of oil has largely resumed unencumbered through the Strait of Hormuz\", statement that has been debunked by all independent observers like Kpler and TankerTrackers. @GeoPWatch",
       "link": "https://t.me/GeoPWatch/39520",
       "published": "Fri, 04 Sep 2026 23:15:05 +0000",
-      "sent_at": "2026-09-04T23:19:02.783379+00:00"
+      "sent_at": "2026-09-04T23:19:02.783379+00:00",
+      "fingerprint": "the new york post claims iran has only 2 months worth of fuel left in its reserves due to a combination of the u s blockade and additional sanctions that have cut off tehran from the resources needed to repair its energy infr the new york post claims iran has only 2 months worth of fuel left in its reserves due to a combination of the u s blockade and additional sanctions that have cut off tehran from the resources needed to repair its energy infrastructure another crushing loss as the nyp puts it was the loss of the uae as a primary trading partner keep in mind this same article claims the global flow of oil has largely resumed unencumbered through the strait of hormuz statement that has been debunked by all independent observers like kpler and tankertrackers geopwatch"
     },
     {
       "key": "1e674460bfc8d6fce7f4662a2f85a4ace1c1d8fe",
@@ -2809,7 +2860,8 @@
       "summary": "Trump touts positive jobs report, pushes for peace in Ukraine and Iran Fox News",
       "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9ibzRjaXAxaEJHTW43aHZ4aFR6QThFenBZOGd6VGkzWlVNbW9rTlZxaGIxZ2hBbUU2ZFV4QTFEaGpEVmM0cFNDeVAyeWpyS1lseThzTl9B?oc=5",
       "published": "Fri, 04 Sep 2026 22:56:31 GMT",
-      "sent_at": "2026-09-04T23:04:20.324792+00:00"
+      "sent_at": "2026-09-04T23:04:20.324792+00:00",
+      "fingerprint": "trump touts positive jobs report pushes for peace in ukraine and iran trump touts positive jobs report pushes for peace in ukraine and iran fox news"
     },
     {
       "key": "23537535cd26a1e22f312c31b41c39b5bdb683dc",
@@ -2818,7 +2870,8 @@
       "summary": "UN nuclear agency members draft resolution reporting Iran to the UN Security Council AP News",
       "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNdGhJdnpSRE1GQ1FZTEdtaEFYMFJ6S2w2WUtISy0tYVFuakpkN3BDdDFTZWRaYkNyY2VqY1oyempFR0pTa1lUNDRPRHZGWk5zZGtvQWhUR0hpeHpHeHRoVGVEMGhwVWN6eE4wOXVRVEZvQ3VVZUpqZERfTkczQk9GTGpYVDVMZmk3bENBWTExUWZEbHVEU1FmSkFFcXNIMjEzNW1HYW0tUHBseWc?oc=5",
       "published": "Fri, 04 Sep 2026 21:20:00 GMT",
-      "sent_at": "2026-09-04T22:27:08.900874+00:00"
+      "sent_at": "2026-09-04T22:27:08.900874+00:00",
+      "fingerprint": "un nuclear agency members draft resolution reporting iran to the un security council un nuclear agency members draft resolution reporting iran to the un security council ap news"
     },
     {
       "key": "37de74b60a296cf453e735e3e9edbab1e8585417",
@@ -2827,7 +2880,8 @@
       "summary": "Reporter: When should the American people expect a resolution on Iran? Trump: Revolution? Reporter: Resolution. Trump: Big difference. I thought that revolution was more interesting.",
       "link": "https://t.me/ClashReport/95117",
       "published": "Fri, 04 Sep 2026 19:14:35 +0000",
-      "sent_at": "2026-09-04T22:07:27.041621+00:00"
+      "sent_at": "2026-09-04T22:07:27.041621+00:00",
+      "fingerprint": "reporter when should the american people expect a resolution on iran trump revolution reporter resolution trump big difference i thought that revolution was more interesting reporter when should the american people expect a resolution on iran trump revolution reporter resolution trump big difference i thought that revolution was more interesting"
     },
     {
       "key": "889295c9f2fa424a789ab26cf4f278e6772ead74",
@@ -2836,7 +2890,8 @@
       "summary": "🇮🇷 ⚡️ — Five anti-ship cruise missile launches from Sirik towards the Strait of Hormuz.",
       "link": "https://t.me/tabzlive/101794",
       "published": "Fri, 04 Sep 2026 19:57:37 +0000",
-      "sent_at": "2026-09-04T22:07:27.041621+00:00"
+      "sent_at": "2026-09-04T22:07:27.041621+00:00",
+      "fingerprint": "five anti ship cruise missile launches from sirik towards the strait of hormuz five anti ship cruise missile launches from sirik towards the strait of hormuz"
     }
   ],
   "hormuz_last_sent_date": "2026-09-05"
