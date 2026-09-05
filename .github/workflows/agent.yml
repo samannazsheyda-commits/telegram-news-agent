@@ -53,7 +53,7 @@ jobs:
           TELEGRAM_CHAT_ID: "@bikhabaar"
           POLL_SECONDS: "60"
           SESSION_SECONDS: "240"
-        run: python -m src.runtime --monitor
+        run: python -m src.runtime_v2 --monitor
 
       - name: Persist runtime data
         if: always()
