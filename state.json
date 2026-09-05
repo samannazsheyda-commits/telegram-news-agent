@@ -527,7 +527,7 @@
   },
   "car_last_sent_date": "2026-09-05",
   "weather_noon_last_sent_date": "2026-09-05",
-  "weather_night_last_sent_date": "2026-09-04",
+  "weather_night_last_sent_date": "2026-09-05",
   "market_day_prices": {
     "date": "2026-09-05",
     "first_usd": 221060,
