@@ -1,6 +1,10 @@
 {
-  "truth_last_id": "41523",
+  "truth_last_id": "41529",
   "news_seen": [
+    "469dc94e9c5de8384bc391702e590d5ba9ac0741",
+    "e0cf08d952598dca107733f85068fc40b3718e2c",
+    "fb8bd00859210a0ceb56ddf2d52948a5adcefb32",
+    "386084dc5afb641e165e09a979945c659f167ce3",
     "c6ab17945c40614e82ad2ab653e07ccaa09546d8",
     "78bbb1e3861478ba5743e2375b7623d68bccb66f",
     "a01e6461aa753c50706844916861ef67f1094d67",
@@ -496,11 +500,7 @@
     "767733cd10ce1bc7d5666166f8da22160da67a5e",
     "7e7cfeccb45b71a3f70b8af2b2aae55c3b8ca9eb",
     "6b2819d2d52978fc434998ae9ba968d354170af1",
-    "262d6fd8d4e013c6d19dcb14051b5149ef605a41",
-    "0e93822fb3b76cb181ddba59c882d28f8e97865b",
-    "c467d188548ae0247919bbb4145530f3a3f0075a",
-    "775285a7831fc24bf780c1b57f89c2a3338f31bf",
-    "20a756f2366de8aaca2ac963221f159b85ad057b"
+    "262d6fd8d4e013c6d19dcb14051b5149ef605a41"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "white",
@@ -530,6 +530,42 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "469dc94e9c5de8384bc391702e590d5ba9ac0741",
+      "source": "NOTAM / Airspace",
+      "title": "Middle East airspace closures: the latest updates for travellers amid the extended US-Iran ceasefire - Condé Nast Traveller Middle East",
+      "reason": "not_today_tehran",
+      "published": "Sat, 02 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxQM3JEbjlLVWpwM2dNS29qQ1lsUFhwWFVYaTZUWFhHSGlHaHIweElTX3lVdkgzaEhaWmwwNkFzbF91WnJDV2xZR3l5V1Q5SFp4M2lkdDRQOTFvTDFEUFd6OXpvM0pLWDNXQU53SHh2Sk1PM2ZJZDlaeHpRMmJ1NDYtT1M1ejN1d1o1VXRyczIxSUlXQ25yQ3NpQlpGWDlfMDBybWk5b0d5dUN1cHk0dzBxWVhpSFd3VkNId2x4TVFtYU1YeU5sVUZjVDJBeTlfY2U0?oc=5",
+      "checked_at": "2026-09-05T04:23:49.024874+00:00"
+    },
+    {
+      "key": "e0cf08d952598dca107733f85068fc40b3718e2c",
+      "source": "NOTAM / Airspace",
+      "title": "Jordan intercepts 10 of 13 Iranian ballistic missiles entering its airspace - Arab Times Kuwait News",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 21:27:04 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPVHpRV2Z2MWRUUlhxR09WT0Vwc2pzaW95WDdZVl9DQmFjQ2NFQUJYRWRUM1NScG1mYURGZzIzTk52VkJ6ZkRhaHZBSFZ3WU8yaUFzb1puSGg4ZWdVbm5IN282MnpfREM2cWlvSy1xWXlrdWFEelBQaDk5blZMWHZXS1c2Z3VmVXVIMF95ZzRiX0JwSGNDQlZkYmhaUF9XQjhPaTAxdTVwRFM1ekZwcEh4dHllSQ?oc=5",
+      "checked_at": "2026-09-05T04:23:49.024874+00:00"
+    },
+    {
+      "key": "fb8bd00859210a0ceb56ddf2d52948a5adcefb32",
+      "source": "NOTAM / Airspace",
+      "title": "Iran Launches Operation Against US Forces as US Warns of Airspace Closures and Flight Cancellations - Arab Times Kuwait News",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 18:47:20 GMT",
+      "link": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQZnRpTE1zdnRZQ3dtWUxRNFJxYWpXOHhrZ0owdGMtV0ZTemUtVWp6M1NhQnNPT3Nlb2RiclNXTnVrelRBeUVOa21hd2J4UXdZV3NvRHZJN1NCdzV2N01SNmZBNlJyNzlNVzZTaGxRbE5VSjZnaWo3ZGJqdUV3Tk51YVVoMnh6YmtCZVdaMDRCN04yeEpDSDQyNjRRM1NiTjBhcENoT3hNZ0w4UUZ4SjdCWUc4c3NNODFsbzd2Y3gybTl1NXBWdElKaDVwWFJYeXRqeHdj?oc=5",
+      "checked_at": "2026-09-05T04:23:49.024874+00:00"
+    },
+    {
+      "key": "386084dc5afb641e165e09a979945c659f167ce3",
+      "source": "The New York Times",
+      "title": "Iran War Helps to Drive U.S. Diesel Prices to New High",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 17:40:08 GMT",
+      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQcXloYk5UMGdQS2dXVEZsR3FsU1RERGpiZFpTNkdUMzAtTnRLb1VKbEZxanY4cUp3M2UtaFZFdlBBVG5FWjFwZWRNQ3QyakluVEw4d3JjZHZTZzZRQlAyZEFLOG1OU0lkNUExTmQ4X3J1WWpWeEJscjBtcTg3Tnh1Qks0WQ?oc=5",
+      "checked_at": "2026-09-05T04:20:49.024494+00:00"
+    },
     {
       "key": "a01e6461aa753c50706844916861ef67f1094d67",
       "source": "Abbas Araghchi / X",
@@ -2292,42 +2328,6 @@
       "reason": "not_today_tehran",
       "published": "Wed, 22 Apr 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1OclVkTnpnU3hjbkpYeldlMnpuRzBFZ2p6YnAwVGJuM0JyMFRhZkpvVC11QjYzejZadGZ6V0ZkRGJESWVQVURSekdqYzExVDMxZE9iUmVQaE9NYjVIN1lTdw?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "655ea31b926011e25493d8179881483c449c1530",
-      "source": "Barak Ravid / X",
-      "title": "Trump on Truth Social: Despite their protestations and false statements to the contrary...Iran has fully and completely agreed to highest level Nuclear inspections long into the future (Infinity!!!). This will insure “Nuclear Honesty.” If they did not agree to this, there",
-      "reason": "not_today_tehran",
-      "published": "Tue, 23 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE02Nmp2RHVZNXMxZW82VTVWdzZLZUMyUTNwWVFDSjJLOXphNnZhUE55QmVhYm14WUlDaHAxLThmUFlrMXZPVkhiaWZUUGh2LVpxYndNNDlEM1ZqUTl3cDQydQ?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "f734a2e0b58502bdac4cd007bf0d46aafe7955df",
-      "source": "Barak Ravid / X",
-      "title": "🚨The U.S. military is conducting air strikes in Iran, U.S. official tells me",
-      "reason": "not_today_tehran",
-      "published": "Wed, 29 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9xZFQ1elktWkJ5ZENBdC1iQXZCU1plMTNuTFFBTUU1MWxnRlFfOFV2ekY4M0cwYVh2VWlwNTZ3RFJhTVF0a0xNYVp0cnV1U2NQckh2dUtyNXJmU1hpRzcteg?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "ac31093e645c9c14bba50829a929c15622b356a9",
-      "source": "Barak Ravid / X",
-      "title": "U.S.-Iran nuclear talks in Geneva end after three hours, per source with knowledge",
-      "reason": "not_today_tehran",
-      "published": "Thu, 26 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9KaTdRTUMtYTFKSmpJNDJFbGl5OUltczYwVm9GWVpSa2hOcm5iNGVvM3pUUjR1bFRtdFhiRXNsdjVfel9hVW5FUHFuX2lqSGdxS2czNElkUkYzbjBYMi1Kcg?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "afea21b3a92fa8fb52c178540de59ad07dea9aec",
-      "source": "Barak Ravid / X",
-      "title": "💥🇺🇸🇮🇷Trump approved the Iran strike plan and ordered it today while in Turkey for the NATO summit, a U.S. official said 💥🇺🇸🇮🇷Trump held a meeting in Ankara with Hegseth, Rubio and Bessent who flew with him on Air Force 1, with Chairman Dan Caine w",
-      "reason": "not_today_tehran",
-      "published": "Tue, 07 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBnMTh4NWVQYWR2cjMzbks1UHRGNTN5WUh3RHUxOHZmTzkwX0hIcXVscmVsWnhPbUZ2U2NkTFgtY1I5eDhWZmx6M0ZUNWtQdEktdjhBMmNEUlBRNlozeDV2eg?oc=5",
       "checked_at": "2026-09-05T01:46:46.148951+00:00"
     }
   ],
