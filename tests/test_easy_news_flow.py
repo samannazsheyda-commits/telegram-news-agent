@@ -156,18 +156,23 @@ def test_install_easy_flow_wires_policy_without_leaking_after_test(monkeypatch):
         v7._easy_news_flow_installed = original_flag
 
 
-def test_easy_flow_selects_only_newest_translatable_story_per_cycle(monkeypatch):
+def test_easy_flow_selects_up_to_five_newest_translatable_stories_per_cycle(monkeypatch):
     from src import runtime_v7 as v7
 
     monkeypatch.setattr(v7, "_original_translate", lambda value, session=None: "ترجمه فارسی ایران")
     v7._translation_cache.clear()
     items = [
-        _x("x:Reuters:1", "Sat, 05 Sep 2026 08:00:00 +0000"),
-        _x("x:Reuters:2", "Sat, 05 Sep 2026 08:01:00 +0000"),
-        _x("x:Reuters:3", "Sat, 05 Sep 2026 08:02:00 +0000"),
+        _x(f"x:Reuters:{i}", f"Sat, 05 Sep 2026 08:{i:02d}:00 +0000")
+        for i in range(1, 8)
     ]
     selected, skipped = v7._select_one_story(items, [])
-    assert [item.key for item in selected] == ["x:Reuters:3"]
+    assert [item.key for item in selected] == [
+        "x:Reuters:7",
+        "x:Reuters:6",
+        "x:Reuters:5",
+        "x:Reuters:4",
+        "x:Reuters:3",
+    ]
     assert skipped == []
 
 
