@@ -1,5 +1,5 @@
 from src.editorial_rules import is_duplicate_story
-from src.newsroom_x import builtin_x_news_sources, clean_x_post_text, x_monitor_query
+from src.newsroom_x import builtin_x_news_sources, clean_x_post_text, resolve_x_post_url, x_monitor_query
 from src.oil import OilSnapshot, format_oil_lines
 from src.sources import MarketSnapshot, NewsItem
 import src.runtime_v2 as runtime
@@ -51,6 +51,32 @@ def test_x_post_text_removes_trailing_secondary_media_attribution():
 def test_x_post_text_removes_parenthetical_secondary_media_citation():
     assert clean_x_post_text("Time is no longer on Iran's side (Wall Street Journal, 2018).") == "Time is no longer on Iran's side."
     assert clean_x_post_text("Pressure is rising (i24NEWS).") == "Pressure is rising."
+
+
+class _FakeResponse:
+    def __init__(self, url, text=""):
+        self.url = url
+        self.text = text
+    def raise_for_status(self):
+        return None
+
+
+class _FakeSession:
+    def __init__(self, response):
+        self.response = response
+    def get(self, *args, **kwargs):
+        return self.response
+
+
+def test_x_link_resolver_returns_direct_status_redirect():
+    session = _FakeSession(_FakeResponse("https://x.com/Reuters/status/1961234567890123456"))
+    assert resolve_x_post_url("https://news.google.com/rss/articles/abc", "Reuters", session=session) == "https://x.com/Reuters/status/1961234567890123456"
+
+
+def test_x_link_resolver_extracts_status_url_from_google_wrapper_html():
+    html = '<a href="https://x.com/Reuters/status/1961234567890123456?ref_src=twsrc%5Etfw">post</a>'
+    session = _FakeSession(_FakeResponse("https://news.google.com/articles/abc", html))
+    assert resolve_x_post_url("https://news.google.com/rss/articles/abc", "Reuters", session=session) == "https://x.com/Reuters/status/1961234567890123456"
 
 
 def test_same_katz_claim_from_france24_and_ap_is_duplicate_despite_paraphrase():
