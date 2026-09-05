@@ -1,5 +1,23 @@
 [
   {
+    "id": "556223e3b32edb6864a3de06fc5484191e551ad8",
+    "news_key": "b7f38256245730b44d39bd30364b452854d7ac99",
+    "source": "NOTAM / Airspace",
+    "source_url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNLXBMSkE0Y1dYYTVrVklRSjFoTE1QcXZ1R21hLTgxZGxvTnE3Q3hjaUU3Ym1XRVNyRFViQXIyRFlsTTZFSXlqZThmT0dBRnU2c1hieTlpSGhuR1pMb185RW9ia1ZaLUN3VTRJWmhyMlNnYzlmaklqX3IxaWFBaFJCeHByQzlEZVlJVjg4YUFTcjduaU1zb1E2MTc1VXEtbkxRd0E?oc=5",
+    "original_title": "EU Aviation Safety Agency Narrows Persian Gulf Airspace Warning",
+    "original_summary": "EU Aviation Safety Agency Narrows Persian Gulf Airspace Warning Aero-News.net",
+    "persian_title": "",
+    "persian_body": "",
+    "published_at_source": "Tue, 01 Sep 2026 11:14:35 GMT",
+    "discovered_at": "2026-09-05T11:20:52.885911+00:00",
+    "rejection_reason": "not_today_tehran",
+    "status": "superseded",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-05T11:21:36.830168+00:00"
+  },
+  {
     "id": "c6b2aa7f933a9f8e66be1ec814f56e6b14781267",
     "news_key": "x:TankerTrackers:2096031376487133584",
     "source": "TankerTrackers / X",

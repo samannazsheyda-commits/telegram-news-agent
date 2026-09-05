@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:JasonMBrodsky:2096190282983247876",
+    "x:business:2096191671138451479",
+    "b7f38256245730b44d39bd30364b452854d7ac99",
     "x:JasonMBrodsky:2096189697013793139",
     "x:AJEnglish:2096189272189526020",
     "x:kann_news:2096188326730494125",
@@ -497,10 +500,7 @@
     "9f7d9983e91d04112d1dcc234859060b41c5d8e3",
     "d737534fd2f114c34cc5b0cef034b26f56e86fbc",
     "08f201f0c92aee4ef45a2955bb251f52c5734107",
-    "655ea31b926011e25493d8179881483c449c1530",
-    "afea21b3a92fa8fb52c178540de59ad07dea9aec",
-    "ed06d4a7374f040657b0ad21b0019e8a75c4d05c",
-    "0fd5a8d47bdac05fff4c57fb0a1f08cf24bd291b"
+    "655ea31b926011e25493d8179881483c449c1530"
   ],
   "market_last_sent_at": "2026-09-05T10:44:48.152950+00:00",
   "next_news_color": "red",
@@ -540,6 +540,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "b7f38256245730b44d39bd30364b452854d7ac99",
+      "source": "NOTAM / Airspace",
+      "title": "EU Aviation Safety Agency Narrows Persian Gulf Airspace Warning",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 11:14:35 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNLXBMSkE0Y1dYYTVrVklRSjFoTE1QcXZ1R21hLTgxZGxvTnE3Q3hjaUU3Ym1XRVNyRFViQXIyRFlsTTZFSXlqZThmT0dBRnU2c1hieTlpSGhuR1pMb185RW9ia1ZaLUN3VTRJWmhyMlNnYzlmaklqX3IxaWFBaFJCeHByQzlEZVlJVjg4YUFTcjduaU1zb1E2MTc1VXEtbkxRd0E?oc=5",
+      "checked_at": "2026-09-05T11:20:52.885911+00:00"
+    },
     {
       "key": "x:AlArabiya_Eng:2096175236408344804",
       "source": "Al Arabiya English / X",
@@ -2330,19 +2339,28 @@
       "published": "Fri, 04 Sep 2026 02:19:15 GMT",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFB3blR6ck5ZUUZ3WUFMdmFjYXVMSDZKc2hwRVNjc2xWUnJ4Z05nWFZEZGpUdTdfZm1CdVNLS0pWZGtQVGMtTFpqX0hLdVUtdlVBcGs1YnNJdldYZ2FkdEljbw?oc=5",
       "checked_at": "2026-09-05T08:33:07.353938+00:00"
-    },
-    {
-      "key": "c63247d8b373c5ecfc0ef3f2c40818ec994c115a",
-      "source": "Barak Ravid / X",
-      "title": "🚨🇺🇸🇮🇷President Trump told me he is ready for \"strong military action\" if negotiations with Iran fail. My story on @axios https://t.co/51WZpantjv",
-      "reason": "not_today_tehran",
-      "published": "Mon, 27 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1wV1BMWjBCR2RYVERvbW5ORlR5blRpTjBrTktycERIY19mVW8wQUIxWHV2M2U1VFpqT0NEU2hxeGRTUzdiN1pOcC13cnhWbUJidEdzd2JXQThKb2F2eUt0TmRFLWdTNG1fUHFN?oc=5",
-      "checked_at": "2026-09-05T08:33:07.353938+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:JasonMBrodsky:2096190282983247876",
+      "source": "Jason Brodsky / X",
+      "title": "#Iran's rial fell to a new record low of about 2.25 million to the US dollar on Saturday, extending a sharp decline in recent weeks.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2096190282983247876",
+      "published": "Sat, 05 Sep 2026 10:54:43 +0000",
+      "sent_at": "2026-09-05T11:22:39.934142+00:00"
+    },
+    {
+      "key": "x:business:2096191671138451479",
+      "source": "Bloomberg / X",
+      "title": "After 286 days at sea, thousands of sailors aboard the USS Abraham Lincoln finally got a brief respite in Thailand. Their grueling deployment shows the mounting strain on the US Navy as the war with Iran drags on.",
+      "summary": "",
+      "link": "https://x.com/business/status/2096191671138451479",
+      "published": "Sat, 05 Sep 2026 11:00:14 +0000",
+      "sent_at": "2026-09-05T11:21:41.885467+00:00"
+    },
     {
       "key": "x:JasonMBrodsky:2096189697013793139",
       "source": "Jason Brodsky / X",
