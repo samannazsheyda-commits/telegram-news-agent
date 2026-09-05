@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:AlArabiya_Eng:2096269172426609005",
     "x:AJEnglish:2096264844135858592",
     "x:CENTCOMFarsi:2096255895445373362",
     "x:JasonMBrodsky:2096249240812957763",
@@ -499,11 +500,10 @@
     "29f0fa35b7c9f50c819beab969844f3c08bb9293",
     "44e421038abd57b99985eda3161ff7e2cdbc5d9d",
     "5d61a7c1036bfcd0b971eb9e63bae2b531ed5c91",
-    "044e83f0fc892a8fbb34c5dd1d9a7a20e8847e40",
-    "8bb4e81c020c1d8768da38664e6c9cd691776abf"
+    "044e83f0fc892a8fbb34c5dd1d9a7a20e8847e40"
   ],
   "market_last_sent_at": "2026-09-05T14:48:33.575362+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -2343,6 +2343,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2096269172426609005",
+      "source": "Al Arabiya English / X",
+      "title": "BREAKING: Ten people were killed when a fuel tanker exploded on a highway in western Iran as a result of a traffic accident, according to state media.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096269172426609005",
+      "published": "Sat, 05 Sep 2026 16:08:12 +0000",
+      "sent_at": "2026-09-05T16:10:09.039462+00:00",
+      "fingerprint": "breaking ten people were killed when a fuel tanker exploded on a highway in western iran as a result of a traffic accident according to state media"
+    },
     {
       "key": "x:AJEnglish:2096264844135858592",
       "source": "Al Jazeera English / X",
