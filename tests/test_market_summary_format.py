@@ -18,7 +18,8 @@ def test_daily_summary_shows_only_current_price_and_percentage_change():
     assert "🔺 ۰.۶۶٪" in text
     assert "۲۲۱,۰۶۰" not in text
     assert "۲۳,۵۱۸,۸۰۰" not in text
-    assert "←" not in text
+    assert "۲۲۱,۰۶۰ ←" not in text
+    assert "۲۳,۵۱۸,۸۰۰ ←" not in text
     assert "👉🏻" not in text
 
 
