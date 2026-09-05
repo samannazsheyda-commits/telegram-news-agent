@@ -541,13 +541,22 @@
   },
   "news_rejections": [
     {
+      "key": "x:AlArabiya_Eng:2096175236408344804",
+      "source": "Al Arabiya English / X",
+      "title": "Iranian experts are taking part in directing Houthi military operations in Yemen’s southwestern province of Taiz, Yemeni military sources tell Al Arabiya English 🔴 The sources said dozens of Houthi fighters had been killed in intense battles as Yemeni armed forces made advances on several fronts over the past few hours 🔴 Yemen’s air force also carried out a series of airstrikes against Houthi positions in Taiz and the western province of Hodeidah, according to the sources 🔴 The strikes helped thwart Houthi attempts to advance along several axes, the sources added",
+      "reason": "translation_failed_retry_later",
+      "published": "Sat, 05 Sep 2026 09:54:56 +0000",
+      "link": "https://x.com/AlArabiya_Eng/status/2096175236408344804",
+      "checked_at": "2026-09-05T09:55:14.263092+00:00"
+    },
+    {
       "key": "x:TankerTrackers:2096031376487133584",
       "source": "TankerTrackers / X",
       "title": "We’ve now tagged 17 crude oil and gas (LNG & LPG) ship-to-ship transfers which took place yesterday (2026-09-04) in the Gulf of Oman. At least 24 million barrels were being exchanged. We also identified many more oil-laden tankers waiting for a dance partner in those waters. It appears that the dance floor itself is the limitation. It's getting quite crowded and port services are kept busy around the clock to ensure smooth and safe transfers. In addition, we spotted at least 7.25 million barrels, along with two more LNG tankers, assembling to transit the SoH into the GoO under the protection of US CENTCOM. Busy day. #OOTT #IranWar #Tankers",
       "reason": "translation_failed_retry_later",
       "published": "Sat, 05 Sep 2026 00:23:17 +0000",
       "link": "https://x.com/TankerTrackers/status/2096031376487133584",
-      "checked_at": "2026-09-05T09:44:02.527764+00:00"
+      "checked_at": "2026-09-05T09:55:14.263092+00:00"
     },
     {
       "key": "ff92b318d33c59099f68d1774fa070027b4851c8",
@@ -2329,15 +2338,6 @@
       "reason": "not_today_tehran",
       "published": "Tue, 28 Apr 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFA4WnpHZ0ZTS0tRbVZoTm93RUQ4NXJ5VE1hTW1xYWtady1oQm5xZldDQUJjcFRobFYycjF4RHR6Yk50ZFhGTWlfR1RaMUljRVhTSEVsSGNJUzV3SjBXRzBlUQ?oc=5",
-      "checked_at": "2026-09-05T08:25:36.583911+00:00"
-    },
-    {
-      "key": "a4c65b64518069f4d43d6f17b5278159da54324c",
-      "source": "Barak Ravid / X",
-      "title": "The U.S. military is conducting strikes on Iranian targets in the area of the strait of Hormuz in retaliation for Iranian attack this morning on a commercial tanker, U.S. official says",
-      "reason": "not_today_tehran",
-      "published": "Sat, 27 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1Xb3AtaDR5Z1drazhNQ0VRb0dHQU1uZU1ZQWhJVkVjWDh5ZTlCamFtRlY3Ylg5TVlOcjVOb2FLSUE0ZlVfYldsemNid3pmRThuTV91dXFVNE5LMDNlY1RiUQ?oc=5",
       "checked_at": "2026-09-05T08:25:36.583911+00:00"
     }
   ],
