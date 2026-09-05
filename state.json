@@ -1,7 +1,6 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
-    "x:kann_news:2096188326730494125",
     "x:TankerTrackers:2096031376487133584",
     "x:AlArabiya_Eng:2096175236408344804",
     "x:AlArabiya_Eng:2096182873434800389",
@@ -500,10 +499,11 @@
     "ed06d4a7374f040657b0ad21b0019e8a75c4d05c",
     "0fd5a8d47bdac05fff4c57fb0a1f08cf24bd291b",
     "8eeaa1a703a8d9d47bbfa5b2928cabdfd70ab444",
-    "f6a83c940c1dc4ece963f7a7bd3588cc2d0bbf3b"
+    "f6a83c940c1dc4ece963f7a7bd3588cc2d0bbf3b",
+    "d7b6d8056d660db0c4bc349bdb3a8db736b33e1e"
   ],
   "market_last_sent_at": "2026-09-05T10:44:48.152950+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -2343,15 +2343,6 @@
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
-    {
-      "key": "x:kann_news:2096188326730494125",
-      "source": "KAN 11 / X",
-      "title": "שגריר ארה\"ב בישראל, מייק האקבי, במהלך ביקורו בכפר הפלסטיני תורמוס-עייא מצפון לרמאללה: \"שמענו מהתושבים תלונות לגבי האתגרים העומדים בפניהם, כשחלקם מאויימים ע\"י אנשים שאני מגדיר כטרוריסטים. כשאתה מנסה לייצר אווירה בה אנשים לא מרגישים בנוח ולא בטוחים בתוך הבתים שלהם – זה טרור בכל מובן המילה\" @LiranHaroni",
-      "summary": "",
-      "link": "https://x.com/kann_news/status/2096188326730494125",
-      "published": "Sat, 05 Sep 2026 10:46:57 +0000",
-      "sent_at": "2026-09-05T10:47:40.088647+00:00"
-    },
     {
       "key": "x:TankerTrackers:2096031376487133584",
       "source": "TankerTrackers / X",
