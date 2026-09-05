@@ -175,6 +175,20 @@ def parse_public_feed(content: bytes, source_name: str) -> list[NewsItem]:
     return items
 
 
+def _direct_iran_telegram_relevance(text: str) -> bool:
+    if not is_iran_related(text):
+        return False
+    # A foreign/regional story is not an Iran story merely because a weapon is
+    # described as Iran-made/Iranian-made. Remove that provenance-only phrase and
+    # require another genuine Iran signal to remain.
+    without_provenance = re.sub(
+        r"(?i)(?:#\s*)?iran(?:ian)?\s*[-–—]?\s*made\b",
+        " ",
+        text or "",
+    )
+    return is_iran_related(without_provenance)
+
+
 def parse_public_telegram_channel(html_text: str, channel: str, source_name: str) -> list[NewsItem]:
     channel = normalize_telegram_channel(channel)
     soup = BeautifulSoup(html_text or "", "html.parser")
@@ -186,7 +200,7 @@ def parse_public_telegram_channel(html_text: str, channel: str, source_name: str
             continue
         text_node = message.select_one(".tgme_widget_message_text")
         text = strip_html(str(text_node)) if text_node is not None else ""
-        if not text or not is_iran_related(text):
+        if not text or not _direct_iran_telegram_relevance(text):
             continue
         title = re.sub(r"\s+", " ", text).strip()
         if len(title) > 240:
