@@ -85,3 +85,13 @@ def test_public_telegram_channel_filters_to_iran_posts_and_preserves_post_link()
     assert items[0].link == "https://t.me/tabzlive/1001"
     assert "Iran" in items[0].title
     assert "05 Sep 2026" in items[0].published
+
+
+def test_public_telegram_channel_rejects_tangential_iran_made_equipment_story():
+    html = '''
+    <div class="tgme_widget_message" data-post="war_noir/2001">
+      <div class="tgme_widget_message_text">#Yemen: Houthis struck Saudi-backed forces with drones. Fighters used an #Iran-made launcher and mortar bombs.</div>
+      <time datetime="2026-09-05T19:04:00+00:00"></time>
+    </div>
+    '''
+    assert parse_public_telegram_channel(html, "war_noir", "War Noir") == []
