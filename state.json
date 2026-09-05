@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "x:CNN:2096246707763728497",
     "x:BBCWorld:2096246356931137577",
     "x:FoxNews:2096245958044496255",
     "x:axios:2096245475439485318",
@@ -499,11 +500,10 @@
     "299fdab3df512821d5a75303f125d52fb9b85bec",
     "d4106c8996feaeee45352b970123995282d29a70",
     "ab7714cf653c0b5b67d3dcd08b8da688d8bb5f91",
-    "ca59bac4f0b3c7336ccb72cdefcccc5a5e5bada6",
-    "d036bb56984d0acd9bf5a048b70a738b992b3df9"
+    "ca59bac4f0b3c7336ccb72cdefcccc5a5e5bada6"
   ],
   "market_last_sent_at": "2026-09-05T12:47:38.071885+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -2344,6 +2344,16 @@
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
     {
+      "key": "x:CNN:2096246707763728497",
+      "source": "CNN / X",
+      "title": "The US military says its forces struck three Iranian crude oil carriers after Iran launched ballistic missiles toward two US Navy warships.",
+      "summary": "",
+      "link": "https://x.com/CNN/status/2096246707763728497",
+      "published": "Sat, 05 Sep 2026 14:38:56 +0000",
+      "sent_at": "2026-09-05T14:40:47.122017+00:00",
+      "fingerprint": "the us military says its forces struck three iranian crude oil carriers after iran launched ballistic missiles toward two us navy warships"
+    },
+    {
       "key": "x:BBCWorld:2096246356931137577",
       "source": "BBC World / X",
       "title": "US hits 3 Iranian oil tankers after saying its warships were targeted",
@@ -2382,16 +2392,6 @@
       "published": "Sat, 05 Sep 2026 14:15:59 +0000",
       "sent_at": "2026-09-05T14:28:15.102785+00:00",
       "fingerprint": "breaking us says it struck three iranian carriers after irgc fired missiles towards two us warships patrolling regional waters centcom commander brad cooper said if the irgc shoots at us ships it ll face a higher economic cost"
-    },
-    {
-      "key": "x:CNN:2096241541916352728",
-      "source": "CNN / X",
-      "title": "The US military says its forces struck three Iranian crude oil carriers after Iran launched ballistic missiles toward two US Navy warships.",
-      "summary": "",
-      "link": "https://x.com/CNN/status/2096241541916352728",
-      "published": "Sat, 05 Sep 2026 14:18:24 +0000",
-      "sent_at": "2026-09-05T14:28:15.102785+00:00",
-      "fingerprint": "the us military says its forces struck three iranian crude oil carriers after iran launched ballistic missiles toward two us navy warships"
     },
     {
       "key": "x:haaretzcom:2096240722630320212",
