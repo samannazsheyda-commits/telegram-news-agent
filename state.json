@@ -1,6 +1,12 @@
 {
   "truth_last_id": "41522",
   "news_seen": [
+    "5de176a78f0b1daf3a7cd68b2c051736142dfc02",
+    "742cd8dbd3904c134e081c767da73dafc2bcf217",
+    "9a3042c31d73aada8517b8bfa38faf4ffd88e625",
+    "0545b93d1340a9a8da9017473e5a631f8d0d1895",
+    "69faa894fd0aa5ca4c4fe38c07f9385b17e1d596",
+    "f8e779c120c3b20dfdb6f8997128d342d2c26f46",
     "99135efccde571d3e581ed774551c3d3476abbd7",
     "af6a9361fec24dee3774dc083f925850c04b9848",
     "dfd861dc257b09c49a5ed426a40e57e8042fc4ae",
@@ -494,16 +500,10 @@
     "4fc9f03c89e8bd0d2dd4484b780735a99f70c5c8",
     "d861c60b008153b6c7eae70970d794a7672941d4",
     "76d2830d2edefd93a7a447e7128b58af6c5d1427",
-    "0a3d6c54b420dfc5c030cda165d3e27ecb722106",
-    "d036bb56984d0acd9bf5a048b70a738b992b3df9",
-    "c8cfae484e130fa2623103653635b4523c799281",
-    "5de176a78f0b1daf3a7cd68b2c051736142dfc02",
-    "9a3042c31d73aada8517b8bfa38faf4ffd88e625",
-    "0545b93d1340a9a8da9017473e5a631f8d0d1895",
-    "afbf8c69ffd59aab862c394b03ded10bee3c3122"
+    "0a3d6c54b420dfc5c030cda165d3e27ecb722106"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو ۲۰۷ دنده‌ای": 2210000000,
     "پژو ۲۰۷ اتومات": 2810000000,
@@ -530,6 +530,51 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "5de176a78f0b1daf3a7cd68b2c051736142dfc02",
+      "source": "Barak Ravid / X",
+      "title": "Trump: The deal with Iran will be signed shortly - tomorrow or the next day",
+      "reason": "not_today_tehran",
+      "published": "Wed, 17 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5qcFNIYldPSkp1OGppcHhwYnhSVVlrT3hsNTJEU2hqa1JGVnNwNjF1RmVDYS1uU0JlQUtPQXU1ZW05aEtpUDVBa0k5SS1qQ01Mcm5ZRlQ1OTdXSEk1S1pPTw?oc=5",
+      "checked_at": "2026-09-05T00:53:23.826681+00:00"
+    },
+    {
+      "key": "742cd8dbd3904c134e081c767da73dafc2bcf217",
+      "source": "Associated Press",
+      "title": "US and Iran trade strikes, and other Mideast news",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 23:12:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxQdlc2ODRWbzc4Ujc2bkpMYWU2dGtJU3JNdk1UeHhYbThocGhLbG9WdDVGd3JpdlIxLUNRZFhWZU80TXhRMWk2RFVaYmVwRXhVdG9fcUl3Zk5Pd0Q1SHpzT0w1aURMQVVxUURyR2lZYTZGbjNfT18yTlBMRml2bTZGM3dDaWNKNmNfelRuLXlsWmw1SlIwNHY0c3ljY2cwc0pma0tId2VtUjBpVWQ4OE5TeE90QVFrWFI5UTZ5eV9HeWhVQ09WUGc?oc=5",
+      "checked_at": "2026-09-05T00:53:23.826681+00:00"
+    },
+    {
+      "key": "9a3042c31d73aada8517b8bfa38faf4ffd88e625",
+      "source": "ABC News",
+      "title": "Rubio says operation in Iran is 'over,' nuclear material 'has to be addressed'",
+      "reason": "not_today_tehran",
+      "published": "Tue, 05 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNTFh6aVdOeUZNVjV0dnY4bkJyalZPSTJ6bnZQSkNiYlpKTTFBS1dNZXFFZFRPZGJWTmxpZmlJZlIyWnFsWnVNSWtheWM1aHBoTi1sdnJrNTNUaE0xNVRJNWJXZDVKTnJLR2dnZUpibERHc0tBMk96c3NRUWkwM0Vfd2ZrTjhFM2pVeG5ObVJUaDVvdldFWm81StIBngFBVV95cUxPLVFBcDhSNjA4RzFCR3JnZERyb01iOXZwVktobzkyZm5rczNuZi1RVXpScnhMWHhKQXhmVFdacmpPUVhwazFPdFdiNVpaQTBMaHF4UXg0ZkZEWjVtaGREcnJNU2p4ZkZCOGVJX0VtcHNEUDVMVXhZbW9BQW00c2pfay1vWVNzUEMtdHNfRmk0S21XdUpQUzZJSTBGQjMtdw?oc=5",
+      "checked_at": "2026-09-05T00:52:23.826570+00:00"
+    },
+    {
+      "key": "0545b93d1340a9a8da9017473e5a631f8d0d1895",
+      "source": "Bloomberg",
+      "title": "Trump Calls Iran Conflict ‘Small Potatoes,’ Plays Down War",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 19:20:36 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQQzF0SFlLNUdqOVR5enVwTzI5ZEptUDB4SnZZN1JiN1lWQlNCczlZS20zT3BONmpjclpUd0JrUnBXbktLYllEUnlsOHRqa3pfNWZFQ3ZCWTRqWXp1WVFaYUJpalVIaW5RcFdtOU40dVp2bXMzVm5nTEp4ZzJTVFlTSmlfSFJ4aTVsSXVUbVFETFAwRjBJMUV2Q0h3MG13cE5ZNmtsWElVMllPQQ?oc=5",
+      "checked_at": "2026-09-05T00:51:23.826441+00:00"
+    },
+    {
+      "key": "f8e779c120c3b20dfdb6f8997128d342d2c26f46",
+      "source": "CBS News",
+      "title": "Why Vance says he wouldn't call the Iran conflict a war",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 11:06:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxONVRqcUcyTEdyUHpQbUE5MjRpVV9BS19KNkJHWnl4Z29PbVFNVGV6bWZCVDF4aVBxZ3Zhb2ROY3JfMjg3aTBQUy1PLXFXeGMtbUhlR1lxQl9FS0V5d0R2QWdlUDNyeEI3dXczUFdSaGQ5WFU5UHhoU21wSVRlZHYtYnlyOUpNVHQzWTRrSVlR?oc=5",
+      "checked_at": "2026-09-05T00:50:23.826301+00:00"
+    },
     {
       "key": "99135efccde571d3e581ed774551c3d3476abbd7",
       "source": "Al Jazeera",
@@ -2284,55 +2329,19 @@
       "published": "Thu, 03 Sep 2026 23:57:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiywFBVV95cUxPdWJyTEVVNzlNV2lCVktTZkk3dHZpYUFndlRkdTVXMzlnR0hEMXZYVnN5U3V5dC1JMEpWVDMwZng4YjhUc3pfOVpiNWNwdDRwbHY1TFhMLWZFZFh3YlF2SVEwYnJjNGkzTlpGR0hsRkwyMkQ4QVRSdmV4Ykxtd0xZamtOYkNNUV90TzhWdnF5ejhGRGhxSHgtcmp0SGdFVkhUa2owblM0QnN0aDRpeXlnRlBHUDdqZnE5TmRjd2FuR1dyVE5qY3VsNFJHWQ?oc=5",
       "checked_at": "2026-09-04T22:27:40.315473+00:00"
-    },
-    {
-      "key": "a16f71b138f315465f450344553c13d96eb84b61",
-      "source": "The New York Times",
-      "title": "Trump Administration Updates: Vance Says ‘I Don’t Know’ if Iran War Will Be Over by Midterms",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 00:31:40 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE5CYmZlT3B0akpuUHViOXdkT2t3M29uX01vTzJZREJ1SGVoaEloWk1Rc2NzaGFScFZJeFdXQ3p1NE5ubVBMMHN3bkRsSXRwNVk5djZJQVFpajJGd3dKU2p6Yk4ydw?oc=5",
-      "checked_at": "2026-09-04T22:27:40.315473+00:00"
-    },
-    {
-      "key": "0b496703f25eb4c3809073cfbb6c07231228ce94",
-      "source": "Associated Press",
-      "title": "Trump turns to a dual economic and military approach in latest attempt to squeeze Iran",
-      "reason": "not_today_tehran",
-      "published": "Thu, 03 Sep 2026 21:15:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNRWgxcXVpSjdHa3ROcWtTRjZfZVotR3lNQ3Y4V2VhUWdSMWh0Ul9wQTFEbmk2TEowWllGbHhiQ1hqZVhaWXN0azVKZUhlRDBWUDJMSnhuTjIwZGg2dlZ5YU9BeG9VR1lSSmhpVGJqcnFjb1Y0Z0tXMzNqNWo2SWE4MXItM3RlcGZaUTlrbDhsMVhmVHg1SzV5RWUxc1JWRDdTaURwb1JYTWk3dw?oc=5",
-      "checked_at": "2026-09-04T22:27:40.315473+00:00"
-    },
-    {
-      "key": "6d4fdab7e9960b457c2c72062fa302373c71e36d",
-      "source": "Al Jazeera",
-      "title": "South Korea mulls ‘contributions’ in Strait of Hormuz",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 12:16:39 GMT",
-      "link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNOGNKSndEUXU1NmZJeVJ5b1B2Tk94VnJkS1F3aGpIbExRRTFmOWlvazk0MzJYY25DNjVCNEpIM2tRd2JhSHcxSTNHVDBLdkJPZHNLcEFyNDcxOUdYMDQwLURJa1M2RWg5UFU2NGdaVVlZaXl1c21LN3FFdzhIVFZNbGlqdG5mb3RYTGpLRktYSk9SVmFxYVHSAZsBQVVfeXFMTk1iMTJFa2pKY2VFZTdUTU4zeDMzTTZ5ck1xRFdsUnIxTnFxRy1hT0xqNEFHcHBITjlPRG1USlhQUklfWmd6aklSZlVHY0U0WjdFSEd3ZWxfTjQycXN4am5QcWRuTDVqYjdpM2wxdnY0TzIwQVZiWFR4MHNUTVQ4dnJsUUxmdVVDcTBpTzBKR1k1bWJrNk1ub3Q1VVE?oc=5",
-      "checked_at": "2026-09-04T22:27:40.315473+00:00"
-    },
-    {
-      "key": "4f96f9a0dbfce15dbffb77a9cbc4fcad56d01c36",
-      "source": "Associated Press",
-      "title": "US issues sanctions on Turkish bank that it calls a ‘critical financial lifeline’ for Iran",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 16:32:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxPanB5cnFJYmZzM1AxbjlvTGZnanhyQzRiYWIzXzNPV1Y1NzhkRlUxZEIxMUdMVDZiX3l3U2N0dDNUZnRNeWF5UHM0SHhJNE55TmtyUDBOSHZWekxwdGZaVUJrWUM1QnpnY2R0TGlieVNhR3ZrTGV0Vi1KYk41bHVwSW4zRXRmcFNILVBXTzNQdm0?oc=5",
-      "checked_at": "2026-09-04T22:27:40.315473+00:00"
-    },
-    {
-      "key": "3254e9634f0aebb76579026fa19819d363528ed1",
-      "source": "Associated Press",
-      "title": "Vance says Iran fight isn't a 'war' as Trump tries to navigate unpopular conflict as election nears",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 06:53:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQUDhITzU0TDIyV0VyQTBvT0FPZmZBZHJaTGFKc3dQaFl6VHpmbmM1TVUtTXRtY2Z1d2dONVdDcXhpUHB4Z2xVcjF4NnBac2ZRUXVBcXpOU0VOZlJfejNfWHZVNEVxeGk3TzZ6MWVIYWljN194YjEtbExGeWJtYk52UTdabG0yWTNQQnlFTy0wd2E2amE1QnBqSDZTaldIb1M4MzFR?oc=5",
-      "checked_at": "2026-09-04T22:27:40.315473+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "69faa894fd0aa5ca4c4fe38c07f9385b17e1d596",
+      "source": "The New York Times",
+      "title": "Trump Administration Live Updates: Vance Says ‘I Don’t Know’ if Iran War Will Be Over by Midterms",
+      "summary": "Trump Administration Live Updates: Vance Says ‘I Don’t Know’ if Iran War Will Be Over by Midterms nytimes.com",
+      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE5CYmZlT3B0akpuUHViOXdkT2t3M29uX01vTzJZREJ1SGVoaEloWk1Rc2NzaGFScFZJeFdXQ3p1NE5ubVBMMHN3bkRsSXRwNVk5djZJQVFpajJGd3dKU2p6Yk4ydw?oc=5",
+      "published": "Fri, 04 Sep 2026 21:22:17 GMT",
+      "sent_at": "2026-09-05T00:50:50.678728+00:00"
+    },
     {
       "key": "7cff5f8f33694c0b7ec693a4c9d1e33867cd25c9",
       "source": "ژئوپی واچ / Telegram",
