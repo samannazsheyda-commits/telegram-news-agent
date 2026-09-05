@@ -1,0 +1,29 @@
+name: Fresh X Tests
+
+on:
+  push:
+    branches:
+      - fix/x-fxtwitter-live
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - name: Live Reuters X timeline smoke
+        run: |
+          python - <<'PY'
+          from src.fresh_x import fetch_profile_timeline
+          items = fetch_profile_timeline({'name':'Reuters','handle':'@Reuters'})
+          print('iran_posts', len(items))
+          for item in items[:5]:
+              print(item.published, item.link, item.title[:180])
+          assert items, 'Fresh Reuters timeline returned no Iran-related X posts'
+          assert all(item.link.startswith('https://x.com/Reuters/status/') for item in items)
+          PY
+      - name: Run full test suite
+        run: python -m pytest -q
