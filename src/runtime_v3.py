@@ -26,10 +26,9 @@ def install_x_publish_all_policy() -> None:
         return _original_low_value(item)
 
     def recent_duplicate(item, references):
-        if _is_x_item(item):
-            # Distinct X posts must all survive semantic dedup. Exact already-published
-            # posts are still blocked earlier by the terminal published-key check.
-            return False
+        # X posts must follow the same event-level semantic dedup as every other
+        # source. Distinct material developments still survive because the
+        # underlying duplicate classifier preserves new precise facts/times/sites.
         return _original_recent_duplicate(item, references)
 
     base.is_low_value_company_news = low_value
