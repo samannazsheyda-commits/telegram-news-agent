@@ -13,12 +13,29 @@ from .sources import NewsItem, USER_AGENT
 
 FXTWITTER_TIMELINE = "https://api.fxtwitter.com/2/profile/{handle}/statuses"
 
+# Extra first-party / high-signal accounts for the near-realtime Iran monitor.
+# CENTCOM, White House, State Department, State spokesperson, SecRubio, SecDef,
+# Treasury, VP and IDF are already included by builtin_x_news_sources().
 _EXTRA_X_SOURCES = (
     {"name": "Barak Ravid", "handle": "@BarakRavid"},
     {"name": "Abbas Araghchi", "handle": "@araghchi"},
     {"name": "Mohsen Rezaei", "handle": "@ir_rezaee"},
     {"name": "Sepah News", "handle": "@Sepah_News"},
     {"name": "TankerTrackers", "handle": "@TankerTrackers"},
+    {"name": "White House Press Secretary", "handle": "@PressSec"},
+    {"name": "White House Communications Director", "handle": "@StevenCheung47"},
+    {"name": "White House Deputy Press Secretary", "handle": "@ATJackson47"},
+    {"name": "White House Rapid Response", "handle": "@RapidResponse47"},
+    {"name": "President of the United States", "handle": "@POTUS"},
+    {"name": "White House Homeland Security Advisor", "handle": "@StephenM"},
+    {"name": "CENTCOM Farsi", "handle": "@CENTCOMFarsi"},
+    {"name": "USA Beh Farsi", "handle": "@USABehFarsi"},
+    {"name": "US Mission to the UN", "handle": "@USUN"},
+    {"name": "US Mission to the UN Vienna", "handle": "@usunvie"},
+    {"name": "US National Intelligence", "handle": "@ODNIgov"},
+    {"name": "State Department Counterterrorism", "handle": "@StateDeptCT"},
+    {"name": "Iran Foreign Ministry", "handle": "@MFAIRAN"},
+    {"name": "Khamenei.ir", "handle": "@khamenei_ir"},
 )
 
 _EXTRA_SOURCE_FA = {
@@ -27,6 +44,20 @@ _EXTRA_SOURCE_FA = {
     "Mohsen Rezaei / X": "محسن رضایی / ایکس",
     "Sepah News / X": "سپاه نیوز",
     "TankerTrackers / X": "تانکرترکرز / ایکس",
+    "White House Press Secretary / X": "سخنگوی کاخ سفید / ایکس",
+    "White House Communications Director / X": "مدیر ارتباطات کاخ سفید / ایکس",
+    "White House Deputy Press Secretary / X": "معاون سخنگوی کاخ سفید / ایکس",
+    "White House Rapid Response / X": "واکنش سریع کاخ سفید / ایکس",
+    "President of the United States / X": "رئیس‌جمهور آمریکا / ایکس",
+    "White House Homeland Security Advisor / X": "مشاور امنیت داخلی کاخ سفید / ایکس",
+    "CENTCOM Farsi / X": "سنتکام فارسی / ایکس",
+    "USA Beh Farsi / X": "وزارت خارجه آمریکا به فارسی / ایکس",
+    "US Mission to the UN / X": "نمایندگی آمریکا در سازمان ملل / ایکس",
+    "US Mission to the UN Vienna / X": "نمایندگی آمریکا در وین / ایکس",
+    "US National Intelligence / X": "جامعه اطلاعاتی آمریکا / ایکس",
+    "State Department Counterterrorism / X": "دفتر ضدتروریسم وزارت خارجه آمریکا / ایکس",
+    "Iran Foreign Ministry / X": "وزارت خارجه ایران / ایکس",
+    "Khamenei.ir / X": "خامنه‌ای دات‌آی‌آر / ایکس",
 }
 for _key, _value in _EXTRA_SOURCE_FA.items():
     formatters.SOURCE_FA.setdefault(_key, _value)
