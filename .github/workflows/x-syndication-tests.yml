@@ -14,20 +14,27 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
-      - name: Live Bing X search diagnostic
+      - name: Live search X status diagnostic
         run: |
           python - <<'PY'
-          import requests, re, urllib.parse, xml.etree.ElementTree as ET
-          q = 'site:x.com/Reuters/status Iran OR Iranian OR Hormuz'
-          url = 'https://www.bing.com/search?format=rss&q=' + urllib.parse.quote(q)
-          r = requests.get(url, headers={'User-Agent':'Mozilla/5.0'}, timeout=30)
-          print('status', r.status_code, 'bytes', len(r.content), 'final', r.url)
-          print(r.text[:5000])
-          r.raise_for_status()
-          root = ET.fromstring(r.content)
-          links = [(n.findtext('title') or '', n.findtext('link') or '', n.findtext('pubDate') or '') for n in root.findall('.//item')]
-          print('items', links[:10])
-          xlinks = [link for _, link, _ in links if re.search(r'https?://(?:www\.)?x\.com/Reuters/status/\d+', link, re.I)]
-          assert xlinks, 'Bing RSS returned no direct Reuters X status links'
+          import requests, re, urllib.parse
+          q = 'site:x.com/Reuters/status Iran Reuters'
+          ua = {'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/152 Safari/537.36'}
+          urls = [
+              'https://www.google.com/search?num=20&tbs=qdr:d&q=' + urllib.parse.quote(q),
+              'https://html.duckduckgo.com/html/?q=' + urllib.parse.quote(q),
+          ]
+          found = []
+          for url in urls:
+              try:
+                  r = requests.get(url, headers=ua, timeout=30)
+                  print('URL', url.split('?')[0], 'status', r.status_code, 'bytes', len(r.text))
+                  print(r.text[:3500])
+                  links = re.findall(r'https?://(?:www\.)?x\.com/Reuters/status/\d+', r.text, re.I)
+                  print('xlinks', list(dict.fromkeys(links))[:10])
+                  found.extend(links)
+              except Exception as exc:
+                  print('ERR', url, exc)
+          assert found, 'Google/DDG returned no direct Reuters X status links'
           PY
       - run: python -m pytest -q
