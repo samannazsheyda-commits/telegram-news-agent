@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41523",
   "news_seen": [
+    "8753c9a679418f6c18c03a00a5eaff8093cd35cb",
+    "5857d479bc0c8d0acdb87dc0933135c92f4e6feb",
     "0781fdf5782c7ba7574fad60af04fcea15b940bf",
     "f0b416480a1f4bb83db71f65b9710ac25ca21580",
     "4fc9f03c89e8bd0d2dd4484b780735a99f70c5c8",
@@ -498,9 +500,7 @@
     "e2f0b5a7d894bc8d89c1f46993c25a529e992bdd",
     "8c1aa1a7a64b925db648627ec238b51417cd3115",
     "49eb717c82e416052929cf3000656e047350d0ee",
-    "f4606b1fdc60f48e0299b6808d1d0c66049fb0af",
-    "7eb6ee1949520bae75806ac99c4bc3c53ad6e59f",
-    "69bab2d5d4697d6ee436546ae74cef118d93ae7b"
+    "f4606b1fdc60f48e0299b6808d1d0c66049fb0af"
   ],
   "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
   "next_news_color": "white",
@@ -530,6 +530,24 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "8753c9a679418f6c18c03a00a5eaff8093cd35cb",
+      "source": "Financial Times",
+      "title": "Why the US and Iran keep escalating",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 04:00:19 GMT",
+      "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOVkhMbUlSNm9PVEtvaDlNbDlOdjNKUktrdmszTGZsM3pjWFZYRWp4NEtlODhJQ0JvX014ZFZGbHVjUXpsMm9XQjFCbTlkU09qWnNVQkVmc216ck02YlB5SjlBRFZoTGxmNTl4Qlk1b09idFpwakNIaUdtMGZaYVJFTG1sS18?oc=5",
+      "checked_at": "2026-09-05T03:25:14.171507+00:00"
+    },
+    {
+      "key": "5857d479bc0c8d0acdb87dc0933135c92f4e6feb",
+      "source": "CNBC",
+      "title": "Iran has mined 'large segments' of Hormuz Strait, Secretary of State Rubio says",
+      "reason": "not_today_tehran",
+      "published": "Tue, 02 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOdm10Q240WjQ5S2Z3RlJnRGlKbGhYUmxGZTgtY19pYk8wdmtWdzEtYjRiVUs0UWprNGhuMW51X0VvbUhLbXl6U0pJNTdZZzZhMWNuV1EwTUtiNFZmd2FKeWdlRi10VEFFZkpuNVF4WTlZVzF1U2FhZkpnT3NmVThfZ0Vn0gGHAUFVX3lxTE1jbTg0YTJaUlgxZlhaYVJpSERaUzNHaTU4VzR2YkYzN0pxUUZqRnpFYi1uMTFGRmdlVnNKMHpJd0drMVZhRTBQOGtwdmRNbVMxSnRoVWt2Y0g1WkV3VUYzZlZpajY1MEF2MVM2ekxnc25adVc5eG9BMlVRMkE1R3EzVnFhcF9TYw?oc=5",
+      "checked_at": "2026-09-05T03:25:14.171507+00:00"
+    },
     {
       "key": "0781fdf5782c7ba7574fad60af04fcea15b940bf",
       "source": "Reuters",
@@ -2310,24 +2328,6 @@
       "reason": "not_today_tehran",
       "published": "Wed, 20 May 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9kNWhvamlfUXFNWWxZZFUwT0VreENDVVg0SDN5V1lidjlocnBGVy1sM3ZIOWc3T0NibVl6RDY0OXV5LVlVZzNPLXFYRXdRVmtFTWJSM1lzWGg0U0I3QkpvZw?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "1beac2efd59d130c4850839340a9ab89bb44c44b",
-      "source": "Barak Ravid / X",
-      "title": "🚨🇺🇸🇮🇷U.S. official: U.S. forces attacked several Iranian air defense systems and radar systems around the strait of Hormuz",
-      "reason": "not_today_tehran",
-      "published": "Tue, 09 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1DQlZIOHozSDFUX0oyeVRGNmVmdUwtTks3V1hkWlhueG5NbS1kc25mR1E2MWVvejZSTnV4ZGNFOFFENktUM0Y5Yk12SUp1NTE2ekRXMURPSnRwcm1IQUcwQg?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "8eeaa1a703a8d9d47bbfa5b2928cabdfd70ab444",
-      "source": "Barak Ravid / X",
-      "title": "CENTCOM: \"U.S. forces completed self-defense strikes against Iran...in response to yesterday’s downing of a U.S. Army Apache helicopter. The forces struck Iranian air defense, ground control stations, and surveillance radar sites near the Strait of Hormuz with",
-      "reason": "not_today_tehran",
-      "published": "Tue, 09 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1RUzRUX1g1bUF1WGpvXzQ0SVJ0dENMczYwWTFsV3NVdm5VMXdsLU9id2hKYTZ2TUk0ZUxDX1NRcWhKdGpPcldleUt1NjZZeldObG1NbGduOFU4cWhqbUtTVw?oc=5",
       "checked_at": "2026-09-05T01:46:46.148951+00:00"
     }
   ],
