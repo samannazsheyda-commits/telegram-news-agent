@@ -1,6 +1,10 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "5390a15f6ca1320c2de73019845487baf4f50813",
+    "x:SkyNews:2096289453287350440",
+    "4a3f2911f63a776028e6d16d5884778b9dec1e56",
+    "797c0402309d74923d0aa106b594b8e407047196",
     "6e6fccc5d6a3c970b7869c05e5c890ca4a45955c",
     "41ca397a3b6de6b3a374b6247e5380a6245d3fb1",
     "6ea4f6b2095e271d9a6d40e2bd216daa7670f6ac",
@@ -496,11 +500,7 @@
     "94cd07c4792c8669b8a7be4a940615222d313376",
     "f6028d3cddc90cc6ab91cd692a4775c7e1884d92",
     "44b5861ead3d0fefd635d005609abd2312adeaa9",
-    "2c92114b62e63be7f87a23c74fc0ae3e6c68febf",
-    "0d8ac1a775653b8e2d169c98208a6502d7fdb507",
-    "035642786db1c3042b28252a3b94d2006982bd88",
-    "ee5ae2415f8d020fa42a754d265667c9d76847fe",
-    "00041968f4177392a8945a1956fe1d1a55df3182"
+    "2c92114b62e63be7f87a23c74fc0ae3e6c68febf"
   ],
   "market_last_sent_at": "2026-09-05T16:50:16.078276+00:00",
   "next_news_color": "white",
@@ -540,6 +540,24 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "4a3f2911f63a776028e6d16d5884778b9dec1e56",
+      "source": "NOTAM / Airspace",
+      "title": "Jordan says sirens sound after missiles from Iran detected in airspace",
+      "reason": "not_today_tehran",
+      "published": "Thu, 09 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQSDI5U2NBbVpLcnVqSTEwNXhBNDE4emlWUmZ6UXRjNC1tSUxEdzc2eEloaXA2MGxhY0hzdW9JQjBBNzluOUNTUzhtd3JUUHJWZGVYZC1zZDJHdDlnbHRVMXlKeHZCUXl2Vzl2TkJCUTUxWTU4U2R3WWJXUnRwb1RndnhjWjhScUlTQXh4VEJhZG1raWw3dTFnUmxEZlppRC1XZ1paTUF1YmNtMkx0SjUxWUU0SFJwdDNwY0s4?oc=5",
+      "checked_at": "2026-09-05T17:29:15.255457+00:00"
+    },
+    {
+      "key": "797c0402309d74923d0aa106b594b8e407047196",
+      "source": "NOTAM / Airspace",
+      "title": "Qatar categorically denies claims it is detaining Iranian pilots - Gulf News",
+      "reason": "not_today_tehran",
+      "published": "Sat, 15 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxONGxydTYxRVdVclpFQlhCZm9KMndqMjhWNTB6OVJMMzYwQldJZGxQdjV4a2VUUXlYdjJ0dUxNVUJ2VEtnelhRREZJdFAxaTFiU3VTOTdINkJVclptcF9RY0JSOHBOekdpa0EwYXhxY0NJLVpHcVl4UmpOdzliVmcwc0ZVNXF6NVJSdHY5YWhoenBRRktvbS1aZHBxd1pmRjRPY1VycUVEWk5wMlMtNVNuLV80azjSAcoBQVVfeXFMTkxNazVDTDRramp5Y0Y0SGo4V2RFb3lwbS00SkJZdVIxUVBXYTY5R0kwbDh6Uk4wUTNDYWhqczJ2QUNwcElGSGRkR29ET2h3S2UzWTBrcmtpUTYwZWo2WkxEVFBweHN2bFIxSWZuaFczYU1kd1VXNVFEckd0Wi1SZmlxOFlvZVBzanp2cVkxSWZ2Q3RlZzMwQzVwbmJXc0hZc3BocVg4Tk12NC0zeHdIeU9qR25aT2NFQzBQRlVZYk5TU2tLUFhhaFlYUQ?oc=5",
+      "checked_at": "2026-09-05T17:29:15.255457+00:00"
+    },
     {
       "key": "6e6fccc5d6a3c970b7869c05e5c890ca4a45955c",
       "source": "NOTAM / Airspace",
@@ -2321,28 +2339,30 @@
       "published": "Fri, 04 Sep 2026 15:25:53 +0000",
       "link": "https://x.com/marklevinshow/status/2095896137794281475",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:marklevinshow:2095923413990740027",
-      "source": "Mark Levin / X",
-      "title": "Erdogan doing business with the Iranian regime",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 17:14:16 +0000",
-      "link": "https://x.com/marklevinshow/status/2095923413990740027",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:statedeptspox:2095568528007127326",
-      "source": "State Department Spokesperson / X",
-      "title": "The United States commends Peru's decision to sever diplomatic relations with Iran. The Iranian regime has long exploited its diplomatic presence abroad to sow chaos and terror. Peru’s bold step sends a clear message: the regime's terrorism—at home and abroad— will not go unanswered.",
-      "reason": "not_today_tehran",
-      "published": "Thu, 03 Sep 2026 17:44:05 +0000",
-      "link": "https://x.com/statedeptspox/status/2095568528007127326",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-04",
   "recent_published_news": [
+    {
+      "key": "5390a15f6ca1320c2de73019845487baf4f50813",
+      "source": "کلش ریپورت / Telegram",
+      "title": "John Bolton on Iran: I think and have thought for decades that the only way you're ever going to get true lasting peace and security in the Middle East is to get rid of the regime in Tehran. I think the U.S.-Israeli strikes did considera...",
+      "summary": "John Bolton on Iran: I think and have thought for decades that the only way you're ever going to get true lasting peace and security in the Middle East is to get rid of the regime in Tehran. I think the U.S.-Israeli strikes did considerable damage to the regime. I think we made a lot of mistakes, that's for sure. But the objective is still realizable if we were willing to think through how to do it.",
+      "link": "https://t.me/ClashReport/95196",
+      "published": "Sat, 05 Sep 2026 17:31:36 +0000",
+      "sent_at": "2026-09-05T17:33:13.150155+00:00",
+      "fingerprint": "john bolton on iran i think and have thought for decades that the only way you re ever going to get true lasting peace and security in the middle east is to get rid of the regime in tehran i think the u s israeli strikes did considera john bolton on iran i think and have thought for decades that the only way you re ever going to get true lasting peace and security in the middle east is to get rid of the regime in tehran i think the u s israeli strikes did considerable damage to the regime i think we made a lot of mistakes that s for sure but the objective is still realizable if we were willing to think through how to do it"
+    },
+    {
+      "key": "x:SkyNews:2096289453287350440",
+      "source": "Sky News / X",
+      "title": "US Central Command said in a statement that it has 'permanently disabled' two Iranian tankers and 'completely destroyed' a third. Iran war latest:",
+      "summary": "",
+      "link": "https://x.com/SkyNews/status/2096289453287350440",
+      "published": "Sat, 05 Sep 2026 17:28:47 +0000",
+      "sent_at": "2026-09-05T17:30:35.368562+00:00",
+      "fingerprint": "us central command said in a statement that it has permanently disabled two iranian tankers and completely destroyed a third iran war latest"
+    },
     {
       "key": "a5d1715c786dadfc4a7125dd6df6e0bbe29b7301",
       "source": "ژئوپی واچ / Telegram",
