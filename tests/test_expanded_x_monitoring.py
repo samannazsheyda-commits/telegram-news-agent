@@ -1,5 +1,5 @@
 from src.editorial_rules import is_duplicate_story
-from src.newsroom_x import builtin_x_news_sources, x_monitor_query
+from src.newsroom_x import builtin_x_news_sources, clean_x_post_text, x_monitor_query
 from src.oil import OilSnapshot, format_oil_lines
 from src.sources import MarketSnapshot, NewsItem
 import src.runtime_v2 as runtime
@@ -41,6 +41,16 @@ def test_x_monitor_query_covers_naval_nuclear_sanctions_and_frozen_funds():
         "frozen funds", "blocked funds", "ballistic missile", "cruise missile", "quds force",
     ):
         assert term in query
+
+
+def test_x_post_text_removes_trailing_secondary_media_attribution():
+    assert clean_x_post_text("Iran is examining whether tensions could escalate - i24NEWS") == "Iran is examining whether tensions could escalate"
+    assert clean_x_post_text("Iran war is very unpopular - Wall Street Journal") == "Iran war is very unpopular"
+
+
+def test_x_post_text_removes_parenthetical_secondary_media_citation():
+    assert clean_x_post_text("Time is no longer on Iran's side (Wall Street Journal, 2018).") == "Time is no longer on Iran's side."
+    assert clean_x_post_text("Pressure is rising (i24NEWS).") == "Pressure is rising."
 
 
 def test_same_katz_claim_from_france24_and_ap_is_duplicate_despite_paraphrase():
