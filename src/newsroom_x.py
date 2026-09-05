@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import html
+import re
+
 import requests
 
 from . import formatters as _formatters
-from .sources import NewsItem, _fetch_google_news_query
+from .sources import NewsItem, USER_AGENT, _fetch_google_news_query
 
 
 _BUILTIN_X_NEWSROOMS = (
@@ -64,6 +67,63 @@ _PERSIAN_SOURCE_NAMES = {
 for _name, _fa in _PERSIAN_SOURCE_NAMES.items():
     _formatters.SOURCE_FA[f"{_name} / X"] = f"{_fa} / ایکس"
 
+_SECONDARY_MEDIA = (
+    "Wall Street Journal", "WSJ", "i24NEWS", "i24 News", "Reuters", "Associated Press", "AP", "AFP",
+    "BBC", "CNN", "France 24", "Al Jazeera", "Al Arabiya", "Axios", "Haaretz", "Times of Israel",
+    "Jerusalem Post", "New York Times", "NYT", "Bloomberg", "Financial Times", "Sky News", "NBC News",
+    "CBS News", "ABC News", "Fox News", "DW News", "The Guardian", "Guardian", "Washington Post",
+    "The Economist", "Economist", "N12", "KAN 11", "Channel 13", "Channel 14",
+)
+_MEDIA_PATTERN = "|".join(sorted((re.escape(name) for name in _SECONDARY_MEDIA), key=len, reverse=True))
+_TRAILING_MEDIA_RE = re.compile(rf"\s+(?:[-–—|:]\s*)(?:{_MEDIA_PATTERN})\s*$", re.IGNORECASE)
+_PAREN_MEDIA_RE = re.compile(rf"\s*\((?:{_MEDIA_PATTERN})(?:\s*,\s*\d{{4}})?\)\s*([.!?؟]?)$", re.IGNORECASE)
+_X_STATUS_RE = re.compile(r"https?://(?:www\.)?(?:x\.com|twitter\.com)/([A-Za-z0-9_]+)/status/(\d+)", re.IGNORECASE)
+
+
+def clean_x_post_text(text: str) -> str:
+    """Remove trailing secondary-media labels while preserving the actual post text."""
+    value = re.sub(r"\s+", " ", html.unescape(text or "")).strip()
+    value = _TRAILING_MEDIA_RE.sub("", value).strip()
+    match = _PAREN_MEDIA_RE.search(value)
+    if match:
+        punctuation = match.group(1) or "."
+        value = _PAREN_MEDIA_RE.sub(punctuation, value).strip()
+    return value
+
+
+def _direct_x_status_url(value: str, expected_handle: str = "") -> str:
+    text = html.unescape(value or "")
+    matches = list(_X_STATUS_RE.finditer(text))
+    if not matches:
+        return ""
+    expected = expected_handle.lstrip("@").lower()
+    chosen = next((m for m in matches if not expected or m.group(1).lower() == expected), matches[0])
+    return f"https://x.com/{chosen.group(1)}/status/{chosen.group(2)}"
+
+
+def resolve_x_post_url(link: str, handle: str, session=requests) -> str:
+    """Resolve an indexed Google News result to the direct X status URL."""
+    direct = _direct_x_status_url(link, handle)
+    if direct:
+        return direct
+    if not link:
+        return ""
+    try:
+        response = session.get(
+            link,
+            headers={"User-Agent": USER_AGENT},
+            timeout=12,
+            allow_redirects=True,
+        )
+        response.raise_for_status()
+    except Exception:
+        return ""
+    direct = _direct_x_status_url(getattr(response, "url", ""), handle)
+    if direct:
+        return direct
+    return _direct_x_status_url(getattr(response, "text", ""), handle)
+
+
 _X_IRAN_QUERY = (
     '(Iran OR Iranian OR Tehran OR IRGC OR "Quds Force" OR Hormuz OR "Persian Gulf" OR "Gulf of Oman" '
     'OR "Arabian Sea" OR "Abraham Lincoln" OR "USS Boxer" OR "carrier strike group" OR carrier OR destroyer '
@@ -119,9 +179,13 @@ def fetch_builtin_x_news_items(*, searcher=None, session=requests) -> list[NewsI
             continue
         for item in items[:20]:
             display = f'{source["name"]} / X'
-            normalized = item if item.source.endswith(" / X") else NewsItem(
-                item.key, display, item.title, item.summary, item.link, item.published
-            )
+            title = clean_x_post_text(item.title)
+            summary = clean_x_post_text(item.summary)
+            direct_link = resolve_x_post_url(item.link, source["handle"], session=session)
+            if not direct_link:
+                # Never publish an X item with a Google News or newsroom-site source link.
+                continue
+            normalized = NewsItem(item.key, display, title, summary, direct_link, item.published)
             if is_monitored_x_topic(f"{normalized.title} {normalized.summary}"):
                 merged.setdefault(normalized.key, normalized)
     return list(merged.values())
