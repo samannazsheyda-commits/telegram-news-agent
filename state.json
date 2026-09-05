@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "ff92b318d33c59099f68d1774fa070027b4851c8",
     "x:haaretzcom:2096044433254797421",
     "x:AJEnglish:2096159651028934757",
     "x:Reuters:2096158936885874844",
@@ -499,8 +500,7 @@
     "1e099e031dbdc7fa6ec60c6a290d372c3444b3fe",
     "d38b55b730cbf40ebddae5c1fdc2b74cbde36a1b",
     "273bedabf67e91e1739e4f62d740bff3cc5448d4",
-    "f8be01f1e11fae72f19606602638f0d635dd06f5",
-    "5d9ac31b959e7b824f9f590e83ee6eaa685b54ac"
+    "f8be01f1e11fae72f19606602638f0d635dd06f5"
   ],
   "market_last_sent_at": "2026-09-05T08:43:54.746517+00:00",
   "next_news_color": "white",
@@ -547,7 +547,16 @@
       "reason": "translation_failed_retry_later",
       "published": "Sat, 05 Sep 2026 00:23:17 +0000",
       "link": "https://x.com/TankerTrackers/status/2096031376487133584",
-      "checked_at": "2026-09-05T09:05:26.566141+00:00"
+      "checked_at": "2026-09-05T09:17:03.313761+00:00"
+    },
+    {
+      "key": "ff92b318d33c59099f68d1774fa070027b4851c8",
+      "source": "NOTAM / Airspace",
+      "title": "US urges citizens to leave Iran immediately as airspace partially reopens - aa.com.tr",
+      "reason": "not_today_tehran",
+      "published": "Wed, 22 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNLTlPTm15NFlmb0ZINzB3UkphRVBtc2JrUUtFZDZnekU1LWRZaDZMM1E0NWdTQ3ZLTVV0WU0yYjJoeS1MWGhGU096WXJEZ2tFeWljYXN3UDUycEFJdUlzcS1aWnZtQ1ZGVU9uODBtTVFpN0RNNG5SNF8xazh2OFFNT05JZUpBNTVEd2ZFREota2dOWXU5bGRuUWQ4U3F4X3BqelFEeVVUclgzQTE2ZnlVbVlUd3U1U0JuZkE?oc=5",
+      "checked_at": "2026-09-05T09:14:03.313364+00:00"
     },
     {
       "key": "x:haaretzcom:2096044433254797421",
@@ -2329,15 +2338,6 @@
       "reason": "not_today_tehran",
       "published": "Sat, 27 Jun 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1Xb3AtaDR5Z1drazhNQ0VRb0dHQU1uZU1ZQWhJVkVjWDh5ZTlCamFtRlY3Ylg5TVlOcjVOb2FLSUE0ZlVfYldsemNid3pmRThuTV91dXFVNE5LMDNlY1RiUQ?oc=5",
-      "checked_at": "2026-09-05T08:25:36.583911+00:00"
-    },
-    {
-      "key": "36ff0d7fdd8b756d6946ee61999c4cd69389b38d",
-      "source": "Barak Ravid / X",
-      "title": "🚨Turkey, Egypt, and Pakistan have been passing messages between the U.S. and Iran over the past two days in an effort to de-escalate, U.S. source says 🚨Senior officials from the three countries held separate talks with White House envoy Steve Witkoff and I",
-      "reason": "not_today_tehran",
-      "published": "Mon, 23 Mar 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5aYVFwMVU1WHVfRnJfYmxpTndPREQxam1HYlhFNHBQM1ltZWM3OFNtSE9mQ0NqX3RpYzJRRTJhUWZRTlRJZmEzRHBDYmp4QV9KTk5JOThkLTVNckttTW42dg?oc=5",
       "checked_at": "2026-09-05T08:25:36.583911+00:00"
     }
   ],
