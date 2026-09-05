@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
+import src.runtime as runtime
 from src.hormuz import (
     HormuzTrafficReport,
     fetch_hormuz_traffic_report,
@@ -104,3 +105,24 @@ def test_daily_fetch_builds_report_from_reliable_source_without_oil_volume():
     assert "Reuters" in report.sources
     rendered = format_hormuz_report(report)
     assert "میلیون بشکه" not in rendered
+
+
+def test_runtime_sends_previous_day_report_once_after_noon(tmp_path, monkeypatch):
+    state_path = tmp_path / "state.json"
+    state_path.write_text('{"truth_last_id":"10","news_seen":["seed"]}', encoding="utf-8")
+    monkeypatch.setattr(runtime.agent, "STATE_PATH", str(state_path))
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
+    requested_dates = []
+    monkeypatch.setattr(runtime, "fetch_hormuz_traffic_report", lambda report_date: requested_dates.append(report_date) or object())
+    monkeypatch.setattr(runtime, "format_hormuz_report", lambda report: "HORMUZ REPORT\nمنابع: Kpler، Reuters")
+    sent = []
+    monkeypatch.setattr(runtime.agent, "send_telegram", lambda text, token, chat: sent.append(text))
+
+    now = datetime(2026, 9, 5, 12, 4, tzinfo=TEHRAN)
+    runtime._send_hormuz_daily(now)
+    runtime._send_hormuz_daily(now)
+
+    assert requested_dates == [date(2026, 9, 4)]
+    assert sent == ["HORMUZ REPORT\nمنابع: Kpler، Reuters"]
+    assert runtime.agent.load_state(state_path)["hormuz_last_sent_date"] == "2026-09-05"
