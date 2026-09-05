@@ -39,7 +39,7 @@ def _persian_source_item(item):
 
 
 def _visible_text(message: str) -> str:
-    # Remove HTML tags (and therefore href URLs) before enforcing the Persian-only gate.
+    # Remove HTML tags (and therefore href URLs) before checking visible output.
     return re.sub(r"<[^>]+>", "", html.unescape(message or ""))
 
 
@@ -54,13 +54,17 @@ def _format_persian_only(item, title_fa: str, summary_fa: str, marker_override=N
         return ""
     # The pointing-hand decoration is intentionally forbidden in the final card.
     message = message.replace("👉🏻 ", "").replace("👉 ", "")
+
+    # Do not kill an otherwise valid fresh story just because a short acronym,
+    # model name or proper noun survived translation (IAEA, F-35, etc.). The title
+    # is still required to be predominantly Persian by runtime_v7; this is now a
+    # diagnostics-only check instead of a publication blocker.
     visible = _visible_text(message)
     if _LATIN_VISIBLE_RE.search(visible):
         print(
-            f"NEWS_SUPPRESSED visible_latin_text source={getattr(item, 'source', '')!r} "
+            f"NEWS_WARNING visible_latin_text source={getattr(item, 'source', '')!r} "
             f"title={getattr(item, 'title', '')!r}"
         )
-        return ""
     return message
 
 
