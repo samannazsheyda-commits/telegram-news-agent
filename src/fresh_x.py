@@ -6,11 +6,7 @@ from email.utils import format_datetime, parsedate_to_datetime
 import requests
 
 from . import formatters
-from .newsroom_x import (
-    builtin_x_news_sources,
-    clean_x_post_text,
-    is_monitored_x_topic,
-)
+from .newsroom_x import builtin_x_news_sources, clean_x_post_text, is_monitored_x_topic
 from .sources import NewsItem, USER_AGENT
 
 FXTWITTER_TIMELINE = "https://api.fxtwitter.com/2/profile/{handle}/statuses"
@@ -33,13 +29,28 @@ _EXTRA_SOURCE_FA = {
 for _key, _value in _EXTRA_SOURCE_FA.items():
     formatters.SOURCE_FA.setdefault(_key, _value)
 
+# Broad words such as "sanctions", "missile" or "nuclear" are useful secondary
+# topic signals, but are not enough by themselves: otherwise unrelated Cuba/Ukraine
+# posts leak into an Iran-only channel. At least one Iran anchor must also be present.
+_IRAN_ANCHORS = (
+    "iran", "iranian", "tehran", "irgc", "quds force", "sepah", "hormuz",
+    "persian gulf", "kharg", "fordow", "natanz", "isfahan nuclear", "arak reactor",
+    "ایران", "ایرانی", "تهران", "سپاه", "نیروی قدس", "هرمز", "خلیج فارس",
+    "خارک", "فردو", "نطنز", "تأسیسات اصفهان", "راکتور اراک",
+)
+
 
 def monitored_x_sources() -> tuple[dict[str, str], ...]:
     merged: dict[str, dict[str, str]] = {}
     for source in (*builtin_x_news_sources(), *_EXTRA_X_SOURCES):
-        handle = source["handle"].lstrip("@").lower()
-        merged.setdefault(handle, source)
+        key = source["handle"].lstrip("@").lower()
+        merged.setdefault(key, source)
     return tuple(merged.values())
+
+
+def is_fresh_iran_topic(text: str) -> bool:
+    value = (text or "").lower()
+    return is_monitored_x_topic(value) and any(anchor in value for anchor in _IRAN_ANCHORS)
 
 
 def _normalise_created_at(value: object) -> str:
@@ -81,8 +92,6 @@ def parse_fxtwitter_timeline(payload: object, source_name: str, handle: str) -> 
         author = row.get("author") if isinstance(row.get("author"), dict) else {}
         author_handle = str(author.get("screen_name") or "").strip().lower()
         url = str(row.get("url") or "").strip()
-        # A timeline entry must belong to the monitored profile. If author metadata is
-        # present, require an exact match; otherwise require the canonical profile URL.
         if author_handle and author_handle != expected:
             continue
         canonical_prefix = f"https://x.com/{screen_name}/status/".lower()
@@ -91,7 +100,7 @@ def parse_fxtwitter_timeline(payload: object, source_name: str, handle: str) -> 
 
         text = clean_x_post_text(str(row.get("text") or row.get("full_text") or ""))
         published = _normalise_created_at(row.get("created_at"))
-        if not text or not published or not is_monitored_x_topic(text):
+        if not text or not published or not is_fresh_iran_topic(text):
             continue
 
         seen.add(post_id)
@@ -121,14 +130,11 @@ def fetch_profile_timeline(source: dict[str, str], *, session=requests) -> list[
 
 
 def fetch_fresh_x_news_items(*, session=requests) -> list[NewsItem]:
-    """Fetch current monitored X timelines through the public FxTwitter proxy.
-
-    This is not the X API. Each returned item is still anchored to the canonical
-    x.com status URL and source timestamp.
-    """
+    """Fetch monitored X timelines through the public FxTwitter proxy, not X API."""
     merged: dict[str, NewsItem] = {}
+    sources = monitored_x_sources()
     failures = 0
-    for source in monitored_x_sources():
+    for source in sources:
         try:
             items = fetch_profile_timeline(source, session=session)
         except Exception as exc:
@@ -137,8 +143,5 @@ def fetch_fresh_x_news_items(*, session=requests) -> list[NewsItem]:
             continue
         for item in items:
             merged.setdefault(item.key, item)
-    print(
-        f"FRESH_X_SCAN sources={len(monitored_x_sources())} failures={failures} "
-        f"iran_posts={len(merged)}"
-    )
+    print(f"FRESH_X_SCAN sources={len(sources)} failures={failures} iran_posts={len(merged)}")
     return list(merged.values())
