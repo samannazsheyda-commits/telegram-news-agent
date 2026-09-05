@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 
@@ -15,6 +15,11 @@ PERSIAN_DIGITS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
 VESSEL_TERMS = (
     "tanker", "tankers", "bulk carrier", "kamsarmax", "handysize", "vlcc",
     "lng carrier", "lpg carrier", "container ship", "cargo ship", "vessel",
+)
+SOURCE_QUERIES = (
+    ("Kpler", '"Strait of Hormuz" (ships OR vessels OR traffic OR transited) Kpler'),
+    ("Vortexa", '"Strait of Hormuz" (ships OR vessels OR traffic OR transited) Vortexa'),
+    ("Reuters", '"Strait of Hormuz" (ships OR vessels OR shipping OR traffic) (Kpler OR Vortexa) source:Reuters'),
 )
 
 
@@ -148,6 +153,99 @@ def parse_hormuz_source_text(text: str, publisher: str = "") -> ParsedHormuzStat
         previous_count=previous if isinstance(previous, int) else None,
         rolling_average=average,
         vessel_details=tuple(details),
+        sources=tuple(sources),
+    )
+
+
+def _default_searcher(label: str, query: str):
+    import requests
+    from .sources import _fetch_google_news_query
+
+    return _fetch_google_news_query(requests, label, query, "en", allow_special_source=True)
+
+
+def _default_detail_fetcher(item):
+    from .sources import fetch_news_detail
+
+    return fetch_news_detail(item)
+
+
+def fetch_hormuz_traffic_report(
+    report_date: date,
+    *,
+    searcher=None,
+    detail_fetcher=None,
+) -> HormuzTrafficReport:
+    """Build a source-backed vessel report. Missing data stays missing; no estimates are invented."""
+    searcher = searcher or _default_searcher
+    detail_fetcher = detail_fetcher or _default_detail_fetcher
+    next_date = report_date + timedelta(days=1)
+    bounded_suffix = f" after:{report_date.isoformat()} before:{(next_date + timedelta(days=1)).isoformat()}"
+
+    parsed_candidates: list[ParsedHormuzStats] = []
+    for label, base_query in SOURCE_QUERIES:
+        try:
+            items = searcher(label, base_query + bounded_suffix)
+        except Exception:
+            continue
+        for item in items[:10]:
+            try:
+                detail = detail_fetcher(item) or ""
+            except Exception:
+                detail = ""
+            combined = " ".join(part for part in (item.title, item.summary, detail) if part)
+            parsed = parse_hormuz_source_text(combined, publisher=item.source)
+            if parsed.observed_count is not None or parsed.previous_count is not None or parsed.rolling_average is not None:
+                parsed_candidates.append(parsed)
+
+    if not parsed_candidates:
+        return HormuzTrafficReport(
+            report_date=report_date,
+            observed_count=None,
+            previous_count=None,
+            rolling_average=None,
+            vessel_details=(),
+            notes=("برای این روز آمار دقیق و قابل استناد کشتی‌ها منتشر نشده است.",),
+            sources=("Kpler", "Vortexa", "Reuters"),
+        )
+
+    # Prefer candidates that explicitly cite Kpler/Vortexa, then Reuters-published material.
+    parsed_candidates.sort(
+        key=lambda p: (
+            "Kpler" in p.sources or "Vortexa" in p.sources,
+            "Reuters" in p.sources,
+            p.observed_count is not None,
+            p.rolling_average is not None,
+        ),
+        reverse=True,
+    )
+    primary = parsed_candidates[0]
+
+    observed = primary.observed_count
+    previous = primary.previous_count
+    average = primary.rolling_average
+    details: list[str] = list(primary.vessel_details)
+    sources: list[str] = list(primary.sources)
+
+    for parsed in parsed_candidates[1:]:
+        if previous is None and parsed.previous_count is not None:
+            previous = parsed.previous_count
+        if average is None and parsed.rolling_average is not None:
+            average = parsed.rolling_average
+        if not details and parsed.vessel_details:
+            details.extend(parsed.vessel_details)
+        for source in parsed.sources:
+            if source not in sources:
+                sources.append(source)
+
+    notes = ("آمار بر پایه تردد قابل مشاهده با AIS است؛ کشتی‌هایی که AIS خاموش داشته باشند ممکن است در شمارش نباشند.",)
+    return HormuzTrafficReport(
+        report_date=report_date,
+        observed_count=observed,
+        previous_count=previous,
+        rolling_average=average,
+        vessel_details=tuple(details[:4]),
+        notes=notes,
         sources=tuple(sources),
     )
 
