@@ -15,6 +15,34 @@ def test_merge_state_keeps_manual_and_runtime_seen_keys():
     assert merged["market_last_sent_at"] == "now"
 
 
+def test_merge_state_keeps_recent_published_from_concurrent_runs():
+    remote_record = {
+        "key": "remote-key",
+        "source": "Al Jazeera English / X",
+        "title": "Fitch removes Qatar negative watch while retaining AA rating",
+        "summary": "",
+        "link": "https://x.com/AJEnglish/status/100",
+        "published": "Sat, 05 Sep 2026 12:20:00 +0000",
+        "sent_at": "2026-09-05T12:23:00+00:00",
+    }
+    local_record = {
+        "key": "local-key",
+        "source": "Reuters / X",
+        "title": "Iran update",
+        "summary": "",
+        "link": "https://x.com/Reuters/status/200",
+        "published": "Sat, 05 Sep 2026 12:24:00 +0000",
+        "sent_at": "2026-09-05T12:25:00+00:00",
+    }
+
+    merged = merge_state(
+        {"news_seen": ["remote-key"], "recent_published_news": [remote_record]},
+        {"news_seen": ["local-key"], "recent_published_news": [local_record]},
+    )
+
+    assert [record["key"] for record in merged["recent_published_news"]] == ["local-key", "remote-key"]
+
+
 def test_merge_snapshot_preserves_remote_and_local_editorial_records(tmp_path):
     repo = tmp_path / "repo"
     snap = tmp_path / "snap"
