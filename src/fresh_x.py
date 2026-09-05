@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from datetime import datetime, timezone
 from email.utils import format_datetime, parsedate_to_datetime
 
@@ -39,6 +40,12 @@ _IRAN_ANCHORS = (
     "ایران", "ایرانی", "تهران", "سپاه", "نیروی قدس", "هرمز", "خلیج فارس",
     "خارک", "فردو", "نطنز", "تأسیسات اصفهان", "راکتور اراک",
 )
+
+# The Telegram newsroom currently publishes X items as text + source link only.
+# If the claim explicitly depends on watching a video/clip/footage, publishing only
+# the prose is misleading and incomplete. Suppress it until the media itself can be
+# attached to the Telegram post.
+_VIDEO_DEPENDENT_RE = re.compile(r"\b(?:video|footage|clip)\b|ویدیو|ويديو|تصاویر\s+ویدیویی", re.IGNORECASE)
 
 
 def monitored_x_sources() -> tuple[dict[str, str], ...]:
@@ -102,6 +109,9 @@ def parse_fxtwitter_timeline(payload: object, source_name: str, handle: str) -> 
         text = clean_visible_x_text(str(row.get("text") or row.get("full_text") or ""))
         published = _normalise_created_at(row.get("created_at"))
         if not text or not published or not is_fresh_iran_topic(text):
+            continue
+        if _VIDEO_DEPENDENT_RE.search(text):
+            print(f"NEWS_SUPPRESSED video_without_channel_media source={source!r} post_id={post_id!r}")
             continue
 
         seen.add(post_id)
