@@ -50,25 +50,27 @@ def _published_dt(item):
 
 
 def _select_one_story(candidates, references):
-    """Choose one newest candidate whose Persian card is actually publishable.
+    """Choose up to five newest candidates whose Persian cards are publishable.
 
     Exact already-published keys are blocked upstream. Distinct X status IDs are not
-    semantically deduplicated here. If the newest title cannot be translated or would
-    format to an empty card, continue down the queue in the same cycle instead of
-    letting one bad item starve the feed.
+    semantically deduplicated here. If a title cannot be translated or would format
+    to an empty card, skip it and continue down the queue in the same cycle.
     """
     _translation_cache.clear()
     if not candidates:
         return [], []
     ordered = sorted(candidates, key=_published_dt, reverse=True)
+    selected = []
     for item in ordered:
         title_fa = _translate_or_original(getattr(item, "title", ""))
         if not title_fa:
             continue
         if not v2._original_news_format(item, title_fa, ""):
             continue
-        return [item], []
-    return [], []
+        selected.append(item)
+        if len(selected) >= 5:
+            break
+    return selected, []
 
 
 def _has_valid_source_link(item) -> bool:
