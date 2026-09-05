@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "ca83413f968d16eb517c1ac051e98ad6aac7c25c",
     "469dc94e9c5de8384bc391702e590d5ba9ac0741",
     "e0cf08d952598dca107733f85068fc40b3718e2c",
     "fb8bd00859210a0ceb56ddf2d52948a5adcefb32",
@@ -499,10 +500,9 @@
     "f3fcb5e3e56de5fffd54dba0b9f00ebb98437da8",
     "767733cd10ce1bc7d5666166f8da22160da67a5e",
     "7e7cfeccb45b71a3f70b8af2b2aae55c3b8ca9eb",
-    "6b2819d2d52978fc434998ae9ba968d354170af1",
-    "262d6fd8d4e013c6d19dcb14051b5149ef605a41"
+    "6b2819d2d52978fc434998ae9ba968d354170af1"
   ],
-  "market_last_sent_at": "2026-09-04T18:39:02.689727+00:00",
+  "market_last_sent_at": "2026-09-05T04:34:33.611150+00:00",
   "next_news_color": "white",
   "car_last_prices": {
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -523,13 +523,22 @@
   "weather_noon_last_sent_date": "2026-09-04",
   "weather_night_last_sent_date": "2026-09-04",
   "market_day_prices": {
-    "date": "2026-09-04",
+    "date": "2026-09-05",
     "first_usd": 221060,
     "last_usd": 221060,
     "first_gold": 23518800,
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "ca83413f968d16eb517c1ac051e98ad6aac7c25c",
+      "source": "Barak Ravid / X",
+      "title": "🇺🇸🇮🇷🇴🇲A diplomat from one of the mediating countries told me Iranian negotiators are waiting for final approvals from the Iranian supreme national security council about the deal with Oman and the US. \"We expect this approval soon\", the diplomat said",
+      "reason": "not_today_tehran",
+      "published": "Fri, 07 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE04OU1JMEVLWnVTWG03djl6T05nMWMzaDBlTXVYN201Vkd1UFNmN3c1TmdNLXVEY0pCOUhVbGNtODhESnNDdDNpaThKSEpUeEtqSm5WU21rZVpGYzZYMHMxM29lM2UzdElXOEE0?oc=5",
+      "checked_at": "2026-09-05T04:34:33.611150+00:00"
+    },
     {
       "key": "469dc94e9c5de8384bc391702e590d5ba9ac0741",
       "source": "NOTAM / Airspace",
@@ -2319,15 +2328,6 @@
       "reason": "not_today_tehran",
       "published": "Sun, 19 Apr 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE00SWNYUzR2OG90RWZtU1NzZm54elBCOTI0Wm51UEMxQ20yYldwTWpKNXQ5THUxRG9faVVlU0xTMnYxbFBUcGlNTDR0SXF3UTB4SU5HdlBJSmdIckdWd2h5Mw?oc=5",
-      "checked_at": "2026-09-05T01:46:46.148951+00:00"
-    },
-    {
-      "key": "10711c69582f83dee9bd0034a20cddb91845e6ed",
-      "source": "Barak Ravid / X",
-      "title": "🇺🇸🇮🇷President Trump is giving Iran's warring factions a short window of several days to unify behind a coherent counter-offer - or the ceasefire he extended Tuesday ends, three U.S. officials tell me. My story on @axios https://t.co/AZRyt8nK8M",
-      "reason": "not_today_tehran",
-      "published": "Wed, 22 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1OclVkTnpnU3hjbkpYeldlMnpuRzBFZ2p6YnAwVGJuM0JyMFRhZkpvVC11QjYzejZadGZ6V0ZkRGJESWVQVURSekdqYzExVDMxZE9iUmVQaE9NYjVIN1lTdw?oc=5",
       "checked_at": "2026-09-05T01:46:46.148951+00:00"
     }
   ],
