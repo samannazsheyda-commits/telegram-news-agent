@@ -1,4 +1,10 @@
-from src.editorial_rules import editorial_detail, is_duplicate_story, is_low_value_company_news
+from src.editorial_rules import (
+    editorial_detail,
+    is_duplicate_story,
+    is_low_value_company_news,
+    is_priority_security_news,
+    priority_search_queries,
+)
 from src.sources import NewsItem
 
 
@@ -81,3 +87,50 @@ def test_editorial_detail_is_not_forced_to_two_sentences():
     assert "نکته دوم خبر." in rendered
     assert "نکته سوم" in rendered
     assert "نکته چهارم" in rendered
+
+
+def test_irgc_quds_force_and_mohsen_rezaei_are_priority_news():
+    assert is_priority_security_news(_item(
+        "irgc-lebanon", "The New York Times",
+        "Iranian advisers trapped with Hezbollah fighters in southern Lebanon tunnels",
+        "Members of the IRGC Quds Force are surrounded by Israeli troops.",
+    ))
+    assert is_priority_security_news(_item(
+        "rezaei", "Reuters",
+        "Mohsen Rezaei warns of a new phase in the Iran conflict",
+    ))
+
+
+def test_khatam_army_drones_and_missiles_are_priority_news():
+    assert is_priority_security_news(_item(
+        "khatam", "Reuters", "Khatam al-Anbiya commander issues statement on Iran defenses"
+    ))
+    assert is_priority_security_news(_item(
+        "army", "BBC News", "Iranian Army announces new air-defense deployment"
+    ))
+    assert is_priority_security_news(_item(
+        "missiles", "CNN", "Iran moves ballistic and cruise missiles as drone units prepare"
+    ))
+
+
+def test_energy_infrastructure_threats_and_netanyahu_katz_iran_statements_are_priority():
+    assert is_priority_security_news(_item(
+        "energy", "Times of Israel",
+        "Israel threatens strikes on Iran energy infrastructure if attacks resume",
+    ))
+    assert is_priority_security_news(_item(
+        "netanyahu", "Reuters", "Netanyahu says Israel will respond to any new Iranian attack"
+    ))
+    assert is_priority_security_news(_item(
+        "katz", "Reuters", "Israel Katz warns Iran over missile attacks"
+    ))
+
+
+def test_priority_queries_explicitly_monitor_required_people_and_capabilities():
+    query_text = " ".join(query for _, query in priority_search_queries()).lower()
+    for term in (
+        "netanyahu", "israel katz", "mohsen rezaei", "irgc", "quds force",
+        "khatam al-anbiya", "iranian army", "ballistic missile", "cruise missile",
+        "drone", "energy infrastructure",
+    ):
+        assert term in query_text
