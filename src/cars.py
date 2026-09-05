@@ -13,6 +13,8 @@ CHANNEL_URL = "https://t.me/bikhabaar"
 USER_AGENT = "Mozilla/5.0 (compatible; TelegramNewsAgent/2.0)"
 
 PERSIAN_TO_ASCII = str.maketrans("۰۱۲۳۴۵۶۷۸۹٬", "0123456789,")
+_RLI = "\u2067"
+_PDI = "\u2069"
 
 
 @dataclass(frozen=True)
@@ -63,11 +65,15 @@ def _change_line(current: int, previous: int | None) -> str:
     return " — بدون تغییر"
 
 
+def _isolated_name(name: str) -> str:
+    return f"{_RLI}<b>{escape(name)}</b>{_PDI}"
+
+
 def format_car_prices(prices: list[CarPrice], previous: dict[str, int] | None = None) -> str:
     previous = previous or {}
     lines = ["🚗 <b>قیمت روز خودرو | بازار آزاد</b>"]
     for item in prices:
-        lines += ["", f"▫️ <b>{escape(item.name)}</b>: {item.market_toman:,} تومان{_change_line(item.market_toman, previous.get(item.name))}"]
+        lines += ["", f"▫️ {_isolated_name(item.name)}: {item.market_toman:,} تومان{_change_line(item.market_toman, previous.get(item.name))}"]
     lines += [
         "",
         f'📌 <a href="{CAR_PRICE_URL}">منبع: {CAR_SOURCE_NAME}</a>',
