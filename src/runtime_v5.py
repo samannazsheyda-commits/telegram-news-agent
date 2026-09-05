@@ -25,10 +25,21 @@ def install_fresh_x_policy() -> None:
     v2._is_newsroom_x = lambda item: str(getattr(item, "source", "")).endswith(" / X")
 
     # Barak Ravid, Araghchi, Mohsen Rezaei, Sepah News and TankerTrackers are now
-    # in the fresh timeline registry. Keep only the non-X NOTAM utility here and
-    # stop the old custom-X path from re-introducing stale Google-indexed posts.
+    # in the fresh timeline registry. Keep only the non-X NOTAM utility here.
+    # Configured Telegram/website sources must remain connected, while configured
+    # X sources stay disabled here so stale Google-indexed X rows cannot re-enter
+    # the fresh-timeline newsroom path.
     v2._PRESERVED_SPECIAL_SOURCES = {"NOTAM / Airspace"}
-    v2._original_custom_fetch = lambda: []
+    original_custom_fetch = v2._original_custom_fetch
+
+    def _configured_non_x_sources():
+        return [
+            item
+            for item in original_custom_fetch()
+            if not str(getattr(item, "source", "")).endswith(" / X")
+        ]
+
+    v2._original_custom_fetch = _configured_non_x_sources
 
     _fresh_x_installed = True
 
