@@ -1,7 +1,8 @@
 from src.editorial_rules import is_duplicate_story
-from src.formatters import format_news
 from src.newsroom_x import builtin_x_news_sources, x_monitor_query
-from src.sources import NewsItem
+from src.oil import OilSnapshot, format_oil_lines
+from src.sources import MarketSnapshot, NewsItem
+import src.runtime_v2 as runtime
 
 
 def _item(key, source, title, summary=""):
@@ -14,10 +15,12 @@ def test_expanded_x_registry_contains_required_accounts():
         "@Reuters", "@AP", "@AFP", "@BBCWorld", "@CNN", "@FRANCE24", "@AJEnglish",
         "@AlArabiya_Eng", "@nytimes", "@nytimesworld", "@business", "@FT", "@SkyNews",
         "@NBCNews", "@CBSNews", "@ABC", "@FoxNews", "@dwnews", "@guardian", "@washingtonpost",
-        "@WSJ", "@netanyahu", "@Israel_katz", "@kann_news", "@N12News", "@newsisrael13",
-        "@C14_news", "@IDF", "@Jerusalem_Post", "@IsraelHayomEng", "@CENTCOM", "@USTreasury",
-        "@SecScottBessent", "@SecDef", "@StateDept", "@statedeptspox", "@WhiteHouse",
-        "@marklevinshow", "@JasonMBrodsky", "@Tasnimnews_Fa", "@Tasnimnews_EN",
+        "@WSJ", "@TheEconomist", "@netanyahu", "@Israel_katz", "@kann_news", "@N12News",
+        "@newsisrael13", "@C14_news", "@IDF", "@Jerusalem_Post", "@IsraelHayomEng", "@CENTCOM",
+        "@USTreasury", "@SecScottBessent", "@SecDef", "@SecRubio", "@VP", "@StateDept",
+        "@statedeptspox", "@WhiteHouse", "@marklevinshow", "@JasonMBrodsky", "@mdubowitz",
+        "@manniefabian", "@sfrantzman", "@jconricus", "@Doranimated", "@jmhansler", "@JoeTruzman",
+        "@Tasnimnews_Fa", "@Tasnimnews_EN",
     }
     assert required <= handles
 
@@ -60,12 +63,35 @@ def test_materially_new_katz_development_is_not_duplicate():
     assert not is_duplicate_story(first, second)
 
 
-def test_news_includes_country_flags_and_follow_arrow():
+def test_news_wrapper_includes_country_flags_and_follow_arrow():
     item = _item(
         "flags", "Reuters / X",
         "US and Israel discuss new measures against Iran",
         "American and Israeli officials met about Iran.",
     )
-    rendered = format_news(item, "آمریکا و اسرائیل درباره اقدامات تازه علیه ایران گفت‌وگو کردند", "")
+    rendered = runtime._format_news_with_flags(
+        item, "آمریکا و اسرائیل درباره اقدامات تازه علیه ایران گفت‌وگو کردند", ""
+    )
     assert "🇮🇷" in rendered and "🇮🇱" in rendered and "🇺🇸" in rendered
-    assert '👉🏻 📡 <a href="https://t.me/bikhabaar">بی‌خبر</a> ←' in rendered
+    assert '👉🏻 📡 <a href="https://t.me/bikhabaar">بی‌خبر</a> ←' in "\n".join(runtime._brand_footer_with_arrow())
+
+
+def test_oil_prices_are_added_to_market_output():
+    snapshot = MarketSnapshot(2_210_600, 235_188_000)
+    object.__setattr__(snapshot, "brent_usd", 112.35)
+    object.__setattr__(snapshot, "wti_usd", 108.10)
+    rendered = runtime._format_market_with_oil(snapshot)
+    assert "نفت برنت: $112.35" in rendered
+    assert "نفت WTI: $108.10" in rendered
+    assert "منبع نفت: Yahoo Finance" in rendered
+
+
+def test_oil_daily_change_reports_amount_and_percentage():
+    up = "\n".join(runtime._oil_daily_lines("نفت برنت", 100.0, 110.0))
+    down = "\n".join(runtime._oil_daily_lines("نفت WTI", 100.0, 95.0))
+    assert "$10.00" in up and "10.00٪ افزایش" in up
+    assert "$5.00" in down and "5.00٪ کاهش" in down
+
+
+def test_oil_formatter_skips_missing_benchmarks_without_inventing_prices():
+    assert format_oil_lines(OilSnapshot()) == []
