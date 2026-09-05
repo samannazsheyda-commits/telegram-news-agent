@@ -1,6 +1,11 @@
 {
   "truth_last_id": "41529",
   "news_seen": [
+    "c2e341b47a8f9c93466c9f488d8d5633a4be1811",
+    "6c07a06255299516ee6307b09c36aa77e69bd907",
+    "f6977fe57e21422377b25e34d6efb33b55efa257",
+    "86093b65172044911c5311b0700831f30f3ba4e3",
+    "2efe3548fd6a5d1a78297f55bed508e77c66d98b",
     "edc4c9e59046c6c6489f46a3cb2a64f765d59695",
     "5cab9e63610e430eaff62d625ba9ed132b29fbc6",
     "aa8cadb0f01281467b8da2a7bda1c584c26a189b",
@@ -495,12 +500,7 @@
     "d0804f9568ce0212b1546ca1753937196b15331e",
     "a4a389747b108657e13bdc007197764ee4934437",
     "27c9e85ae54ba52deb6de47c47fec95fb12964bf",
-    "0ad43489488ffd09f223a03e85292d466f01b59e",
-    "c052b66457058460797d97d743a95ca3fb84c145",
-    "a05a0b1dbe76408e9b69809af69b258fcec2b201",
-    "b533114cfe9300aed1e706f8f717b4a743ac89c9",
-    "1d5e59539b338d22156a2cfc1da4b835ac6170e9",
-    "287c89a2038583400021abbe4d8122e5762d9b86"
+    "0ad43489488ffd09f223a03e85292d466f01b59e"
   ],
   "market_last_sent_at": "2026-09-05T04:34:33.611150+00:00",
   "next_news_color": "white",
@@ -530,6 +530,51 @@
     "last_gold": 23518800
   },
   "news_rejections": [
+    {
+      "key": "c2e341b47a8f9c93466c9f488d8d5633a4be1811",
+      "source": "NOTAM / Airspace",
+      "title": "Iran ceasefire agreement: Limited Middle East airspace reopens",
+      "reason": "not_today_tehran",
+      "published": "Thu, 09 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQOUFjeFRGalB3TkJTR2hnN3d0eFhKTGhLalNxVFhpTkhsNXU5SjhZTzRjLVNMeHphdWpIZWlUcENPTERacjJzd25zNERYM3JEa2lUUTVzZjV2WXNYMFoyQmtEUjlRWHBUczZ5TjU3cEZ0eTUwWUtyOXRYRGtydDhDZmZONk5CRGFYeFJveTVVRERsRzQ?oc=5",
+      "checked_at": "2026-09-05T06:30:17.249810+00:00"
+    },
+    {
+      "key": "6c07a06255299516ee6307b09c36aa77e69bd907",
+      "source": "NOTAM / Airspace",
+      "title": "Jordan says airspace remains open, flights unchanged after Iranian attacks - Arab News PK",
+      "reason": "not_today_tehran",
+      "published": "Thu, 09 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPeVdhcDNQdjNITHFYQTZPN1Q2Nm1RUndWV0RzcjdHWGxrdHJISHp6UDNqdFl1TXAtOHcxTnM5b3RFS3ZfZ05HMm9wM25Kc3QzVUxxQzdsMDB0UHVYWkRST2tUd3F4YVRyU3Y3U3N6ZWdmOTNQS3EwYUo1V0N5b284aTRLeHhBUFBYNG90bUdnMXZlMC00ai0wRUJBVFZRNkNwRmJnMTdNV3Vza1p6SnF6clctYzh4djYy?oc=5",
+      "checked_at": "2026-09-05T06:30:17.249810+00:00"
+    },
+    {
+      "key": "f6977fe57e21422377b25e34d6efb33b55efa257",
+      "source": "NOTAM / Airspace",
+      "title": "Iran suspends western airport flights as Trump presses for 'immediate ceasefire' - Türkiye Today",
+      "reason": "not_today_tehran",
+      "published": "Sun, 14 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPR3lmLVZwRWp1SVU1cTRUQVZtUHdrQmlVZWxiQi1xZ2tSbTJoekJBc0UyeEpYaUJ3NFRpczYwZGl0N1E1U1FfSFhZOXUxSHltWjVLa2czWDJGTzdkRjU1N0g5QUtpa3VPcnB1WklHYWdrWVZPQlY4cG9UVlJuUFRzcU9JLVRMWjN3TWhWdmRGMV9paTI4Zk91ZkItSU9mMWtOR196ZjdTV3I5V3NSSUVtU2RDX2dEYTBHNkg0Qzd3OA?oc=5",
+      "checked_at": "2026-09-05T06:30:17.249810+00:00"
+    },
+    {
+      "key": "86093b65172044911c5311b0700831f30f3ba4e3",
+      "source": "NOTAM / Airspace",
+      "title": "EU aviation agency tightens Middle East airspace warning - Iran International",
+      "reason": "not_today_tehran",
+      "published": "Tue, 14 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9PdVR2aWw4TkhFWVZ0U2tPU0pvOHFINUdqd0w2NlgzRFdna0l0c2dfSUZXZ3dRR3ItYkRVS2x4NjY1U09ZWUZVZWsxbU5PQWV1aFE?oc=5",
+      "checked_at": "2026-09-05T06:27:17.249397+00:00"
+    },
+    {
+      "key": "2efe3548fd6a5d1a78297f55bed508e77c66d98b",
+      "source": "NOTAM / Airspace",
+      "title": "Europe has updated its Gulf airspace warning as US-Iran tensions continue - here's what it means for air travel",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 08:42:33 GMT",
+      "link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxNN01LN3k2WmxqRGxBZW9INXBtakRmUnFHQ3dpOV9sSlNVWG5vX2h5QmUtQU1jVjhycXBaRTR6US1YQzcyZlYzRzUweGFZX3VRMUNNYkU2R1dMdXNOa2NTemxxNHExZzZ3X2Z1N01ucXFpdkpoazQ3LXQyVXRPcERqd3U1WFpYd0k5eEhxVzhxZURuYmJJaTBMbVhIa3c0VmplRlF1UElKQXJURUVEY3pDN0dDSFp3X2pCdzM1MXczNnFPMm1uMjFiSDVienBQQnQzaVlsQ0tDU0RyR0l4?oc=5",
+      "checked_at": "2026-09-05T06:27:17.249397+00:00"
+    },
     {
       "key": "edc4c9e59046c6c6489f46a3cb2a64f765d59695",
       "source": "TankerTrackers",
@@ -2283,51 +2328,6 @@
       "reason": "not_today_tehran",
       "published": "Wed, 05 Aug 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOQ1dLLUtEN1BOZURoRGtpQ1JYaDRibllHa25fRHBpNXlrSUdLV1N3NzVETUFZN3FXTFZlUTB2dmJWd1hSWUNRdDdVcUNnTmNfTTgtVXd1eTJ3WmNoRWxrY2FhcFdlX1d4bUxQdzVIcWM5RHNHNDBsOEN0TjFVTGN5ZHMtZkJ2SW5JTVJLWC04YzJmRG9CTlM5MGRVdzFTNVNYcVVOcGlzeFlSamc?oc=5",
-      "checked_at": "2026-09-05T05:47:05.823045+00:00"
-    },
-    {
-      "key": "1e099e031dbdc7fa6ec60c6a290d372c3444b3fe",
-      "source": "CBS News",
-      "title": "Military personnel told last month to stop calling Iran conflict \"Operation Epic Fury\"",
-      "reason": "not_today_tehran",
-      "published": "Thu, 03 Sep 2026 03:26:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE5aVGhGV3NKamhmZ0FxeUhHNkNTV3FNSWxDWEFsQ3VkbG0zaExFSWhLRzNZNDZfS3Z5Ti1xeTl0XzVRR2o3VDVXOHcwNDlfUXVVNWFVZ0hwdlRaYUExajRLamRFUkxRM25ZLXF1dFFQQnlhZw?oc=5",
-      "checked_at": "2026-09-05T05:47:05.823045+00:00"
-    },
-    {
-      "key": "d38b55b730cbf40ebddae5c1fdc2b74cbde36a1b",
-      "source": "Fox News",
-      "title": "EXCLUSIVE: State Dept reveals Portland Antifa connection to Hamas, Iran’s IRGC in sweeping terror action",
-      "reason": "not_today_tehran",
-      "published": "Wed, 26 Aug 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxNTFVGQ2pERjhsOFZQZWJDbDAxTVZGTGZ5RFZnUVowck5OR3pMY0ZBVEkyOFl5YzJibWJiVTB3eGtiSFIzYWlkZXpLSElCVTQ2ZFBwMmZHajcwYmtWMEdnWWZYcG1fZFFTdWNWV01Xa1dqNEd2YUZBMldtWmw1dGUyQ0ozZmFHZml2bUFIVjl4ZE1TLTBqQTBMb0xVY2lHV3dUcm9nbC1uLXY0UUYtUllBT0dmeUVoaC1NSmRtODZyb2tJZGdxdW9r0gHMAUFVX3lxTE9UNWFTVWFDOWEwbm5GV19ZOVBUVEF6Uk5fQ2N2OVdTM2dMRk5LWFpxaXBkR1U5YlNNdThnWjB5UmllLVRwODRqS3RoVWxtWmh6UXE1R3NWT2JnbXNLYTkwd1k5VnVPMEF5NEdGbElHTzNPYzktWFpoZTNZVFRnc3pyWWhibEtDaThaQldNRGtUNlJSOWVJNEJXb1NOU1VPamRHMTZDc3hXeUZIVU1URURPb0s4OVdEUjlMNEJsSmtXNHgxY01ITHdoM2lLVg?oc=5",
-      "checked_at": "2026-09-05T05:47:05.823045+00:00"
-    },
-    {
-      "key": "273bedabf67e91e1739e4f62d740bff3cc5448d4",
-      "source": "CNN",
-      "title": "Trump promised ‘economic D-Day’ for Iran. The result isn’t what was expected",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 19:51:04 GMT",
-      "link": "https://news.google.com/rss/articles/CBMihgFBVV95cUxNQnlmZTJJaklwbTJSQ2RMRGdRU1ExaVRIVlJGNTZRREczNWF6Q0Rzb3NYOHByc3o3cVJuckVDTkVMczhsQVNLN2RURktsVTRkdjN6b0FwNzNZZ0MwNjRKMmRoUEU0TEMyUERLeVV0Ym5lTUFsTnJRRlNyVkltMW5mN3dhOWg3Zw?oc=5",
-      "checked_at": "2026-09-05T05:47:05.823045+00:00"
-    },
-    {
-      "key": "f8be01f1e11fae72f19606602638f0d635dd06f5",
-      "source": "BBC News",
-      "title": "US and Iran trade strikes after first known US attack in weeks",
-      "reason": "not_today_tehran",
-      "published": "Mon, 31 Aug 2026 13:47:30 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE0wR1VYOXlxY0JNeElMalZOaEw0VDcycU9GeDBFLUdEQ2x4NjRuSjQzd0drUUtfVDRIR2hzenZjY2lRU2ZvbzVUeWVzYUQxc2QwcS1pWW5HX2EzUQ?oc=5",
-      "checked_at": "2026-09-05T05:47:05.823045+00:00"
-    },
-    {
-      "key": "5d9ac31b959e7b824f9f590e83ee6eaa685b54ac",
-      "source": "CBS News",
-      "title": "U.S. military strikes Iranian targets in first military action in a month",
-      "reason": "not_today_tehran",
-      "published": "Mon, 31 Aug 2026 02:37:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxNY3ZaTmR4OEVQWjVMZWRibUo2TGJTRDMtUVl6SmdLblprZlRsOXNPeTNvVmJRX2VUbU5JX3dCeXFfbUtqaExPa2pxZzByOEl4aDNNOThMajlXMnNHdFhFVlViTmIzTVZqMmh4RnVsMkdNTmV5ZGNVUThJYjZBRHpfdmFTY0QzYVpuUDdXUFl4c21VWDhvNWZib3NFbE00QQ?oc=5",
       "checked_at": "2026-09-05T05:47:05.823045+00:00"
     }
   ],
