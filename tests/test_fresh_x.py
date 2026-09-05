@@ -14,10 +14,10 @@ def test_parse_fxtwitter_timeline_keeps_iran_posts_with_direct_status_url():
             },
             {
                 "type": "status",
-                "id": "2096157673938952432",
-                "url": "https://x.com/Reuters/status/2096157673938952432",
-                "text": "Unrelated technology story",
-                "created_at": "Sat Sep 05 08:45:08 +0000 2026",
+                "id": "2096140054468968713",
+                "url": "https://x.com/Reuters/status/2096140054468968713",
+                "text": "US embassy issues health alert for Cuba amid oil blockade, sanctions",
+                "created_at": "Sat Sep 05 07:35:08 +0000 2026",
             },
         ],
     }
