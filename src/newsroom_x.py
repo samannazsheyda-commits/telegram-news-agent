@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 import html
+import json
 import re
+import time
+from datetime import datetime, timezone
+from email.utils import format_datetime, parsedate_to_datetime
 
 import requests
 
@@ -37,9 +41,13 @@ _BUILTIN_X_NEWSROOMS = (
     ("Mark Dubowitz", "@mdubowitz"), ("Emanuel Fabian", "@manniefabian"),
     ("Seth Frantzman", "@sfrantzman"), ("Jonathan Conricus", "@jconricus"),
     ("Michael Doran", "@Doranimated"), ("Jennifer Hansler", "@jmhansler"),
-    ("Joe Truzman", "@JoeTruzman"),
-    # Iranian newsrooms only — no Iranian commentators
-    ("Tasnim Persian", "@Tasnimnews_Fa"), ("Tasnim English", "@Tasnimnews_EN"),
+    ("Joe Truzman", "@JoeTruzman"), ("Barak Ravid", "@BarakRavid"),
+    # Iranian official/newsroom sources retained from the existing special-source list
+    ("Abbas Araghchi", "@araghchi"), ("Mohsen Rezaei", "@ir_rezaee"),
+    ("Sepah News", "@Sepah_News"), ("Tasnim Persian", "@Tasnimnews_Fa"),
+    ("Tasnim English", "@Tasnimnews_EN"),
+    # Maritime source explicitly retained by the user
+    ("TankerTrackers", "@TankerTrackers"),
 )
 
 _PERSIAN_SOURCE_NAMES = {
@@ -62,7 +70,9 @@ _PERSIAN_SOURCE_NAMES = {
     "White House": "کاخ سفید", "Mark Levin": "مارک لوین", "Jason Brodsky": "جیسون برادسکی",
     "Mark Dubowitz": "مارک دوبوویتز", "Emanuel Fabian": "امانوئل فابیان", "Seth Frantzman": "ست فرانتزمن",
     "Jonathan Conricus": "جاناتان کانریکوس", "Michael Doran": "مایکل دوران", "Jennifer Hansler": "جنیفر هنسلر",
-    "Joe Truzman": "جو تروزمن", "Tasnim Persian": "تسنیم", "Tasnim English": "تسنیم انگلیسی",
+    "Joe Truzman": "جو تروزمن", "Barak Ravid": "باراک راوید", "Abbas Araghchi": "عباس عراقچی",
+    "Mohsen Rezaei": "محسن رضایی", "Sepah News": "سپاه نیوز", "TankerTrackers": "تانکرترکرز",
+    "Tasnim Persian": "تسنیم", "Tasnim English": "تسنیم انگلیسی",
 }
 for _name, _fa in _PERSIAN_SOURCE_NAMES.items():
     _formatters.SOURCE_FA[f"{_name} / X"] = f"{_fa} / ایکس"
@@ -78,10 +88,11 @@ _MEDIA_PATTERN = "|".join(sorted((re.escape(name) for name in _SECONDARY_MEDIA),
 _TRAILING_MEDIA_RE = re.compile(rf"\s+(?:[-–—|:]\s*)(?:{_MEDIA_PATTERN})\s*$", re.IGNORECASE)
 _PAREN_MEDIA_RE = re.compile(rf"\s*\((?:{_MEDIA_PATTERN})(?:\s*,\s*\d{{4}})?\)\s*([.!?؟]?)$", re.IGNORECASE)
 _X_STATUS_RE = re.compile(r"https?://(?:www\.)?(?:x\.com|twitter\.com)/([A-Za-z0-9_]+)/status/(\d+)", re.IGNORECASE)
+_NEXT_DATA_RE = re.compile(r'<script[^>]+id=["\']__NEXT_DATA__["\'][^>]*>(.*?)</script>', re.IGNORECASE | re.DOTALL)
+_X_SYNDICATION_BASE = "https://syndication.twitter.com/srv/timeline-profile/screen-name"
 
 
 def clean_x_post_text(text: str) -> str:
-    """Remove trailing secondary-media labels while preserving the actual post text."""
     value = re.sub(r"\s+", " ", html.unescape(text or "")).strip()
     value = _TRAILING_MEDIA_RE.sub("", value).strip()
     match = _PAREN_MEDIA_RE.search(value)
@@ -102,19 +113,13 @@ def _direct_x_status_url(value: str, expected_handle: str = "") -> str:
 
 
 def resolve_x_post_url(link: str, handle: str, session=requests) -> str:
-    """Resolve an indexed Google News result to the direct X status URL."""
     direct = _direct_x_status_url(link, handle)
     if direct:
         return direct
     if not link:
         return ""
     try:
-        response = session.get(
-            link,
-            headers={"User-Agent": USER_AGENT},
-            timeout=12,
-            allow_redirects=True,
-        )
+        response = session.get(link, headers={"User-Agent": USER_AGENT}, timeout=12, allow_redirects=True)
         response.raise_for_status()
     except Exception:
         return ""
@@ -142,7 +147,7 @@ _MONITORED_TERMS = (
     "al udeid", "al dhafra", "diego garcia", "bahrain", "qatar", "kuwait", "fordow", "natanz",
     "isfahan", "arak", "iaea", "grossi", "inspector", "centrifuge", "enrichment", "uranium", "ofac",
     "sanctions", "frozen funds", "blocked funds", "ballistic missile", "cruise missile", "drone",
-    "netanyahu", "israel katz", "hezbollah", "notam", "tanker", "shipping",
+    "netanyahu", "israel katz", "hezbollah", "notam", "tanker", "shipping", "nuclear", "missile",
     "ایران", "تهران", "سپاه", "نیروی قدس", "هرمز", "خلیج فارس", "ناو هواپیمابر", "ناو آب‌خاکی",
     "ناوشکن", "زیردریایی", "ناوگان پنجم", "مین‌گذاری", "مین دریایی", "مین‌روبی", "فردو", "نطنز",
     "اصفهان", "اراک", "آژانس", "گروسی", "بازرس", "غنی‌سازی", "اورانیوم", "تحریم", "پول بلوکه",
@@ -163,6 +168,74 @@ def builtin_x_news_sources() -> tuple[dict[str, str], ...]:
     return tuple({"name": name, "handle": handle} for name, handle in _BUILTIN_X_NEWSROOMS)
 
 
+def _normalise_x_created_at(value: object) -> str:
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    try:
+        dt = parsedate_to_datetime(raw)
+    except Exception:
+        try:
+            dt = datetime.strptime(raw, "%a %b %d %H:%M:%S %z %Y")
+        except ValueError:
+            return ""
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return format_datetime(dt.astimezone(timezone.utc))
+
+
+def parse_x_syndication_html(page_html: str, source_name: str, handle: str) -> list[NewsItem]:
+    """Parse the public X embed timeline and return only Iran-related posts from that profile."""
+    match = _NEXT_DATA_RE.search(page_html or "")
+    if not match:
+        raise ValueError("X syndication __NEXT_DATA__ missing")
+    payload = json.loads(html.unescape(match.group(1)))
+    page_props = payload.get("props", {}).get("pageProps", {})
+    entries = page_props.get("timeline", {}).get("entries")
+    if not isinstance(entries, list):
+        raise ValueError("X syndication timeline entries missing")
+
+    display = f"{source_name} / X"
+    screen_name = handle.lstrip("@")
+    result: list[NewsItem] = []
+    seen_ids: set[str] = set()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        content = entry.get("content") if isinstance(entry.get("content"), dict) else {}
+        tweet = content.get("tweet") if isinstance(content.get("tweet"), dict) else entry.get("tweet")
+        if not isinstance(tweet, dict):
+            continue
+        post_id = str(tweet.get("id_str") or tweet.get("id") or "").strip()
+        text = clean_x_post_text(str(tweet.get("full_text") or tweet.get("text") or ""))
+        published = _normalise_x_created_at(tweet.get("created_at"))
+        if not post_id or not text or not published or post_id in seen_ids:
+            continue
+        if not is_monitored_x_topic(text):
+            continue
+        seen_ids.add(post_id)
+        result.append(NewsItem(
+            f"x:{screen_name}:{post_id}",
+            display,
+            text,
+            "",
+            f"https://x.com/{screen_name}/status/{post_id}",
+            published,
+        ))
+    return result
+
+
+def _default_syndication_fetcher(source: dict[str, str], session=requests) -> str:
+    handle = source["handle"].lstrip("@")
+    response = session.get(
+        f"{_X_SYNDICATION_BASE}/{handle}",
+        headers={"User-Agent": USER_AGENT, "Accept": "text/html,application/xhtml+xml"},
+        timeout=15,
+    )
+    response.raise_for_status()
+    return response.text
+
+
 def _default_searcher(source: dict[str, str], session=requests) -> list[NewsItem]:
     handle = source["handle"].lstrip("@")
     label = f'{source["name"]} / X'
@@ -170,22 +243,45 @@ def _default_searcher(source: dict[str, str], session=requests) -> list[NewsItem
     return _fetch_google_news_query(session, label, query, "en", allow_special_source=True)
 
 
-def fetch_builtin_x_news_items(*, searcher=None, session=requests) -> list[NewsItem]:
-    merged: dict[str, NewsItem] = {}
-    for source in builtin_x_news_sources():
-        try:
-            items = searcher(source) if searcher else _default_searcher(source, session=session)
-        except Exception:
+def _google_fallback_items(source: dict[str, str], *, searcher, session=requests) -> list[NewsItem]:
+    try:
+        items = searcher(source) if searcher else _default_searcher(source, session=session)
+    except Exception:
+        return []
+    normalized_items: list[NewsItem] = []
+    for item in items[:20]:
+        display = f'{source["name"]} / X'
+        title = clean_x_post_text(item.title)
+        summary = clean_x_post_text(item.summary)
+        direct_link = resolve_x_post_url(item.link, source["handle"], session=session)
+        if not direct_link:
             continue
-        for item in items[:20]:
-            display = f'{source["name"]} / X'
-            title = clean_x_post_text(item.title)
-            summary = clean_x_post_text(item.summary)
-            direct_link = resolve_x_post_url(item.link, source["handle"], session=session)
-            if not direct_link:
-                # Never publish an X item with a Google News or newsroom-site source link.
-                continue
-            normalized = NewsItem(item.key, display, title, summary, direct_link, item.published)
-            if is_monitored_x_topic(f"{normalized.title} {normalized.summary}"):
-                merged.setdefault(normalized.key, normalized)
+        normalized = NewsItem(item.key, display, title, summary, direct_link, item.published)
+        if is_monitored_x_topic(f"{normalized.title} {normalized.summary}"):
+            normalized_items.append(normalized)
+    return normalized_items
+
+
+def fetch_builtin_x_news_items(*, searcher=None, syndication_fetcher=None, session=requests) -> list[NewsItem]:
+    """Read monitored X profiles directly through X's public embed timeline; Google is fallback only."""
+    merged: dict[str, NewsItem] = {}
+    use_default_syndication = syndication_fetcher is None
+    for index, source in enumerate(builtin_x_news_sources()):
+        try:
+            page_html = (
+                syndication_fetcher(source)
+                if syndication_fetcher
+                else _default_syndication_fetcher(source, session=session)
+            )
+            items = parse_x_syndication_html(page_html, source["name"], source["handle"])
+        except Exception as exc:
+            print(f"X syndication fallback source={source['handle']!r} error={exc}")
+            items = _google_fallback_items(source, searcher=searcher, session=session)
+
+        for item in items:
+            merged.setdefault(item.key, item)
+
+        # Avoid hammering the public embed endpoint across the full monitored registry.
+        if use_default_syndication and index + 1 < len(_BUILTIN_X_NEWSROOMS):
+            time.sleep(0.20)
     return list(merged.values())
