@@ -34,7 +34,7 @@ class FakeSession:
         raise AssertionError(url)
 
 
-def test_phone_page_uses_persian_jalali_title_time_digits_and_drops_incomplete_prices():
+def test_phone_page_uses_persian_jalali_title_time_digits_and_never_shows_missing_price_text():
     prices = [
         phones.FlagshipPhonePrice(
             'Apple iPhone 17 Pro Max', 300_000_000,
@@ -46,6 +46,11 @@ def test_phone_page_uses_persian_jalali_title_time_digits_and_drops_incomplete_p
             registered_toman=None,
             unregistered_toman=250_000_000,
         ),
+        phones.FlagshipPhonePrice(
+            'Xiaomi 17 Ultra', 0,
+            registered_toman=None,
+            unregistered_toman=None,
+        ),
     ]
     session = FakeSession('https://telegra.ph/phone-fa-test')
     phones.create_phone_telegraph_page(prices, session=session, now=NOW)
@@ -56,7 +61,9 @@ def test_phone_page_uses_persian_jalali_title_time_digits_and_drops_incomplete_p
     assert 'iPhone ۱۷ Pro Max' in encoded
     assert '۴۳۹,۹۸۰,۰۰۰ تومان' in encoded
     assert '۳۰۰,۰۰۰,۰۰۰ تومان' in encoded
-    assert 'Galaxy S۲۶ Ultra' not in encoded
+    assert 'Galaxy S۲۶ Ultra' in encoded
+    assert '۲۵۰,۰۰۰,۰۰۰ تومان' in encoded
+    assert 'Xiaomi ۱۷ Ultra' not in encoded
     assert 'در منبع ثبت نشده' not in encoded
     assert 'در فهرست قیمت روز موبایل' in encoded
 
