@@ -70,27 +70,23 @@ class FakeSession:
         raise AssertionError(url)
 
 
-def test_phone_list_creates_telegraph_instant_view_with_all_40_models():
-    create_page = getattr(phones, 'create_phone_telegraph_page', None)
-    assert callable(create_page), 'phone list must create a Telegraph Instant View page'
-
+def test_phone_list_creates_telegraph_instant_view_with_all_40_models_and_banner():
     prices = phones.parse_flagship_phone_prices(_sample_html())
     session = FakeSession()
-    url = create_page(prices, session=session)
+    url = phones.create_phone_telegraph_page(prices, session=session)
     assert url == 'https://telegra.ph/phone-prices-test'
     _, data, _ = session.posts[1]
     nodes = json.loads(data['content'])
     encoded = json.dumps(nodes, ensure_ascii=False)
+    assert phones.PHONE_BANNER_URL in encoded
     assert sum(item.name in encoded for item in prices) == 40
     assert encoded.index('آیفون') < encoded.index('سامسونگ') < encoded.index('شیائومی') < encoded.index('سایر برندها')
 
 
-def test_compact_phone_post_links_to_instant_view_instead_of_dumping_40_rows():
-    formatter = getattr(phones, 'format_phone_telegraph_post', None)
-    assert callable(formatter), 'phone list needs a compact Telegram post formatter'
-    text = formatter('https://telegra.ph/phone-prices-test', 40)
-    assert '40' in text
+def test_compact_phone_post_links_title_without_separate_view_link():
+    text = phones.format_phone_telegraph_post('https://telegra.ph/phone-prices-test', 40)
     assert 'https://telegra.ph/phone-prices-test' in text
-    assert 'مشاهده لیست کامل' in text
+    assert 'مشاهده لیست کامل' not in text
+    assert 'لیست 40 مدل' not in text
     assert 'mobile.ir' in text
     assert 'بی‌خبر' in text
