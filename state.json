@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "x:mdubowitz:2096566054608625667",
+    "x:JasonMBrodsky:2096565805970276746",
     "x:CENTCOM:2096565072105447656",
     "x:business:2096562827045503077",
     "x:AJEnglish:2096555382197936399",
@@ -498,9 +500,7 @@
     "f3fcb5e3e56de5fffd54dba0b9f00ebb98437da8",
     "0e93822fb3b76cb181ddba59c882d28f8e97865b",
     "775285a7831fc24bf780c1b57f89c2a3338f31bf",
-    "7400b668305f70196a3cea1743c07b4d9e69d67a",
-    "49eb717c82e416052929cf3000656e047350d0ee",
-    "f4606b1fdc60f48e0299b6808d1d0c66049fb0af"
+    "7400b668305f70196a3cea1743c07b4d9e69d67a"
   ],
   "market_last_sent_at": "2026-09-06T10:45:33.357422+00:00",
   "next_news_color": "white",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:JasonMBrodsky:2096565805970276746",
+      "source": "Jason Brodsky / X",
+      "title": "\"According to the official, Tehran believes Iranian dissidents and journalists living abroad do not receive comprehensive protection from security agencies in their countries of residence and seeks to exploit those vulnerabilities.\" \"The official identified Azerbaijan, Turkey and the United Arab Emirates as high-risk destinations. Several European countries were also assessed as carrying heightened risks.\"",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2096565805970276746",
+      "published": "Sun, 06 Sep 2026 11:46:55 +0000",
+      "sent_at": "2026-09-06T11:53:36.656412+00:00",
+      "fingerprint": "according to the official tehran believes iranian dissidents and journalists living abroad do not receive comprehensive protection from security agencies in their countries of residence and seeks to exploit those vulnerabilities the official identified azerbaijan turkey and the united arab emirates as high risk destinations several european countries were also assessed as carrying heightened risks"
+    },
+    {
+      "key": "x:mdubowitz:2096566054608625667",
+      "source": "Mark Dubowitz / X",
+      "title": "After three years of war, the axis of resistance — which has taken a beating from the U.S. and Israel — is no longer an axis. More evidence that the regime in Iran is losing.",
+      "summary": "",
+      "link": "https://x.com/mdubowitz/status/2096566054608625667",
+      "published": "Sun, 06 Sep 2026 11:47:54 +0000",
+      "sent_at": "2026-09-06T11:53:36.656412+00:00",
+      "fingerprint": "after three years of war the axis of resistance which has taken a beating from the u s and israel is no longer an axis more evidence that the regime in iran is losing"
+    },
     {
       "key": "x:CENTCOM:2096565072105447656",
       "source": "CENTCOM / X",
