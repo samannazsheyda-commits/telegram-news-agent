@@ -502,7 +502,7 @@
     "af58b9bffe817d2cd9b13541913c4b94d1eddf59",
     "bb5ac693eb887d2023fca0bdad6292835df020bc"
   ],
-  "market_last_sent_at": "2026-09-06T06:29:34.820132+00:00",
+  "market_last_sent_at": "2026-09-06T08:41:33.445711+00:00",
   "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2790000000,
@@ -609,14 +609,14 @@
     "لوکانو L8": 10110000000
   },
   "car_last_sent_date": "2026-09-06",
-  "weather_noon_last_sent_date": "2026-09-05",
+  "weather_noon_last_sent_date": "2026-09-06",
   "weather_night_last_sent_date": "2026-09-05",
   "market_day_prices": {
     "date": "2026-09-06",
     "first_usd": 227205,
-    "last_usd": 227205,
+    "last_usd": 225520,
     "first_gold": 23674400,
-    "last_gold": 23674400,
+    "last_gold": 23501800,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
