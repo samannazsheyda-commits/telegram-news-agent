@@ -146,8 +146,9 @@ def _format_car_via_telegraph(prices, previous=None) -> str:
 
 def _car_due_with_one_time_telegraph_republish(state: dict, now) -> bool:
     local_date = now.astimezone(v7.v2.base.agent.TEHRAN).date().isoformat()
-    if local_date == _CAR_REPUBLISH_DATE and state.get("car_telegraph_republish_date") != local_date:
+    if local_date == _CAR_REPUBLISH_DATE and state.get("car_telegraph_republish_date_2") != local_date:
         state["car_telegraph_republish_date"] = local_date
+        state["car_telegraph_republish_date_2"] = local_date
         return True
     return _original_car_due(state, now)
 
