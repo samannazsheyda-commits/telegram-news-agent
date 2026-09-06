@@ -1,6 +1,24 @@
 {
-  "truth_last_id": "41529",
+  "truth_last_id": "41530",
   "news_seen": [
+    "fc8ce490e9ecde629ed3eb477fd6b0224fe77a41",
+    "x:Jerusalem_Post:2096479834591387648",
+    "x:FT:2096459117015494872",
+    "x:Jerusalem_Post:2096439181668938053",
+    "x:AJEnglish:2096432129819513165",
+    "x:CENTCOMFarsi:2096417989679529996",
+    "x:TankerTrackers:2096417407099118035",
+    "x:JasonMBrodsky:2096409611297247400",
+    "x:CBSNews:2096361482334192057",
+    "x:haaretzcom:2096338868127564206",
+    "x:JasonMBrodsky:2096338616775573564",
+    "75a0dc4a18b91a08d2c5c0055d248b56b29d4183",
+    "e925d6da75326ca55b8563b8264aeb01b28f0134",
+    "aa765ef65d00fc9b7cbb78bb8f52157cade2d12c",
+    "b057c447068fea9229af7cc0ee1ad20bee4c4bc4",
+    "x:TankerTrackers:2096234794065563736",
+    "x:TankerTrackers:2096229726482260137",
+    "x:JasonMBrodsky:2096271981930778872",
     "75deef33720ecbb2fb17a152fe57e55d7507d578",
     "x:Jerusalem_Post:2096325224253788304",
     "c9a1d56e067c2b4455d8025bca4f12d983a1ecc9",
@@ -482,28 +500,10 @@
     "6c07a06255299516ee6307b09c36aa77e69bd907",
     "f6977fe57e21422377b25e34d6efb33b55efa257",
     "86093b65172044911c5311b0700831f30f3ba4e3",
-    "2efe3548fd6a5d1a78297f55bed508e77c66d98b",
-    "edc4c9e59046c6c6489f46a3cb2a64f765d59695",
-    "5cab9e63610e430eaff62d625ba9ed132b29fbc6",
-    "aa8cadb0f01281467b8da2a7bda1c584c26a189b",
-    "955c85171f69f38009034bda32f754f72368065a",
-    "17a1b6c578e1f774e8ebe8e985d13da6659e145e",
-    "ae4e651112dc6ae044cfb5fa1954195b28136221",
-    "fc8ce490e9ecde629ed3eb477fd6b0224fe77a41",
-    "f97aa0c1f84d4e785f4d11871165db4ca28bbe6c",
-    "d12dcce9be792c1293f9c96184668b72489e7047",
-    "7bd478204277d3d1d6aa3f9d079333009c0f3fe1",
-    "73555df19eea7dbfc10ef3e8adb8252f633119b5",
-    "d856734f5228e1ec302e077fbaf87179b15cd67e",
-    "2af202619843c1d8a505e8531312ff01788d835f",
-    "ad051d1471e24b68adf0ebd24e33bd337fd955b6",
-    "fe7ec0578043f395d0d930f8624edd84b0297f25",
-    "8bb3128249385dc64e89e6baa2df41e4c9f0a7b2",
-    "10711c69582f83dee9bd0034a20cddb91845e6ed",
-    "ac31093e645c9c14bba50829a929c15622b356a9"
+    "2efe3548fd6a5d1a78297f55bed508e77c66d98b"
   ],
-  "market_last_sent_at": "2026-09-05T19:32:05.566713+00:00",
-  "next_news_color": "white",
+  "market_last_sent_at": "2026-09-06T06:29:34.820132+00:00",
+  "next_news_color": "red",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -529,10 +529,10 @@
   "weather_noon_last_sent_date": "2026-09-05",
   "weather_night_last_sent_date": "2026-09-05",
   "market_day_prices": {
-    "date": "2026-09-05",
-    "first_usd": 221060,
+    "date": "2026-09-06",
+    "first_usd": 227205,
     "last_usd": 227205,
-    "first_gold": 23518800,
+    "first_gold": 23674400,
     "last_gold": 23674400,
     "first_brent": 96.28,
     "last_brent": 96.28,
@@ -540,6 +540,69 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "fc8ce490e9ecde629ed3eb477fd6b0224fe77a41",
+      "source": "NOTAM / Airspace",
+      "title": "Dubai and Middle East flight disruption: UAE intercepts Iranian drone as US and Iran exchange first fire in a month - cntraveller.in",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 11:30:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNajl1OC03b09aQUw0VzIxV29xLUZqRmFSVWhRNzZ6WFNiOG5aTFpQaFR2VUhNM2RMMEUzWjJlN0lBYkc1Y1dja3J3ZXczU244RmhzZDd6Y0xycnVzQmxFZWxPLUdsaFhPQWY5S2Q1RmFBXzFhX3lrbkU1SF81NWdzenc2V29zeHlFWU0tc1JGc2lRVVk2UWswbDNGUWJ0M2I2NF9SNEswM0tkQnJpNG55dDM2RjhDVDJkSHprUGQ1eFNTc2YzTGl2cXhMQWs?oc=5",
+      "checked_at": "2026-09-06T06:31:49.063515+00:00"
+    },
+    {
+      "key": "e925d6da75326ca55b8563b8264aeb01b28f0134",
+      "source": "ژئوپی واچ / Telegram",
+      "title": "⚡️ 🇮🇷 🚢 – Iran claims to have targeted three oil tankers in the Strait of Hormuz, in response to the U.S. bombing three of its vessels earlier today. It looks like Iran will also enact a \"tanker-for-tanker\" policy. @GeoPWatch",
+      "reason": "not_today_tehran",
+      "published": "Sat, 05 Sep 2026 20:16:54 +0000",
+      "link": "https://t.me/GeoPWatch/39543",
+      "checked_at": "2026-09-06T06:29:34.820132+00:00"
+    },
+    {
+      "key": "aa765ef65d00fc9b7cbb78bb8f52157cade2d12c",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Bessent on Iran: There’s probably only about 30 million barrels of Iranian crude oil left that China hasn’t bought. That will run out soon, and there will be no more China buying because they have no product.",
+      "reason": "low_signal_or_unapproved_source",
+      "published": "Sun, 06 Sep 2026 05:12:53 +0000",
+      "link": "https://t.me/ClashReport/95235",
+      "checked_at": "2026-09-06T06:29:34.820132+00:00"
+    },
+    {
+      "key": "b057c447068fea9229af7cc0ee1ad20bee4c4bc4",
+      "source": "NOTAM / Airspace",
+      "title": "Iran War Quietly Raises the Strategic Value of Central Asian Airspace - The Times Of Central Asia",
+      "reason": "not_today_tehran",
+      "published": "Tue, 04 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxNWk1WNlRBbk5fUDdIQl9HdGhjcEdGV2FwUFRMSUFTSWJuS21MbjNMRmFWN0l5MVdzbGJTb3RtdURKTDU5MFoyd2k1TkVhakpFR1dLdWRvWEZ5clQ5NmFjOXR5d29Bc2FEaC15QW9JZjd4blBJTkh4eXU4dW9NV2plSkhQbHM4N1F1Z1ZKN1JaOVpBNWhH?oc=5",
+      "checked_at": "2026-09-06T06:29:34.820132+00:00"
+    },
+    {
+      "key": "x:TankerTrackers:2096234794065563736",
+      "source": "TankerTrackers / X",
+      "title": "We should point out that on 2026-08-14, DOWNY (9218480) did berth to load oil at Kharg Island but our satellite imagery analysis days later showed that she was mostly empty. If anything, she is partially laden.",
+      "reason": "not_today_tehran",
+      "published": "Sat, 05 Sep 2026 13:51:35 +0000",
+      "link": "https://x.com/TankerTrackers/status/2096234794065563736",
+      "checked_at": "2026-09-06T06:29:34.820132+00:00"
+    },
+    {
+      "key": "x:TankerTrackers:2096229726482260137",
+      "source": "TankerTrackers / X",
+      "title": "Today’s satellite imagery suggests that the National Iranian Tanker Company (NITC) VLCC supertanker DOWNY (9218480) was attacked. She is in ballast and carrying no oil cargo. This is the type of vessel US CENTCOM typically targets in retaliation for Iranian attacks on tankers transiting the Strait of Hormuz. Satellite imagery shows a flurry of tugboat activity, corroborated by AIS movements that began at approximately 04:45 UTC this morning. The activity is concentrated around the port-quarter; which is the bottom-left corner of the vessel. This suggests that the engine room was struck, most likely by a US Hellfire missile. There are no signs of fire or smoke on thermal imagery. The vessels do not appear to be conducting firefighting operations at the time of the image, although those efforts may have concluded before 07:21 UTC, when today's imagery was captured. We also have sources reporting that NITC’s STARK1 (9171450) was struck off the coast of Kooh Mobarak, Iran overnight. She too is empty of cargo. A few days ago, NITC tankers SINOPA (9172038) and HAWK (9362061) were also struck off the port of Jask in the Gulf of Oman, though they appeared to contain some amount of oil cargo; which breaks the usual strike pattern. #OOTT #IranWar #Tankers",
+      "reason": "not_today_tehran",
+      "published": "Sat, 05 Sep 2026 13:31:27 +0000",
+      "link": "https://x.com/TankerTrackers/status/2096229726482260137",
+      "checked_at": "2026-09-06T06:29:34.820132+00:00"
+    },
+    {
+      "key": "x:JasonMBrodsky:2096271981930778872",
+      "source": "Jason Brodsky / X",
+      "title": "A point of correction: President Trump was the first American president since 1979 to have given the green light for the use of force against the Iranian regime’s internal security apparatus, the same forces that were suppressing Iranians during the protests. Key commanders, including the head of the Basij, were taken out in mostly Israeli strikes. Previous American presidents offered lip service, strongly-worded press statements, symbolic sanctions, and worked on maintaining internet access, but little more. Regardless of whether one likes the president or agrees with the war, this is a part of his record that must be considered.",
+      "reason": "not_today_tehran",
+      "published": "Sat, 05 Sep 2026 16:19:21 +0000",
+      "link": "https://x.com/JasonMBrodsky/status/2096271981930778872",
+      "checked_at": "2026-09-06T06:29:34.820132+00:00"
+    },
     {
       "key": "75deef33720ecbb2fb17a152fe57e55d7507d578",
       "source": "NOTAM / Airspace",
@@ -2276,73 +2339,120 @@
       "published": "Thu, 03 Sep 2026 09:53:58 +0000",
       "link": "https://x.com/manniefabian/status/2095450221069181168",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:manniefabian:2095567922823397527",
-      "source": "Emanuel Fabian / X",
-      "title": "In a statement, the military says that in the past few weeks, troops of the 36th Division, after achieving \"operational control of the ridge area above and below ground,\" cleared two tunnel routes of Hezbollah operatives, killing some of them while others fled. The IDF describes the facility as a \"strategic infrastructure that was built over two decades,\" which it says was financed and planned by Iran. Inside the tunnels, the troops found \"command centers, weapons rooms, generator rooms, living quarters, showers, and a kitchen,\" which the IDF says enabled Hezbollah operatives \"to conduct fighting and remain there for extended periods.\" The IDF says that now that the underground site has been clear of Hezbollah operatives, it is working to demolish it. \"Upon completion of the activity, the IDF will establish a renewed defensive posture in accordance with the situational assessment,\" the military says, indicating that it plans to withdraw from the area. The military says that Hezbollah operatives launched attacks from the underground site at the ridge. \"Following the activity in the [tunnel] routes in recent weeks, the ability to carry out terror attacks against Israeli civilians and IDF troops from the routes has been neutralized,\" the statement adds.",
-      "reason": "not_today_tehran",
-      "published": "Thu, 03 Sep 2026 17:41:41 +0000",
-      "link": "https://x.com/manniefabian/status/2095567922823397527",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:manniefabian:2095568526715109731",
-      "source": "Emanuel Fabian / X",
-      "title": "The Reuters report earlier that Iran warned the US that it would respond to any Israeli offensive on Ali Taher, is 100% bullshit. The IDF has been inside tunnels for weeks.",
-      "reason": "not_today_tehran",
-      "published": "Thu, 03 Sep 2026 17:44:05 +0000",
-      "link": "https://x.com/manniefabian/status/2095568526715109731",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:mdubowitz:2095636047400992995",
-      "source": "Mark Dubowitz / X",
-      "title": "President Trump was right to use every element of American power to stop Iran from developing nuclear weapons. The regime is now at its weakest point in 47 years. Double down: economically strangle the regime so it can’t pay its thugs. Use selective military force to keep oil flowing. Back the Iranian people to cripple the regime. The president has two years to turn “Death to America” into the end of the Islamic Republic.",
-      "reason": "not_today_tehran",
-      "published": "Thu, 03 Sep 2026 22:12:23 +0000",
-      "link": "https://x.com/mdubowitz/status/2095636047400992995",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:mdubowitz:2095885258457481261",
-      "source": "Mark Dubowitz / X",
-      "title": "The Trump administration is now targeting banks in the UAE and Turkey for facilitating Iran’s sanctions evasion. Just last week, experts insisted the administration lacked the resolve to go after foreign banks especially those in allied countries. That prediction didn’t age well. (And whether Turkey still qualifies as an ally is a separate question.)",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 14:42:39 +0000",
-      "link": "https://x.com/mdubowitz/status/2095885258457481261",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:mdubowitz:2095886488856564035",
-      "source": "Mark Dubowitz / X",
-      "title": "Turns out the Trump administration can be very effective at multilateral diplomacy. A growing number of countries are joining “Diplomatic Outcast” — a powerful complement to “Economic Outcast,” “Epic Fury” and “Hormuz Breakout.”",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 14:47:33 +0000",
-      "link": "https://x.com/mdubowitz/status/2095886488856564035",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:mdubowitz:2095889790990184936",
-      "source": "Mark Dubowitz / X",
-      "title": "Follow @kerri_bitsoff You will learn a lot. And listen to our discussion on The Iran Breakdown: https://www.youtube.com/live/DW7A2Wlc5GQ?si=sgO6_VNqRUJX39-W",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 15:00:40 +0000",
-      "link": "https://x.com/mdubowitz/status/2095889790990184936",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:JasonMBrodsky:2095824486431858777",
-      "source": "Jason Brodsky / X",
-      "title": "\"But after that diplomatic effort dragged on, the Trump administration told them that it would not return to the MoU, according to people familiar with the talks. Instead, it is now pushing for a more comprehensive agreement that will cover not only the strait but Tehran’s nuclear programme, one diplomat briefed said.\" https://www.ft.com/content/f8b2e4ad-6af2-4cf5-aae2-d1d359b31fa4?syn-25a6b1a6=1",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 10:41:10 +0000",
-      "link": "https://x.com/JasonMBrodsky/status/2095824486431858777",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "75a0dc4a18b91a08d2c5c0055d248b56b29d4183",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Iran’s IRGC says it launched ballistic missiles at a U.S. aircraft carrier and destroyer, claiming the warships were involved in actions against Iranian vessels.",
+      "summary": "Iran’s IRGC says it launched ballistic missiles at a U.S. aircraft carrier and destroyer, claiming the warships were involved in actions against Iranian vessels. The IRGC said the ships were damaged and withdrew from the area, and warned of further responses if hostile actions continue.",
+      "link": "https://t.me/ClashReport/95230",
+      "published": "Sat, 05 Sep 2026 23:12:30 +0000",
+      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "fingerprint": "iran s irgc says it launched ballistic missiles at a u s aircraft carrier and destroyer claiming the warships were involved in actions against iranian vessels iran s irgc says it launched ballistic missiles at a u s aircraft carrier and destroyer claiming the warships were involved in actions against iranian vessels the irgc said the ships were damaged and withdrew from the area and warned of further responses if hostile actions continue"
+    },
+    {
+      "key": "x:JasonMBrodsky:2096338616775573564",
+      "source": "Jason Brodsky / X",
+      "title": "Similar clips surfaced in July. Would wait for confirmation as IRGC has an interest in developing propaganda videos to deter shipping and to makeup for its failure to hit U.S. warships.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2096338616775573564",
+      "published": "Sat, 05 Sep 2026 20:44:08 +0000",
+      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "fingerprint": "similar clips surfaced in july would wait for confirmation as irgc has an interest in developing propaganda videos to deter shipping and to makeup for its failure to hit u s warships"
+    },
+    {
+      "key": "x:haaretzcom:2096338868127564206",
+      "source": "Haaretz / X",
+      "title": "Vance: U.S. cuts contact with Iran over Hormuz, China willing to back embargo",
+      "summary": "",
+      "link": "https://x.com/haaretzcom/status/2096338868127564206",
+      "published": "Sat, 05 Sep 2026 20:45:08 +0000",
+      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "fingerprint": "vance u s cuts contact with iran over hormuz china willing to back embargo"
+    },
+    {
+      "key": "x:CBSNews:2096361482334192057",
+      "source": "CBS News / X",
+      "title": "Iran Guard says it attacked U.S.-linked vessels in retaliation for strikes",
+      "summary": "",
+      "link": "https://x.com/CBSNews/status/2096361482334192057",
+      "published": "Sat, 05 Sep 2026 22:15:00 +0000",
+      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "fingerprint": "iran guard says it attacked u s linked vessels in retaliation for strikes"
+    },
+    {
+      "key": "x:JasonMBrodsky:2096409611297247400",
+      "source": "Jason Brodsky / X",
+      "title": "Iran is reportedly preparing for a broad, coordinated attack against Israel on several fronts simultaneously, Israeli assessments indicate, in a scenario resembling a future October 7-style assault but designed from the outset to bring together all components of the Iranian axis.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2096409611297247400",
+      "published": "Sun, 06 Sep 2026 01:26:15 +0000",
+      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "fingerprint": "iran is reportedly preparing for a broad coordinated attack against israel on several fronts simultaneously israeli assessments indicate in a scenario resembling a future october 7 style assault but designed from the outset to bring together all components of the iranian axis"
+    },
+    {
+      "key": "x:TankerTrackers:2096417407099118035",
+      "source": "TankerTrackers / X",
+      "title": "Countries covered in these numbers are: Saudi Arabia, Iraq, Iran, Kuwait, Oman, UAE and Qatar. Although most may recover in the coming months, Iran's exports of 1.68 Mbpd (baseline number) may likely remain at zero for the foreseeable future; depending on any agreement.",
+      "summary": "",
+      "link": "https://x.com/TankerTrackers/status/2096417407099118035",
+      "published": "Sun, 06 Sep 2026 01:57:14 +0000",
+      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "fingerprint": "countries covered in these numbers are saudi arabia iraq iran kuwait oman uae and qatar although most may recover in the coming months iran s exports of 1 68 mbpd baseline number may likely remain at zero for the foreseeable future depending on any agreement"
+    },
+    {
+      "key": "x:CENTCOMFarsi:2096417989679529996",
+      "source": "CENTCOM Farsi / X",
+      "title": "به لطف دقت و حرفه‌ای‌گری اعضای سرویس آمریکا، کشتی کایلو M/T امروز در خلیج عمان غرق شد و در قعر دریا به نیروی دریایی ایران پیوست.",
+      "summary": "",
+      "link": "https://x.com/CENTCOMFarsi/status/2096417989679529996",
+      "published": "Sun, 06 Sep 2026 01:59:32 +0000",
+      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "fingerprint": "به لطف دقت و حرفه ای گری اعضای سرویس آمریکا، کشتی کایلو m t امروز در خلیج عمان غرق شد و در قعر دریا به نیروی دریایی ایران پیوست"
+    },
+    {
+      "key": "x:AJEnglish:2096432129819513165",
+      "source": "Al Jazeera English / X",
+      "title": "BREAKING: Iran’s Islamic Revolutionary Guard Corps (IRGC) says its naval forces attacked a remotely operated US drone boat that it said was “attempting to enter the protected area of the Strait of Hormuz”.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096432129819513165",
+      "published": "Sun, 06 Sep 2026 02:55:44 +0000",
+      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "fingerprint": "breaking iran s islamic revolutionary guard corps irgc says its naval forces attacked a remotely operated us drone boat that it said was attempting to enter the protected area of the strait of hormuz"
+    },
+    {
+      "key": "x:Jerusalem_Post:2096439181668938053",
+      "source": "Jerusalem Post / X",
+      "title": "Iranian Foreign Minister Abbas Araghchi conversed separately with the Foreign Minister of Saudi Arabia, Faisal bin Farhan, and the Foreign Minister of Turkey, Hakan Fidan, according to the Iranian state-affiliated media agency Tasnim News.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096439181668938053",
+      "published": "Sun, 06 Sep 2026 03:23:45 +0000",
+      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "fingerprint": "iranian foreign minister abbas araghchi conversed separately with the foreign minister of saudi arabia faisal bin farhan and the foreign minister of turkey hakan fidan according to the iranian state affiliated media agency tasnim news"
+    },
+    {
+      "key": "x:FT:2096459117015494872",
+      "source": "Financial Times / X",
+      "title": "The risky mission to de-mine the Strait of Hormuz",
+      "summary": "",
+      "link": "https://x.com/FT/status/2096459117015494872",
+      "published": "Sun, 06 Sep 2026 04:42:58 +0000",
+      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "fingerprint": "the risky mission to de mine the strait of hormuz"
+    },
+    {
+      "key": "x:Jerusalem_Post:2096479834591387648",
+      "source": "Jerusalem Post / X",
+      "title": "Opinion: Iran’s regime is increasingly turning its security apparatus inward as protests, armed opposition and internal threats put pressure on the IRGC.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096479834591387648",
+      "published": "Sun, 06 Sep 2026 06:05:17 +0000",
+      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "fingerprint": "opinion iran s regime is increasingly turning its security apparatus inward as protests armed opposition and internal threats put pressure on the irgc"
+    },
     {
       "key": "x:Jerusalem_Post:2096325224253788304",
       "source": "Jerusalem Post / X",
