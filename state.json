@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "x:AlArabiya_Eng:2096580287438225439",
     "x:Jerusalem_Post:2096574389500137967",
     "x:AlArabiya_Eng:2096570212753473640",
     "x:ABC:2096568289413443892",
@@ -499,11 +500,10 @@
     "ce44717186c35aadeb657fc3a227b1b77da78e20",
     "46e18e13e4fdac34563478b8f23326cb14aede67",
     "a3c64a8dd54dc01d26424b84c922c2a9db9930e9",
-    "047fbd029f99e1fefec3f89a16521f3ddd97bd2e",
-    "5086f697b359c0554012c66c2975c53d02bcbf7a"
+    "047fbd029f99e1fefec3f89a16521f3ddd97bd2e"
   ],
-  "market_last_sent_at": "2026-09-06T10:45:33.357422+00:00",
-  "next_news_color": "red",
+  "market_last_sent_at": "2026-09-06T12:45:51.668902+00:00",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -614,9 +614,9 @@
   "market_day_prices": {
     "date": "2026-09-06",
     "first_usd": 227205,
-    "last_usd": 224905,
+    "last_usd": 224695,
     "first_gold": 23674400,
-    "last_gold": 23431100,
+    "last_gold": 23582600,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2096580287438225439",
+      "source": "Al Arabiya English / X",
+      "title": "Iran says it will step up efforts to tackle problems created by the US sanctions that are crippling its economy, while a senior Iranian official has warned of a “painful response” if it comes under further attack.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096580287438225439",
+      "published": "Sun, 06 Sep 2026 12:44:27 +0000",
+      "sent_at": "2026-09-06T12:45:51.668902+00:00",
+      "fingerprint": "iran says it will step up efforts to tackle problems created by the us sanctions that are crippling its economy while a senior iranian official has warned of a painful response if it comes under further attack"
+    },
     {
       "key": "x:Jerusalem_Post:2096574389500137967",
       "source": "Jerusalem Post / X",
