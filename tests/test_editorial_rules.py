@@ -80,6 +80,30 @@ def test_company_story_with_direct_operational_security_impact_is_kept():
     assert not is_low_value_company_news(item)
 
 
+def test_airline_resuming_flights_over_iran_is_operational_not_company_fluff():
+    item = _item(
+        "uae-resumes",
+        "NOTAM / Airspace",
+        "Major UAE Carrier Resumes Flights Over Iranian Airspace Despite EASA Warnings Not To",
+    )
+    assert not is_low_value_company_news(item)
+
+
+def test_overflight_and_airspace_reopening_updates_are_kept():
+    overflight = _item(
+        "overflight",
+        "NOTAM / Airspace",
+        "UAE carrier resumes overflights of Iranian airspace",
+    )
+    reopening = _item(
+        "reopening",
+        "NOTAM / Airspace",
+        "Iran partially reopens airspace to international flights",
+    )
+    assert not is_low_value_company_news(overflight)
+    assert not is_low_value_company_news(reopening)
+
+
 def test_editorial_detail_is_not_forced_to_two_sentences():
     detail = "نکته اول خبر. نکته دوم خبر. نکته سوم که برای فهم ماجرا لازم است. نکته چهارم تکمیلی."
     rendered = editorial_detail(detail)
