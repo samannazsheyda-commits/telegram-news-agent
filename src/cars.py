@@ -95,7 +95,6 @@ def _telegraph_car_nodes(prices: list[CarPrice], previous: dict[str, int] | None
     previous = previous or {}
     nodes: list[dict] = [
         {"tag": "figure", "children": [{"tag": "img", "attrs": {"src": CAR_BANNER_URL}}]},
-        {"tag": "p", "children": [f"لیست کامل {len(prices)} خودروی موجود در منبع؛ نام مدل‌ها عیناً مطابق منبع نمایش داده می‌شوند."]},
         {"tag": "hr"},
     ]
     for item in prices:
