@@ -1,0 +1,32 @@
+name: Apply Source Fallback Patch
+
+on:
+  push:
+    branches:
+      - fix/news-delivery-hardening-2026-09-06
+    paths:
+      - "tools/apply_source_fallback_patch.py"
+      - ".github/workflows/apply-source-fallback-patch.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: python tools/apply_source_fallback_patch.py
+      - run: |
+          if git diff --quiet -- src/runtime_v2.py src/sources.py; then
+            echo "Patch already applied"
+            exit 0
+          fi
+          git config user.name "news-hardening[bot]"
+          git config user.email "news-hardening[bot]@users.noreply.github.com"
+          git add src/runtime_v2.py src/sources.py
+          git commit -m "fix: keep web fallback beside fresh X"
+          git push origin HEAD:fix/news-delivery-hardening-2026-09-06
