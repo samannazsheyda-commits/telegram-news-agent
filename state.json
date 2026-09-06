@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41570",
   "news_seen": [
+    "x:WSJ:2096730087953416243",
     "7c3f407103c7bfeca9be49cc116f2ee817855cc2",
     "fa1e455d36270eb14acec594969e51f627fd695a",
     "x:AJEnglish:2096723807092584462",
@@ -499,11 +500,10 @@
     "3c5bf0c12d2f2a54d3887184de15722e91048866",
     "17c5391202f45155a1299353db8300f51a3b9e8c",
     "ab0b557beb6d3ef996cf8876365a6afe1b0d250d",
-    "f3f4ebe007c4619e81e675a35e59e4480e90fb87",
-    "84cf552fb09556a8b9b9ea5e67c340ca7e117182"
+    "f3f4ebe007c4619e81e675a35e59e4480e90fb87"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:WSJ:2096730087953416243",
+      "source": "Wall Street Journal / X",
+      "title": "As the Trump administration tightens its economic squeeze on Iran, it faces a surprising weak link in its campaign to cut off the regime from the global financial system: America’s own banks.",
+      "summary": "",
+      "link": "https://x.com/WSJ/status/2096730087953416243",
+      "published": "Sun, 06 Sep 2026 22:39:42 +0000",
+      "sent_at": "2026-09-06T22:43:59.581211+00:00",
+      "fingerprint": "as the trump administration tightens its economic squeeze on iran it faces a surprising weak link in its campaign to cut off the regime from the global financial system america s own banks"
+    },
     {
       "key": "x:AJEnglish:2096723807092584462",
       "source": "Al Jazeera English / X",
