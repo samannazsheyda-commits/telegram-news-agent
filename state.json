@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "x:Jerusalem_Post:2096574389500137967",
     "x:AlArabiya_Eng:2096570212753473640",
     "x:ABC:2096568289413443892",
     "05b519493e12bc70566a2252982875d2cac99d9d",
@@ -499,11 +500,10 @@
     "46e18e13e4fdac34563478b8f23326cb14aede67",
     "a3c64a8dd54dc01d26424b84c922c2a9db9930e9",
     "047fbd029f99e1fefec3f89a16521f3ddd97bd2e",
-    "5086f697b359c0554012c66c2975c53d02bcbf7a",
-    "f3fcb5e3e56de5fffd54dba0b9f00ebb98437da8"
+    "5086f697b359c0554012c66c2975c53d02bcbf7a"
   ],
   "market_last_sent_at": "2026-09-06T10:45:33.357422+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:Jerusalem_Post:2096574389500137967",
+      "source": "Jerusalem Post / X",
+      "title": "While the rule was widely viewed as potentially affecting Israel, Taylor and Brown discuss whether Bulgaria could also face questions after Iran threatened the country over its decision to allow US aircraft to refuel there.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096574389500137967",
+      "published": "Sun, 06 Sep 2026 12:21:01 +0000",
+      "sent_at": "2026-09-06T12:22:27.357463+00:00",
+      "fingerprint": "while the rule was widely viewed as potentially affecting israel taylor and brown discuss whether bulgaria could also face questions after iran threatened the country over its decision to allow us aircraft to refuel there"
+    },
     {
       "key": "x:ABC:2096568289413443892",
       "source": "ABC News / X",
