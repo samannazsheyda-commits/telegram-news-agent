@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "x:Reuters:2096584271855071653",
     "x:AlArabiya_Eng:2096580287438225439",
     "x:Jerusalem_Post:2096574389500137967",
     "x:AlArabiya_Eng:2096570212753473640",
@@ -499,11 +500,10 @@
     "dac5d64fee016b1fc22cb4db4367e88152ed15b8",
     "ce44717186c35aadeb657fc3a227b1b77da78e20",
     "46e18e13e4fdac34563478b8f23326cb14aede67",
-    "a3c64a8dd54dc01d26424b84c922c2a9db9930e9",
-    "047fbd029f99e1fefec3f89a16521f3ddd97bd2e"
+    "a3c64a8dd54dc01d26424b84c922c2a9db9930e9"
   ],
   "market_last_sent_at": "2026-09-06T12:45:51.668902+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:Reuters:2096584271855071653",
+      "source": "Reuters / X",
+      "title": "Iran's Hormuz leverage wanes as US economic squeeze bites",
+      "summary": "",
+      "link": "https://x.com/Reuters/status/2096584271855071653",
+      "published": "Sun, 06 Sep 2026 13:00:17 +0000",
+      "sent_at": "2026-09-06T13:00:31.933082+00:00",
+      "fingerprint": "iran s hormuz leverage wanes as us economic squeeze bites"
+    },
     {
       "key": "x:AlArabiya_Eng:2096580287438225439",
       "source": "Al Arabiya English / X",
