@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "3ce87551aabfb77078e34887b15bf7b5ab1035e6",
     "x:AJEnglish:2096522632908689752",
     "8c5f18d959b1b70c6fadb13f3e60d162a4386512",
     "x:AlArabiya_Eng:2096506704779255816",
@@ -499,11 +500,10 @@
     "4afc70e957d248b749b73a08053fea55486ed079",
     "5133ee1d154c48155325c5ac31d4d12f86a5fc61",
     "32bbe1e0b12bece2a4b3407987e6a74d2608e2b1",
-    "39f4693c6d6b4c00893650a78fe461a7b21f4e78",
-    "af58b9bffe817d2cd9b13541913c4b94d1eddf59"
+    "39f4693c6d6b4c00893650a78fe461a7b21f4e78"
   ],
   "market_last_sent_at": "2026-09-06T08:41:33.445711+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2790000000,
     "پژو 207 اتوماتیک پانوراما": 2960000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "3ce87551aabfb77078e34887b15bf7b5ab1035e6",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Iran's Ghalibaf: The Americans must have understood that the era of 'proportional responses' is over. Our strikes on aggressor bases were only a beginning. The rules of the game have changed.",
+      "summary": "Iran's Ghalibaf: The Americans must have understood that the era of 'proportional responses' is over. Our strikes on aggressor bases were only a beginning. The rules of the game have changed. From now on, any aggression against Iran's interests will receive a faster, heavier, and more painful response.",
+      "link": "https://t.me/ClashReport/95259",
+      "published": "Sun, 06 Sep 2026 09:06:10 +0000",
+      "sent_at": "2026-09-06T09:09:19.111306+00:00",
+      "fingerprint": "iran s ghalibaf the americans must have understood that the era of proportional responses is over our strikes on aggressor bases were only a beginning the rules of the game have changed iran s ghalibaf the americans must have understood that the era of proportional responses is over our strikes on aggressor bases were only a beginning the rules of the game have changed from now on any aggression against iran s interests will receive a faster heavier and more painful response"
+    },
     {
       "key": "x:AJEnglish:2096522632908689752",
       "source": "Al Jazeera English / X",
