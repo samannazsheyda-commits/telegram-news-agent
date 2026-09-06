@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41533",
   "news_seen": [
+    "x:haaretzcom:2096642473632096362",
     "x:JasonMBrodsky:2096640287695048713",
     "fd7b4ec7a5bd5ad558e166a2f3be65bb581d1b46",
     "29aa09821e551ad5f134983b61264ad8aca0d978",
@@ -499,11 +500,10 @@
     "8d123bd438a939f3bd00e2aa1cc7bad1c4e34694",
     "1b4bbc816ea96d6bbba6dbc80b326497bdadbe7d",
     "2ed3c020bc612a0a6dfd699f6ddc0986d61dc3d5",
-    "f57931fe192fe4b32275f2d519cab0342603b1a0",
-    "7aeb0954d4c78ea486e6c2baade9f99d00f89062"
+    "f57931fe192fe4b32275f2d519cab0342603b1a0"
   ],
-  "market_last_sent_at": "2026-09-06T14:49:57.247923+00:00",
-  "next_news_color": "white",
+  "market_last_sent_at": "2026-09-06T16:53:35.925783+00:00",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -614,9 +614,9 @@
   "market_day_prices": {
     "date": "2026-09-06",
     "first_usd": 227205,
-    "last_usd": 224400,
+    "last_usd": 223010,
     "first_gold": 23674400,
-    "last_gold": 23416400,
+    "last_gold": 23353600,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:haaretzcom:2096642473632096362",
+      "source": "Haaretz / X",
+      "title": "Despite Iran war effects, record 1.4 million Israelis traveled abroad in August",
+      "summary": "",
+      "link": "https://x.com/haaretzcom/status/2096642473632096362",
+      "published": "Sun, 06 Sep 2026 16:51:34 +0000",
+      "sent_at": "2026-09-06T16:53:35.925783+00:00",
+      "fingerprint": "despite iran war effects record 1 4 million israelis traveled abroad in august"
+    },
     {
       "key": "x:JasonMBrodsky:2096640287695048713",
       "source": "Jason Brodsky / X",
