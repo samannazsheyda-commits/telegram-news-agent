@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "x:AlArabiya_Eng:2096506704779255816",
     "77552fc5107aff588ed597aec7f34bd70167e4a0",
     "c2e341b47a8f9c93466c9f488d8d5633a4be1811",
     "x:AJEnglish:2096499890033414340",
@@ -499,11 +500,10 @@
     "39f4693c6d6b4c00893650a78fe461a7b21f4e78",
     "af58b9bffe817d2cd9b13541913c4b94d1eddf59",
     "bb5ac693eb887d2023fca0bdad6292835df020bc",
-    "13ba0b4a2e408af69976087364bc4fa686ffd10a",
-    "bb72c3e3d18cf43a9a3c5dc73853823e0feed85a"
+    "13ba0b4a2e408af69976087364bc4fa686ffd10a"
   ],
   "market_last_sent_at": "2026-09-06T06:29:34.820132+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2790000000,
     "پژو 207 اتوماتیک پانوراما": 2960000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2096506704779255816",
+      "source": "Al Arabiya English / X",
+      "title": "US Treasury Secretary Scott Bessent says “Operation Economic Outcast” is “the greatest economic isolation operation in the history of the world” and will “asphyxiate” Iran’s regime.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096506704779255816",
+      "published": "Sun, 06 Sep 2026 07:52:04 +0000",
+      "sent_at": "2026-09-06T07:54:53.773187+00:00",
+      "fingerprint": "us treasury secretary scott bessent says operation economic outcast is the greatest economic isolation operation in the history of the world and will asphyxiate iran s regime"
+    },
     {
       "key": "x:AJEnglish:2096499890033414340",
       "source": "Al Jazeera English / X",
