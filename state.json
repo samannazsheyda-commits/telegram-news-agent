@@ -1,6 +1,7 @@
 {
-  "truth_last_id": "41533",
+  "truth_last_id": "41542",
   "news_seen": [
+    "x:AlArabiya_Eng:2096662807957696531",
     "x:AlArabiya_Eng:2096657263117189585",
     "x:FT:2096650665590198551",
     "x:CBSNews:2096649632738574803",
@@ -499,11 +500,10 @@
     "1beac2efd59d130c4850839340a9ab89bb44c44b",
     "95b31772883c4359a942d10cd7f094ed5c3b80c0",
     "6651d683c09b6e15520b101418da656cff64e3aa",
-    "ead661fa7041f3768ea84686a215606c086491ce",
-    "8d123bd438a939f3bd00e2aa1cc7bad1c4e34694"
+    "ead661fa7041f3768ea84686a215606c086491ce"
   ],
   "market_last_sent_at": "2026-09-06T16:53:35.925783+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2096662807957696531",
+      "source": "Al Arabiya English / X",
+      "title": "Iranian parliament speaker Mohammad Bagher Qalibaf says the US has understood that the era of “proportionate responses” is over, warning that Iran’s future retaliation will be “faster, heavier and more painful.”",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096662807957696531",
+      "published": "Sun, 06 Sep 2026 18:12:22 +0000",
+      "sent_at": "2026-09-06T18:14:57.974532+00:00",
+      "fingerprint": "iranian parliament speaker mohammad bagher qalibaf says the us has understood that the era of proportionate responses is over warning that iran s future retaliation will be faster heavier and more painful"
+    },
     {
       "key": "x:AlArabiya_Eng:2096657263117189585",
       "source": "Al Arabiya English / X",
