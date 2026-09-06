@@ -1,42 +1,22 @@
-from datetime import datetime, timezone
+import inspect
 
-import src.main as main
 import src.runtime_v9 as v9
 from src.cars import CarPrice
-from src.sources import TruthPost
 
 
-def test_daily_car_post_uses_telegraph_page_not_full_external_list(tmp_path, monkeypatch):
-    state_path = tmp_path / "state.json"
-    state_path.write_text(
-        '{"truth_last_id":"10","news_seen":["seed"],"weather_noon_last_sent_date":"2026-09-06","market_last_sent_at":"2026-09-06T06:00:00+00:00"}',
-        encoding="utf-8",
-    )
-    monkeypatch.setattr(main, "STATE_PATH", str(state_path))
-    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token")
-    monkeypatch.setenv("TELEGRAM_CHAT_ID", "chat")
-    monkeypatch.setattr(main, "fetch_truth_posts", lambda: [TruthPost("10", "", "old", "https://truth/10")])
-    monkeypatch.setattr(main, "fetch_news_items", lambda: [])
-    monkeypatch.setattr(main, "fetch_market_snapshot", lambda: (_ for _ in ()).throw(RuntimeError("market disabled")))
-    monkeypatch.setattr(main, "fetch_car_prices", lambda: [CarPrice("تارا اتوماتیک V4 LX", 3_085_000_000)])
+def test_production_car_formatter_stays_inside_telegram():
+    formatter = getattr(v9, "_format_car_for_telegram", None)
+    assert callable(formatter), "production car formatter must render a native Telegram post"
 
-    created = []
-    monkeypatch.setattr(
-        v9,
-        "create_car_telegraph_page",
-        lambda prices, previous: created.append((prices, previous)) or "https://telegra.ph/car-prices-today",
-    )
-    monkeypatch.setattr(
-        v9,
-        "format_car_telegraph_post",
-        lambda url, count: f"CAR TELEGRAPH {count} {url}",
-    )
-    sent = []
-    monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
-    monkeypatch.setattr(main, "format_car_prices", v9._format_car_via_telegraph)
+    text = formatter([CarPrice("تارا اتوماتیک V4 LX", 3_085_000_000)], {})
 
-    now = datetime(2026, 9, 6, 8, 0, tzinfo=timezone.utc)  # 11:30 Tehran
-    assert main.run(now) == 0
-    assert created
-    assert sent == ["CAR TELEGRAPH 1 https://telegra.ph/car-prices-today"]
-    assert "mashin3.com" not in sent[0]
+    assert "تارا اتوماتیک V4 LX" in text
+    assert "3,085,000,000 تومان" in text
+    assert "telegra.ph" not in text
+    assert "مشاهده لیست کامل قیمت خودروها" not in text
+
+
+def test_production_installer_uses_native_car_formatter_not_telegraph():
+    source = inspect.getsource(v9.install_persian_only_output)
+    assert "format_car_prices = _format_car_for_telegram" in source
+    assert "format_car_prices = _format_car_via_telegraph" not in source
