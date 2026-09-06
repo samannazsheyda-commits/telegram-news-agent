@@ -10,5 +10,5 @@ def test_fresh_car_instant_view_is_forced_once_today():
     due = getattr(v9, "_car_due_with_one_time_instant_republish", None)
     assert callable(due)
     assert due(state, now) is True
-    assert state["car_instant_republish_fresh_date"] == "2026-09-06"
+    assert state["car_instant_republish_fresh_2_date"] == "2026-09-06"
     assert due(state, now) is False
