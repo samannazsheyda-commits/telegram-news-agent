@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import os
 import sys
+import time
+from datetime import datetime, timezone
 
 from . import fresh_x
 from . import runtime as base
 from . import runtime_v2 as v2
 from . import runtime_v9 as v9
 from .market_policy import market_summary_day, regular_market_allowed
+from .phones import fetch_flagship_phone_prices, format_flagship_phone_prices, phone_flagships_due
 from .services import send_telegram_photo as _send_telegram_photo
 from .x_editorial_quality import rejection_reason
 
@@ -68,6 +71,26 @@ def _send_with_photo_tracking(text: str, bot_token: str, chat_id: str, *args, **
     base._pending_auto_item = None
 
 
+def _publish_daily_flagships(now: datetime) -> None:
+    state = base.agent.load_state(base.agent.STATE_PATH)
+    if not phone_flagships_due(state, now):
+        return
+
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+    if not token or not chat_id:
+        return
+
+    try:
+        prices = fetch_flagship_phone_prices()
+        base.agent.send_telegram(format_flagship_phone_prices(prices), token, chat_id)
+        state["phone_flagships_last_sent_date"] = now.astimezone(base.agent.TEHRAN).date().isoformat()
+        state["phone_flagships_last_prices"] = {item.name: item.price_toman for item in prices}
+        base.agent.save_state(state, base.agent.STATE_PATH)
+    except Exception as exc:
+        print(f"Phone flagship price error: {exc}", file=sys.stderr)
+
+
 def install_production_policies() -> None:
     global _installed
     if _installed:
@@ -88,17 +111,36 @@ def install_production_policies() -> None:
     base.agent._market_quiet_hours = lambda now: not regular_market_allowed(now)
     base.agent._market_summary_day = market_summary_day
 
+    # Weather city-temperature cards are retired in production. Their former daily slot is
+    # replaced by the flagship-phone card published by this runtime.
+    base.agent._weather_noon_due = lambda state, now: False
+    base.agent._weather_night_due = lambda state, now: False
+
     _installed = True
 
 
 def run(now=None) -> int:
     install_production_policies()
-    return v9.run(now)
+    resolved_now = now or datetime.now(timezone.utc)
+    _publish_daily_flagships(resolved_now)
+    return v9.run(resolved_now)
 
 
 def monitor_loop(poll_seconds: int = 60, session_seconds: int = 240) -> int:
-    install_production_policies()
-    return v9.monitor_loop(poll_seconds=poll_seconds, session_seconds=session_seconds)
+    poll_seconds = max(1, int(poll_seconds))
+    session_seconds = max(poll_seconds, int(session_seconds))
+    started = time.monotonic()
+    while True:
+        cycle_started = time.monotonic()
+        if cycle_started - started >= session_seconds:
+            return 0
+        rc = run()
+        if rc != 0:
+            return rc
+        cycle_finished = time.monotonic()
+        if cycle_finished - started + poll_seconds > session_seconds:
+            return 0
+        time.sleep(max(0.0, poll_seconds - (cycle_finished - cycle_started)))
 
 
 def _cli() -> int:
