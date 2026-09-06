@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
+      - name: Install parser
+        run: pip install requests beautifulsoup4
       - name: Republish two latest captionless Iran-related Trump image posts
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -36,8 +38,7 @@ jobs:
               soup = BeautifulSoup(r.text, "html.parser")
               for a in soup.find_all("a", href=True):
                   href = a["href"]
-                  m = re.search(r"/statuses/(\d+)", href)
-                  if not m:
+                  if not re.search(r"/statuses/(\d+)", href):
                       continue
                   full = href if href.startswith("http") else base + href
                   if full not in status_urls:
@@ -56,16 +57,12 @@ jobs:
               low = page_text.lower()
               if not any(term in low for term in iran_terms):
                   continue
-
-              # Only captionless/original-post pages: the heading after Original Post is empty.
-              # Archive pages expose a File Attachments section and Download link(s).
               if "File Attachments" not in page_text or "Image Description:" not in page_text:
                   continue
 
               image_url = None
               for a in soup.find_all("a", href=True):
-                  label = " ".join(a.stripped_strings).strip().lower()
-                  if label != "download":
+                  if " ".join(a.stripped_strings).strip().lower() != "download":
                       continue
                   href = a["href"]
                   cand = href if href.startswith("http") else base + href
@@ -83,7 +80,6 @@ jobs:
                   continue
 
               sid = int(re.search(r"/statuses/(\d+)", url).group(1))
-              # Read the original Truth Social URL exposed on the archive page.
               truth_url = None
               for a in soup.find_all("a", href=True):
                   href = a["href"]
@@ -93,7 +89,6 @@ jobs:
               if not truth_url:
                   text_match = re.search(r"https://truthsocial\.com/@realDonaldTrump/\d+", page_text)
                   truth_url = text_match.group(0) if text_match else url
-
               candidates.append((sid, truth_url, image_url, url))
 
           candidates.sort(reverse=True)
