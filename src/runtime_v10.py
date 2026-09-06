@@ -23,7 +23,7 @@ _installed = False
 _original_parse_x = fresh_x.parse_fxtwitter_timeline
 _PHONE_40_REPUBLISH_DATE = "2026-09-06"
 _PHONE_40_REPUBLISH_STATE_KEY = "phone_flagships_republish_40_date"
-_PHONE_FRESH_REPUBLISH_STATE_KEY = "phone_flagships_fresh_republish_date"
+_PHONE_FRESH_REPUBLISH_STATE_KEY = "phone_flagships_fresh_republish_2_date"
 
 
 def _clean_brand_footer() -> list[str]:
@@ -89,14 +89,11 @@ def _phone_flagships_due_with_one_time_republish(state: dict, now: datetime) -> 
 
 
 def _phone_flagships_due_with_fresh_republish(state: dict, now: datetime) -> bool:
-    """Force exactly one fresh same-day fetch after the latest phone-card redesign."""
     local_date = now.astimezone(base.agent.TEHRAN).date().isoformat()
     if (
         local_date == _PHONE_40_REPUBLISH_DATE
         and state.get(_PHONE_FRESH_REPUBLISH_STATE_KEY) != local_date
     ):
-        # Claim only in this in-memory state. It is persisted only after a successful send,
-        # so a network/fetch error remains retryable on the next monitor cycle.
         state[_PHONE_FRESH_REPUBLISH_STATE_KEY] = local_date
         return True
     return _phone_flagships_due_with_one_time_republish(state, now)
@@ -113,7 +110,6 @@ def _publish_daily_flagships(now: datetime) -> None:
         return
 
     try:
-        # This is intentionally fetched at publish time; forced republish never reuses the old snapshot.
         prices = fetch_flagship_phone_prices()
         page_url = create_phone_telegraph_page(prices)
         text = format_phone_telegraph_post(page_url, len(prices))
@@ -142,7 +138,6 @@ def install_production_policies() -> None:
     base.agent._market_quiet_hours = lambda now: not regular_market_allowed(now)
     base.agent._market_summary_day = market_summary_day
 
-    # Weather city-temperature cards are retired in production.
     base.agent._weather_noon_due = lambda state, now: False
     base.agent._weather_night_due = lambda state, now: False
 
