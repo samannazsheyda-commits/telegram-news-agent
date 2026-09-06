@@ -170,12 +170,9 @@ def create_car_telegraph_page(
 
 
 def format_car_telegraph_post(page_url: str, count: int) -> str:
+    del count
     return "\n".join([
-        "🚗 <b>قیمت روز خودرو | بازار آزاد</b>",
-        "",
-        f"لیست کامل قیمت {count} خودروی موجود در منبع آماده است.",
-        "",
-        f'👉🏻 <a href="{escape(page_url, quote=True)}"><b>مشاهده لیست کامل قیمت خودروها</b></a>',
+        f'🚗 <a href="{escape(page_url, quote=True)}"><b>قیمت روز خودرو | بازار آزاد</b></a>',
         "",
         f'📌 <a href="{CAR_PRICE_URL}">منبع: {CAR_SOURCE_NAME}</a>',
         "",
