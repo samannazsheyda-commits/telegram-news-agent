@@ -35,6 +35,17 @@ def _persian_source_item(item):
     if not mapped:
         mapped = v7.v2.base.news_formatters.SOURCE_FA.get(source, source)
     mapped = mapped.replace(" / Telegram", " / تلگرام").replace(" / X", " / ایکس")
+
+    # Keep a valid story publishable even when a new/unknown source name has not
+    # been transliterated yet. Never expose a Latin source label in the channel.
+    if _LATIN_VISIBLE_RE.search(mapped):
+        if source.endswith(" / X"):
+            mapped = "منبع در ایکس"
+        elif source.endswith(" / Telegram") or source.endswith(" / تلگرام"):
+            mapped = "منبع در تلگرام"
+        else:
+            mapped = "منبع خبری"
+
     return replace(item, source=mapped) if mapped != source else item
 
 
@@ -55,10 +66,9 @@ def _format_persian_only(item, title_fa: str, summary_fa: str, marker_override=N
     # The pointing-hand decoration is intentionally forbidden in the final card.
     message = message.replace("👉🏻 ", "").replace("👉 ", "")
 
-    # Do not kill an otherwise valid fresh story just because a short acronym,
-    # model name or proper noun survived translation (IAEA, F-35, etc.). The title
-    # is still required to be predominantly Persian by runtime_v7; this is now a
-    # diagnostics-only check instead of a publication blocker.
+    # Keep the story if a short acronym/model name remains in an otherwise Persian
+    # body, but never allow a raw Latin source label because _persian_source_item
+    # replaces unknown source names before formatting.
     visible = _visible_text(message)
     if _LATIN_VISIBLE_RE.search(visible):
         print(
