@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "x:CENTCOM:2096565072105447656",
     "x:business:2096562827045503077",
     "x:AJEnglish:2096555382197936399",
     "x:JasonMBrodsky:2096549811755302943",
@@ -499,11 +500,10 @@
     "775285a7831fc24bf780c1b57f89c2a3338f31bf",
     "7400b668305f70196a3cea1743c07b4d9e69d67a",
     "49eb717c82e416052929cf3000656e047350d0ee",
-    "f4606b1fdc60f48e0299b6808d1d0c66049fb0af",
-    "d8146ca2086ccae2bc398d978a91cec636e1ae78"
+    "f4606b1fdc60f48e0299b6808d1d0c66049fb0af"
   ],
   "market_last_sent_at": "2026-09-06T10:45:33.357422+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:CENTCOM:2096565072105447656",
+      "source": "CENTCOM / X",
+      "title": "A U.S. Air Force F-35A stealth fighter jet patrols over regional waters as CENTCOM forces continue to enforce the maritime blockade against Iran. As of Sept. 6, U.S. forces have redirected 92 commercial vessels, disabled 3 and boarded 2 to ensure strict compliance.",
+      "summary": "",
+      "link": "https://x.com/CENTCOM/status/2096565072105447656",
+      "published": "Sun, 06 Sep 2026 11:44:00 +0000",
+      "sent_at": "2026-09-06T11:45:06.178243+00:00",
+      "fingerprint": "a u s air force f 35a stealth fighter jet patrols over regional waters as centcom forces continue to enforce the maritime blockade against iran as of sept 6 u s forces have redirected 92 commercial vessels disabled 3 and boarded 2 to ensure strict compliance"
+    },
     {
       "key": "x:business:2096562827045503077",
       "source": "Bloomberg / X",
