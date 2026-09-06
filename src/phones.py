@@ -16,8 +16,8 @@ TEHRAN = ZoneInfo("Asia/Tehran")
 _PERSIAN_TO_ASCII = str.maketrans("۰۱۲۳۴۵۶۷۸۹٬", "0123456789,")
 
 # Ordered by how the list should appear in Telegram. The numeric series is
-# intentionally discovered from the source so the post rolls forward when a
-# new generation replaces the current flagship.
+# discovered from current seller rows so the post automatically rolls forward
+# when a newer flagship generation actually appears for sale.
 _FLAGSHIP_FAMILIES: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("Apple", re.compile(r"^Apple iPhone (?P<series>\d+) Pro Max$", re.I)),
     ("Samsung", re.compile(r"^Samsung Galaxy S(?P<series>\d+) Ultra$", re.I)),
@@ -42,31 +42,54 @@ def _parse_price(text: str) -> int | None:
     return int(match.group(1).replace(",", ""))
 
 
+def _family_match(value: str):
+    name = (value or "").strip()
+    for _, pattern in _FLAGSHIP_FAMILIES:
+        match = pattern.fullmatch(name)
+        if match:
+            return name, pattern, int(match.group("series"))
+    return None
+
+
 def parse_flagship_phone_prices(html: str) -> list[FlagshipPhonePrice]:
+    """Parse seller rows from mobile.ir regardless of leading seller/city/date cells."""
     soup = BeautifulSoup(html or "", "html.parser")
     rows: list[tuple[str, int]] = []
+
     for tr in soup.find_all("tr"):
         cells = [c.get_text(" ", strip=True) for c in tr.find_all(["td", "th"])]
         if len(cells) < 2:
             continue
-        name = cells[0].strip()
-        price = _parse_price(cells[1])
-        if name and price:
-            rows.append((name, price))
+
+        for index, cell in enumerate(cells):
+            matched = _family_match(cell)
+            if not matched:
+                continue
+            name, _, _ = matched
+
+            # On mobile.ir the advertised model is followed by its numeric price.
+            # Scan only cells to its right so seller phone numbers/descriptions can
+            # never be mistaken for a handset price.
+            price = next(
+                (value for value in (_parse_price(x) for x in cells[index + 1 :]) if value),
+                None,
+            )
+            if price:
+                rows.append((name, price))
+            break
 
     selected: list[FlagshipPhonePrice] = []
     for _, pattern in _FLAGSHIP_FAMILIES:
         matches: list[tuple[int, str, int]] = []
         for name, price in rows:
-            match = pattern.match(name)
+            match = pattern.fullmatch(name)
             if match:
                 matches.append((int(match.group("series")), name, price))
         if not matches:
             continue
+
         latest_series = max(series for series, _, _ in matches)
         current = [(name, price) for series, name, price in matches if series == latest_series]
-        # mobile.ir can contain multiple sellers for the same phone; publishing
-        # the lowest listed price makes the daily card deterministic and useful.
         name = current[0][0]
         price = min(price for _, price in current)
         selected.append(FlagshipPhonePrice(name, price))
@@ -89,7 +112,7 @@ def fetch_flagship_phone_prices(session=requests) -> list[FlagshipPhonePrice]:
                 "price_to": -1,
                 "provinceid": 0,
                 "shopid": 0,
-                "sort": "date",
+                "sort": "name",
                 "terms": term,
             },
             headers={"User-Agent": USER_AGENT},
