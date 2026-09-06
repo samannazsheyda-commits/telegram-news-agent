@@ -10,7 +10,12 @@ from . import runtime as base
 from . import runtime_v2 as v2
 from . import runtime_v9 as v9
 from .market_policy import market_summary_day, regular_market_allowed
-from .phones import fetch_flagship_phone_prices, format_flagship_phone_prices, phone_flagships_due
+from .phones import (
+    create_phone_telegraph_page,
+    fetch_flagship_phone_prices,
+    format_phone_telegraph_post,
+    phone_flagships_due,
+)
 from .services import send_telegram_photo as _send_telegram_photo
 from .x_editorial_quality import rejection_reason
 
@@ -83,9 +88,14 @@ def _publish_daily_flagships(now: datetime) -> None:
 
     try:
         prices = fetch_flagship_phone_prices()
-        base.agent.send_telegram(format_flagship_phone_prices(prices), token, chat_id)
+        page_url = create_phone_telegraph_page(prices)
+        text = format_phone_telegraph_post(page_url, len(prices))
+        # Telegraph links are sent with preview enabled so Telegram exposes its
+        # native Instant View/open-inside-Telegram experience.
+        v9._send_with_telegraph_preview(text, token, chat_id)
         state["phone_flagships_last_sent_date"] = now.astimezone(base.agent.TEHRAN).date().isoformat()
         state["phone_flagships_last_prices"] = {item.name: item.price_toman for item in prices}
+        state["phone_flagships_last_page_url"] = page_url
         base.agent.save_state(state, base.agent.STATE_PATH)
     except Exception as exc:
         print(f"Phone flagship price error: {exc}", file=sys.stderr)
@@ -112,7 +122,7 @@ def install_production_policies() -> None:
     base.agent._market_summary_day = market_summary_day
 
     # Weather city-temperature cards are retired in production. Their former daily slot is
-    # replaced by the flagship-phone card published by this runtime.
+    # replaced by the 40-model phone Instant View card published by this runtime.
     base.agent._weather_noon_due = lambda state, now: False
     base.agent._weather_night_due = lambda state, now: False
 
