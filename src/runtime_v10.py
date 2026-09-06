@@ -23,6 +23,7 @@ _installed = False
 _original_parse_x = fresh_x.parse_fxtwitter_timeline
 _PHONE_40_REPUBLISH_DATE = "2026-09-06"
 _PHONE_40_REPUBLISH_STATE_KEY = "phone_flagships_republish_40_date"
+_PHONE_FRESH_REPUBLISH_STATE_KEY = "phone_flagships_fresh_republish_date"
 
 
 def _clean_brand_footer() -> list[str]:
@@ -57,7 +58,6 @@ def _send_with_photo_tracking(text: str, bot_token: str, chat_id: str, *args, **
             try:
                 _send_telegram_photo(photo_url, text, bot_token, chat_id, *args, **kwargs)
             except Exception as exc:
-                # A bad/expired X image must never block the underlying news item.
                 print(f"NEWS_PHOTO_FALLBACK key={key!r} error={exc}", file=sys.stderr)
                 base._original_send_telegram(text, bot_token, chat_id, *args, **kwargs)
         else:
@@ -88,9 +88,23 @@ def _phone_flagships_due_with_one_time_republish(state: dict, now: datetime) -> 
     return phone_flagships_due(state, now)
 
 
+def _phone_flagships_due_with_fresh_republish(state: dict, now: datetime) -> bool:
+    """Force exactly one fresh same-day fetch after the latest phone-card redesign."""
+    local_date = now.astimezone(base.agent.TEHRAN).date().isoformat()
+    if (
+        local_date == _PHONE_40_REPUBLISH_DATE
+        and state.get(_PHONE_FRESH_REPUBLISH_STATE_KEY) != local_date
+    ):
+        # Claim only in this in-memory state. It is persisted only after a successful send,
+        # so a network/fetch error remains retryable on the next monitor cycle.
+        state[_PHONE_FRESH_REPUBLISH_STATE_KEY] = local_date
+        return True
+    return _phone_flagships_due_with_one_time_republish(state, now)
+
+
 def _publish_daily_flagships(now: datetime) -> None:
     state = base.agent.load_state(base.agent.STATE_PATH)
-    if not _phone_flagships_due_with_one_time_republish(state, now):
+    if not _phone_flagships_due_with_fresh_republish(state, now):
         return
 
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
@@ -99,11 +113,10 @@ def _publish_daily_flagships(now: datetime) -> None:
         return
 
     try:
+        # This is intentionally fetched at publish time; forced republish never reuses the old snapshot.
         prices = fetch_flagship_phone_prices()
         page_url = create_phone_telegraph_page(prices)
         text = format_phone_telegraph_post(page_url, len(prices))
-        # Telegraph links are sent with preview enabled so Telegram exposes its
-        # native Instant View/open-inside-Telegram experience.
         v9._send_with_telegraph_preview(text, token, chat_id)
         local_date = now.astimezone(base.agent.TEHRAN).date().isoformat()
         state["phone_flagships_last_sent_date"] = local_date
@@ -111,6 +124,7 @@ def _publish_daily_flagships(now: datetime) -> None:
         state["phone_flagships_last_page_url"] = page_url
         if local_date == _PHONE_40_REPUBLISH_DATE:
             state[_PHONE_40_REPUBLISH_STATE_KEY] = local_date
+            state[_PHONE_FRESH_REPUBLISH_STATE_KEY] = local_date
         base.agent.save_state(state, base.agent.STATE_PATH)
     except Exception as exc:
         print(f"Phone flagship price error: {exc}", file=sys.stderr)
@@ -121,23 +135,14 @@ def install_production_policies() -> None:
     if _installed:
         return
 
-    # X newsroom quality: suppress context-dependent fragments and report/feature headlines.
     fresh_x.parse_fxtwitter_timeline = _quality_parse_x
-
-    # Telegram news photos: base.install_integrations resolves this global when it wires sending.
     base._send_with_tracking = _send_with_photo_tracking
-
-    # Clean channel footer. runtime_v2 used to reintroduce the pointing-finger emoji.
     v2._brand_footer_with_arrow = _clean_brand_footer
     base.news_formatters._brand_footer = _clean_brand_footer
-
-    # Iran market policy: normal rate cards only during market hours; daily summary at 23:30.
-    # Fridays and official Iranian holidays are handled inside market_policy.
     base.agent._market_quiet_hours = lambda now: not regular_market_allowed(now)
     base.agent._market_summary_day = market_summary_day
 
-    # Weather city-temperature cards are retired in production. Their former daily slot is
-    # replaced by the 40-model phone Instant View card published by this runtime.
+    # Weather city-temperature cards are retired in production.
     base.agent._weather_noon_due = lambda state, now: False
     base.agent._weather_night_due = lambda state, now: False
 
