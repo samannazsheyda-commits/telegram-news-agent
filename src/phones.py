@@ -16,12 +16,11 @@ TEHRAN = ZoneInfo("Asia/Tehran")
 TELEGRAPH_API_URL = "https://api.telegra.ph"
 PHONE_BANNER_URL = (
     "https://raw.githubusercontent.com/samannazsheyda-commits/telegram-news-agent/"
-    "main/assets/phone_price_banner.svg"
+    "main/assets/phone_price_banner.jpg"
 )
 
 _PERSIAN_TO_ASCII = str.maketrans("۰۱۲۳۴۵۶۷۸۹٬", "0123456789,")
 
-# Search enough premium/current families to reliably fill a 40-model daily card.
 _SEARCH_TERMS = (
     "iPhone",
     "Samsung Galaxy S",
@@ -253,7 +252,6 @@ def phone_flagships_due(state: dict, now) -> bool:
 
 
 def format_flagship_phone_prices(prices: list[FlagshipPhonePrice]) -> str:
-    """Legacy direct-list formatter retained for compatibility/tests."""
     lines = ["📱 <b>پرچمدارهای موبایل | بازار ایران</b>"]
     for item in prices:
         lines += ["", f"▫️ <b>{escape(item.name)}</b>: از {item.price_toman:,} تومان"]
