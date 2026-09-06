@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41569",
   "news_seen": [
+    "x:sfrantzman:2096676009101901879",
+    "x:AlArabiya_Eng:2096675106088997338",
     "x:marklevinshow:2096714311519342608",
     "x:AFP:2096705018686591463",
     "x:AlArabiya_Eng:2096704995945025962",
@@ -498,9 +500,7 @@
     "8bac07fca4f3da2ba87e2ab1dde9789289151b10",
     "6af0767dc52a080e8d61c9548dd2c053a9affcf2",
     "38688faaf3843bca0fbbbde2780aa9a23f70ba7e",
-    "66691d8498aa0d34bceb2b7b3a6c12bc533587fa",
-    "80bd3d4bdaf5a6b48ae545e3ca1966cc1360445c",
-    "a346b50f653fad877c9c38a32ad2b5147a5d0bcc"
+    "66691d8498aa0d34bceb2b7b3a6c12bc533587fa"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
   "next_news_color": "white",
@@ -623,6 +623,24 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "x:sfrantzman:2096676009101901879",
+      "source": "Seth Frantzman / X",
+      "title": "And almost all the Hamas leadership conveniently lived abroad If they’d lived there it’s possible they would not have done this, but a whole industry of 3D chess thought it was smart they hung out in 5 star accommodations abroad while destroying Gaza At least the folk who started the Peloponessian war and ruined their countries had some experience at the front and had to suffer the consequences; Hitler’s staff had to stay in Germany; they didn’t get to run the war from Sweden Hamas saw Gaza as worth destroying for what they believed was the “greater struggle”; and their supporters abroad also believed this Make no mistake They knew what would happen. They chose ruin And the same for Iran’s regime using Lebanese, Iraqis, Yemenis and others; they will send you to fight and they will be far away",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 19:04:49 +0000",
+      "link": "https://x.com/sfrantzman/status/2096676009101901879",
+      "checked_at": "2026-09-06T22:04:58.835975+00:00"
+    },
+    {
+      "key": "x:AlArabiya_Eng:2096675106088997338",
+      "source": "Al Arabiya English / X",
+      "title": "Iran will only commit to keeping the Strait of Hormuz open if the US refrains from attacks and other hostile actions, Supreme National Security Council Secretary Mohsen Rezaei says 🔴 Rezaei told state TV that an agreement establishing a new shipping corridor through the strategic waterway was expected to be signed in the coming days, with Iran managing the entry and exit of vessels 🔴 He said previous understandings had suffered from a lack of guarantees, adding that mediators had proven unable to ensure their implementation 🔴 Rezaei also criticized Washington’s approach to Tehran, saying the US would only consider Iran trustworthy if it submitted to American demands",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 19:01:14 +0000",
+      "link": "https://x.com/AlArabiya_Eng/status/2096675106088997338",
+      "checked_at": "2026-09-06T22:03:37.274195+00:00"
+    },
     {
       "key": "6c07a06255299516ee6307b09c36aa77e69bd907",
       "source": "NOTAM / Airspace",
@@ -2403,24 +2421,6 @@
       "reason": "duplicate_or_redundant",
       "published": "Sat, 05 Sep 2026 03:45:09 +0000",
       "link": "https://x.com/haaretzcom/status/2096082180216676858",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:haaretzcom:2096089726721704066",
-      "source": "Haaretz / X",
-      "title": "NYT: U.S. intelligence believes Iran wants to escalate war before Midterms https://www.haaretz.com/middle-east-news/iran/2026-09-05/ty-article/nyt-u-s-intelligence-believes-iran-wants-to-escalate-war-before-midterms/000001a0-6f96-def7-a7f7-6ff705150000?taid=6a9b974c07aa2e0001f63247&utm_campaign=trueanthem&utm_medium=social&utm_source=twitter",
-      "reason": "duplicate_or_redundant",
-      "published": "Sat, 05 Sep 2026 04:15:08 +0000",
-      "link": "https://x.com/haaretzcom/status/2096089726721704066",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:Jerusalem_Post:2096129575667310642",
-      "source": "Jerusalem Post / X",
-      "title": "Report: The US has begun developing a post-war strategy aimed at expanding regional efforts to contain Iran and normalizing relations between Israel and its neighbors. https://www.jpost.com/middle-east/article-907626",
-      "reason": "duplicate_or_redundant",
-      "published": "Sat, 05 Sep 2026 06:53:29 +0000",
-      "link": "https://x.com/Jerusalem_Post/status/2096129575667310642",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
