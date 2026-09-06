@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 import requests
 from bs4 import BeautifulSoup
 
-from .persian_datetime import format_persian_number, tehran_persian_date_time, to_persian_digits
+from .persian_datetime import format_persian_number, tehran_persian_date_time
 
 MOBILE_PRICE_URL = "https://www.mobile.ir/phones/prices.aspx"
 CHANNEL_URL = "https://t.me/bikhabaar"
@@ -144,7 +144,7 @@ def _priority_score(item: FlagshipPhonePrice, bucket: str) -> int:
 
 
 def parse_flagship_phone_prices(html: str) -> list[FlagshipPhonePrice]:
-    """Return up to 10 Apple, 10 Samsung, 10 Xiaomi and 10 other premium models with real prices."""
+    """Return up to 10 Apple, 10 Samsung, 10 Xiaomi and 10 other premium models with prices."""
     soup = BeautifulSoup(html or "", "html.parser")
     by_name: dict[str, dict[str, int | None]] = {}
     order: list[str] = []
@@ -253,11 +253,12 @@ def phone_flagships_due(state: dict, now) -> bool:
 
 
 def format_flagship_phone_prices(prices: list[FlagshipPhonePrice]) -> str:
+    """Legacy direct-Telegram formatter retained for compatibility."""
     lines = ["📱 <b>پرچمدارهای موبایل | بازار ایران</b>"]
     for item in prices:
         if item.price_toman <= 0:
             continue
-        lines += ["", f"▫️ <b>{escape(to_persian_digits(item.name))}</b>: از {format_persian_number(item.price_toman)} تومان"]
+        lines += ["", f"▫️ <b>{escape(item.name)}</b>: از {item.price_toman:,} تومان"]
     lines += [
         "",
         f'📌 <a href="{MOBILE_PRICE_URL}">منبع: mobile.ir</a>',
@@ -283,7 +284,7 @@ def _has_price(item: FlagshipPhonePrice) -> bool:
 
 
 def _phone_price_children(item: FlagshipPhonePrice) -> list:
-    children: list = [{"tag": "strong", "children": [to_persian_digits(item.name)]}]
+    children: list = [{"tag": "strong", "children": [item.name]}]
     if item.registered_toman:
         children.extend([{"tag": "br"}, f"با رجیستر: {format_persian_number(item.registered_toman)} تومان"])
     if item.unregistered_toman:
@@ -306,7 +307,7 @@ def _phone_summary(prices: list[FlagshipPhonePrice], date_text: str) -> str:
     status = " (با رجیستر)" if highest.registered_toman and amount == highest.registered_toman else ""
     return (
         f"در فهرست قیمت روز موبایل ({date_text})، گران‌ترین مدل دارای قیمت "
-        f"{to_persian_digits(highest.name)} با قیمت {format_persian_number(amount)} تومان{status} ثبت شده است. "
+        f"{highest.name} با قیمت {format_persian_number(amount)} تومان{status} ثبت شده است. "
         f"این فهرست فقط مدل‌هایی را نمایش می‌دهد که قیمت واقعی در منبع دارند. منبع: mobile.ir"
     )
 
