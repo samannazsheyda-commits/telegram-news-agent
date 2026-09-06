@@ -3,12 +3,13 @@ name: Air Traffic Tests
 on:
   push:
     branches:
-      - feat/mideast-air-traffic-work2
+      - main
     paths:
       - "src/air_traffic.py"
       - "tests/test_air_traffic.py"
       - "requirements*.txt"
       - ".github/workflows/air-traffic-tests.yml"
+  workflow_dispatch:
 
 jobs:
   test:
