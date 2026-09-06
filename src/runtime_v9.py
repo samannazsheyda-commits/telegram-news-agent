@@ -163,19 +163,17 @@ def _car_due_with_one_time_telegraph_republish(state: dict, now) -> bool:
 
 
 def _car_due_with_one_time_instant_republish(state: dict, now) -> bool:
+    """Compatibility entry point; now drives the latest Persian Instant View resend."""
     local_date = now.astimezone(v7.v2.base.agent.TEHRAN).date().isoformat()
-    if local_date == _CAR_REPUBLISH_DATE and state.get(_CAR_FRESH_INSTANT_STATE_KEY) != local_date:
+    if local_date == _CAR_REPUBLISH_DATE and state.get(_CAR_PERSIAN_PAGE_STATE_KEY) != local_date:
+        state[_CAR_PERSIAN_PAGE_STATE_KEY] = local_date
         state[_CAR_FRESH_INSTANT_STATE_KEY] = local_date
         return True
     return _original_car_due(state, now)
 
 
 def _car_due_with_persian_page_republish(state: dict, now) -> bool:
-    local_date = now.astimezone(v7.v2.base.agent.TEHRAN).date().isoformat()
-    if local_date == _CAR_REPUBLISH_DATE and state.get(_CAR_PERSIAN_PAGE_STATE_KEY) != local_date:
-        state[_CAR_PERSIAN_PAGE_STATE_KEY] = local_date
-        return True
-    return _original_car_due(state, now)
+    return _car_due_with_one_time_instant_republish(state, now)
 
 
 def install_persian_only_output() -> None:
@@ -192,7 +190,7 @@ def install_persian_only_output() -> None:
     v7.v2.base.agent._market_quiet_hours = _market_quiet_hours
     v7.v2.base.agent._market_summary_day = market_summary_day
     v7.v2.base.agent.format_car_prices = _format_car_via_telegraph
-    v7.v2.base.agent._car_due = _car_due_with_persian_page_republish
+    v7.v2.base.agent._car_due = _car_due_with_one_time_instant_republish
     _installed = True
 
 
