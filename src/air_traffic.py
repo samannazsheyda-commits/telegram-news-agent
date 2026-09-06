@@ -10,43 +10,45 @@ from typing import Iterable
 from zoneinfo import ZoneInfo
 
 import requests
-from PIL import ImageDraw, ImageOps
+from PIL import ImageDraw
 from staticmap import StaticMap
 
 from .persian_datetime import gregorian_to_jalali, to_persian_digits
 
 TEHRAN = ZoneInfo("Asia/Tehran")
 REGION_BOUNDS = {
-    "min_lat": 20.5,
-    "max_lat": 42.0,
-    "min_lon": 35.0,
-    "max_lon": 66.0,
+    "min_lat": 14.0,
+    "max_lat": 48.0,
+    "min_lon": 31.0,
+    "max_lon": 69.0,
 }
 CENTER_LAT = 31.5
-CENTER_LON = 51.5
-MAP_WIDTH = 1400
-MAP_HEIGHT = 900
-MAP_ZOOM = 6
+CENTER_LON = 51.0
+MAP_WIDTH = 690
+MAP_HEIGHT = 1536
+MAP_ZOOM = 5
 QUERY_RADIUS_NM = 250
 PROVIDERS = (
     "https://api.adsb.lol/v2/point/{lat}/{lon}/{radius}",
     "https://api.airplanes.live/v2/point/{lat}/{lon}/{radius}",
 )
 QUERY_CENTERS = (
+    (39.0, 35.0),  # Turkey
     (33.3, 36.3),  # Syria
     (33.3, 44.4),  # Iraq
-    (38.0, 46.0),
+    (38.0, 46.0),  # Azerbaijan / NW Iran
     (35.7, 51.4),  # Tehran / central Iran
-    (36.3, 59.6),
-    (31.0, 60.5),
-    (28.5, 52.5),
-    (27.2, 56.3),
+    (36.3, 59.6),  # NE Iran
+    (31.0, 60.5),  # eastern Iran
+    (28.5, 52.5),  # south-central Iran
+    (27.2, 56.3),  # Hormuz
     (24.7, 46.7),  # eastern Saudi
     (26.0, 51.0),  # Bahrain / Qatar
     (25.2, 55.3),  # UAE
     (23.6, 58.4),  # Oman
+    (16.0, 48.0),  # Yemen / southern Arabian Peninsula
 )
-USER_AGENT = "bikhabaar-air-traffic/1.1"
+USER_AGENT = "bikhabaar-air-traffic/1.2"
 
 
 def _tehran_jalali(now: datetime | None = None) -> tuple[str, str]:
@@ -148,9 +150,9 @@ def _screen_pixel(lon: float, lat: float) -> tuple[float, float]:
 
 def _plane_polygon(px: float, py: float, heading: float) -> list[tuple[float, float]]:
     shape = [
-        (0, -11), (2.5, -4), (4, -1), (10, 2), (10, 4), (3.5, 3),
-        (2.3, 8), (5, 10), (5, 12), (0, 10), (-5, 12), (-5, 10),
-        (-2.3, 8), (-3.5, 3), (-10, 4), (-10, 2), (-4, -1), (-2.5, -4),
+        (0, -10), (2.2, -4), (3.4, -1), (8.5, 2), (8.5, 3.5), (3.2, 2.8),
+        (2.1, 7), (4.4, 8.8), (4.4, 10.2), (0, 8.6), (-4.4, 10.2), (-4.4, 8.8),
+        (-2.1, 7), (-3.2, 2.8), (-8.5, 3.5), (-8.5, 2), (-3.4, -1), (-2.2, -4),
     ]
     angle = math.radians(heading % 360.0)
     cos_a, sin_a = math.cos(angle), math.sin(angle)
@@ -178,8 +180,6 @@ def render_air_traffic_map(aircraft: Iterable[dict], output_path: str | Path) ->
         raise ValueError("no aircraft positions to render")
 
     image = canvas.render(zoom=MAP_ZOOM, center=(CENTER_LON, CENTER_LAT)).convert("RGB")
-    gray = ImageOps.grayscale(image)
-    image = ImageOps.colorize(gray, black="#273036", white="#b9c1c5").convert("RGB")
     draw = ImageDraw.Draw(image)
 
     for row in rows:
@@ -193,7 +193,7 @@ def render_air_traffic_map(aircraft: Iterable[dict], output_path: str | Path) ->
         except (TypeError, ValueError):
             heading = 0.0
         polygon = _plane_polygon(px, py, heading)
-        draw.polygon(polygon, fill="#f7c843", outline="#6f5a16")
+        draw.polygon(polygon, fill="#f5c400", outline="#7b6300")
 
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
