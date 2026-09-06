@@ -17,7 +17,7 @@ _BUILTIN_X_NEWSROOMS = (
     ("The New York Times", "@nytimes"), ("NYT World", "@nytimesworld"),
     ("Bloomberg", "@business"), ("Financial Times", "@FT"), ("Sky News", "@SkyNews"),
     ("NBC News", "@NBCNews"), ("CBS News", "@CBSNews"), ("ABC News", "@ABC"),
-    ("Fox News", "@FoxNews"), ("DW News", "@dwnews"), ("The Guardian", "@guardian"),
+    ("Fox News", "@FoxNews"), ("The Guardian", "@guardian"),
     ("Washington Post", "@washingtonpost"), ("Wall Street Journal", "@WSJ"),
     ("The Economist", "@TheEconomist"),
     # Israeli newsrooms and official sources
@@ -28,7 +28,8 @@ _BUILTIN_X_NEWSROOMS = (
     ("Channel 14", "@C14_news"), ("IDF", "@IDF"),
     # US officials and institutions relevant to Iran/security/sanctions
     ("CENTCOM", "@CENTCOM"), ("US Treasury", "@USTreasury"),
-    ("Scott Bessent", "@SecScottBessent"), ("Pete Hegseth", "@SecDef"),
+    ("Scott Bessent", "@SecScottBessent"), ("Pete Hegseth", "@PeteHegseth"),
+    ("Department of War", "@DeptofWar"),
     ("Marco Rubio", "@SecRubio"), ("JD Vance", "@VP"),
     ("US State Department", "@StateDept"), ("State Department Spokesperson", "@statedeptspox"),
     ("White House", "@WhiteHouse"),
@@ -38,8 +39,6 @@ _BUILTIN_X_NEWSROOMS = (
     ("Seth Frantzman", "@sfrantzman"), ("Jonathan Conricus", "@jconricus"),
     ("Michael Doran", "@Doranimated"), ("Jennifer Hansler", "@jmhansler"),
     ("Joe Truzman", "@JoeTruzman"),
-    # Iranian newsrooms only — no Iranian commentators
-    ("Tasnim Persian", "@Tasnimnews_Fa"), ("Tasnim English", "@Tasnimnews_EN"),
 )
 
 _PERSIAN_SOURCE_NAMES = {
@@ -49,7 +48,7 @@ _PERSIAN_SOURCE_NAMES = {
     "The New York Times": "نیویورک تایمز", "NYT World": "نیویورک تایمز جهان",
     "Bloomberg": "بلومبرگ", "Financial Times": "فایننشال تایمز", "Sky News": "اسکای نیوز",
     "NBC News": "ان‌بی‌سی نیوز", "CBS News": "سی‌بی‌اس نیوز", "ABC News": "ای‌بی‌سی نیوز",
-    "Fox News": "فاکس نیوز", "DW News": "دویچه‌وله", "The Guardian": "گاردین",
+    "Fox News": "فاکس نیوز", "The Guardian": "گاردین",
     "Washington Post": "واشنگتن پست", "Wall Street Journal": "وال‌استریت ژورنال",
     "The Economist": "اکونومیست", "Times of Israel": "تایمز اسرائیل", "Haaretz": "هاآرتص",
     "Axios": "اکسیوس", "Jerusalem Post": "جروزالم پست", "Israel Hayom": "اسرائیل هیوم",
@@ -57,12 +56,13 @@ _PERSIAN_SOURCE_NAMES = {
     "KAN 11": "کانال ۱۱ اسرائیل", "N12": "کانال ۱۲ اسرائیل", "Channel 13": "کانال ۱۳ اسرائیل",
     "Channel 14": "کانال ۱۴ اسرائیل", "IDF": "ارتش اسرائیل", "CENTCOM": "سنتکام",
     "US Treasury": "وزارت خزانه‌داری آمریکا", "Scott Bessent": "اسکات بسنت",
-    "Pete Hegseth": "پیت هگست", "Marco Rubio": "مارکو روبیو", "JD Vance": "جی‌دی ونس",
+    "Pete Hegseth": "پیت هگست", "Department of War": "وزارت جنگ آمریکا",
+    "Marco Rubio": "مارکو روبیو", "JD Vance": "جی‌دی ونس",
     "US State Department": "وزارت خارجه آمریکا", "State Department Spokesperson": "سخنگوی وزارت خارجه آمریکا",
     "White House": "کاخ سفید", "Mark Levin": "مارک لوین", "Jason Brodsky": "جیسون برادسکی",
     "Mark Dubowitz": "مارک دوبوویتز", "Emanuel Fabian": "امانوئل فابیان", "Seth Frantzman": "ست فرانتزمن",
     "Jonathan Conricus": "جاناتان کانریکوس", "Michael Doran": "مایکل دوران", "Jennifer Hansler": "جنیفر هنسلر",
-    "Joe Truzman": "جو تروزمن", "Tasnim Persian": "تسنیم", "Tasnim English": "تسنیم انگلیسی",
+    "Joe Truzman": "جو تروزمن",
 }
 for _name, _fa in _PERSIAN_SOURCE_NAMES.items():
     _formatters.SOURCE_FA[f"{_name} / X"] = f"{_fa} / ایکس"
