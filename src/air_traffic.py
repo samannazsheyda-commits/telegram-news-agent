@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import math
 import os
 import time
 from datetime import datetime, timezone
@@ -9,45 +10,43 @@ from typing import Iterable
 from zoneinfo import ZoneInfo
 
 import requests
-from staticmap import CircleMarker, StaticMap
+from PIL import ImageDraw, ImageOps
+from staticmap import StaticMap
 
 from .persian_datetime import gregorian_to_jalali, to_persian_digits
 
 TEHRAN = ZoneInfo("Asia/Tehran")
 REGION_BOUNDS = {
-    "min_lat": 12.0,
-    "max_lat": 43.5,
-    "min_lon": 25.0,
-    "max_lon": 68.0,
+    "min_lat": 20.5,
+    "max_lat": 42.0,
+    "min_lon": 35.0,
+    "max_lon": 66.0,
 }
-CENTER_LAT = 28.5
-CENTER_LON = 47.0
-MAP_WIDTH = 1280
+CENTER_LAT = 31.5
+CENTER_LON = 51.5
+MAP_WIDTH = 1400
 MAP_HEIGHT = 900
-MAP_ZOOM = 5
+MAP_ZOOM = 6
 QUERY_RADIUS_NM = 250
 PROVIDERS = (
     "https://api.adsb.lol/v2/point/{lat}/{lon}/{radius}",
     "https://api.airplanes.live/v2/point/{lat}/{lon}/{radius}",
 )
 QUERY_CENTERS = (
-    (30.0, 31.2),
-    (33.3, 36.3),
-    (39.2, 34.0),
-    (33.3, 44.4),
+    (33.3, 36.3),  # Syria
+    (33.3, 44.4),  # Iraq
     (38.0, 46.0),
-    (35.7, 51.4),
+    (35.7, 51.4),  # Tehran / central Iran
     (36.3, 59.6),
     (31.0, 60.5),
     (28.5, 52.5),
     (27.2, 56.3),
-    (24.7, 46.7),
-    (21.5, 39.2),
-    (26.0, 51.0),
-    (25.2, 55.3),
-    (23.6, 58.4),
+    (24.7, 46.7),  # eastern Saudi
+    (26.0, 51.0),  # Bahrain / Qatar
+    (25.2, 55.3),  # UAE
+    (23.6, 58.4),  # Oman
 )
-USER_AGENT = "bikhabaar-air-traffic/1.0"
+USER_AGENT = "bikhabaar-air-traffic/1.1"
 
 
 def _tehran_jalali(now: datetime | None = None) -> tuple[str, str]:
@@ -132,24 +131,70 @@ def fetch_live_aircraft(*, session=requests) -> list[dict]:
     return list(merged.values())
 
 
+def _world_pixel(lon: float, lat: float, zoom: int) -> tuple[float, float]:
+    size = 256.0 * (2 ** zoom)
+    x = (lon + 180.0) / 360.0 * size
+    lat = max(-85.05112878, min(85.05112878, lat))
+    sin_lat = math.sin(math.radians(lat))
+    y = (0.5 - math.log((1 + sin_lat) / (1 - sin_lat)) / (4 * math.pi)) * size
+    return x, y
+
+
+def _screen_pixel(lon: float, lat: float) -> tuple[float, float]:
+    x, y = _world_pixel(lon, lat, MAP_ZOOM)
+    cx, cy = _world_pixel(CENTER_LON, CENTER_LAT, MAP_ZOOM)
+    return MAP_WIDTH / 2 + (x - cx), MAP_HEIGHT / 2 + (y - cy)
+
+
+def _plane_polygon(px: float, py: float, heading: float) -> list[tuple[float, float]]:
+    shape = [
+        (0, -11), (2.5, -4), (4, -1), (10, 2), (10, 4), (3.5, 3),
+        (2.3, 8), (5, 10), (5, 12), (0, 10), (-5, 12), (-5, 10),
+        (-2.3, 8), (-3.5, 3), (-10, 4), (-10, 2), (-4, -1), (-2.5, -4),
+    ]
+    angle = math.radians(heading % 360.0)
+    cos_a, sin_a = math.cos(angle), math.sin(angle)
+    return [
+        (px + x * cos_a - y * sin_a, py + x * sin_a + y * cos_a)
+        for x, y in shape
+    ]
+
+
 def render_air_traffic_map(aircraft: Iterable[dict], output_path: str | Path) -> Path:
     canvas = StaticMap(
         MAP_WIDTH,
         MAP_HEIGHT,
         url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     )
-    count = 0
+    rows: list[dict] = []
     for row in aircraft:
         try:
-            lat = float(row["lat"])
-            lon = float(row["lon"])
+            float(row["lat"])
+            float(row["lon"])
         except (KeyError, TypeError, ValueError):
             continue
-        canvas.add_marker(CircleMarker((lon, lat), "#e53935", 4))
-        count += 1
-    if count == 0:
+        rows.append(row)
+    if not rows:
         raise ValueError("no aircraft positions to render")
-    image = canvas.render(zoom=MAP_ZOOM, center=(CENTER_LON, CENTER_LAT))
+
+    image = canvas.render(zoom=MAP_ZOOM, center=(CENTER_LON, CENTER_LAT)).convert("RGB")
+    gray = ImageOps.grayscale(image)
+    image = ImageOps.colorize(gray, black="#273036", white="#b9c1c5").convert("RGB")
+    draw = ImageDraw.Draw(image)
+
+    for row in rows:
+        lat = float(row["lat"])
+        lon = float(row["lon"])
+        px, py = _screen_pixel(lon, lat)
+        if not (-20 <= px <= MAP_WIDTH + 20 and -20 <= py <= MAP_HEIGHT + 20):
+            continue
+        try:
+            heading = float(row.get("track", row.get("true_heading", 0)) or 0)
+        except (TypeError, ValueError):
+            heading = 0.0
+        polygon = _plane_polygon(px, py, heading)
+        draw.polygon(polygon, fill="#f7c843", outline="#6f5a16")
+
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
     image.save(path, "PNG")
