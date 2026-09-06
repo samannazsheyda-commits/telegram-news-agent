@@ -101,25 +101,35 @@ def parse_flagship_phone_prices(html: str) -> list[FlagshipPhonePrice]:
 
 def fetch_flagship_phone_prices(session=requests) -> list[FlagshipPhonePrice]:
     pages: list[str] = []
+    last_error: Exception | None = None
     for term in _SEARCH_TERMS:
-        response = session.get(
-            MOBILE_PRICE_URL,
-            params={
-                "brandid": 0,
-                "duration": 14,
-                "pagesize": 200,
-                "price_from": -1,
-                "price_to": -1,
-                "provinceid": 0,
-                "shopid": 0,
-                "sort": "name",
-                "terms": term,
-            },
-            headers={"User-Agent": USER_AGENT},
-            timeout=30,
-        )
-        response.raise_for_status()
-        pages.append(response.text)
+        try:
+            response = session.get(
+                MOBILE_PRICE_URL,
+                params={
+                    "brandid": 0,
+                    "duration": 1,
+                    "pagesize": 200,
+                    "price_from": -1,
+                    "price_to": -1,
+                    "provinceid": 0,
+                    "shopid": 0,
+                    "sort": "name",
+                    "terms": term,
+                },
+                headers={"User-Agent": USER_AGENT},
+                timeout=30,
+            )
+            response.raise_for_status()
+            pages.append(response.text)
+        except Exception as exc:
+            last_error = exc
+            continue
+
+    if not pages:
+        if last_error:
+            raise last_error
+        raise RuntimeError("mobile.ir returned no flagship pages")
     return parse_flagship_phone_prices("\n".join(pages))
 
 
