@@ -1,6 +1,7 @@
 {
-  "truth_last_id": "41569",
+  "truth_last_id": "41570",
   "news_seen": [
+    "x:AJEnglish:2096723807092584462",
     "x:CENTCOM:2096397091769565468",
     "x:sfrantzman:2096676009101901879",
     "x:AlArabiya_Eng:2096675106088997338",
@@ -499,11 +500,10 @@
     "f3f4ebe007c4619e81e675a35e59e4480e90fb87",
     "84cf552fb09556a8b9b9ea5e67c340ca7e117182",
     "8bac07fca4f3da2ba87e2ab1dde9789289151b10",
-    "6af0767dc52a080e8d61c9548dd2c053a9affcf2",
-    "38688faaf3843bca0fbbbde2780aa9a23f70ba7e"
+    "6af0767dc52a080e8d61c9548dd2c053a9affcf2"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -630,7 +630,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 00:36:30 +0000",
       "link": "https://x.com/CENTCOM/status/2096397091769565468",
-      "checked_at": "2026-09-06T22:10:19.181039+00:00"
+      "checked_at": "2026-09-06T22:15:10.745770+00:00"
     },
     {
       "key": "x:sfrantzman:2096676009101901879",
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2096723807092584462",
+      "source": "Al Jazeera English / X",
+      "title": "Iranian Foreign Ministry spokesperson Esmaeil Baghaei says the Strait of Hormuz was “wide open” until the US and Israel attacked Iran on February 28. He accused the US of expecting \"the whole world to pay the bill\" for the war.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096723807092584462",
+      "published": "Sun, 06 Sep 2026 22:14:45 +0000",
+      "sent_at": "2026-09-06T22:15:10.745770+00:00",
+      "fingerprint": "iranian foreign ministry spokesperson esmaeil baghaei says the strait of hormuz was wide open until the us and israel attacked iran on february 28 he accused the us of expecting the whole world to pay the bill for the war"
+    },
     {
       "key": "x:marklevinshow:2096714311519342608",
       "source": "Mark Levin / X",
