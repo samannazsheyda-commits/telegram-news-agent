@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
@@ -24,9 +25,27 @@ CENTER_LON = 47.0
 MAP_WIDTH = 1280
 MAP_HEIGHT = 900
 MAP_ZOOM = 4
-ADSB_URLS = (
-    "https://api.adsb.lol/v2/all",
-    "https://api.airplanes.live/v2/all",
+QUERY_RADIUS_NM = 250
+PROVIDERS = (
+    "https://api.adsb.lol/v2/point/{lat}/{lon}/{radius}",
+    "https://api.airplanes.live/v2/point/{lat}/{lon}/{radius}",
+)
+QUERY_CENTERS = (
+    (30.0, 31.2),   # Egypt
+    (33.3, 36.3),   # Levant
+    (39.2, 34.0),   # Turkey
+    (33.3, 44.4),   # Iraq
+    (38.0, 46.0),   # NW Iran
+    (35.7, 51.4),   # Tehran
+    (36.3, 59.6),   # NE Iran
+    (31.0, 60.5),   # E Iran
+    (28.5, 52.5),   # S Iran
+    (27.2, 56.3),   # Strait of Hormuz
+    (24.7, 46.7),   # Central Saudi Arabia
+    (21.5, 39.2),   # Red Sea / Jeddah
+    (26.0, 51.0),   # Qatar / Bahrain / Gulf
+    (25.2, 55.3),   # UAE
+    (23.6, 58.4),   # Oman
 )
 USER_AGENT = "bikhabaar-air-traffic/1.0"
 
@@ -71,31 +90,54 @@ def filter_middle_east_aircraft(
     return kept
 
 
-def fetch_live_aircraft(*, session=requests) -> list[dict]:
+def _fetch_center(lat: float, lon: float, *, session=requests) -> list[dict]:
     errors: list[str] = []
-    for url in ADSB_URLS:
+    for template in PROVIDERS:
+        url = template.format(lat=lat, lon=lon, radius=QUERY_RADIUS_NM)
         try:
             response = session.get(
                 url,
                 headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
-                timeout=30,
+                timeout=20,
             )
             response.raise_for_status()
             payload = response.json()
             rows = payload.get("ac") if isinstance(payload, dict) else None
             if not isinstance(rows, list):
                 raise ValueError("aircraft list missing")
-            filtered = filter_middle_east_aircraft(rows)
-            if filtered:
-                return filtered
-            raise ValueError("no fresh aircraft positions in region")
+            return rows
         except Exception as exc:
             errors.append(f"{url}: {exc}")
-    raise RuntimeError("; ".join(errors) or "live ADS-B providers unavailable")
+    raise RuntimeError("; ".join(errors))
+
+
+def fetch_live_aircraft(*, session=requests) -> list[dict]:
+    merged: dict[str, dict] = {}
+    failures = 0
+    for index, (lat, lon) in enumerate(QUERY_CENTERS):
+        if index:
+            time.sleep(1.05)
+        try:
+            rows = _fetch_center(lat, lon, session=session)
+        except Exception as exc:
+            failures += 1
+            print(f"AIR_TRAFFIC_SOURCE_ERROR center=({lat},{lon}) error={exc}")
+            continue
+        for row in filter_middle_east_aircraft(rows):
+            key = str(row.get("hex") or row.get("icao") or f"{row.get('lat')}:{row.get('lon')}")
+            merged[key] = row
+    if not merged:
+        raise RuntimeError(f"no live Middle East ADS-B positions; failed_centers={failures}")
+    print(f"AIR_TRAFFIC_FETCH aircraft={len(merged)} failed_centers={failures}")
+    return list(merged.values())
 
 
 def render_air_traffic_map(aircraft: Iterable[dict], output_path: str | Path) -> Path:
-    canvas = StaticMap(MAP_WIDTH, MAP_HEIGHT, url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png")
+    canvas = StaticMap(
+        MAP_WIDTH,
+        MAP_HEIGHT,
+        url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    )
     count = 0
     for row in aircraft:
         try:
