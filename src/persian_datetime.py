@@ -64,5 +64,5 @@ def tehran_persian_date_time(now: datetime | None = None) -> tuple[str, str]:
     local = resolved.astimezone(TEHRAN)
     jy, jm, jd = gregorian_to_jalali(local.year, local.month, local.day)
     date_text = f"{to_persian_digits(jd)} {_PERSIAN_MONTHS[jm - 1]} {to_persian_digits(jy)}"
-    time_text = f"{to_persian_digits(local.hour):0>2}:{to_persian_digits(local.minute):0>2}"
+    time_text = to_persian_digits(f"{local.hour:02d}:{local.minute:02d}")
     return date_text, time_text
