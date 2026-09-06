@@ -321,6 +321,8 @@ def fetch_custom_news_items(path: str | Path = CUSTOM_SOURCES_PATH, session=requ
     for source in _read_sources(Path(path)):
         if not source.get("active", True):
             continue
+        if str(source.get("status") or "").lower() == "reference":
+            continue
         try:
             kind = source.get("kind")
             if kind == "website":
