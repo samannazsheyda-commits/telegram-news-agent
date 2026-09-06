@@ -23,6 +23,11 @@ def test_mark_dubowitz_x_source_is_fully_persian():
     assert item.source == "مارک دوبوویتز / ایکس"
 
 
-def test_visible_text_gate_ignores_hidden_url_but_blocks_visible_latin():
+def test_unknown_latin_x_source_is_hidden_without_dropping_story():
     assert "x.com" not in _visible_text('<a href="https://x.com/a/status/1">لینک منبع خبر</a>')
-    assert _format_persian_only(_item("Unknown Person / X"), "یک خبر مهم درباره ایران", "") == ""
+    item = _persian_source_item(_item("Unknown Person / X"))
+    assert item.source == "منبع در ایکس"
+    message = _format_persian_only(_item("Unknown Person / X"), "یک خبر مهم درباره ایران", "")
+    assert message
+    assert "Unknown Person" not in _visible_text(message)
+    assert "منبع در ایکس" in _visible_text(message)
