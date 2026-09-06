@@ -128,3 +128,5 @@ def test_empty_seen_state_processes_current_news_instead_of_silently_bootstrappi
     assert main.run(NOW) == 0
     assert sent == ["خبر جاری"]
     assert item.key in main.load_state(state_path)["news_seen"]
+
+# Regression suite for transactional news delivery; do not convert retryable failures into seen items.
