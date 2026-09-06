@@ -4,7 +4,7 @@ import src.main as main
 from src.sources import MarketSnapshot, NewsItem, TruthPost
 
 
-def test_first_run_bootstraps_news_and_truth_but_sends_market(tmp_path, monkeypatch):
+def test_first_run_processes_current_news_and_bootstraps_truth(tmp_path, monkeypatch):
     state_path = tmp_path / "state.json"
     monkeypatch.setattr(main, "STATE_PATH", str(state_path))
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token")
@@ -17,12 +17,12 @@ def test_first_run_bootstraps_news_and_truth_but_sends_market(tmp_path, monkeypa
     monkeypatch.setattr(main, "translate_to_fa", lambda text: f"FA:{text}")
     rc = main.run(datetime(2026, 9, 4, 12, 0, tzinfo=timezone.utc))
     assert rc == 0
-    assert len(sent) == 1
-    assert "دلار آزاد" in sent[0]
+    assert len(sent) == 2
+    assert any("دلار آزاد" in text for text in sent)
+    assert any("Axios" in text or "اکسیوس" in text for text in sent)
     state = main.load_state(state_path)
     assert state["truth_last_id"] == "10"
     assert state["news_seen"] == ["a"]
-
 
 def test_truth_advances_state_but_sends_only_iran_related_posts(tmp_path, monkeypatch):
     state_path = tmp_path / "state.json"

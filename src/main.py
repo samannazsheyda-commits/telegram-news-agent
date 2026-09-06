@@ -350,61 +350,101 @@ def run(now: datetime | None = None) -> int:
         items = fetch_news_items()
         seen = list(state.get("news_seen") or [])
         seen_set = set(seen)
-        if not seen:
-            state["news_seen"] = [item.key for item in items[:300]]
+        new_items = [item for item in items if item.key not in seen_set]
+        rejected: list[tuple[NewsItem, str]] = []
+        candidates: list[NewsItem] = []
+        retryable_rejections = {"invalid_publish_time", "missing_direct_source_link"}
+
+        for item in new_items:
+            reason = _news_rejection_reason(item, now)
+            if reason is None:
+                candidates.append(item)
+            else:
+                rejected.append((item, reason))
+
+        for item, reason in rejected:
+            _audit_news(state, item, reason, now)
+            if reason not in retryable_rejections:
+                seen.insert(0, item.key)
+                seen_set.add(item.key)
+            changed = True
+
+        # Only previously accepted/currently eligible stories can suppress a new factual report.
+        references = [
+            item for item in items
+            if item.key in seen_set and _news_rejection_reason(item, now) is None
+        ]
+        selected, duplicates = _select_top_stories(candidates, references)
+        for item in duplicates:
+            _audit_news(state, item, "duplicate_or_redundant", now)
+            seen.insert(0, item.key)
+            seen_set.add(item.key)
+            changed = True
+
+        if rejected or duplicates:
+            state["news_seen"] = seen[:500]
             save_state(state, STATE_PATH)
-            changed = bool(items) or changed
-        else:
-            new_items = [item for item in items if item.key not in seen_set]
-            rejected: list[tuple[NewsItem, str]] = []
-            candidates: list[NewsItem] = []
-            for item in new_items:
-                reason = _news_rejection_reason(item, now)
-                if reason is None:
-                    candidates.append(item)
-                else:
-                    rejected.append((item, reason))
 
-            for item, reason in rejected:
-                _audit_news(state, item, reason, now)
-                seen.insert(0, item.key)
-                seen_set.add(item.key)
-
-            # Only previously accepted/currently eligible stories can suppress a new factual report.
-            references = [
-                item for item in items
-                if item.key in seen_set and _news_rejection_reason(item, now) is None
-            ]
-            selected, duplicates = _select_top_stories(candidates, references)
-            for item in duplicates:
-                _audit_news(state, item, "duplicate_or_redundant", now)
-                seen.insert(0, item.key)
-                seen_set.add(item.key)
-
-            if rejected or duplicates:
-                state["news_seen"] = seen[:500]
-                save_state(state, STATE_PATH)
-                changed = True
-
-            next_color = state.get("next_news_color", "red")
-            for item in reversed(selected):
+        next_color = state.get("next_news_color", "red")
+        for item in reversed(selected):
+            try:
                 title_fa = translate_to_fa(item.title)
-                if not title_fa:
-                    _audit_news(state, item, "translation_failed_retry_later", now)
-                    save_state(state, STATE_PATH)
-                    changed = True
-                    continue
-                detail = fetch_news_detail(item)
-                summary_fa = translate_to_fa(detail[:1200]) if detail else ""
-                marker = _red_story_marker(item) if next_color == "red" else "⚪️"
-                send_telegram(format_news(item, title_fa, summary_fa, marker_override=marker), token, chat_id)
-                next_color = "white" if next_color == "red" else "red"
-                state["next_news_color"] = next_color
-                seen.insert(0, item.key)
-                seen_set.add(item.key)
-                state["news_seen"] = seen[:500]
-                save_state(state, STATE_PATH)
+            except Exception as exc:
+                print(f"NEWS_ITEM_RETRY key={item.key!r} stage=title_translation error={exc}", file=sys.stderr)
+                _audit_news(state, item, "translation_failed_retry_later", now)
                 changed = True
+                continue
+            if not title_fa:
+                _audit_news(state, item, "translation_failed_retry_later", now)
+                changed = True
+                continue
+
+            detail = ""
+            try:
+                detail = fetch_news_detail(item)
+            except Exception as exc:
+                # Detail is enrichment only; a headline must still be publishable without it.
+                print(f"NEWS_DETAIL_FALLBACK key={item.key!r} error={exc}", file=sys.stderr)
+
+            summary_fa = ""
+            if detail:
+                try:
+                    summary_fa = translate_to_fa(detail[:1200]) or ""
+                except Exception as exc:
+                    print(f"NEWS_SUMMARY_FALLBACK key={item.key!r} error={exc}", file=sys.stderr)
+
+            marker = _red_story_marker(item) if next_color == "red" else "⚪️"
+            try:
+                message = format_news(item, title_fa, summary_fa, marker_override=marker)
+            except Exception as exc:
+                print(f"NEWS_ITEM_RETRY key={item.key!r} stage=format error={exc}", file=sys.stderr)
+                _audit_news(state, item, "format_failed_retry_later", now)
+                changed = True
+                continue
+            if not (message or "").strip():
+                _audit_news(state, item, "format_failed_retry_later", now)
+                changed = True
+                continue
+
+            try:
+                send_telegram(message, token, chat_id)
+            except Exception as exc:
+                print(f"NEWS_ITEM_RETRY key={item.key!r} stage=send error={exc}", file=sys.stderr)
+                _audit_news(state, item, "send_failed_retry_later", now)
+                changed = True
+                continue
+
+            next_color = "white" if next_color == "red" else "red"
+            state["next_news_color"] = next_color
+            seen.insert(0, item.key)
+            seen_set.add(item.key)
+            state["news_seen"] = seen[:500]
+            save_state(state, STATE_PATH)
+            changed = True
+
+        if changed:
+            state["news_seen"] = seen[:500]
+            save_state(state, STATE_PATH)
     except Exception as exc:
         print(f"News error: {exc}", file=sys.stderr)
 
