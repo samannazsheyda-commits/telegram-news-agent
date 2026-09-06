@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41542",
   "news_seen": [
+    "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
+    "x:AJEnglish:2096680962515968032",
     "x:CBSNews:2096684024295018932",
     "x:Reuters:2096683625106301379",
     "x:AJEnglish:2096682102167130140",
@@ -498,12 +500,10 @@
     "8ea2cf545985fcb0885cac8a6a24100920ef7554",
     "51515ef1d7fc0eadbf6119ee8ed0ab729520596a",
     "244dd75587ca7258bed1d8ea3f67fdccbb9eb07a",
-    "da7baa919be2f0bdbdad8878d259af93a0f0a920",
-    "bd359d3212f780e33a7e84399f3159d37e5ee7f6",
-    "863ec3aca1adda25644f10f4b023ce7f5c4ec24b"
+    "da7baa919be2f0bdbdad8878d259af93a0f0a920"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -623,6 +623,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Iran's Security Council Secretary Rezaei: The Americans are trying to smuggle 5 to 6 vessels, spending a lot of money, but these ships are usually targeted. We have not yet decided to sink them, because they are carrying petroleum products.",
+      "reason": "bundled_or_multi_headline",
+      "published": "Sun, 06 Sep 2026 18:54:37 +0000",
+      "link": "https://t.me/ClashReport/95359",
+      "checked_at": "2026-09-06T19:50:47.671410+00:00"
+    },
     {
       "key": "b0b4eb9246ea46545b988b91ee491bd4c833303f",
       "source": "کلش ریپورت / Telegram",
@@ -2413,19 +2422,20 @@
       "published": "Tue, 01 Sep 2026 16:24:03 +0000",
       "link": "https://x.com/TankerTrackers/status/2094823610200269240",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:TankerTrackers:2094849805453320424",
-      "source": "TankerTrackers / X",
-      "title": "Houses? There are 184 Iran-tankers which OFAC (part of the US Department of Treasury) still haven't slapped with sanctions. They alone have transported 533 million barrels (let's say $32 billion) of Iranian crude oil and refined products over the years.",
-      "reason": "not_today_tehran",
-      "published": "Tue, 01 Sep 2026 18:08:08 +0000",
-      "link": "https://x.com/TankerTrackers/status/2094849805453320424",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2096680962515968032",
+      "source": "Al Jazeera English / X",
+      "title": "Iran’s Parliament Speaker says new attacks on the country will “meet a faster, heavier and more painful response”, as Tehran says it will announce restricted zone outside the Strait ⁠of Hormuz.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096680962515968032",
+      "published": "Sun, 06 Sep 2026 19:24:30 +0000",
+      "sent_at": "2026-09-06T19:48:56.334999+00:00",
+      "fingerprint": "iran s parliament speaker says new attacks on the country will meet a faster heavier and more painful response as tehran says it will announce restricted zone outside the strait of hormuz"
+    },
     {
       "key": "x:AJEnglish:2096682102167130140",
       "source": "Al Jazeera English / X",
