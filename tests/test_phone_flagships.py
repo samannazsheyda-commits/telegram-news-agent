@@ -1,7 +1,11 @@
 from datetime import datetime, timezone
 
-import src.main as main
-from src.phones import FlagshipPhonePrice, format_flagship_phone_prices, parse_flagship_phone_prices
+from src.phones import (
+    FlagshipPhonePrice,
+    format_flagship_phone_prices,
+    parse_flagship_phone_prices,
+    phone_flagships_due,
+)
 
 
 def test_parse_flagships_picks_latest_series_and_lowest_listed_price():
@@ -44,6 +48,6 @@ def test_phone_post_is_compact_and_has_bikhabaar_footer():
 def test_flagship_phone_post_is_due_once_daily_after_noon_tehran():
     before = datetime(2026, 9, 6, 8, 0, tzinfo=timezone.utc)   # 11:30 Tehran
     after = datetime(2026, 9, 6, 8, 30, tzinfo=timezone.utc)   # 12:00 Tehran
-    assert main._phone_flagships_due({}, before) is False
-    assert main._phone_flagships_due({}, after) is True
-    assert main._phone_flagships_due({'phone_flagships_last_sent_date': '2026-09-06'}, after) is False
+    assert phone_flagships_due({}, before) is False
+    assert phone_flagships_due({}, after) is True
+    assert phone_flagships_due({'phone_flagships_last_sent_date': '2026-09-06'}, after) is False
