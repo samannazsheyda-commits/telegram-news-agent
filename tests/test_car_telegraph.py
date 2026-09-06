@@ -59,11 +59,11 @@ def test_telegraph_page_contains_banner_and_every_exact_source_row():
     assert 'نام مدل‌ها عیناً مطابق منبع نمایش داده می‌شوند' not in encoded
 
 
-def test_compact_telegram_post_links_to_full_telegraph_page():
+def test_compact_telegram_post_links_title_to_full_telegraph_page():
     text = format_car_telegraph_post('https://telegra.ph/car-prices-test', 42)
 
     assert 'قیمت روز خودرو' in text
-    assert '42' in text
     assert 'https://telegra.ph/car-prices-test' in text
-    assert 'مشاهده لیست کامل قیمت خودروها' in text
+    assert 'مشاهده لیست کامل قیمت خودروها' not in text
+    assert 'لیست کامل قیمت' not in text
     assert 'منبع: ماشین۳' in text
