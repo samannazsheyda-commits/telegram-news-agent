@@ -1,6 +1,14 @@
 {
   "truth_last_id": "41532",
   "news_seen": [
+    "x:business:2096623224767270947",
+    "d0842fe8936e25d637407cfc2ad4ab692cc22751",
+    "4cf4c333ea4c57e901ec74d8aea87fe4d3791cb1",
+    "4fd4645439b27a261c8375e0f8bd95ea5f17cb81",
+    "40a55e1115e45a332fefe5d9df8ca5e31580d93b",
+    "f1819b8457c1b3a8950a6df4646ed12bb229487c",
+    "x:IsraelHayomEng:2096620255984374017",
+    "8c1f8822c70d38585ac8a402d4bc9acbe0c19c39",
     "9ef0dabde57c080cb9239955bd4c6b11535c28af",
     "x:CENTCOMFarsi:2096613479004188731",
     "x:AJEnglish:2096610623048323296",
@@ -492,18 +500,10 @@
     "e025ea10ba3ba8b28c1fa0ae8b674a766257bc57",
     "ac38e1b70171858dc5700941dd4968e8573b1dbd",
     "e4e02e3bd9e965275150509eee4fcf361415bc7d",
-    "5797daada67408be35fae2d03bb5e2167547e9b0",
-    "3d92bc9ea120fbcde678ac0a01191beb99b60022",
-    "1519b980e86f1e9b8149b33c538b30b0539009a0",
-    "81f8d53f047163c39ff2cb4280601880ad90dc2a",
-    "28f230603527771b74b30b6425b5178b7613f985",
-    "ee640e849784bc1110433cdd2e5041dc219e9836",
-    "d04cb173ec65e06cec715e675c78a7d5f51f89a4",
-    "b748b16679acfe4953d887c9d6bb8abeb0d6c70c",
-    "3f1231d8e161e78fed1fb576a6c8a18f0652f859"
+    "5797daada67408be35fae2d03bb5e2167547e9b0"
   ],
   "market_last_sent_at": "2026-09-06T14:49:57.247923+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -623,6 +623,51 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "4cf4c333ea4c57e901ec74d8aea87fe4d3791cb1",
+      "source": "NOTAM / Airspace",
+      "title": "US airstrikes on Iran escalate conflict, impact global energy prices - Crypto Briefing",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 06:17:48 GMT",
+      "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQbFlPS3pEb2tYa1pOYVQwR0ItSUUwcDhWUXdUaHByS2ZraGg3OWw2UWdpY0hGblB4cnNjMTBiMXM2ODBMdEJ5d1dxbWRSUmJHM185WVRhUFczQzF4SWVDWDJwdWVXYl9YWm5DZHRmODlFa2ttVUd0Sks1dm5iemRUYnVGVzg2VlU3TUVzaXlkTG9PRUVMWHYwUDlZRQ?oc=5",
+      "checked_at": "2026-09-06T15:35:25.118048+00:00"
+    },
+    {
+      "key": "4fd4645439b27a261c8375e0f8bd95ea5f17cb81",
+      "source": "NOTAM / Airspace",
+      "title": "Iran warns of broader strikes if US persists in vessel ‘harassment’ - Crypto Briefing",
+      "reason": "not_today_tehran",
+      "published": "Sat, 05 Sep 2026 17:36:43 GMT",
+      "link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxQOGdlQWlqd1F6OVFKcVJMMm43Z0RlYXV3NkdiRktFYnpEZW9OZEtkMWJmZ2VzZVZ0Z1kyTnp4Vl9lamM2SXhtLUZ2NFp0WUpmZU10ZTBydGxtbGNVQzNJai1Id0ViWEVWWjFZSXo3NlM1Z0ZRRHhtQUNjZjRGM2tFaU90MVNlWjFjUDhmc3ZkTTBnWmVjU2pseQ?oc=5",
+      "checked_at": "2026-09-06T15:35:25.118048+00:00"
+    },
+    {
+      "key": "40a55e1115e45a332fefe5d9df8ca5e31580d93b",
+      "source": "DW",
+      "title": "Lufthansa avoids Iranian airspace",
+      "reason": "not_today_tehran",
+      "published": "Fri, 21 Jun 2019 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOcGVQMEF6X0tFTFhjS2ZlZmpQekgtWk1xS0hDeUlYME1wTmVaaUc4NlB4aWVvX3didy1BekJjQlUwUFAtN0w4YW0weWY5TkFVM2JVWkYzVjhhdTdNT2dUN2FqaGY3Z1lrQ2kyakNid1RQRkp1YzFXZkJPUDdzQzl0MFdkYzZCRjVvZjRDMVNB0gGOAUFVX3lxTE1RYTJIdVpETHVUUEFjWERQQVpOTXlzUnJSOWZCeWVnOUlWQjh1Q1Eyc2o1d0swdDBQclhqTW9EMGt2ZWh6R2RSckZOOVc3WjhGTE5yTXhBQ1RTZ3pzdU1nMVBCR1FDUTBlekRvNmlwN0F3NHViNUgyRnZyQVNiV2VCaWFXNzFrNWlERnZETXc?oc=5",
+      "checked_at": "2026-09-06T15:35:25.118048+00:00"
+    },
+    {
+      "key": "f1819b8457c1b3a8950a6df4646ed12bb229487c",
+      "source": "NOTAM / Airspace",
+      "title": "KLM, European airlines warned to avoid Iranian airspace amid rising tensions - NL Times",
+      "reason": "not_today_tehran",
+      "published": "Sat, 17 Jan 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxNZ1hHcEZENkNfVVVyRU9WRy0xUkc0LTVxQXdGNzNVY3YyMUJUS2xreFJlS2wtX3QxLTB0eHZDOFN0UEQxV1NrOFhWbzIweVdiemRqTC0yLUY5VndrVmFLZWNFX1ZBYmtpR2dZWGxMYWRhVVlkZUxWdmlYR3FWN3ZUWWx2dGJJbmphaWRXanl5elFiemRKUko3LVBEYWdqQkxjM2cwZg?oc=5",
+      "checked_at": "2026-09-06T15:35:25.118048+00:00"
+    },
+    {
+      "key": "8c1f8822c70d38585ac8a402d4bc9acbe0c19c39",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Netanyahu on Iran: This regime in Iran — its end is near. It is weak, it is fighting for its life, it is staggering, and there is still a mission to complete that we are determined to carry out.",
+      "reason": "bundled_or_multi_headline",
+      "published": "Sun, 06 Sep 2026 15:23:14 +0000",
+      "link": "https://t.me/ClashReport/95303",
+      "checked_at": "2026-09-06T15:32:16.610023+00:00"
+    },
     {
       "key": "9ef0dabde57c080cb9239955bd4c6b11535c28af",
       "source": "کلش ریپورت / Telegram",
@@ -2377,55 +2422,40 @@
       "published": "Sun, 21 Jun 2026 05:04:47 +0000",
       "link": "https://x.com/ir_rezaee/status/2068560743016857667",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:ir_rezaee:2068806830256423059",
-      "source": "Mohsen Rezaei / X",
-      "title": "ایالات متحده بر اساس تفاهم با جمهوری اسلامی ایران، مسئول تجاوزات و اقدامات تنش‌زای رژیم صهیونیستی در لبنان است و باید پاسخگو باشد. در صورت تهدید علیه ایران، آمریکایی‌ها را پاسخگو می‌کنیم.",
-      "reason": "not_today_tehran",
-      "published": "Sun, 21 Jun 2026 21:22:39 +0000",
-      "link": "https://x.com/ir_rezaee/status/2068806830256423059",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:ir_rezaee:2070810514846826634",
-      "source": "Mohsen Rezaei / X",
-      "title": "آمریکا با حمایت از اقدامات نیروی نیابتی خود در منطقه، بند اول تفاهم‌نامه و با ادامه تنش‌آفرینی در تنگه هرمز، بند پنجم را نقض کرده است. پاسخ نقض هر بند از تفاهم‌نامه، سریع و کوبنده خواهد بود.",
-      "reason": "not_today_tehran",
-      "published": "Sat, 27 Jun 2026 10:04:35 +0000",
-      "link": "https://x.com/ir_rezaee/status/2070810514846826634",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:ir_rezaee:2074201040262496491",
-      "source": "Mohsen Rezaei / X",
-      "title": "ملت بزرگ ایران، پس از پنج دهه، امروز نیز با همان صلابت و ایمان روزهای آغازین انقلاب، شعارهای کوبنده‌ی خود را علیه آمریکای جنایتکار و اسرائیل غاصب سر می‌دهند. این شعارها که با خونخواهی رهبر شهید توأم شده، به خشمی مقدس و اتحادی پولادین علیه دشمنان این مرز و بوم تبدیل شده است.",
-      "reason": "not_today_tehran",
-      "published": "Mon, 06 Jul 2026 18:37:19 +0000",
-      "link": "https://x.com/ir_rezaee/status/2074201040262496491",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:ir_rezaee:2074918488649400573",
-      "source": "Mohsen Rezaei / X",
-      "title": "هرگاه از مسیر زور راه به جایی نمی‌برند، شتابان به مذاکره و توافق روی می‌آورند و به محض رسیدن به آن، در پی نابودی‌اش برمی‌آیند. در منطق سیاسی آمریکا، مذاکره تنها پلی برای عبور است، نه تعهدی پایدار! پاسخ هر ماجراجویی تازه، ضرباتی بی‌سابقه از سوی ایران خواهد بود.",
-      "reason": "not_today_tehran",
-      "published": "Wed, 08 Jul 2026 18:08:12 +0000",
-      "link": "https://x.com/ir_rezaee/status/2074918488649400573",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:ir_rezaee:2078195992382280039",
-      "source": "Mohsen Rezaei / X",
-      "title": "سیاست هم مذاکره هم جنگ تمام شد؛ اگر آمریکا طی ۲-۳ روز آینده جنگ را ادامه دهد، وارد مرحلهٔ «تهاجم و انهدام کامل» دشمن خواهیم شد. در صورت فعال‌سازی این راهبرد دیگر به مقابله‌به‌مثل اکتفا نمی‌کنیم و هیچ مرز سیاسی در مقابل نیروهای تهاجمی ایران امنیت نخواهد داشت.",
-      "reason": "not_today_tehran",
-      "published": "Fri, 17 Jul 2026 19:11:50 +0000",
-      "link": "https://x.com/ir_rezaee/status/2078195992382280039",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "d0842fe8936e25d637407cfc2ad4ab692cc22751",
+      "source": "NOTAM / Airspace",
+      "title": "Egypt urges US-Iran negotiations amid regional tensions - Crypto Briefing",
+      "summary": "Egypt urges US-Iran negotiations amid regional tensions Crypto Briefing",
+      "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPbXhKUVctTzN5b1N0V1FQZFRrOFM1QlU3LVc3aFRjTUZWSTlVUWZKcngtdWhmbHM5b0FGc1FqTmZIcW1ZTF9hTkZvTUE5LUxGRkcxQkpvaTZqdzRqZ0xteHNpNUJOV2dQV0o0YVZjMl85Mk5yclhkUlhBTXMyUEdXSE45VVlWSlk5TXFB?oc=5",
+      "published": "Sat, 05 Sep 2026 21:05:55 GMT",
+      "sent_at": "2026-09-06T15:35:25.118048+00:00",
+      "fingerprint": "egypt urges us iran negotiations amid regional tensions crypto briefing egypt urges us iran negotiations amid regional tensions crypto briefing"
+    },
+    {
+      "key": "x:business:2096623224767270947",
+      "source": "Bloomberg / X",
+      "title": "US Navy escorts that are helping tankers cross the Strait of Hormuz are essential to sustaining crude flows through the waterway, Energy Secretary Chris Wright said Sunday, suggesting they won’t end anytime soon.",
+      "summary": "",
+      "link": "https://x.com/business/status/2096623224767270947",
+      "published": "Sun, 06 Sep 2026 15:35:04 +0000",
+      "sent_at": "2026-09-06T15:35:25.118048+00:00",
+      "fingerprint": "us navy escorts that are helping tankers cross the strait of hormuz are essential to sustaining crude flows through the waterway energy secretary chris wright said sunday suggesting they won t end anytime soon"
+    },
+    {
+      "key": "x:IsraelHayomEng:2096620255984374017",
+      "source": "Israel Hayom / X",
+      "title": "Secret Navy SEAL operation in Strait of Hormuz revealed",
+      "summary": "",
+      "link": "https://x.com/IsraelHayomEng/status/2096620255984374017",
+      "published": "Sun, 06 Sep 2026 15:23:17 +0000",
+      "sent_at": "2026-09-06T15:32:16.610023+00:00",
+      "fingerprint": "secret navy seal operation in strait of hormuz revealed"
+    },
     {
       "key": "x:CENTCOMFarsi:2096613479004188731",
       "source": "CENTCOM Farsi / X",
