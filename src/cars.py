@@ -77,14 +77,15 @@ def _change_line(current: int, previous: int | None) -> str:
 
 
 def _isolated_name(name: str) -> str:
-    return f"{_RLI}<b>{escape(to_persian_digits(name))}</b>{_PDI}"
+    return f"{_RLI}<b>{escape(name)}</b>{_PDI}"
 
 
 def format_car_prices(prices: list[CarPrice], previous: dict[str, int] | None = None) -> str:
+    """Legacy direct-Telegram formatter retained for compatibility; source model names stay exact."""
     previous = previous or {}
     lines = ["🚗 <b>قیمت روز خودرو | بازار آزاد</b>"]
     for item in prices:
-        lines += ["", f"▫️ {_isolated_name(item.name)}: {format_persian_number(item.market_toman)} تومان{_change_line(item.market_toman, previous.get(item.name))}"]
+        lines += ["", f"▫️ {_isolated_name(item.name)}: {item.market_toman:,} تومان{_legacy_change_line(item.market_toman, previous.get(item.name))}"]
     lines += [
         "",
         f'📌 <a href="{CAR_PRICE_URL}">منبع: {CAR_SOURCE_NAME}</a>',
@@ -95,6 +96,18 @@ def format_car_prices(prices: list[CarPrice], previous: dict[str, int] | None = 
     return "\n".join(lines)
 
 
+def _legacy_change_line(current: int, previous: int | None) -> str:
+    if not previous or previous <= 0:
+        return ""
+    diff = current - previous
+    pct = abs(diff) / previous * 100
+    if diff > 0:
+        return f" ▲ {abs(diff):,} تومان | {pct:.2f}٪"
+    if diff < 0:
+        return f" ▼ {abs(diff):,} تومان | {pct:.2f}٪"
+    return " — بدون تغییر"
+
+
 def _car_summary(prices: list[CarPrice], date_text: str) -> str:
     visible = [item for item in prices if item.market_toman > 0]
     if not visible:
@@ -102,7 +115,7 @@ def _car_summary(prices: list[CarPrice], date_text: str) -> str:
     highest = max(visible, key=lambda item: item.market_toman)
     return (
         f"در فهرست قیمت روز خودرو ({date_text})، گران‌ترین مدل "
-        f"{to_persian_digits(highest.name)} با قیمت {format_persian_number(highest.market_toman)} تومان ثبت شده است. "
+        f"{highest.name} با قیمت {format_persian_number(highest.market_toman)} تومان ثبت شده است. "
         f"این فهرست شامل {to_persian_digits(len(visible))} مدل دارای قیمت در منبع ماشین۳ است."
     )
 
@@ -126,7 +139,7 @@ def _telegraph_car_nodes(
         nodes.append({
             "tag": "p",
             "children": [
-                {"tag": "strong", "children": [to_persian_digits(item.name)]},
+                {"tag": "strong", "children": [item.name]},
                 f": {format_persian_number(item.market_toman)} تومان{change}",
             ],
         })
