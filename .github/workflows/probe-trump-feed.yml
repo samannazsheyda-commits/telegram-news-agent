@@ -1,0 +1,23 @@
+name: Probe Trump Feed
+on:
+  push:
+    branches: [main]
+    paths: [".probe-trump-feed"]
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read latest archive feed
+        run: |
+          python - <<'PY'
+          import requests, xml.etree.ElementTree as ET
+          r=requests.get('https://www.trumpstruth.org/feed',headers={'User-Agent':'Mozilla/5.0'},timeout=30)
+          r.raise_for_status()
+          root=ET.fromstring(r.content)
+          for i,node in enumerate(root.findall('.//item')[:30]):
+              vals={}
+              for tag in ('title','link','guid','pubDate','description'):
+                  c=node.find(tag); vals[tag]=(c.text or '').strip() if c is not None else ''
+              print('ITEM',i,repr(vals))
+          PY
