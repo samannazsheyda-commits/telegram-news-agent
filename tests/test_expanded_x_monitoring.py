@@ -15,13 +15,12 @@ def test_expanded_x_registry_contains_required_accounts():
     required = {
         "@Reuters", "@AP", "@AFP", "@BBCWorld", "@CNN", "@FRANCE24", "@AJEnglish",
         "@AlArabiya_Eng", "@nytimes", "@nytimesworld", "@business", "@FT", "@SkyNews",
-        "@NBCNews", "@CBSNews", "@ABC", "@FoxNews", "@dwnews", "@guardian", "@washingtonpost",
+        "@NBCNews", "@CBSNews", "@ABC", "@FoxNews", "@guardian", "@washingtonpost",
         "@WSJ", "@TheEconomist", "@netanyahu", "@Israel_katz", "@kann_news", "@N12News",
         "@newsisrael13", "@C14_news", "@IDF", "@Jerusalem_Post", "@IsraelHayomEng", "@CENTCOM",
-        "@USTreasury", "@SecScottBessent", "@SecDef", "@SecRubio", "@VP", "@StateDept",
+        "@USTreasury", "@SecScottBessent", "@PeteHegseth", "@DeptofWar", "@SecRubio", "@VP", "@StateDept",
         "@statedeptspox", "@WhiteHouse", "@marklevinshow", "@JasonMBrodsky", "@mdubowitz",
         "@manniefabian", "@sfrantzman", "@jconricus", "@Doranimated", "@jmhansler", "@JoeTruzman",
-        "@Tasnimnews_Fa", "@Tasnimnews_EN",
     }
     assert required <= handles
 
