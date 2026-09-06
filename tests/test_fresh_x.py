@@ -46,19 +46,37 @@ def test_parser_rejects_status_from_wrong_profile():
     assert parse_fxtwitter_timeline(payload, "Reuters", "@Reuters") == []
 
 
-def test_parser_suppresses_video_dependent_x_post_when_channel_has_no_video_attachment():
+def test_parser_keeps_self_contained_factual_claim_even_when_it_mentions_video():
     payload = {
         "code": 200,
         "results": [{
             "type": "status",
             "id": "2096215788063498460",
             "url": "https://x.com/TankerTrackers/status/2096215788063498460",
-            "text": "Video shows an Iranian NITC VLCC fully loaded at Kharg Island.",
+            "text": "Video shows an Iranian NITC VLCC was struck near Kharg Island and is on fire.",
             "created_at": "Sat Sep 05 12:36:00 +0000 2026",
             "author": {"screen_name": "TankerTrackers"},
             "media": {
                 "videos": [{"type": "video", "url": "https://video.example/test.mp4"}],
             },
+        }],
+    }
+
+    items = parse_fxtwitter_timeline(payload, "TankerTrackers", "@TankerTrackers")
+    assert len(items) == 1
+    assert "was struck" in items[0].title
+
+
+def test_parser_still_suppresses_video_only_promo_or_contextless_cta():
+    payload = {
+        "code": 200,
+        "results": [{
+            "type": "status",
+            "id": "2096215788063498469",
+            "url": "https://x.com/TankerTrackers/status/2096215788063498469",
+            "text": "Watch this video from Tehran for the full clip.",
+            "created_at": "Sat Sep 05 12:36:30 +0000 2026",
+            "author": {"screen_name": "TankerTrackers"},
         }],
     }
 
