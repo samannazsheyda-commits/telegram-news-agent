@@ -21,6 +21,8 @@ from .x_editorial_quality import rejection_reason
 
 _installed = False
 _original_parse_x = fresh_x.parse_fxtwitter_timeline
+_original_looks_bundled = base.agent._looks_bundled
+_original_is_statement = base.agent._is_statement
 _PHONE_40_REPUBLISH_DATE = "2026-09-06"
 _PHONE_40_REPUBLISH_STATE_KEY = "phone_flagships_republish_40_date"
 _PHONE_FRESH_REPUBLISH_STATE_KEY = "phone_flagships_fresh_republish_2_date"
@@ -48,6 +50,20 @@ def _quality_parse_x(payload, source_name: str, handle: str):
             continue
         accepted.append(item)
     return accepted
+
+
+def _looks_bundled_without_statement_false_positive(item) -> bool:
+    """Do not mistake a long single-speaker quote for multiple bundled stories."""
+    if base.agent._speaker_key(item) is not None:
+        return False
+    return _original_looks_bundled(item)
+
+
+def _is_statement_with_priority_escape(item) -> bool:
+    """Throttle routine quotes, but never distinct high-priority security developments."""
+    if base._priority_event_priority(item) >= 80:
+        return False
+    return _original_is_statement(item)
 
 
 def _send_with_photo_tracking(text: str, bot_token: str, chat_id: str, *args, **kwargs) -> None:
@@ -151,6 +167,9 @@ def install_production_policies() -> None:
     base.news_formatters._brand_footer = _clean_brand_footer
     base.agent._market_quiet_hours = lambda now: not regular_market_allowed(now)
     base.agent._market_summary_day = market_summary_day
+
+    base.agent._looks_bundled = _looks_bundled_without_statement_false_positive
+    base.agent._is_statement = _is_statement_with_priority_escape
 
     base.agent._weather_noon_due = lambda state, now: False
     base.agent._weather_night_due = lambda state, now: False
