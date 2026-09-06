@@ -4,6 +4,7 @@ import html
 import os
 import re
 import sys
+import time
 from dataclasses import replace
 
 from . import runtime_v7 as v7
@@ -15,7 +16,11 @@ _installed = False
 _original_v7_formatter = v7._format_news_with_footer_icons
 _original_low_value_company = v7.v2.base.is_low_value_company_news
 _original_car_due = v7.v2.base.agent._car_due
+_original_market_fetch = v7.v2._original_market_fetch
+_original_send_telegram = v7.v2.base._original_send_telegram
 _LATIN_VISIBLE_RE = re.compile(r"\b[A-Za-z]{2,}\b")
+_FREE_USD_RE = re.compile(r"نرخ\s*فعلی\s*:*\s*([0-9۰-۹][0-9۰-۹,٬]*)")
+_PERSIAN_NUMBER_MAP = str.maketrans("۰۱۲۳۴۵۶۷۸۹٬", "0123456789,")
 _CAR_REPUBLISH_DATE = "2026-09-06"
 
 _SOURCE_OVERRIDES = {
@@ -88,6 +93,51 @@ def _market_quiet_hours(now) -> bool:
     return not regular_market_allowed(now)
 
 
+def _free_market_usd_rial_from_text(text: str) -> int:
+    value = str(text or "").translate(_PERSIAN_NUMBER_MAP)
+    match = _FREE_USD_RE.search(value)
+    if not match:
+        raise ValueError("TGJU free-market USD current rate not found")
+    return int(match.group(1).replace(",", ""))
+
+
+def _fetch_market_with_explicit_free_usd():
+    snapshot = _original_market_fetch()
+    profile_text = v7.v2.sources._fetch_profile_text(v7.v2.sources.requests, "price_dollar_rl")
+    usd_rial = _free_market_usd_rial_from_text(profile_text)
+    return replace(snapshot, usd_rial=usd_rial)
+
+
+def _disable_preview_for_text(text: str) -> bool:
+    return "https://telegra.ph/" not in str(text or "")
+
+
+def _send_with_telegraph_preview(text: str, bot_token: str, chat_id: str, *args, **kwargs) -> None:
+    if _disable_preview_for_text(text):
+        return _original_send_telegram(text, bot_token, chat_id, *args, **kwargs)
+
+    if not (text or "").strip():
+        return
+    if not bot_token or not chat_id:
+        raise RuntimeError("TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID are required")
+
+    session = kwargs.pop("session", args[0] if args else v7.v2.services.requests)
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    for chunk in v7.v2.services.split_message(text):
+        response = session.post(
+            url,
+            json={
+                "chat_id": chat_id,
+                "text": chunk,
+                "parse_mode": "HTML",
+                "disable_web_page_preview": False,
+            },
+            timeout=20,
+        )
+        v7.v2.services._check_telegram_response(response)
+        time.sleep(3.2)
+
+
 def _format_car_via_telegraph(prices, previous=None) -> str:
     """Create an in-Telegram Telegraph page and return only its compact Telegram card."""
     page_url = create_car_telegraph_page(prices, previous or {})
@@ -97,8 +147,6 @@ def _format_car_via_telegraph(prices, previous=None) -> str:
 def _car_due_with_one_time_telegraph_republish(state: dict, now) -> bool:
     local_date = now.astimezone(v7.v2.base.agent.TEHRAN).date().isoformat()
     if local_date == _CAR_REPUBLISH_DATE and state.get("car_telegraph_republish_date") != local_date:
-        # Mutate the in-memory state before send; main persists it only after a successful car post.
-        # If Telegraph creation/send fails, the marker is not saved and the next cycle retries.
         state["car_telegraph_republish_date"] = local_date
         return True
     return _original_car_due(state, now)
@@ -110,6 +158,8 @@ def install_persian_only_output() -> None:
         return
     v7._display_item = _persian_source_item
     v7._format_news_with_footer_icons = _format_persian_only
+    v7.v2._original_market_fetch = _fetch_market_with_explicit_free_usd
+    v7.v2.base._original_send_telegram = _send_with_telegraph_preview
     v8.install_strict_dedup_policy()
     v7.v2._format_news_with_flags = _format_persian_only
     v7.v2.base.is_low_value_company_news = _newsroom_low_value_company_news
