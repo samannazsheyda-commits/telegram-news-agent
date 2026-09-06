@@ -14,7 +14,9 @@ from .market_policy import market_summary_day, regular_market_allowed
 _installed = False
 _original_v7_formatter = v7._format_news_with_footer_icons
 _original_low_value_company = v7.v2.base.is_low_value_company_news
+_original_car_due = v7.v2.base.agent._car_due
 _LATIN_VISIBLE_RE = re.compile(r"\b[A-Za-z]{2,}\b")
+_CAR_REPUBLISH_DATE = "2026-09-06"
 
 _SOURCE_OVERRIDES = {
     "Mark Dubowitz / X": "مارک دوبوویتز / ایکس",
@@ -92,6 +94,16 @@ def _format_car_via_telegraph(prices, previous=None) -> str:
     return format_car_telegraph_post(page_url, len(prices))
 
 
+def _car_due_with_one_time_telegraph_republish(state: dict, now) -> bool:
+    local_date = now.astimezone(v7.v2.base.agent.TEHRAN).date().isoformat()
+    if local_date == _CAR_REPUBLISH_DATE and state.get("car_telegraph_republish_date") != local_date:
+        # Mutate the in-memory state before send; main persists it only after a successful car post.
+        # If Telegraph creation/send fails, the marker is not saved and the next cycle retries.
+        state["car_telegraph_republish_date"] = local_date
+        return True
+    return _original_car_due(state, now)
+
+
 def install_persian_only_output() -> None:
     global _installed
     if _installed:
@@ -104,6 +116,7 @@ def install_persian_only_output() -> None:
     v7.v2.base.agent._market_quiet_hours = _market_quiet_hours
     v7.v2.base.agent._market_summary_day = market_summary_day
     v7.v2.base.agent.format_car_prices = _format_car_via_telegraph
+    v7.v2.base.agent._car_due = _car_due_with_one_time_telegraph_republish
     _installed = True
 
 
