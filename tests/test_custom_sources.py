@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import json
+
 from src.custom_sources import (
     XSource,
     discover_feed_url,
+    fetch_custom_news_items,
     normalize_x_handle,
     parse_public_feed,
     parse_public_telegram_channel,
@@ -95,3 +98,31 @@ def test_public_telegram_channel_rejects_tangential_iran_made_equipment_story():
     </div>
     '''
     assert parse_public_telegram_channel(html, "war_noir", "War Noir") == []
+
+
+def test_reference_custom_sources_are_context_only_and_never_auto_published(tmp_path):
+    path = tmp_path / "custom_sources.json"
+    path.write_text(
+        json.dumps([
+            {
+                "id": "tabz-reference",
+                "kind": "telegram",
+                "name": "تبز لایو",
+                "channel": "tabzlive",
+                "active": True,
+                "status": "reference",
+            }
+        ], ensure_ascii=False),
+        encoding="utf-8",
+    )
+    session = FakeSession([
+        FakeResponse(text='''
+        <div class="tgme_widget_message" data-post="tabzlive/102055">
+          <div class="tgme_widget_message_text">President Trump posts about Iran oil exports.</div>
+          <time datetime="2026-09-06T19:05:00+00:00"></time>
+        </div>
+        ''')
+    ])
+
+    assert fetch_custom_news_items(path=path, session=session) == []
+    assert session.calls == []
