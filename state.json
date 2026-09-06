@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41533",
   "news_seen": [
+    "x:AlArabiya_Eng:2096657263117189585",
     "x:FT:2096650665590198551",
     "x:CBSNews:2096649632738574803",
     "x:haaretzcom:2096642473632096362",
@@ -499,11 +500,10 @@
     "95b31772883c4359a942d10cd7f094ed5c3b80c0",
     "6651d683c09b6e15520b101418da656cff64e3aa",
     "ead661fa7041f3768ea84686a215606c086491ce",
-    "8d123bd438a939f3bd00e2aa1cc7bad1c4e34694",
-    "1b4bbc816ea96d6bbba6dbc80b326497bdadbe7d"
+    "8d123bd438a939f3bd00e2aa1cc7bad1c4e34694"
   ],
   "market_last_sent_at": "2026-09-06T16:53:35.925783+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2096657263117189585",
+      "source": "Al Arabiya English / X",
+      "title": "Israeli Prime Minister Benjamin Netanyahu says Iran’s leadership is “weak, fighting for its life, and faltering,” claiming the regime’s end is near.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096657263117189585",
+      "published": "Sun, 06 Sep 2026 17:50:20 +0000",
+      "sent_at": "2026-09-06T17:51:39.660187+00:00",
+      "fingerprint": "israeli prime minister benjamin netanyahu says iran s leadership is weak fighting for its life and faltering claiming the regime s end is near"
+    },
     {
       "key": "x:FT:2096650665590198551",
       "source": "Financial Times / X",
