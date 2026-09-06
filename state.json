@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41532",
   "news_seen": [
+    "x:AJEnglish:2096610623048323296",
     "x:TankerTrackers:2096605307552096296",
     "x:AlArabiya_Eng:2096592443059614116",
     "x:AJEnglish:2096589677415268663",
@@ -499,11 +500,10 @@
     "b748b16679acfe4953d887c9d6bb8abeb0d6c70c",
     "3f1231d8e161e78fed1fb576a6c8a18f0652f859",
     "2e795c26073bee1210b20050cc6ba2aae108ff75",
-    "92ba04c4c765f484257de60c1db456a1cdf7067f",
-    "ddc9242e4fb8954ece244aea36187270cd130eb8"
+    "92ba04c4c765f484257de60c1db456a1cdf7067f"
   ],
-  "market_last_sent_at": "2026-09-06T12:45:51.668902+00:00",
-  "next_news_color": "white",
+  "market_last_sent_at": "2026-09-06T14:49:57.247923+00:00",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -614,9 +614,9 @@
   "market_day_prices": {
     "date": "2026-09-06",
     "first_usd": 227205,
-    "last_usd": 224695,
+    "last_usd": 224400,
     "first_gold": 23674400,
-    "last_gold": 23582600,
+    "last_gold": 23416400,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2096610623048323296",
+      "source": "Al Jazeera English / X",
+      "title": "Weapons have been seized in Iran’s city of Oshnavieh, allegedly linked to separatist groups with ties to Israel. Tasnim news agency reports that the shipment included Kalashnikov assault rifles, 28 magazines, and other ammunition.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096610623048323296",
+      "published": "Sun, 06 Sep 2026 14:45:00 +0000",
+      "sent_at": "2026-09-06T14:49:57.247923+00:00",
+      "fingerprint": "weapons have been seized in iran s city of oshnavieh allegedly linked to separatist groups with ties to israel tasnim news agency reports that the shipment included kalashnikov assault rifles 28 magazines and other ammunition"
+    },
     {
       "key": "x:TankerTrackers:2096605307552096296",
       "source": "TankerTrackers / X",
