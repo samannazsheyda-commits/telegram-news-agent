@@ -56,6 +56,7 @@ def test_telegraph_page_contains_banner_and_every_exact_source_row():
     assert '▲' in encoded
     assert 'بدون تغییر' in encoded
     assert CAR_PRICE_URL in encoded
+    assert 'نام مدل‌ها عیناً مطابق منبع نمایش داده می‌شوند' not in encoded
 
 
 def test_compact_telegram_post_links_to_full_telegraph_page():
