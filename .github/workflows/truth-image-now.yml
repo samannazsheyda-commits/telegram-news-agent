@@ -1,0 +1,70 @@
+name: Publish Latest Trump Image Truth
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".truth-image-now"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Publish latest captionless Trump image Truth
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: "@bikhabaar"
+        run: |
+          python - <<'PY'
+          import html, os, re, requests
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+
+          account = "107780257626128497"
+          api = f"https://truthsocial.com/api/v1/accounts/{account}/statuses"
+          headers = {"User-Agent": "bikhabaar-truth-image/1.0"}
+          r = requests.get(api, params={"limit": 40, "exclude_replies": "true"}, headers=headers, timeout=30)
+          r.raise_for_status()
+          statuses = r.json()
+
+          def clean(s):
+              return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(s or ""))).strip()
+
+          candidates = []
+          for status in statuses:
+              target = status.get("reblog") or status
+              text = clean(target.get("content", ""))
+              media = target.get("media_attachments") or []
+              images = [m for m in media if (m.get("type") or "").lower() == "image" and (m.get("url") or m.get("preview_url"))]
+              if text or not images:
+                  continue
+              desc = " ".join(str(m.get("description") or "") for m in images).lower()
+              candidates.append((status, target, images[0], desc))
+
+          if not candidates:
+              raise SystemExit("No captionless image Truth found")
+
+          iran_terms = ("iran", "iranian", "tehran", "irgc", "hormuz", "persian gulf", "ایران", "تهران", "هرمز")
+          chosen = next((c for c in candidates if any(t in c[3] for t in iran_terms)), candidates[0])
+          status, target, image, desc = chosen
+          photo = image.get("url") or image.get("preview_url")
+          truth_url = status.get("url") or target.get("url") or ""
+          caption = "<b>پست جدید ترامپ در تروت سوشال</b>"
+          if truth_url:
+              caption += f'\n\n<a href="{truth_url}">لینک پست اصلی</a>'
+
+          token = os.environ["TELEGRAM_BOT_TOKEN"]
+          chat = os.environ["TELEGRAM_CHAT_ID"]
+          res = requests.post(
+              f"https://api.telegram.org/bot{token}/sendPhoto",
+              json={"chat_id": chat, "photo": photo, "caption": caption, "parse_mode": "HTML"},
+              timeout=30,
+          )
+          res.raise_for_status()
+          data = res.json()
+          if not data.get("ok"):
+              raise SystemExit(f"Telegram rejected: {data}")
+          print("TRUTH_IMAGE_PUBLISHED", truth_url)
+          PY
