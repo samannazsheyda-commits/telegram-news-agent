@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import html
 import re
+import sys
 from dataclasses import dataclass
 from difflib import SequenceMatcher
 from typing import Any
@@ -314,14 +315,16 @@ def fetch_news_items(session=requests) -> list[NewsItem]:
     for fallback_source, query, lang in NEWS_QUERIES:
         try:
             items = _fetch_google_news_query(session, fallback_source, query, lang)
-        except Exception:
+        except Exception as exc:
+            print(f"NEWS_SOURCE_ERROR source={fallback_source!r} error={exc}", file=sys.stderr)
             continue
         for item in items:
             merged.setdefault(item.key, item)
     for fallback_source, query, lang in SPECIAL_QUERIES:
         try:
             items = _fetch_google_news_query(session, fallback_source, query, lang, allow_special_source=True)
-        except Exception:
+        except Exception as exc:
+            print(f"NEWS_SOURCE_ERROR source={fallback_source!r} error={exc}", file=sys.stderr)
             continue
         for item in items:
             combined = f"{item.title} {item.summary}"

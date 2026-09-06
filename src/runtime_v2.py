@@ -13,6 +13,7 @@ from .oil import OilSnapshot, fetch_oil_snapshot, format_oil_lines
 
 
 _original_generic_fetch = base._original_fetch_news_items
+_original_priority_fetch = base.fetch_priority_news_items
 _original_custom_fetch = base.fetch_custom_news_items
 _original_priority_score = base._priority_event_priority
 _original_market_fetch = base.agent.fetch_market_snapshot
@@ -98,13 +99,35 @@ def translate_news_to_fa(text: str, session=None) -> str:
 
 
 def _x_first_fetch_news_items():
-    global _x_news_keys
-    try: x_items = fetch_builtin_x_news_items()
-    except Exception as exc:
-        print(f"Newsroom X source error: {exc}", file=sys.stderr); x_items = []
-    _x_news_keys = {item.key for item in x_items}
-    return list(x_items)
+    """Merge fast X timelines with independent mainstream web coverage.
 
+    Fresh X is preferred for speed, but an X outage must never create a newsroom
+    coverage hole. Google-indexed X rows are deliberately excluded from the web
+    fallback because fresh/direct X ingestion owns those sources.
+    """
+    global _x_news_keys
+    merged = {}
+    try:
+        x_items = fetch_builtin_x_news_items()
+    except Exception as exc:
+        print(f"Newsroom X source error: {exc}", file=sys.stderr)
+        x_items = []
+    _x_news_keys = {item.key for item in x_items}
+    for item in x_items:
+        merged.setdefault(item.key, item)
+
+    try:
+        web_items = _original_generic_fetch()
+    except Exception as exc:
+        print(f"Mainstream web source error: {exc}", file=sys.stderr)
+        web_items = []
+    for item in web_items:
+        if str(getattr(item, "source", "")).endswith(" / X"):
+            continue
+        merged.setdefault(item.key, item)
+
+    print(f"NEWS_SOURCE_MERGE x={len(x_items)} web={len(web_items)} total={len(merged)}")
+    return list(merged.values())
 
 def _fetch_preserved_special_items() -> list:
     merged = {}
@@ -269,7 +292,7 @@ def _install_market_hooks() -> None:
 def install_integrations() -> None:
     base._original_fetch_news_items = _x_first_fetch_news_items
     base.fetch_custom_news_items = _custom_x_and_alert_items
-    base.fetch_priority_news_items = _no_priority_web_news
+    base.fetch_priority_news_items = _original_priority_fetch
     base._priority_rejection_reason = _strict_rejection_reason
     base._priority_event_priority = _priority_event_priority
     base._original_format_news = _format_news_with_flags
