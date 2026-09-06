@@ -24,6 +24,7 @@ _original_parse_x = fresh_x.parse_fxtwitter_timeline
 _PHONE_40_REPUBLISH_DATE = "2026-09-06"
 _PHONE_40_REPUBLISH_STATE_KEY = "phone_flagships_republish_40_date"
 _PHONE_FRESH_REPUBLISH_STATE_KEY = "phone_flagships_fresh_republish_2_date"
+_PHONE_PERSIAN_PAGE_STATE_KEY = "phone_flagships_persian_page_republish_date"
 
 
 def _clean_brand_footer() -> list[str]:
@@ -99,9 +100,20 @@ def _phone_flagships_due_with_fresh_republish(state: dict, now: datetime) -> boo
     return _phone_flagships_due_with_one_time_republish(state, now)
 
 
+def _phone_flagships_due_with_persian_page_republish(state: dict, now: datetime) -> bool:
+    local_date = now.astimezone(base.agent.TEHRAN).date().isoformat()
+    if (
+        local_date == _PHONE_40_REPUBLISH_DATE
+        and state.get(_PHONE_PERSIAN_PAGE_STATE_KEY) != local_date
+    ):
+        state[_PHONE_PERSIAN_PAGE_STATE_KEY] = local_date
+        return True
+    return _phone_flagships_due_with_fresh_republish(state, now)
+
+
 def _publish_daily_flagships(now: datetime) -> None:
     state = base.agent.load_state(base.agent.STATE_PATH)
-    if not _phone_flagships_due_with_fresh_republish(state, now):
+    if not _phone_flagships_due_with_persian_page_republish(state, now):
         return
 
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
@@ -111,8 +123,8 @@ def _publish_daily_flagships(now: datetime) -> None:
 
     try:
         prices = fetch_flagship_phone_prices()
-        page_url = create_phone_telegraph_page(prices)
-        text = format_phone_telegraph_post(page_url, len(prices))
+        page_url = create_phone_telegraph_page(prices, now=now)
+        text = format_phone_telegraph_post(page_url, len(prices), now=now)
         v9._send_with_telegraph_preview(text, token, chat_id)
         local_date = now.astimezone(base.agent.TEHRAN).date().isoformat()
         state["phone_flagships_last_sent_date"] = local_date
@@ -121,6 +133,7 @@ def _publish_daily_flagships(now: datetime) -> None:
         if local_date == _PHONE_40_REPUBLISH_DATE:
             state[_PHONE_40_REPUBLISH_STATE_KEY] = local_date
             state[_PHONE_FRESH_REPUBLISH_STATE_KEY] = local_date
+            state[_PHONE_PERSIAN_PAGE_STATE_KEY] = local_date
         base.agent.save_state(state, base.agent.STATE_PATH)
     except Exception as exc:
         print(f"Phone flagship price error: {exc}", file=sys.stderr)
