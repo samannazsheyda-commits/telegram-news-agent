@@ -1,4 +1,4 @@
-from src.fresh_x import parse_fxtwitter_timeline
+from src.fresh_x import monitored_x_sources, parse_fxtwitter_timeline
 
 
 def test_parse_fxtwitter_timeline_keeps_iran_posts_with_direct_status_url():
@@ -80,3 +80,13 @@ def test_parser_keeps_same_tanker_claim_when_it_does_not_depend_on_video():
 
     items = parse_fxtwitter_timeline(payload, "TankerTrackers", "@TankerTrackers")
     assert len(items) == 1
+
+
+def test_monitored_x_sources_use_active_current_accounts_not_dead_or_suspended_handles():
+    handles = {source["handle"].lower() for source in monitored_x_sources()}
+    assert "@petehegseth" in handles
+    assert "@deptofwar" in handles
+    assert "@secdef" not in handles
+    assert "@dwnews" not in handles
+    assert "@tasnimnews_fa" not in handles
+    assert "@tasnimnews_en" not in handles
