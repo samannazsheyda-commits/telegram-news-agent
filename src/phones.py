@@ -14,6 +14,10 @@ CHANNEL_URL = "https://t.me/bikhabaar"
 USER_AGENT = "Mozilla/5.0 (compatible; TelegramNewsAgent/2.0)"
 TEHRAN = ZoneInfo("Asia/Tehran")
 TELEGRAPH_API_URL = "https://api.telegra.ph"
+PHONE_BANNER_URL = (
+    "https://raw.githubusercontent.com/samannazsheyda-commits/telegram-news-agent/"
+    "main/assets/phone_price_banner.svg"
+)
 
 _PERSIAN_TO_ASCII = str.maketrans("۰۱۲۳۴۵۶۷۸۹٬", "0123456789,")
 
@@ -52,6 +56,8 @@ _OTHER_PREFIXES = (
 class FlagshipPhonePrice:
     name: str
     price_toman: int
+    registered_toman: int | None = None
+    unregistered_toman: int | None = None
 
 
 def _parse_price(text: str) -> int | None:
@@ -60,6 +66,19 @@ def _parse_price(text: str) -> int | None:
     if not match:
         return None
     return int(match.group(1).replace(",", ""))
+
+
+def _registry_status(text: str) -> str | None:
+    value = " ".join((text or "").split())
+    unregistered_terms = (
+        "بدون رجیستر", "بدون ریجستر", "بدون رجیستری", "بدون ریجستری",
+    )
+    if any(term in value for term in unregistered_terms):
+        return "unregistered"
+    registered_terms = ("رجیستر", "ریجستر", "رجیستری", "ریجستری")
+    if any(term in value for term in registered_terms):
+        return "registered"
+    return None
 
 
 def _bucket(name: str) -> str | None:
@@ -107,7 +126,6 @@ def _priority_score(item: FlagshipPhonePrice, bucket: str) -> int:
             return int(sm.group(1)) * 100 + _variant_weight(name)
         zm = re.search(r"Galaxy Z (?:Fold|Flip)(\d+)", name, re.I)
         if zm:
-            # Keep the newest foldables among the current S-series flagships.
             return 2500 + int(zm.group(1)) * 10 + _variant_weight(name)
         return 0
 
@@ -126,7 +144,7 @@ def _priority_score(item: FlagshipPhonePrice, bucket: str) -> int:
 def parse_flagship_phone_prices(html: str) -> list[FlagshipPhonePrice]:
     """Return up to 10 Apple, 10 Samsung, 10 Xiaomi and 10 other premium models."""
     soup = BeautifulSoup(html or "", "html.parser")
-    lowest_by_name: dict[str, int] = {}
+    by_name: dict[str, dict[str, int | None]] = {}
     order: list[str] = []
 
     for tr in soup.find_all("tr"):
@@ -139,8 +157,6 @@ def parse_flagship_phone_prices(html: str) -> list[FlagshipPhonePrice]:
             if _bucket(name) is None:
                 continue
 
-            # mobile.ir puts the advertised price immediately after the model in
-            # the table. Scan only to the right so phone numbers cannot be parsed.
             price = next(
                 (value for value in (_parse_price(x) for x in cells[index + 1 :]) if value),
                 None,
@@ -148,14 +164,31 @@ def parse_flagship_phone_prices(html: str) -> list[FlagshipPhonePrice]:
             if not price:
                 break
 
-            if name not in lowest_by_name:
+            if name not in by_name:
                 order.append(name)
-                lowest_by_name[name] = price
+                by_name[name] = {
+                    "lowest": price,
+                    "registered": None,
+                    "unregistered": None,
+                }
             else:
-                lowest_by_name[name] = min(lowest_by_name[name], price)
+                by_name[name]["lowest"] = min(int(by_name[name]["lowest"] or price), price)
+
+            status = _registry_status(" ".join(cells[index + 1 :]))
+            if status:
+                current = by_name[name][status]
+                by_name[name][status] = price if current is None else min(int(current), price)
             break
 
-    items = [FlagshipPhonePrice(name, lowest_by_name[name]) for name in order]
+    items = [
+        FlagshipPhonePrice(
+            name=name,
+            price_toman=int(by_name[name]["lowest"] or 0),
+            registered_toman=(int(by_name[name]["registered"]) if by_name[name]["registered"] is not None else None),
+            unregistered_toman=(int(by_name[name]["unregistered"]) if by_name[name]["unregistered"] is not None else None),
+        )
+        for name in order
+    ]
     grouped: dict[str, list[FlagshipPhonePrice]] = {"apple": [], "samsung": [], "xiaomi": [], "other": []}
     for item in items:
         bucket = _bucket(item.name)
@@ -165,8 +198,6 @@ def parse_flagship_phone_prices(html: str) -> list[FlagshipPhonePrice]:
     for bucket in ("apple", "samsung", "xiaomi"):
         grouped[bucket].sort(key=lambda item: _priority_score(item, bucket), reverse=True)
 
-    # Other brands intentionally preserve source/search order so the section is
-    # diverse instead of being dominated by incomparable model numbers.
     selected = (
         grouped["apple"][:10]
         + grouped["samsung"][:10]
@@ -246,8 +277,15 @@ def _section_for(item: FlagshipPhonePrice) -> str:
     }.get(bucket or "", "سایر برندها")
 
 
+def _price_or_missing(value: int | None) -> str:
+    return f"{value:,} تومان" if value is not None else "در منبع ثبت نشده"
+
+
 def _telegraph_phone_nodes(prices: list[FlagshipPhonePrice]) -> list[dict]:
-    nodes: list[dict] = []
+    nodes: list[dict] = [
+        {"tag": "figure", "children": [{"tag": "img", "attrs": {"src": PHONE_BANNER_URL}}]},
+        {"tag": "hr"},
+    ]
     sections = ("آیفون", "سامسونگ", "شیائومی", "سایر برندها")
     for section in sections:
         rows = [item for item in prices if _section_for(item) == section]
@@ -259,7 +297,10 @@ def _telegraph_phone_nodes(prices: list[FlagshipPhonePrice]) -> list[dict]:
                 "tag": "p",
                 "children": [
                     {"tag": "strong", "children": [item.name]},
-                    f": {item.price_toman:,} تومان",
+                    {"tag": "br"},
+                    f"با رجیستر: {_price_or_missing(item.registered_toman)}",
+                    {"tag": "br"},
+                    f"بدون رجیستر: {_price_or_missing(item.unregistered_toman)}",
                 ],
             })
         nodes.append({"tag": "hr"})
@@ -323,12 +364,11 @@ def create_phone_telegraph_page(prices: list[FlagshipPhonePrice], *, session=req
 
 
 def format_phone_telegraph_post(page_url: str, count: int) -> str:
+    del count
     return "\n".join([
-        "📱 <b>قیمت روز موبایل | مدل‌های منتخب بازار</b>",
+        f'📱 <a href="{escape(page_url, quote=True)}"><b>قیمت روز موبایل | بازار ایران</b></a>',
         "",
-        f"لیست {count} مدل: آیفون، سامسونگ، شیائومی و سایر برندها",
-        "",
-        f'👉🏻 <a href="{escape(page_url, quote=True)}"><b>مشاهده لیست کامل قیمت موبایل‌ها</b></a>',
+        "قیمت با رجیستر و بدون رجیستر بر اساس آگهی‌های موجود در منبع",
         "",
         f'📌 <a href="{MOBILE_PRICE_URL}">منبع: mobile.ir</a>',
         "",
