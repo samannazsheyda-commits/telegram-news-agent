@@ -1,6 +1,18 @@
 {
   "truth_last_id": "41542",
   "news_seen": [
+    "a03b57ae9e92c6873f23699c165f876195c0bfdf",
+    "x:JasonMBrodsky:2096675109868118459",
+    "a8ccf84b0aef81051a23bf115a5c90cc0835ca09",
+    "6988d62a50a1e685d05b2399818c09d4806bbcf2",
+    "3f1963e509edbe48d11b10f4a2ed454a060aede1",
+    "d95b8b3c4b13f0bf601af564d90c1d0d6ae6cd42",
+    "505cb2abff500a6448899ea9cfc1880bf216a7b7",
+    "04c35aae7867c7be88f516ae553479f186100586",
+    "44a7936014d36349cd9a196288e355dd226cd616",
+    "604338df53c0054cebf0d2fa39311983bba439ea",
+    "4885264fa0ace9d0ea2827733380d46b14f0c0b8",
+    "b76b7a98e481cd8c82d262fd469f1f519c77dcef",
     "x:AlArabiya_Eng:2096662807957696531",
     "x:AlArabiya_Eng:2096657263117189585",
     "x:FT:2096650665590198551",
@@ -488,21 +500,9 @@
     "0e8297ad51259db79a6322eca4aa7b5f24a445de",
     "abe4095245afbf5de97a1730b386d7f58953788a",
     "a4c65b64518069f4d43d6f17b5278159da54324c",
-    "36ff0d7fdd8b756d6946ee61999c4cd69389b38d",
-    "d18453bd839f1ccfd34c4ccfc3a4e838b7197f5f",
-    "30a6ba006580d65f5f664f017122b6ee52a6e75d",
-    "7e6775c28cfcdd16c36cc6e013b53106efe555cc",
-    "9438902f771c883cd4359f1bdf6f957e63aa00a9",
-    "90d75a78e9933d5c28c531f8e0054467e8559000",
-    "f734a2e0b58502bdac4cd007bf0d46aafe7955df",
-    "80ca9858e1ef024b8265c73889c8d259e7d8bbe1",
-    "9c2e698ee497839032880b8f21ab2b5a8134a790",
-    "1beac2efd59d130c4850839340a9ab89bb44c44b",
-    "95b31772883c4359a942d10cd7f094ed5c3b80c0",
-    "6651d683c09b6e15520b101418da656cff64e3aa",
-    "ead661fa7041f3768ea84686a215606c086491ce"
+    "36ff0d7fdd8b756d6946ee61999c4cd69389b38d"
   ],
-  "market_last_sent_at": "2026-09-06T16:53:35.925783+00:00",
+  "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
   "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
@@ -614,7 +614,7 @@
   "market_day_prices": {
     "date": "2026-09-06",
     "first_usd": 227205,
-    "last_usd": 223010,
+    "last_usd": 223000,
     "first_gold": 23674400,
     "last_gold": 23353600,
     "first_brent": 96.28,
@@ -623,6 +623,42 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "44a7936014d36349cd9a196288e355dd226cd616",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Iran's Security Council Secretary Rezaei: We have every right to distrust America. We engage in diplomacy and negotiations, but we have a right [to be skeptical]. Now they claim that Iran cannot be trusted. First of all, they are lying.",
+      "reason": "bundled_or_multi_headline",
+      "published": "Sun, 06 Sep 2026 19:03:07 +0000",
+      "link": "https://t.me/ClashReport/95362",
+      "checked_at": "2026-09-06T19:11:03.103896+00:00"
+    },
+    {
+      "key": "604338df53c0054cebf0d2fa39311983bba439ea",
+      "source": "تبز لایو / Telegram",
+      "title": "🇮🇷 🇱🇧 ❌ 🇮🇱 — Iran’s Secretary of the Supreme National Security Council, Mohsen Rezaee: In no war is there victory after victory or defeat after defeat; wars have their ups and downs. Hezbollah has always held the upper hand in Lebanon.",
+      "reason": "bundled_or_multi_headline",
+      "published": "Sun, 06 Sep 2026 19:03:05 +0000",
+      "link": "https://t.me/tabzlive/102053",
+      "checked_at": "2026-09-06T19:11:03.103896+00:00"
+    },
+    {
+      "key": "4885264fa0ace9d0ea2827733380d46b14f0c0b8",
+      "source": "تبز لایو / Telegram",
+      "title": "🇮🇷 🇺🇸 ⚡️ — Iran’s Secretary of the Supreme National Security Council, Mohsen Rezaee: The Americans are trying to smuggle 5 to 6 vessels, spending a lot of money, but these ships are usually targeted.",
+      "reason": "bundled_or_multi_headline",
+      "published": "Sun, 06 Sep 2026 18:57:31 +0000",
+      "link": "https://t.me/tabzlive/102051",
+      "checked_at": "2026-09-06T19:11:03.103896+00:00"
+    },
+    {
+      "key": "b76b7a98e481cd8c82d262fd469f1f519c77dcef",
+      "source": "تبز لایو / Telegram",
+      "title": "🇮🇷 🇺🇸 ⚡️ — Iran’s Secretary of the Supreme National Security Council, Mohsen Rezaee: 48 hours ago, for the first time, we tested an Iranian anti-ship missile above an American warship.",
+      "reason": "bundled_or_multi_headline",
+      "published": "Sun, 06 Sep 2026 18:51:12 +0000",
+      "link": "https://t.me/tabzlive/102046",
+      "checked_at": "2026-09-06T19:11:03.103896+00:00"
+    },
     {
       "key": "fd7b4ec7a5bd5ad558e166a2f3be65bb581d1b46",
       "source": "NOTAM / Airspace",
@@ -2386,46 +2422,90 @@
       "published": "Wed, 02 Sep 2026 01:50:09 +0000",
       "link": "https://x.com/TankerTrackers/status/2094966074991149445",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:TankerTrackers:2095156248136270120",
-      "source": "TankerTrackers / X",
-      "title": "Crude oil exports via the Strait of Hormuz per our tracking: - Pre-conflict era (2026-01-01 to 2026-02-28): 16.63 Mbpd - Pre-US blockade conflict era (2026-02-28 to 2026-04-13): 3.45 Mbpd - First US blockade (2026-04-13 to 2026-06-18): 2.72 Mbpd - MoU effective era (2026-06-18 to 2026-07-14): 10 Mbpd - Second US blockade era (2026-07-14 - present): 4.9 Mbpd 186 days of conflict amounted to 779 million barrels of crude oil via the SoH; which works out to 4.19 Mbpd. #OOTT #IranWar #Tankers",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 14:25:50 +0000",
-      "link": "https://x.com/TankerTrackers/status/2095156248136270120",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:TankerTrackers:2095190772924535135",
-      "source": "TankerTrackers / X",
-      "title": "Fresh figures: Over the past (complete) 28 days, there have been six days where more than 10 million barrels of crude oil departed via the USN Blockade Line. As you can see, the average daily number is 7.54 Mbpd (down from 17.67 Mbpd back in Jan & Feb 2026). Of that amount, 5.04 Mbpd comes out via the SoH while another 2.49 Mbpd comes out of the oil terminals located along the GoO. #OOTT #IranWar #Tankers PS: We are so done with this topic right now. Moving on.",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 16:43:01 +0000",
-      "link": "https://x.com/TankerTrackers/status/2095190772924535135",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:Sepah_News:936375644757331969",
-      "source": "Sepah News / X",
-      "title": "تشکیل بسیج جهانی اسلام سردار محمدعلی جعفری فرمانده کل سپاه پاسداران : اکنون هسته‌‌های مقاومت مسلحانه در کشورهای منطقه شکل گرفته است که نتیجه آن را مردم منطقه دیدند و همینطور در برخی کشورها نیز حلقه‌های کوچک‌تر مقاومت ایجاد شده که تاثیر آنها نیز بزودی مشاهده خواهد شد.",
-      "reason": "not_today_tehran",
-      "published": "Thu, 30 Nov 2017 23:25:25 +0000",
-      "link": "https://x.com/Sepah_News/status/936375644757331969",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:ir_rezaee:2063703451897352255",
-      "source": "Mohsen Rezaei / X",
-      "title": "جمهوری اسلامی ایران بارها اعلام کرده بود که نقض آتش‌بس و تجاوز به لبنان را برنمی‌تابد. امشب متجاوزان پاسخ خود را دریافت کردند. این پاسخ هشداری است تا دست از شرارت بردارند؛ هر اقدام جدید با پاسخی کوبنده‌تر و هزینه‌هایی سنگین‌تر مواجه خواهد شد.",
-      "reason": "not_today_tehran",
-      "published": "Sun, 07 Jun 2026 19:23:39 +0000",
-      "link": "https://x.com/ir_rezaee/status/2063703451897352255",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "a03b57ae9e92c6873f23699c165f876195c0bfdf",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Iran's Security Council Secretary Rezaei: We have reserved the right to respond to the Americans’ attack on a wedding ceremony in Kuhestak, and the Americans should know this.",
+      "summary": "Iran's Security Council Secretary Rezaei: We have reserved the right to respond to the Americans’ attack on a wedding ceremony in Kuhestak, and the Americans should know this.",
+      "link": "https://t.me/ClashReport/95368",
+      "published": "Sun, 06 Sep 2026 19:13:15 +0000",
+      "sent_at": "2026-09-06T19:13:31.930571+00:00",
+      "fingerprint": "iran s security council secretary rezaei we have reserved the right to respond to the americans attack on a wedding ceremony in kuhestak and the americans should know this iran s security council secretary rezaei we have reserved the right to respond to the americans attack on a wedding ceremony in kuhestak and the americans should know this"
+    },
+    {
+      "key": "04c35aae7867c7be88f516ae553479f186100586",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Iran's Security Council Secretary Rezaei: It is a blatant lie to say that U.S. economic sanctions are the cause of a major famine in Iran.",
+      "summary": "Iran's Security Council Secretary Rezaei: It is a blatant lie to say that U.S. economic sanctions are the cause of a major famine in Iran. Our government has been thinking about this for a long time, and we currently have enough stocks of food and basic goods.",
+      "link": "https://t.me/ClashReport/95356",
+      "published": "Sun, 06 Sep 2026 18:49:01 +0000",
+      "sent_at": "2026-09-06T19:11:03.103896+00:00",
+      "fingerprint": "iran s security council secretary rezaei it is a blatant lie to say that u s economic sanctions are the cause of a major famine in iran iran s security council secretary rezaei it is a blatant lie to say that u s economic sanctions are the cause of a major famine in iran our government has been thinking about this for a long time and we currently have enough stocks of food and basic goods"
+    },
+    {
+      "key": "505cb2abff500a6448899ea9cfc1880bf216a7b7",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Iran's Security Council Secretary Rezaei: In the coming days and weeks, we will announce a restricted zone outside the Strait of Hormuz that starts from the U.S.",
+      "summary": "Iran's Security Council Secretary Rezaei: In the coming days and weeks, we will announce a restricted zone outside the Strait of Hormuz that starts from the U.S. Navy's blockade line and extends through the Strait of Hormuz into the Persian Gulf. Any ship identified entering this zone with the intention of passing through the Strait will be added to our sanctions list.",
+      "link": "https://t.me/ClashReport/95358",
+      "published": "Sun, 06 Sep 2026 18:50:48 +0000",
+      "sent_at": "2026-09-06T19:11:03.103896+00:00",
+      "fingerprint": "iran s security council secretary rezaei in the coming days and weeks we will announce a restricted zone outside the strait of hormuz that starts from the u s iran s security council secretary rezaei in the coming days and weeks we will announce a restricted zone outside the strait of hormuz that starts from the u s navy s blockade line and extends through the strait of hormuz into the persian gulf any ship identified entering this zone with the intention of passing through the strait will be added to our sanctions list"
+    },
+    {
+      "key": "d95b8b3c4b13f0bf601af564d90c1d0d6ae6cd42",
+      "source": "تبز لایو / Telegram",
+      "title": "🇮🇷 🇺🇸 ⚡️ — Iran’s Secretary of the Supreme National Security Council, Mohsen Rezaee: Trump’s claim that the Strait of Hormuz is open is a complete lie.",
+      "summary": "🇮🇷 🇺🇸 ⚡️ — Iran’s Secretary of the Supreme National Security Council, Mohsen Rezaee: Trump’s claim that the Strait of Hormuz is open is a complete lie. Before the Strait of Hormuz was closed, more than 100 ships transported over 100 million tons of goods. …",
+      "link": "https://t.me/tabzlive/102050",
+      "published": "Sun, 06 Sep 2026 18:56:59 +0000",
+      "sent_at": "2026-09-06T19:11:03.103896+00:00",
+      "fingerprint": "iran s secretary of the supreme national security council mohsen rezaee trump s claim that the strait of hormuz is open is a complete lie iran s secretary of the supreme national security council mohsen rezaee trump s claim that the strait of hormuz is open is a complete lie before the strait of hormuz was closed more than 100 ships transported over 100 million tons of goods"
+    },
+    {
+      "key": "3f1963e509edbe48d11b10f4a2ed454a060aede1",
+      "source": "تبز لایو / Telegram",
+      "title": "🇮🇷 🇺🇸 ⚡️ — Iran’s Secretary of the Supreme National Security Council, Mohsen Rezaee: Americans have never honored their commitments and have always opposed our nation.",
+      "summary": "🇮🇷 🇺🇸 ⚡️ — Iran’s Secretary of the Supreme National Security Council, Mohsen Rezaee: Americans have never honored their commitments and have always opposed our nation. Even the Pahlavi, who went to America due to revolutionary pressure, was abandoned by them.…",
+      "link": "https://t.me/tabzlive/102054",
+      "published": "Sun, 06 Sep 2026 19:04:29 +0000",
+      "sent_at": "2026-09-06T19:11:03.103896+00:00",
+      "fingerprint": "iran s secretary of the supreme national security council mohsen rezaee americans have never honored their commitments and have always opposed our nation iran s secretary of the supreme national security council mohsen rezaee americans have never honored their commitments and have always opposed our nation even the pahlavi who went to america due to revolutionary pressure was abandoned by them"
+    },
+    {
+      "key": "6988d62a50a1e685d05b2399818c09d4806bbcf2",
+      "source": "تبز لایو / Telegram",
+      "title": "🇺🇸 🇮🇷 ⚡️ — President Trump posts about Iran's economy, inflation, and oil exports.",
+      "summary": "🇺🇸 🇮🇷 ⚡️ — President Trump posts about Iran's economy, inflation, and oil exports.",
+      "link": "https://t.me/tabzlive/102055",
+      "published": "Sun, 06 Sep 2026 19:05:53 +0000",
+      "sent_at": "2026-09-06T19:11:03.103896+00:00",
+      "fingerprint": "president trump posts about iran s economy inflation and oil exports president trump posts about iran s economy inflation and oil exports"
+    },
+    {
+      "key": "a8ccf84b0aef81051a23bf115a5c90cc0835ca09",
+      "source": "تبز لایو / Telegram",
+      "title": "🇺🇸 🇮🇷 ⚡️ — President Trump threatens Iran's Kharg Island again.",
+      "summary": "🇺🇸 🇮🇷 ⚡️ — President Trump threatens Iran's Kharg Island again.",
+      "link": "https://t.me/tabzlive/102059",
+      "published": "Sun, 06 Sep 2026 19:07:31 +0000",
+      "sent_at": "2026-09-06T19:11:03.103896+00:00",
+      "fingerprint": "president trump threatens iran s kharg island again president trump threatens iran s kharg island again"
+    },
+    {
+      "key": "x:JasonMBrodsky:2096675109868118459",
+      "source": "Jason Brodsky / X",
+      "title": "This as an increasingly frustrated and flailing Iranian regime.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2096675109868118459",
+      "published": "Sun, 06 Sep 2026 19:01:15 +0000",
+      "sent_at": "2026-09-06T19:11:03.103896+00:00",
+      "fingerprint": "this as an increasingly frustrated and flailing iranian regime"
+    },
     {
       "key": "x:AlArabiya_Eng:2096662807957696531",
       "source": "Al Arabiya English / X",
