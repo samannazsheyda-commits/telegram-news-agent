@@ -5,6 +5,8 @@ from PIL import Image
 from src.air_traffic import (
     CENTER_LAT,
     CENTER_LON,
+    MAP_HEIGHT,
+    MAP_WIDTH,
     MAP_ZOOM,
     build_caption,
     filter_middle_east_aircraft,
@@ -29,10 +31,11 @@ def test_filter_middle_east_aircraft_keeps_only_fresh_positioned_rows():
     assert [row["hex"] for row in kept] == ["abc123", "def456"]
 
 
-def test_map_is_tightly_centered_on_iran_and_nearby_region():
-    assert 30.0 <= CENTER_LAT <= 33.0
-    assert 49.0 <= CENTER_LON <= 52.0
-    assert MAP_ZOOM == 6
+def test_map_matches_reference_portrait_crop_with_iran_centered():
+    assert MAP_HEIGHT > MAP_WIDTH * 2
+    assert 31.0 <= CENTER_LAT <= 33.0
+    assert 49.5 <= CENTER_LON <= 52.0
+    assert MAP_ZOOM == 5
 
 
 def test_render_uses_yellow_airplane_symbols_instead_of_red_dots(tmp_path):
