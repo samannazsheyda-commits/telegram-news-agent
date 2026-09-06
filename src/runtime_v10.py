@@ -21,6 +21,8 @@ from .x_editorial_quality import rejection_reason
 
 _installed = False
 _original_parse_x = fresh_x.parse_fxtwitter_timeline
+_PHONE_40_REPUBLISH_DATE = "2026-09-06"
+_PHONE_40_REPUBLISH_STATE_KEY = "phone_flagships_republish_40_date"
 
 
 def _clean_brand_footer() -> list[str]:
@@ -76,9 +78,19 @@ def _send_with_photo_tracking(text: str, bot_token: str, chat_id: str, *args, **
     base._pending_auto_item = None
 
 
+def _phone_flagships_due_with_one_time_republish(state: dict, now: datetime) -> bool:
+    local_date = now.astimezone(base.agent.TEHRAN).date().isoformat()
+    if (
+        local_date == _PHONE_40_REPUBLISH_DATE
+        and state.get(_PHONE_40_REPUBLISH_STATE_KEY) != local_date
+    ):
+        return True
+    return phone_flagships_due(state, now)
+
+
 def _publish_daily_flagships(now: datetime) -> None:
     state = base.agent.load_state(base.agent.STATE_PATH)
-    if not phone_flagships_due(state, now):
+    if not _phone_flagships_due_with_one_time_republish(state, now):
         return
 
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
@@ -93,9 +105,12 @@ def _publish_daily_flagships(now: datetime) -> None:
         # Telegraph links are sent with preview enabled so Telegram exposes its
         # native Instant View/open-inside-Telegram experience.
         v9._send_with_telegraph_preview(text, token, chat_id)
-        state["phone_flagships_last_sent_date"] = now.astimezone(base.agent.TEHRAN).date().isoformat()
+        local_date = now.astimezone(base.agent.TEHRAN).date().isoformat()
+        state["phone_flagships_last_sent_date"] = local_date
         state["phone_flagships_last_prices"] = {item.name: item.price_toman for item in prices}
         state["phone_flagships_last_page_url"] = page_url
+        if local_date == _PHONE_40_REPUBLISH_DATE:
+            state[_PHONE_40_REPUBLISH_STATE_KEY] = local_date
         base.agent.save_state(state, base.agent.STATE_PATH)
     except Exception as exc:
         print(f"Phone flagship price error: {exc}", file=sys.stderr)
