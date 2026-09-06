@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41532",
   "news_seen": [
+    "x:TankerTrackers:2096605307552096296",
     "x:AlArabiya_Eng:2096592443059614116",
     "x:AJEnglish:2096589677415268663",
     "8811c8649ac3c6bfa5dccaae88a25357bf6372e3",
@@ -499,11 +500,10 @@
     "3f1231d8e161e78fed1fb576a6c8a18f0652f859",
     "2e795c26073bee1210b20050cc6ba2aae108ff75",
     "92ba04c4c765f484257de60c1db456a1cdf7067f",
-    "ddc9242e4fb8954ece244aea36187270cd130eb8",
-    "4ad49c9959a2d30657c94cd619eee24772cd218c"
+    "ddc9242e4fb8954ece244aea36187270cd130eb8"
   ],
   "market_last_sent_at": "2026-09-06T12:45:51.668902+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:TankerTrackers:2096605307552096296",
+      "source": "TankerTrackers / X",
+      "title": "Finally, a sensible figure. Unlike previous statements, this one is based on a daily average. We have 8 Mbpd of crude oil alone over the past seven complete days via the Strait of Hormuz; the rest is refined products.",
+      "summary": "",
+      "link": "https://x.com/TankerTrackers/status/2096605307552096296",
+      "published": "Sun, 06 Sep 2026 14:23:53 +0000",
+      "sent_at": "2026-09-06T14:24:25.732341+00:00",
+      "fingerprint": "finally a sensible figure unlike previous statements this one is based on a daily average we have 8 mbpd of crude oil alone over the past seven complete days via the strait of hormuz the rest is refined products"
+    },
     {
       "key": "x:AlArabiya_Eng:2096592443059614116",
       "source": "Al Arabiya English / X",
