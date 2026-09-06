@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41542",
   "news_seen": [
+    "b0b4eb9246ea46545b988b91ee491bd4c833303f",
+    "56a919506ae1ec7295855f351baa9555de219768",
+    "fafc1b1eab367301c224547b3faeda44c240e8f8",
     "a03b57ae9e92c6873f23699c165f876195c0bfdf",
     "x:JasonMBrodsky:2096675109868118459",
     "a8ccf84b0aef81051a23bf115a5c90cc0835ca09",
@@ -497,10 +500,7 @@
     "863ec3aca1adda25644f10f4b023ce7f5c4ec24b",
     "f7b4ed733aa5f4cdef23da496cfa3d39453e017c",
     "257826d29dc8dfc797d33e7d1586341081b8f310",
-    "0e8297ad51259db79a6322eca4aa7b5f24a445de",
-    "abe4095245afbf5de97a1730b386d7f58953788a",
-    "a4c65b64518069f4d43d6f17b5278159da54324c",
-    "36ff0d7fdd8b756d6946ee61999c4cd69389b38d"
+    "0e8297ad51259db79a6322eca4aa7b5f24a445de"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
   "next_news_color": "red",
@@ -623,6 +623,33 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "b0b4eb9246ea46545b988b91ee491bd4c833303f",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Iran's Security Council Secretary Rezaei: 48 hours ago, for the first time, we tested an Iranian anti-ship missile above an American warship. This special missile created a \"hell\" for the Americans, and they fled.",
+      "reason": "bundled_or_multi_headline",
+      "published": "Sun, 06 Sep 2026 18:50:05 +0000",
+      "link": "https://t.me/ClashReport/95357",
+      "checked_at": "2026-09-06T19:18:52.673655+00:00"
+    },
+    {
+      "key": "56a919506ae1ec7295855f351baa9555de219768",
+      "source": "تبز لایو / Telegram",
+      "title": "🇮🇷 🇺🇸 ⚡️ — Iran’s Secretary of the Supreme National Security Council, Mohsen Rezaee: We have every right to distrust America. We engage in diplomacy and negotiations, but we have a right [to distrust].",
+      "reason": "bundled_or_multi_headline",
+      "published": "Sun, 06 Sep 2026 19:14:55 +0000",
+      "link": "https://t.me/tabzlive/102066",
+      "checked_at": "2026-09-06T19:15:31.852647+00:00"
+    },
+    {
+      "key": "fafc1b1eab367301c224547b3faeda44c240e8f8",
+      "source": "تبز لایو / Telegram",
+      "title": "🇮🇷 🇺🇸 ⚡️ — Iran’s Secretary of the Supreme National Security Council, Mohsen Rezaee: 48 hours ago, for the first time, we tested an Iranian anti-ship missile above an American warship.",
+      "reason": "bundled_or_multi_headline",
+      "published": "Sun, 06 Sep 2026 18:52:22 +0000",
+      "link": "https://t.me/tabzlive/102047",
+      "checked_at": "2026-09-06T19:15:31.852647+00:00"
+    },
     {
       "key": "44a7936014d36349cd9a196288e355dd226cd616",
       "source": "کلش ریپورت / Telegram",
@@ -2394,33 +2421,6 @@
       "reason": "not_today_tehran",
       "published": "Tue, 01 Sep 2026 18:08:08 +0000",
       "link": "https://x.com/TankerTrackers/status/2094849805453320424",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:TankerTrackers:2095081527163965843",
-      "source": "TankerTrackers / X",
-      "title": "Nonsense. Iran already cut its oil production over the summer to match its domestic refining/consumption. That’s why we are not seeing many tanker loadings happening there anymore. They don’t have overflow.",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 09:28:55 +0000",
-      "link": "https://x.com/TankerTrackers/status/2095081527163965843",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:TankerTrackers:2095123832302383539",
-      "source": "TankerTrackers / X",
-      "title": "We have the identities of the tankers now. They are (just as the two screenshots show) a NITC (National Iranian Tanker Company) VLCC supertanker and a NITC Suezmax tanker.",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 12:17:01 +0000",
-      "link": "https://x.com/TankerTrackers/status/2095123832302383539",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:TankerTrackers:2094966074991149445",
-      "source": "TankerTrackers / X",
-      "title": "It looks like two cargo-empty tankers got hit; and US CENTCOM doesn't usually attack oil-laden tankers. NITC have a dozen empty tankers in Iran, and three were already hit over the summer. Other non-NITC tankers got hit too, but we can't currently say for sure whether these two belong to NITC.",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 01:50:09 +0000",
-      "link": "https://x.com/TankerTrackers/status/2094966074991149445",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
