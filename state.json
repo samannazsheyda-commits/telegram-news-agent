@@ -1,6 +1,7 @@
 {
-  "truth_last_id": "41532",
+  "truth_last_id": "41533",
   "news_seen": [
+    "x:StevenCheung47:2096636139083853937",
     "x:Reuters:2096629622049821081",
     "dbcf8921fc2abf507dc0747370b6dc342d712979",
     "x:business:2096623224767270947",
@@ -499,11 +500,10 @@
     "7aeb0954d4c78ea486e6c2baade9f99d00f89062",
     "20c9fe7ce72dfd4592c8757557b0b1bba574f56a",
     "b1607ee8d30f15df24023068730e78e38b907048",
-    "e025ea10ba3ba8b28c1fa0ae8b674a766257bc57",
-    "ac38e1b70171858dc5700941dd4968e8573b1dbd"
+    "e025ea10ba3ba8b28c1fa0ae8b674a766257bc57"
   ],
   "market_last_sent_at": "2026-09-06T14:49:57.247923+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:StevenCheung47:2096636139083853937",
+      "source": "White House Communications Director / X",
+      "title": "The United States has total control of the Strait of Hormuz!",
+      "summary": "",
+      "link": "https://x.com/StevenCheung47/status/2096636139083853937",
+      "published": "Sun, 06 Sep 2026 16:26:23 +0000",
+      "sent_at": "2026-09-06T16:29:27.569520+00:00",
+      "fingerprint": "the united states has total control of the strait of hormuz"
+    },
     {
       "key": "x:Reuters:2096629622049821081",
       "source": "Reuters / X",
