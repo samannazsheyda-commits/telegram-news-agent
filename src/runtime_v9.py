@@ -22,6 +22,7 @@ _LATIN_VISIBLE_RE = re.compile(r"\b[A-Za-z]{2,}\b")
 _FREE_USD_RE = re.compile(r"نرخ\s*فعلی\s*:*\s*([0-9۰-۹][0-9۰-۹,٬]*)")
 _PERSIAN_NUMBER_MAP = str.maketrans("۰۱۲۳۴۵۶۷۸۹٬", "0123456789,")
 _CAR_REPUBLISH_DATE = "2026-09-06"
+_CAR_FRESH_INSTANT_STATE_KEY = "car_instant_republish_fresh_date"
 
 _SOURCE_OVERRIDES = {
     "Mark Dubowitz / X": "مارک دوبوویتز / ایکس",
@@ -139,21 +140,21 @@ def _send_with_telegraph_preview(text: str, bot_token: str, chat_id: str, *args,
 
 
 def _format_car_via_telegraph(prices, previous=None) -> str:
-    """Legacy Telegraph formatter retained for compatibility/tests; production no longer uses it."""
+    """Create a fresh Instant View page from the prices fetched in the current run."""
     page_url = create_car_telegraph_page(prices, previous or {})
     return format_car_telegraph_post(page_url, len(prices))
 
 
 def _format_car_for_telegram(prices, previous=None) -> str:
-    """Render the full car-price list directly in Telegram, without a Telegraph/Instant View hop."""
+    """Backward-compatible native formatter retained for tests/fallback readers."""
     return format_car_native(prices, previous or {})
 
 
 def _car_due_with_one_time_native_republish(state: dict, now) -> bool:
+    """Backward-compatible gate for the earlier native-card migration."""
     local_date = now.astimezone(v7.v2.base.agent.TEHRAN).date().isoformat()
     if local_date == _CAR_REPUBLISH_DATE and state.get("car_native_republish_date") != local_date:
         state["car_native_republish_date"] = local_date
-        # Preserve older migration markers so persisted state remains backward-compatible.
         state["car_telegraph_republish_date"] = local_date
         state["car_telegraph_republish_date_2"] = local_date
         return True
@@ -163,6 +164,15 @@ def _car_due_with_one_time_native_republish(state: dict, now) -> bool:
 def _car_due_with_one_time_telegraph_republish(state: dict, now) -> bool:
     """Backward-compatible alias for older tests/state readers."""
     return _car_due_with_one_time_native_republish(state, now)
+
+
+def _car_due_with_one_time_instant_republish(state: dict, now) -> bool:
+    """Force one fresh same-day car fetch and Instant View publish, then stop repeating it."""
+    local_date = now.astimezone(v7.v2.base.agent.TEHRAN).date().isoformat()
+    if local_date == _CAR_REPUBLISH_DATE and state.get(_CAR_FRESH_INSTANT_STATE_KEY) != local_date:
+        state[_CAR_FRESH_INSTANT_STATE_KEY] = local_date
+        return True
+    return _original_car_due(state, now)
 
 
 def install_persian_only_output() -> None:
@@ -178,8 +188,8 @@ def install_persian_only_output() -> None:
     v7.v2.base.is_low_value_company_news = _newsroom_low_value_company_news
     v7.v2.base.agent._market_quiet_hours = _market_quiet_hours
     v7.v2.base.agent._market_summary_day = market_summary_day
-    v7.v2.base.agent.format_car_prices = _format_car_for_telegram
-    v7.v2.base.agent._car_due = _car_due_with_one_time_native_republish
+    v7.v2.base.agent.format_car_prices = _format_car_via_telegraph
+    v7.v2.base.agent._car_due = _car_due_with_one_time_instant_republish
     _installed = True
 
 
