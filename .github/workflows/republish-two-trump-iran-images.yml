@@ -10,118 +10,44 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 5
     steps:
-      - name: Install parser
-        run: pip install requests beautifulsoup4
-      - name: Republish two latest captionless Iran-related Trump image posts
+      - name: Republish exact two Trump Iran image posts
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: "@bikhabaar"
         run: |
           python - <<'PY'
-          import os, re, requests
-          from bs4 import BeautifulSoup
+          import os, requests
 
-          session = requests.Session()
-          session.headers.update({"User-Agent": "Mozilla/5.0 (compatible; Bikhabaar/1.0)"})
-          base = "https://www.trumpstruth.org"
-          urls = [
-              base + "/?query=Iran&per_page=100&removed=include&sort=desc",
-              base + "/?query=Hormuz&per_page=100&removed=include&sort=desc",
+          posts = [
+              {
+                  "photo": "https://truth-archive.us-iad-1.linodeobjects.com/attachments/17977/ef4da83f66017163-4c1b09bf9dd9.jpg",
+                  "truth": "https://truthsocial.com/@realDonaldTrump/117206799377569441",
+              },
+              {
+                  "photo": "https://truth-archive.us-iad-1.linodeobjects.com/attachments/17996/7a4f781a660b5225-dd943bbd0460.jpg",
+                  "truth": "https://truthsocial.com/@realDonaldTrump/117225385560464439",
+              },
           ]
-
-          status_urls = []
-          for index_url in urls:
-              r = session.get(index_url, timeout=30)
-              r.raise_for_status()
-              soup = BeautifulSoup(r.text, "html.parser")
-              for a in soup.find_all("a", href=True):
-                  href = a["href"]
-                  if not re.search(r"/statuses/(\d+)", href):
-                      continue
-                  full = href if href.startswith("http") else base + href
-                  if full not in status_urls:
-                      status_urls.append(full)
-
-          iran_terms = ("iran", "iranian", "tehran", "irgc", "hormuz", "persian gulf", "ایران", "تهران", "هرمز")
-          candidates = []
-          for url in status_urls[:120]:
-              try:
-                  r = session.get(url, timeout=25)
-                  r.raise_for_status()
-              except Exception:
-                  continue
-              soup = BeautifulSoup(r.text, "html.parser")
-              page_text = " ".join(soup.stripped_strings)
-              low = page_text.lower()
-              if not any(term in low for term in iran_terms):
-                  continue
-              if "File Attachments" not in page_text or "Image Description:" not in page_text:
-                  continue
-
-              image_url = None
-              for a in soup.find_all("a", href=True):
-                  if " ".join(a.stripped_strings).strip().lower() != "download":
-                      continue
-                  href = a["href"]
-                  cand = href if href.startswith("http") else base + href
-                  try:
-                      rr = session.get(cand, timeout=25, allow_redirects=True, stream=True)
-                      ctype = (rr.headers.get("content-type") or "").lower()
-                      if "image/" in ctype:
-                          image_url = rr.url
-                          rr.close()
-                          break
-                      rr.close()
-                  except Exception:
-                      pass
-              if not image_url:
-                  continue
-
-              sid = int(re.search(r"/statuses/(\d+)", url).group(1))
-              truth_url = None
-              for a in soup.find_all("a", href=True):
-                  href = a["href"]
-                  if "truthsocial.com/@realDonaldTrump/" in href or "truthsocial.com/users/realDonaldTrump/statuses/" in href:
-                      truth_url = href
-                      break
-              if not truth_url:
-                  text_match = re.search(r"https://truthsocial\.com/@realDonaldTrump/\d+", page_text)
-                  truth_url = text_match.group(0) if text_match else url
-              candidates.append((sid, truth_url, image_url, url))
-
-          candidates.sort(reverse=True)
-          chosen = []
-          seen_truth = set()
-          for item in candidates:
-              if item[1] in seen_truth:
-                  continue
-              seen_truth.add(item[1])
-              chosen.append(item)
-              if len(chosen) == 2:
-                  break
-
-          if len(chosen) < 2:
-              raise SystemExit(f"Need two Iran image Truths, found {len(chosen)}")
 
           token = os.environ["TELEGRAM_BOT_TOKEN"]
           chat = os.environ["TELEGRAM_CHAT_ID"]
-          for sid, truth_url, image_url, archive_url in reversed(chosen):
+          for post in posts:
               caption = (
                   '<b>پست جدید ترامپ در تروت سوشال</b>\n\n'
-                  f'📌 <a href="{truth_url}">لینک پست اصلی</a>\n\n'
+                  f'📌 <a href="{post["truth"]}">لینک پست اصلی</a>\n\n'
                   '📡 <a href="https://t.me/bikhabaar">بی‌خبر</a> ←\n'
                   'مانیتور تحولات ایران'
               )
               res = requests.post(
                   f"https://api.telegram.org/bot{token}/sendPhoto",
-                  json={"chat_id": chat, "photo": image_url, "caption": caption, "parse_mode": "HTML"},
+                  json={"chat_id": chat, "photo": post["photo"], "caption": caption, "parse_mode": "HTML"},
                   timeout=30,
               )
               res.raise_for_status()
-              payload = res.json()
-              if not payload.get("ok"):
-                  raise SystemExit(f"Telegram rejected status {sid}: {payload}")
-              print("REPUBLISHED_TRUMP_IRAN_IMAGE", sid, truth_url, archive_url)
+              data = res.json()
+              if not data.get("ok"):
+                  raise SystemExit(f"Telegram rejected {post['truth']}: {data}")
+              print("REPUBLISHED", post["truth"])
           PY
