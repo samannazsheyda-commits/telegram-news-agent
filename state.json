@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41569",
   "news_seen": [
+    "x:marklevinshow:2096714311519342608",
     "x:AFP:2096705018686591463",
     "x:AlArabiya_Eng:2096704995945025962",
     "6c07a06255299516ee6307b09c36aa77e69bd907",
@@ -499,11 +500,10 @@
     "38688faaf3843bca0fbbbde2780aa9a23f70ba7e",
     "66691d8498aa0d34bceb2b7b3a6c12bc533587fa",
     "80bd3d4bdaf5a6b48ae545e3ca1966cc1360445c",
-    "a346b50f653fad877c9c38a32ad2b5147a5d0bcc",
-    "3da9d2619473dadb06132e08b93c8b06bf3f17f5"
+    "a346b50f653fad877c9c38a32ad2b5147a5d0bcc"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:marklevinshow:2096714311519342608",
+      "source": "Mark Levin / X",
+      "title": "ARM THE IRANIAN PEOPLE ASAP!",
+      "summary": "",
+      "link": "https://x.com/marklevinshow/status/2096714311519342608",
+      "published": "Sun, 06 Sep 2026 21:37:01 +0000",
+      "sent_at": "2026-09-06T21:38:51.804448+00:00",
+      "fingerprint": "arm the iranian people asap"
+    },
     {
       "key": "x:AlArabiya_Eng:2096704995945025962",
       "source": "Al Arabiya English / X",
