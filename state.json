@@ -1,6 +1,12 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "39587fc86617e1904080e5bfbf3efdeb26b857a0",
+    "946a63b90e0dc7af1b73438ef660ad4925719465",
+    "f35ebc0af3312a97045fc089157023d804e32537",
+    "0e24224e9b398427ba17330d3cf4a1e054cbae58",
+    "d62bc3ae7050ae09cf0eb82da709f99793669ccd",
+    "7256109192e0324973804bae9b92a006244fd2e5",
     "d691951b5e45278a8a218b20831c6a0348485747",
     "89ef441dbef9bfdb74008878ab7534ac87846dc1",
     "9fbe04e3e462f7f21fd72d804a7fe44de2220042",
@@ -494,13 +500,7 @@
     "5921d549c06640a3a0b415091d7731275a134016",
     "837577ffd01da07170f1f5031e48df86d323dc4d",
     "b25c6919f45ca708f11f62d9032052fe38b8a8b1",
-    "3076578e1318c2f05f0502284ab9cb59fdbf2dd0",
-    "cf518aac250f52842c642fb517830f2bc9e58f2c",
-    "3f26df0ac46e0cff9075b9e67df67a6912a8bd7a",
-    "aa59927614141ffc42c4aa147fee74dc4afa580f",
-    "8648c5543e6c9a5bb5368aef978ad127e93332f3",
-    "4c406a7e2a42867d4aa7842d09e954b513d71e55",
-    "591b84f5d377a0903816f1d8bab2f6542045c8b1"
+    "3076578e1318c2f05f0502284ab9cb59fdbf2dd0"
   ],
   "market_last_sent_at": "2026-09-06T08:41:33.445711+00:00",
   "next_news_color": "red",
@@ -623,6 +623,60 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "39587fc86617e1904080e5bfbf3efdeb26b857a0",
+      "source": "DW",
+      "title": "India's aviation boom hits turbulence amid Iran war",
+      "reason": "not_today_tehran",
+      "published": "Wed, 15 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPUk1ycXgyV1pXcnItcjdnNFJOV19hRE40NmhUOXlnTkNmRHhHSzY3Z2tCWGcwZkZKem56ZnZUMDRGWHFyUG9GdHd5RExYdmNPODMwN3l4Q3RtRnhmdzRWdmFPdjREMzhBa3pUVXM0ajJyV3pqNl9ac1pMUWYxZFlEbG9lZVdxTHgxUGFv0gGLAUFVX3lxTFBpVXpHLVl1M3ZOQUJpNVhoVURLVG04QjRUUWdIaGtxSTAxM1J6aEo1NW9iOUpnVXRvaHJoM2c3ZjZHVFdlVE5tVUpKX1U0ak81YjZvMHdCNlFSTlpPcTdoT0pTRmhfQkFzU3E3RW9kNWtfVFBsM3RWcktWR2hkLTdyRGViWUJmZjZueGc?oc=5",
+      "checked_at": "2026-09-06T09:51:55.605826+00:00"
+    },
+    {
+      "key": "946a63b90e0dc7af1b73438ef660ad4925719465",
+      "source": "NOTAM / Airspace",
+      "title": "Trump Excoriates European Countries for Imposing Restrictions on U.S. Action Against Iran - Foundation for Defense of Democracies",
+      "reason": "not_today_tehran",
+      "published": "Tue, 31 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNSTJBb0oxbE5sRWtMR2pnRENONjVXYW1mOUpsSy1YYkgycVJXTlNBOEcwZTRhZTdJNE9rVzVZNTF1NmtWWDBSUEpxY0ZTQkM1c2ZoX2NJc21UTXhlc3NmLUl6RmlfZnBQSlZPYU16Y2loNUJXd2xnWlNxb3BaX0VZQ3hQY3dJTllYOTliRFF3ajB3alE0Z0JCRExmdGRac3puSlI1RlRLZUdJMl9Uc21tQmxKV3hEMS1GdmpLcHBDUjNCNEFEanpwWQ?oc=5",
+      "checked_at": "2026-09-06T09:51:55.605826+00:00"
+    },
+    {
+      "key": "f35ebc0af3312a97045fc089157023d804e32537",
+      "source": "NOTAM / Airspace",
+      "title": "Netanyahu: Our pilots are prepared to reach anywhere in Iranian airspace",
+      "reason": "not_today_tehran",
+      "published": "Sun, 03 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBLclhvci1WRUhvSWVuZG9JaTJEUS03dmlFdTJJSG9BV2pWRU1ycXA5SVVLYUltSVIxeG5ubFhGOS1TODNWVlJKNVhjM1oybnFDMDJrU0VSbV9QZw?oc=5",
+      "checked_at": "2026-09-06T09:51:55.605826+00:00"
+    },
+    {
+      "key": "0e24224e9b398427ba17330d3cf4a1e054cbae58",
+      "source": "NOTAM / Airspace",
+      "title": "Kuwait closes its airspace over Iranian attacks",
+      "reason": "not_today_tehran",
+      "published": "Wed, 10 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQc1JHRnhGYlo4MW9RS2hoclZIU001UnZ5Q04wYmtpd1FwQ1pCZXdGVXF4Z3FvTVRUWUtJZzhaaWFiLXNKYzBjN0JPQ0RveUllaW91QXpsLVA4NDMtSjlWWS1RajYzQkxNWjlUTEpKdHVUaWVCa3FNbFZTV3Q0WGI3TWFSYkFBbkVSNS0xN1doelMyWjZMc2s4QkJ1X2ZzZ3hONnhEdHZwYXROZ0lSZ1piQXNwQkJHWjhfYUVhMjMtT1JaeHBTNEJWWjFCdHpXb0lnM3AtTDdhZnN5bEx1NTc0?oc=5",
+      "checked_at": "2026-09-06T09:51:55.605826+00:00"
+    },
+    {
+      "key": "d62bc3ae7050ae09cf0eb82da709f99793669ccd",
+      "source": "NOTAM / Airspace",
+      "title": "US officials believed Israel plotted to kill Iranian negotiators: report - Anadolu Ajansı",
+      "reason": "not_today_tehran",
+      "published": "Fri, 03 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNWE8yNWxxcmlOekR0YTJOR3czOWw3SndqUnJnREEycnJZRGJtcV95RURXbGZvWWhxT2I2dDhtNkxzTExfOXdzUjNMYUtPUEpVSGhKSW9jYXV1YmlZUW5ESHNuNXBsWmJJdURvOXgzdy1ldzlkUEJvM1h2bFNrTVV3cEc3RlhKNjVJVFdzQ1d0Q2QtMzUyczRWdEU0TlVoU3dJVDJsbWVQRmJLcXR2M0pvOHVkSQ?oc=5",
+      "checked_at": "2026-09-06T09:51:55.605826+00:00"
+    },
+    {
+      "key": "7256109192e0324973804bae9b92a006244fd2e5",
+      "source": "NOTAM / Airspace",
+      "title": "Return of the US-Iran War? Middle East Airspace Faces Fresh Disruptions - Kenya Association of Travel Agents",
+      "reason": "not_today_tehran",
+      "published": "Sun, 19 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOTW85eldUYmd4RVZUemMxdEpUeDNySkw1Q0lHcndHV1Y3ajc4QnptQjBrSXEtYVRPcEYtakNnMTg3UTZtSzZUZ09IYkhONzd1UXpibGMxaDB3V0tkVzhoa3dhZHRIUDdscXRYSUNsNFU5bndoVXVzbnVSeVpYRmpNUUJNWXBmSkhFTkhNNlQ5N3dEWEROZU4zTA?oc=5",
+      "checked_at": "2026-09-06T09:51:55.605826+00:00"
+    },
     {
       "key": "d691951b5e45278a8a218b20831c6a0348485747",
       "source": "Reuters",
@@ -2367,60 +2421,6 @@
       "reason": "not_today_tehran",
       "published": "Sun, 23 Aug 2026 19:00:44 +0000",
       "link": "https://x.com/ir_rezaee/status/2091601549931827456",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:ir_rezaee:2095106961394077902",
-      "source": "Mohsen Rezaei / X",
-      "title": "با این دست و پا زدن‌ها، نه تنها از قعر جهنمی که برای خود ساخته‌اید بیرون نخواهید آمد، بلکه به زودی خواهید دید راهبرد جدید ایران در میدان جنگ، دیپلماسی و مقابله با محاصره اقتصادی، بنیان‌‌تان را درهم خواهد شکست.",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 11:09:59 +0000",
-      "link": "https://x.com/ir_rezaee/status/2095106961394077902",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:araghchi:2079997466649448760",
-      "source": "Abbas Araghchi / X",
-      "title": "Our defense doctrine is clear: eye for an eye. Any aggression against Iran, including our infrastructure, will compel a powerful and decisive response. Those who contribute to such aggression, whatever the kind of support, will also be considered as legitimate targets.",
-      "reason": "not_today_tehran",
-      "published": "Wed, 22 Jul 2026 18:30:15 +0000",
-      "link": "https://x.com/araghchi/status/2079997466649448760",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:araghchi:2081406217486778612",
-      "source": "Abbas Araghchi / X",
-      "title": "Zelenskyy has attacked an Iranian commercial vessel, killing a sailor. A blatant UN Charter violation done at Israel's behest to drag Europe into its war. In calls with EU High Rep Kallas and FM Lavrov, made clear that what the freeloader in Kyiv did CANNOT GO UNANSWERED.",
-      "reason": "not_today_tehran",
-      "published": "Sun, 26 Jul 2026 15:48:07 +0000",
-      "link": "https://x.com/araghchi/status/2081406217486778612",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:araghchi:2082177796508459412",
-      "source": "Abbas Araghchi / X",
-      "title": "Was assured by Ukrainian FM @andrii_sybiha that the attack on an Iranian ship was unintentional and Ukraine seeks no escalation. Iran does not seek escalation either, but made clear any attack on our citizens or interests is unacceptable. There must be restitution for losses.",
-      "reason": "not_today_tehran",
-      "published": "Tue, 28 Jul 2026 18:54:06 +0000",
-      "link": "https://x.com/araghchi/status/2082177796508459412",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:araghchi:2085791206542320058",
-      "source": "Abbas Araghchi / X",
-      "title": "Iran's Powerful Armed Forces have shown their readiness, capability, and might in face of the world's most expensive military. When Muslims stand together, we can face every challenge by malicious outsiders head-on. Time to rely only on ourselves and embrace true brotherhood.",
-      "reason": "not_today_tehran",
-      "published": "Fri, 07 Aug 2026 18:12:30 +0000",
-      "link": "https://x.com/araghchi/status/2085791206542320058",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:araghchi:2087731363713564746",
-      "source": "Abbas Araghchi / X",
-      "title": "Countries like France should stop lecturing the world about “human rights” and international law. The hypocrisy is blatant and embarrassing. Your backing of Israel’s genocide in Gaza—and aggression against Iran—has destroyed whatever moral high ground you imagined you had.",
-      "reason": "not_today_tehran",
-      "published": "Thu, 13 Aug 2026 02:41:59 +0000",
-      "link": "https://x.com/araghchi/status/2087731363713564746",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
