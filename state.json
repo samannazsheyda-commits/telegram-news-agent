@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41569",
   "news_seen": [
+    "x:AFP:2096705018686591463",
+    "x:AlArabiya_Eng:2096704995945025962",
     "6c07a06255299516ee6307b09c36aa77e69bd907",
     "1a1a4f6d13489bff97c7b144118f1cd321bcdd05",
     "2b7fbbd1ae06534ec393cac6c750d993ef99be60",
@@ -498,9 +500,7 @@
     "66691d8498aa0d34bceb2b7b3a6c12bc533587fa",
     "80bd3d4bdaf5a6b48ae545e3ca1966cc1360445c",
     "a346b50f653fad877c9c38a32ad2b5147a5d0bcc",
-    "3da9d2619473dadb06132e08b93c8b06bf3f17f5",
-    "a341a2599eb0a37d56dfdc8afb090baa395e9342",
-    "7854484690ed814576ad1ecb4a7678cd6b7bd139"
+    "3da9d2619473dadb06132e08b93c8b06bf3f17f5"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
   "next_news_color": "red",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2096704995945025962",
+      "source": "Al Arabiya English / X",
+      "title": "Six months after a conflict that rattled markets and pushed the region to the brink of a wider war, the tide may be turning against Iran as Washington unleashes an unprecedented economic offensive to achieve what military force could not.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096704995945025962",
+      "published": "Sun, 06 Sep 2026 21:00:00 +0000",
+      "sent_at": "2026-09-06T21:09:32.851096+00:00",
+      "fingerprint": "six months after a conflict that rattled markets and pushed the region to the brink of a wider war the tide may be turning against iran as washington unleashes an unprecedented economic offensive to achieve what military force could not"
+    },
+    {
+      "key": "x:AFP:2096705018686591463",
+      "source": "AFP / X",
+      "title": "Iran's top negotiator on Sunday threatens a more forceful response to any further US attacks after Tehran targeted American warships in their latest round of clashes",
+      "summary": "",
+      "link": "https://x.com/AFP/status/2096705018686591463",
+      "published": "Sun, 06 Sep 2026 21:00:06 +0000",
+      "sent_at": "2026-09-06T21:09:32.851096+00:00",
+      "fingerprint": "iran s top negotiator on sunday threatens a more forceful response to any further us attacks after tehran targeted american warships in their latest round of clashes"
+    },
     {
       "key": "x:AJEnglish:2096680962515968032",
       "source": "Al Jazeera English / X",
