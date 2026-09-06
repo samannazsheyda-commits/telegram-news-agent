@@ -66,6 +66,40 @@ def _is_statement_with_priority_escape(item) -> bool:
     return _original_is_statement(item)
 
 
+def _retry_todays_false_bundles(now: datetime) -> None:
+    """Remove today's false bundled rejections from seen so the normal pipeline retries them once."""
+    state = base.agent.load_state(base.agent.STATE_PATH)
+    seen = list(state.get("news_seen") or [])
+    if not seen:
+        return
+    retry_keys: set[str] = set()
+    for record in base._store.queue():
+        if record.get("status", "pending") != "pending":
+            continue
+        if record.get("rejection_reason") != "bundled_or_multi_headline":
+            continue
+        published = str(record.get("published_at_source") or "")
+        if not base.agent._published_today(published, now):
+            continue
+        item = base.NewsItem(
+            str(record.get("news_key") or ""),
+            str(record.get("source") or ""),
+            str(record.get("original_title") or ""),
+            str(record.get("original_summary") or ""),
+            str(record.get("source_url") or ""),
+            published,
+        )
+        if base.agent._speaker_key(item) is not None:
+            retry_keys.add(item.key)
+    if not retry_keys:
+        return
+    cleaned = [key for key in seen if key not in retry_keys]
+    if cleaned != seen:
+        state["news_seen"] = cleaned
+        base.agent.save_state(state, base.agent.STATE_PATH)
+        print(f"NEWS_RECOVERY requeued_false_bundles={len(retry_keys)}")
+
+
 def _send_with_photo_tracking(text: str, bot_token: str, chat_id: str, *args, **kwargs) -> None:
     key = base._pending_auto_key
     item = base._pending_auto_item
@@ -180,6 +214,7 @@ def install_production_policies() -> None:
 def run(now=None) -> int:
     install_production_policies()
     resolved_now = now or datetime.now(timezone.utc)
+    _retry_todays_false_bundles(resolved_now)
     _publish_daily_flagships(resolved_now)
     return v9.run(resolved_now)
 
