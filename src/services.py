@@ -222,6 +222,44 @@ def split_message(text: str, max_len: int = 3900) -> list[str]:
     return chunks
 
 
+def _check_telegram_response(response) -> None:
+    response.raise_for_status()
+    data = response.json()
+    if not data.get("ok", False):
+        raise RuntimeError(f"Telegram rejected message: {data}")
+
+
+def send_telegram_photo(photo_url: str, text: str, bot_token: str, chat_id: str, session=requests) -> None:
+    photo = (photo_url or "").strip()
+    if not photo:
+        raise ValueError("photo_url is required")
+    if not bot_token or not chat_id:
+        raise RuntimeError("TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID are required")
+
+    url = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
+    caption = (text or "").strip()
+    if caption and len(caption) <= 1024:
+        response = session.post(
+            url,
+            json={
+                "chat_id": chat_id,
+                "photo": photo,
+                "caption": caption,
+                "parse_mode": "HTML",
+            },
+            timeout=20,
+        )
+        _check_telegram_response(response)
+        time.sleep(3.2)
+        return
+
+    response = session.post(url, json={"chat_id": chat_id, "photo": photo}, timeout=20)
+    _check_telegram_response(response)
+    time.sleep(3.2)
+    if caption:
+        send_telegram(caption, bot_token, chat_id, session=session)
+
+
 def send_telegram(text: str, bot_token: str, chat_id: str, session=requests) -> None:
     if not (text or "").strip():
         return
@@ -234,10 +272,7 @@ def send_telegram(text: str, bot_token: str, chat_id: str, session=requests) -> 
             json={"chat_id": chat_id, "text": chunk, "parse_mode": "HTML", "disable_web_page_preview": True},
             timeout=20,
         )
-        response.raise_for_status()
-        data = response.json()
-        if not data.get("ok", False):
-            raise RuntimeError(f"Telegram rejected message: {data}")
+        _check_telegram_response(response)
         time.sleep(3.2)
 
 
