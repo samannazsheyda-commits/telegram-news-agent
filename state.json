@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "f6977fe57e21422377b25e34d6efb33b55efa257",
+    "86093b65172044911c5311b0700831f30f3ba4e3",
+    "2efe3548fd6a5d1a78297f55bed508e77c66d98b",
     "x:IsraelHayomEng:2096487392966283357",
     "fc8ce490e9ecde629ed3eb477fd6b0224fe77a41",
     "x:Jerusalem_Post:2096479834591387648",
@@ -497,10 +500,7 @@
     "bb72c3e3d18cf43a9a3c5dc73853823e0feed85a",
     "10c2064a817cb0025d0566572c13ccf7c3360a62",
     "77552fc5107aff588ed597aec7f34bd70167e4a0",
-    "c2e341b47a8f9c93466c9f488d8d5633a4be1811",
-    "6c07a06255299516ee6307b09c36aa77e69bd907",
-    "f6977fe57e21422377b25e34d6efb33b55efa257",
-    "86093b65172044911c5311b0700831f30f3ba4e3"
+    "c2e341b47a8f9c93466c9f488d8d5633a4be1811"
   ],
   "market_last_sent_at": "2026-09-06T06:29:34.820132+00:00",
   "next_news_color": "white",
@@ -540,6 +540,33 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "f6977fe57e21422377b25e34d6efb33b55efa257",
+      "source": "NOTAM / Airspace",
+      "title": "Iran suspends western airport flights as Trump presses for 'immediate ceasefire' - Türkiye Today",
+      "reason": "not_today_tehran",
+      "published": "Sun, 14 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPR3lmLVZwRWp1SVU1cTRUQVZtUHdrQmlVZWxiQi1xZ2tSbTJoekJBc0UyeEpYaUJ3NFRpczYwZGl0N1E1U1FfSFhZOXUxSHltWjVLa2czWDJGTzdkRjU1N0g5QUtpa3VPcnB1WklHYWdrWVZPQlY4cG9UVlJuUFRzcU9JLVRMWjN3TWhWdmRGMV9paTI4Zk91ZkItSU9mMWtOR196ZjdTV3I5V3NSSUVtU2RDX2dEYTBHNkg0Qzd3OA?oc=5",
+      "checked_at": "2026-09-06T06:58:33.769167+00:00"
+    },
+    {
+      "key": "86093b65172044911c5311b0700831f30f3ba4e3",
+      "source": "NOTAM / Airspace",
+      "title": "EU aviation agency tightens Middle East airspace warning - Iran International",
+      "reason": "not_today_tehran",
+      "published": "Tue, 14 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9PdVR2aWw4TkhFWVZ0U2tPU0pvOHFINUdqd0w2NlgzRFdna0l0c2dfSUZXZ3dRR3ItYkRVS2x4NjY1U09ZWUZVZWsxbU5PQWV1aFE?oc=5",
+      "checked_at": "2026-09-06T06:57:19.621851+00:00"
+    },
+    {
+      "key": "2efe3548fd6a5d1a78297f55bed508e77c66d98b",
+      "source": "NOTAM / Airspace",
+      "title": "Europe has updated its Gulf airspace warning as US-Iran tensions continue - here's what it means for air travel",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 08:42:33 GMT",
+      "link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxNN01LN3k2WmxqRGxBZW9INXBtakRmUnFHQ3dpOV9sSlNVWG5vX2h5QmUtQU1jVjhycXBaRTR6US1YQzcyZlYzRzUweGFZX3VRMUNNYkU2R1dMdXNOa2NTemxxNHExZzZ3X2Z1N01ucXFpdkpoazQ3LXQyVXRPcERqd3U1WFpYd0k5eEhxVzhxZURuYmJJaTBMbVhIa3c0VmplRlF1UElKQXJURUVEY3pDN0dDSFp3X2pCdzM1MXczNnFPMm1uMjFiSDVienBQQnQzaVlsQ0tDU0RyR0l4?oc=5",
+      "checked_at": "2026-09-06T06:56:05.623185+00:00"
+    },
     {
       "key": "fc8ce490e9ecde629ed3eb477fd6b0224fe77a41",
       "source": "NOTAM / Airspace",
@@ -2311,33 +2338,6 @@
       "reason": "not_today_tehran",
       "published": "Fri, 21 Aug 2026 11:36:36 +0000",
       "link": "https://x.com/jconricus/status/2090765007042535454",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:jconricus:2095279034800157082",
-      "source": "Jonathan Conricus / X",
-      "title": "The Iranian regime is losing everywhere except for in most global media. I explained why on @FoxBusiness with @LizClaman Tks @AriellaNoveck",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 22:33:44 +0000",
-      "link": "https://x.com/jconricus/status/2095279034800157082",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:jconricus:2095280355750076499",
-      "source": "Jonathan Conricus / X",
-      "title": "The Iranian regime is growing more desperate by the day. The US strategy is working. Israel is ready to defend and retaliate. The Iranian people must not be left to fight alone again. My thoughts on @FoxBusiness",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 22:38:59 +0000",
-      "link": "https://x.com/jconricus/status/2095280355750076499",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:manniefabian:2095450221069181168",
-      "source": "Emanuel Fabian / X",
-      "title": "Defense Minister Israel Katz warns that if Iran attacks Israel, the military will target all of the regime's infrastructure, \"including energy infrastructure.\" \"There are signs we are seeing that indicate that the heavy economic pressure Iran is under and the fear of an uprising and the fall of the regime could push them to desperate measures,\" Katz says at a Jewish New Year toast with Defense Ministry employees. \"An Iranian attack on Israel will free us from all constraints, we will strike all infrastructure -- including energy infrastructure -- and return Iran to the Stone Age and darkness,\" he says. Katz adds that \"Israel is well prepared, defensively and offensively, for every possibility -- and the IDF is ready to carry out the mission.”",
-      "reason": "not_today_tehran",
-      "published": "Thu, 03 Sep 2026 09:53:58 +0000",
-      "link": "https://x.com/manniefabian/status/2095450221069181168",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
