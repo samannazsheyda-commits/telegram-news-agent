@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "x:AJEnglish:2096522632908689752",
     "8c5f18d959b1b70c6fadb13f3e60d162a4386512",
     "x:AlArabiya_Eng:2096506704779255816",
     "77552fc5107aff588ed597aec7f34bd70167e4a0",
@@ -499,11 +500,10 @@
     "5133ee1d154c48155325c5ac31d4d12f86a5fc61",
     "32bbe1e0b12bece2a4b3407987e6a74d2608e2b1",
     "39f4693c6d6b4c00893650a78fe461a7b21f4e78",
-    "af58b9bffe817d2cd9b13541913c4b94d1eddf59",
-    "bb5ac693eb887d2023fca0bdad6292835df020bc"
+    "af58b9bffe817d2cd9b13541913c4b94d1eddf59"
   ],
   "market_last_sent_at": "2026-09-06T08:41:33.445711+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2790000000,
     "پژو 207 اتوماتیک پانوراما": 2960000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2096522632908689752",
+      "source": "Al Jazeera English / X",
+      "title": "The US economic and maritime blockade against Iran could cost Washington far more than Tehran, the Islamic Revolutionary Guard Corps says.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096522632908689752",
+      "published": "Sun, 06 Sep 2026 08:55:21 +0000",
+      "sent_at": "2026-09-06T08:57:45.480770+00:00",
+      "fingerprint": "the us economic and maritime blockade against iran could cost washington far more than tehran the islamic revolutionary guard corps says"
+    },
     {
       "key": "x:AlArabiya_Eng:2096506704779255816",
       "source": "Al Arabiya English / X",
