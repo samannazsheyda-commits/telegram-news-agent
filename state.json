@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "x:IsraelHayomEng:2096487392966283357",
     "fc8ce490e9ecde629ed3eb477fd6b0224fe77a41",
     "x:Jerusalem_Post:2096479834591387648",
     "x:FT:2096459117015494872",
@@ -499,11 +500,10 @@
     "c2e341b47a8f9c93466c9f488d8d5633a4be1811",
     "6c07a06255299516ee6307b09c36aa77e69bd907",
     "f6977fe57e21422377b25e34d6efb33b55efa257",
-    "86093b65172044911c5311b0700831f30f3ba4e3",
-    "2efe3548fd6a5d1a78297f55bed508e77c66d98b"
+    "86093b65172044911c5311b0700831f30f3ba4e3"
   ],
-  "market_last_sent_at": "2026-09-06T06:29:34.820132+00:00",
-  "next_news_color": "red",
+  "market_last_sent_at": "2026-09-06T06:34:30.897029+00:00",
+  "next_news_color": "white",
   "car_last_prices": {
     "پراید ۱۵۱": 1275000000,
     "پژو ۲۰۷ دنده‌ای": 2210000000,
@@ -547,7 +547,7 @@
       "reason": "not_today_tehran",
       "published": "Fri, 04 Sep 2026 11:30:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNajl1OC03b09aQUw0VzIxV29xLUZqRmFSVWhRNzZ6WFNiOG5aTFpQaFR2VUhNM2RMMEUzWjJlN0lBYkc1Y1dja3J3ZXczU244RmhzZDd6Y0xycnVzQmxFZWxPLUdsaFhPQWY5S2Q1RmFBXzFhX3lrbkU1SF81NWdzenc2V29zeHlFWU0tc1JGc2lRVVk2UWswbDNGUWJ0M2I2NF9SNEswM0tkQnJpNG55dDM2RjhDVDJkSHprUGQ1eFNTc2YzTGl2cXhMQWs?oc=5",
-      "checked_at": "2026-09-06T06:31:49.063515+00:00"
+      "checked_at": "2026-09-06T06:36:39.646351+00:00"
     },
     {
       "key": "e925d6da75326ca55b8563b8264aeb01b28f0134",
@@ -556,7 +556,7 @@
       "reason": "not_today_tehran",
       "published": "Sat, 05 Sep 2026 20:16:54 +0000",
       "link": "https://t.me/GeoPWatch/39543",
-      "checked_at": "2026-09-06T06:29:34.820132+00:00"
+      "checked_at": "2026-09-06T06:34:30.897029+00:00"
     },
     {
       "key": "aa765ef65d00fc9b7cbb78bb8f52157cade2d12c",
@@ -565,7 +565,7 @@
       "reason": "low_signal_or_unapproved_source",
       "published": "Sun, 06 Sep 2026 05:12:53 +0000",
       "link": "https://t.me/ClashReport/95235",
-      "checked_at": "2026-09-06T06:29:34.820132+00:00"
+      "checked_at": "2026-09-06T06:34:30.897029+00:00"
     },
     {
       "key": "b057c447068fea9229af7cc0ee1ad20bee4c4bc4",
@@ -574,7 +574,7 @@
       "reason": "not_today_tehran",
       "published": "Tue, 04 Aug 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxNWk1WNlRBbk5fUDdIQl9HdGhjcEdGV2FwUFRMSUFTSWJuS21MbjNMRmFWN0l5MVdzbGJTb3RtdURKTDU5MFoyd2k1TkVhakpFR1dLdWRvWEZ5clQ5NmFjOXR5d29Bc2FEaC15QW9JZjd4blBJTkh4eXU4dW9NV2plSkhQbHM4N1F1Z1ZKN1JaOVpBNWhH?oc=5",
-      "checked_at": "2026-09-06T06:29:34.820132+00:00"
+      "checked_at": "2026-09-06T06:34:30.897029+00:00"
     },
     {
       "key": "x:TankerTrackers:2096234794065563736",
@@ -583,7 +583,7 @@
       "reason": "not_today_tehran",
       "published": "Sat, 05 Sep 2026 13:51:35 +0000",
       "link": "https://x.com/TankerTrackers/status/2096234794065563736",
-      "checked_at": "2026-09-06T06:29:34.820132+00:00"
+      "checked_at": "2026-09-06T06:34:30.897029+00:00"
     },
     {
       "key": "x:TankerTrackers:2096229726482260137",
@@ -592,7 +592,7 @@
       "reason": "not_today_tehran",
       "published": "Sat, 05 Sep 2026 13:31:27 +0000",
       "link": "https://x.com/TankerTrackers/status/2096229726482260137",
-      "checked_at": "2026-09-06T06:29:34.820132+00:00"
+      "checked_at": "2026-09-06T06:34:30.897029+00:00"
     },
     {
       "key": "x:JasonMBrodsky:2096271981930778872",
@@ -601,7 +601,7 @@
       "reason": "not_today_tehran",
       "published": "Sat, 05 Sep 2026 16:19:21 +0000",
       "link": "https://x.com/JasonMBrodsky/status/2096271981930778872",
-      "checked_at": "2026-09-06T06:29:34.820132+00:00"
+      "checked_at": "2026-09-06T06:34:30.897029+00:00"
     },
     {
       "key": "75deef33720ecbb2fb17a152fe57e55d7507d578",
@@ -2344,13 +2344,23 @@
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
     {
+      "key": "x:IsraelHayomEng:2096487392966283357",
+      "source": "Israel Hayom / X",
+      "title": "Despite sanctions, Iran funnels billions through US banks",
+      "summary": "",
+      "link": "https://x.com/IsraelHayomEng/status/2096487392966283357",
+      "published": "Sun, 06 Sep 2026 06:35:19 +0000",
+      "sent_at": "2026-09-06T06:37:56.425166+00:00",
+      "fingerprint": "despite sanctions iran funnels billions through us banks"
+    },
+    {
       "key": "75a0dc4a18b91a08d2c5c0055d248b56b29d4183",
       "source": "کلش ریپورت / Telegram",
       "title": "Iran’s IRGC says it launched ballistic missiles at a U.S. aircraft carrier and destroyer, claiming the warships were involved in actions against Iranian vessels.",
       "summary": "Iran’s IRGC says it launched ballistic missiles at a U.S. aircraft carrier and destroyer, claiming the warships were involved in actions against Iranian vessels. The IRGC said the ships were damaged and withdrew from the area, and warned of further responses if hostile actions continue.",
       "link": "https://t.me/ClashReport/95230",
       "published": "Sat, 05 Sep 2026 23:12:30 +0000",
-      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "sent_at": "2026-09-06T06:36:39.641694+00:00",
       "fingerprint": "iran s irgc says it launched ballistic missiles at a u s aircraft carrier and destroyer claiming the warships were involved in actions against iranian vessels iran s irgc says it launched ballistic missiles at a u s aircraft carrier and destroyer claiming the warships were involved in actions against iranian vessels the irgc said the ships were damaged and withdrew from the area and warned of further responses if hostile actions continue"
     },
     {
@@ -2360,7 +2370,7 @@
       "summary": "",
       "link": "https://x.com/JasonMBrodsky/status/2096338616775573564",
       "published": "Sat, 05 Sep 2026 20:44:08 +0000",
-      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "sent_at": "2026-09-06T06:36:39.641694+00:00",
       "fingerprint": "similar clips surfaced in july would wait for confirmation as irgc has an interest in developing propaganda videos to deter shipping and to makeup for its failure to hit u s warships"
     },
     {
@@ -2370,7 +2380,7 @@
       "summary": "",
       "link": "https://x.com/haaretzcom/status/2096338868127564206",
       "published": "Sat, 05 Sep 2026 20:45:08 +0000",
-      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "sent_at": "2026-09-06T06:36:39.641694+00:00",
       "fingerprint": "vance u s cuts contact with iran over hormuz china willing to back embargo"
     },
     {
@@ -2380,7 +2390,7 @@
       "summary": "",
       "link": "https://x.com/CBSNews/status/2096361482334192057",
       "published": "Sat, 05 Sep 2026 22:15:00 +0000",
-      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "sent_at": "2026-09-06T06:36:39.641694+00:00",
       "fingerprint": "iran guard says it attacked u s linked vessels in retaliation for strikes"
     },
     {
@@ -2390,7 +2400,7 @@
       "summary": "",
       "link": "https://x.com/JasonMBrodsky/status/2096409611297247400",
       "published": "Sun, 06 Sep 2026 01:26:15 +0000",
-      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "sent_at": "2026-09-06T06:36:39.641694+00:00",
       "fingerprint": "iran is reportedly preparing for a broad coordinated attack against israel on several fronts simultaneously israeli assessments indicate in a scenario resembling a future october 7 style assault but designed from the outset to bring together all components of the iranian axis"
     },
     {
@@ -2400,7 +2410,7 @@
       "summary": "",
       "link": "https://x.com/TankerTrackers/status/2096417407099118035",
       "published": "Sun, 06 Sep 2026 01:57:14 +0000",
-      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "sent_at": "2026-09-06T06:36:39.641694+00:00",
       "fingerprint": "countries covered in these numbers are saudi arabia iraq iran kuwait oman uae and qatar although most may recover in the coming months iran s exports of 1 68 mbpd baseline number may likely remain at zero for the foreseeable future depending on any agreement"
     },
     {
@@ -2410,7 +2420,7 @@
       "summary": "",
       "link": "https://x.com/CENTCOMFarsi/status/2096417989679529996",
       "published": "Sun, 06 Sep 2026 01:59:32 +0000",
-      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "sent_at": "2026-09-06T06:36:39.641694+00:00",
       "fingerprint": "به لطف دقت و حرفه ای گری اعضای سرویس آمریکا، کشتی کایلو m t امروز در خلیج عمان غرق شد و در قعر دریا به نیروی دریایی ایران پیوست"
     },
     {
@@ -2420,7 +2430,7 @@
       "summary": "",
       "link": "https://x.com/AJEnglish/status/2096432129819513165",
       "published": "Sun, 06 Sep 2026 02:55:44 +0000",
-      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "sent_at": "2026-09-06T06:36:39.641694+00:00",
       "fingerprint": "breaking iran s islamic revolutionary guard corps irgc says its naval forces attacked a remotely operated us drone boat that it said was attempting to enter the protected area of the strait of hormuz"
     },
     {
@@ -2430,7 +2440,7 @@
       "summary": "",
       "link": "https://x.com/Jerusalem_Post/status/2096439181668938053",
       "published": "Sun, 06 Sep 2026 03:23:45 +0000",
-      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "sent_at": "2026-09-06T06:36:39.641694+00:00",
       "fingerprint": "iranian foreign minister abbas araghchi conversed separately with the foreign minister of saudi arabia faisal bin farhan and the foreign minister of turkey hakan fidan according to the iranian state affiliated media agency tasnim news"
     },
     {
@@ -2440,7 +2450,7 @@
       "summary": "",
       "link": "https://x.com/FT/status/2096459117015494872",
       "published": "Sun, 06 Sep 2026 04:42:58 +0000",
-      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "sent_at": "2026-09-06T06:36:39.641694+00:00",
       "fingerprint": "the risky mission to de mine the strait of hormuz"
     },
     {
@@ -2450,7 +2460,7 @@
       "summary": "",
       "link": "https://x.com/Jerusalem_Post/status/2096479834591387648",
       "published": "Sun, 06 Sep 2026 06:05:17 +0000",
-      "sent_at": "2026-09-06T06:31:49.058909+00:00",
+      "sent_at": "2026-09-06T06:36:39.641694+00:00",
       "fingerprint": "opinion iran s regime is increasingly turning its security apparatus inward as protests armed opposition and internal threats put pressure on the irgc"
     },
     {
