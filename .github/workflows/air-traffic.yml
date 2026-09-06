@@ -1,16 +1,7 @@
 name: Middle East Air Traffic
 
 on:
-  schedule:
-    - cron: "30 8 * * *"   # 12:00 Tehran
-    - cron: "30 16 * * *"  # 20:00 Tehran
-    - cron: "30 20 * * *"  # 00:00 Tehran
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - ".air-traffic-initial-publish"
 
 jobs:
   publish:
