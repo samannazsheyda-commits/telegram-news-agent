@@ -1,5 +1,23 @@
 [
   {
+    "id": "82058b02c5f8b737f6869381841e4d8ea06f47fb",
+    "news_key": "6c07a06255299516ee6307b09c36aa77e69bd907",
+    "source": "NOTAM / Airspace",
+    "source_url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPZ3hWcGJQNWptRlNXR1FRSFplTnNCbmxQczJNS3J5MXJkT0Znd2dXd0VLV1hPNlZtUWs5eXoyMThmSWdfRkRBODdmNkNoR3ZqWjNldHo2c0tvZXAxa3N0MU9kNy1lWU5ad1BfZldsZVpBUTZtNUN1Zm82S0ZvVXhXLWtKcmlWeXRsVEJkRkRZY1FuYlNQOTloXzZoa3dYQlhNdVVtNkh6SDlnbUZuTVhtY0ljVXdnaWJVTUE?oc=5",
+    "original_title": "Jordan says airspace remains open, flights unchanged after Iranian attacks - Arab News",
+    "original_summary": "Jordan says airspace remains open, flights unchanged after Iranian attacks Arab News",
+    "persian_title": "",
+    "persian_body": "",
+    "published_at_source": "Thu, 09 Jul 2026 07:00:00 GMT",
+    "discovered_at": "2026-09-06T20:57:01.154137+00:00",
+    "rejection_reason": "not_today_tehran",
+    "status": "superseded",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-06T20:58:29.315666+00:00"
+  },
+  {
     "id": "982cd277ea2eba9711f9dcf27c062cff9d6007ef",
     "news_key": "1a1a4f6d13489bff97c7b144118f1cd321bcdd05",
     "source": "وار نوآر / Telegram",
@@ -8026,24 +8044,6 @@
     "final_persian_body": "",
     "decision_at": "",
     "updated_at": "2026-09-05T06:41:58.815009+00:00"
-  },
-  {
-    "id": "82058b02c5f8b737f6869381841e4d8ea06f47fb",
-    "news_key": "6c07a06255299516ee6307b09c36aa77e69bd907",
-    "source": "NOTAM / Airspace",
-    "source_url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPeVdhcDNQdjNITHFYQTZPN1Q2Nm1RUndWV0RzcjdHWGxrdHJISHp6UDNqdFl1TXAtOHcxTnM5b3RFS3ZfZ05HMm9wM25Kc3QzVUxxQzdsMDB0UHVYWkRST2tUd3F4YVRyU3Y3U3N6ZWdmOTNQS3EwYUo1V0N5b284aTRLeHhBUFBYNG90bUdnMXZlMC00ai0wRUJBVFZRNkNwRmJnMTdNV3Vza1p6SnF6clctYzh4djYy?oc=5",
-    "original_title": "Jordan says airspace remains open, flights unchanged after Iranian attacks - Arab News PK",
-    "original_summary": "Jordan says airspace remains open, flights unchanged after Iranian attacks Arab News PK",
-    "persian_title": "",
-    "persian_body": "",
-    "published_at_source": "Thu, 09 Jul 2026 07:00:00 GMT",
-    "discovered_at": "2026-09-05T06:30:17.249810+00:00",
-    "rejection_reason": "not_today_tehran",
-    "status": "superseded",
-    "final_persian_title": "",
-    "final_persian_body": "",
-    "decision_at": "",
-    "updated_at": "2026-09-05T06:31:16.239395+00:00"
   },
   {
     "id": "5b57e22e6013d49a117a7cb8f28c7c581c1e6d80",

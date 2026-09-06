@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41569",
   "news_seen": [
+    "6c07a06255299516ee6307b09c36aa77e69bd907",
     "1a1a4f6d13489bff97c7b144118f1cd321bcdd05",
     "2b7fbbd1ae06534ec393cac6c750d993ef99be60",
     "x:RapidResponse47:2096627930562507193",
@@ -499,8 +500,7 @@
     "a346b50f653fad877c9c38a32ad2b5147a5d0bcc",
     "3da9d2619473dadb06132e08b93c8b06bf3f17f5",
     "a341a2599eb0a37d56dfdc8afb090baa395e9342",
-    "7854484690ed814576ad1ecb4a7678cd6b7bd139",
-    "6bf0f187ae69b500f6c457e54605fe5807273186"
+    "7854484690ed814576ad1ecb4a7678cd6b7bd139"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
   "next_news_color": "red",
@@ -623,6 +623,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "6c07a06255299516ee6307b09c36aa77e69bd907",
+      "source": "NOTAM / Airspace",
+      "title": "Jordan says airspace remains open, flights unchanged after Iranian attacks - Arab News",
+      "reason": "not_today_tehran",
+      "published": "Thu, 09 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPZ3hWcGJQNWptRlNXR1FRSFplTnNCbmxQczJNS3J5MXJkT0Znd2dXd0VLV1hPNlZtUWs5eXoyMThmSWdfRkRBODdmNkNoR3ZqWjNldHo2c0tvZXAxa3N0MU9kNy1lWU5ad1BfZldsZVpBUTZtNUN1Zm82S0ZvVXhXLWtKcmlWeXRsVEJkRkRZY1FuYlNQOTloXzZoa3dYQlhNdVVtNkh6SDlnbUZuTVhtY0ljVXdnaWJVTUE?oc=5",
+      "checked_at": "2026-09-06T20:57:01.154137+00:00"
+    },
     {
       "key": "1a1a4f6d13489bff97c7b144118f1cd321bcdd05",
       "source": "وار نوآر / Telegram",
@@ -2412,15 +2421,6 @@
       "reason": "duplicate_or_redundant",
       "published": "Sat, 05 Sep 2026 06:53:29 +0000",
       "link": "https://x.com/Jerusalem_Post/status/2096129575667310642",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:AJEnglish:2096140818335535225",
-      "source": "Al Jazeera English / X",
-      "title": "BREAKING: An Iranian oil tanker off Kharg Island has been struck by four US missiles and is currently being evacuated, reports Iranian media. Kharg Island processes around 90% of Iran’s oil exports. 🔴 LIVE updates: https://aje.news/39nt0j",
-      "reason": "duplicate_or_redundant",
-      "published": "Sat, 05 Sep 2026 07:38:10 +0000",
-      "link": "https://x.com/AJEnglish/status/2096140818335535225",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
