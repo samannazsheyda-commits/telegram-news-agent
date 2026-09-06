@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41532",
   "news_seen": [
+    "x:Reuters:2096629622049821081",
+    "dbcf8921fc2abf507dc0747370b6dc342d712979",
     "x:business:2096623224767270947",
     "d0842fe8936e25d637407cfc2ad4ab692cc22751",
     "4cf4c333ea4c57e901ec74d8aea87fe4d3791cb1",
@@ -498,12 +500,10 @@
     "20c9fe7ce72dfd4592c8757557b0b1bba574f56a",
     "b1607ee8d30f15df24023068730e78e38b907048",
     "e025ea10ba3ba8b28c1fa0ae8b674a766257bc57",
-    "ac38e1b70171858dc5700941dd4968e8573b1dbd",
-    "e4e02e3bd9e965275150509eee4fcf361415bc7d",
-    "5797daada67408be35fae2d03bb5e2167547e9b0"
+    "ac38e1b70171858dc5700941dd4968e8573b1dbd"
   ],
   "market_last_sent_at": "2026-09-06T14:49:57.247923+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -623,6 +623,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "dbcf8921fc2abf507dc0747370b6dc342d712979",
+      "source": "تبز لایو / Telegram",
+      "title": "🇮🇱 ❌ 🇮🇷 — Israeli Prime Minister Netanyahu on Iran: There is still more to be done. This regime in Iran — its end is near.",
+      "reason": "low_signal_or_unapproved_source",
+      "published": "Sun, 06 Sep 2026 16:03:24 +0000",
+      "link": "https://t.me/tabzlive/102008",
+      "checked_at": "2026-09-06T16:13:10.432608+00:00"
+    },
     {
       "key": "4cf4c333ea4c57e901ec74d8aea87fe4d3791cb1",
       "source": "NOTAM / Airspace",
@@ -2413,19 +2422,20 @@
       "published": "Thu, 18 Jun 2026 20:00:29 +0000",
       "link": "https://x.com/ir_rezaee/status/2067698990376697943",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:ir_rezaee:2068560743016857667",
-      "source": "Mohsen Rezaei / X",
-      "title": "آمریکا قرار بود با راهبرد «صلح از طریق قدرت» ایران را وادار به تسلیم کند؛ حالا که شکست خوردند، از سر استیصال اصرار به مذاکره دارند. اما دشمن نشان داده که عهدشکن است. باید مراقب بود؛ هرگونه خوش‌بینی مورد سوءاستفاده دشمن قرار می‌گیرد.",
-      "reason": "not_today_tehran",
-      "published": "Sun, 21 Jun 2026 05:04:47 +0000",
-      "link": "https://x.com/ir_rezaee/status/2068560743016857667",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:Reuters:2096629622049821081",
+      "source": "Reuters / X",
+      "title": "Gulf stocks end mixed as US-Iran tensions linger",
+      "summary": "",
+      "link": "https://x.com/Reuters/status/2096629622049821081",
+      "published": "Sun, 06 Sep 2026 16:00:30 +0000",
+      "sent_at": "2026-09-06T16:13:10.432608+00:00",
+      "fingerprint": "gulf stocks end mixed as us iran tensions linger"
+    },
     {
       "key": "d0842fe8936e25d637407cfc2ad4ab692cc22751",
       "source": "NOTAM / Airspace",
