@@ -28,28 +28,31 @@ _CONTEXT_ALIASES = {
 }
 
 _NUMBER_RE = re.compile(r"(?<![A-Za-z0-9])\d+(?![A-Za-z0-9])")
+_PERSIAN_RE = re.compile(r"[\u0600-\u06ff]")
 
 
 def _normalised_progress_text(item: NewsItem) -> str:
     return f"{item.title} {item.summary}".lower().translate(_DIGIT_MAP)
 
 
-def _nearest_number(text: str, start: int, end: int, radius: int = 80) -> str | None:
+def _directional_number(text: str, start: int, end: int, *, prefer_before: bool, radius: int = 80) -> tuple[int, str] | None:
     lo = max(0, start - radius)
     hi = min(len(text), end + radius)
-    candidates = []
+    before: list[tuple[int, str]] = []
+    after: list[tuple[int, str]] = []
     for match in _NUMBER_RE.finditer(text, lo, hi):
         if match.end() <= start:
-            distance = start - match.end()
+            before.append((start - match.end(), match.group(0)))
         elif match.start() >= end:
-            distance = match.start() - end
-        else:
-            distance = 0
-        candidates.append((distance, match.start(), match.group(0)))
-    if not candidates:
-        return None
-    candidates.sort()
-    return candidates[0][2]
+            after.append((match.start() - end, match.group(0)))
+
+    preferred = before if prefer_before else after
+    fallback = after if prefer_before else before
+    if preferred:
+        return min(preferred, key=lambda row: row[0])
+    if fallback:
+        return min(fallback, key=lambda row: row[0])
+    return None
 
 
 def _progress_action_facts(item: NewsItem) -> set[str]:
@@ -59,29 +62,18 @@ def _progress_action_facts(item: NewsItem) -> set[str]:
     for action, aliases in _ACTION_ALIASES.items():
         best: tuple[int, str] | None = None
         for alias in aliases:
+            prefer_before = bool(_PERSIAN_RE.search(alias))
             for match in re.finditer(re.escape(alias), text, flags=re.IGNORECASE):
-                number = _nearest_number(text, match.start(), match.end())
-                if number is None:
+                candidate = _directional_number(
+                    text,
+                    match.start(),
+                    match.end(),
+                    prefer_before=prefer_before,
+                )
+                if candidate is None:
                     continue
-                # Keep the closest alias/number pair for this action. This avoids
-                # nearby dates such as "Sept. 6" / "15 شهریور" winning over 92.
-                number_match = None
-                lo = max(0, match.start() - 80)
-                hi = min(len(text), match.end() + 80)
-                for candidate in _NUMBER_RE.finditer(text, lo, hi):
-                    if candidate.group(0) != number:
-                        continue
-                    if candidate.end() <= match.start():
-                        distance = match.start() - candidate.end()
-                    elif candidate.start() >= match.end():
-                        distance = candidate.start() - match.end()
-                    else:
-                        distance = 0
-                    if number_match is None or distance < number_match:
-                        number_match = distance
-                distance = number_match if number_match is not None else 999
-                if best is None or distance < best[0]:
-                    best = (distance, number)
+                if best is None or candidate[0] < best[0]:
+                    best = candidate
         if best is not None:
             facts.add(f"action:{action}:{best[1]}")
     return facts
