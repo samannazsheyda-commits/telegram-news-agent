@@ -3,10 +3,13 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
+from datetime import datetime
 from html import escape
 
 import requests
 from bs4 import BeautifulSoup
+
+from .persian_datetime import format_persian_number, tehran_persian_date_time, to_persian_digits
 
 CAR_PRICE_URL = "https://www.mashin3.com/price.html"
 CAR_SOURCE_NAME = "ماشین۳"
@@ -64,22 +67,24 @@ def _change_line(current: int, previous: int | None) -> str:
         return ""
     diff = current - previous
     pct = abs(diff) / previous * 100
+    diff_text = format_persian_number(abs(diff))
+    pct_text = to_persian_digits(f"{pct:.2f}")
     if diff > 0:
-        return f" ▲ {abs(diff):,} تومان | {pct:.2f}٪"
+        return f" ▲ {diff_text} تومان | {pct_text}٪"
     if diff < 0:
-        return f" ▼ {abs(diff):,} تومان | {pct:.2f}٪"
+        return f" ▼ {diff_text} تومان | {pct_text}٪"
     return " — بدون تغییر"
 
 
 def _isolated_name(name: str) -> str:
-    return f"{_RLI}<b>{escape(name)}</b>{_PDI}"
+    return f"{_RLI}<b>{escape(to_persian_digits(name))}</b>{_PDI}"
 
 
 def format_car_prices(prices: list[CarPrice], previous: dict[str, int] | None = None) -> str:
     previous = previous or {}
     lines = ["🚗 <b>قیمت روز خودرو | بازار آزاد</b>"]
     for item in prices:
-        lines += ["", f"▫️ {_isolated_name(item.name)}: {item.market_toman:,} تومان{_change_line(item.market_toman, previous.get(item.name))}"]
+        lines += ["", f"▫️ {_isolated_name(item.name)}: {format_persian_number(item.market_toman)} تومان{_change_line(item.market_toman, previous.get(item.name))}"]
     lines += [
         "",
         f'📌 <a href="{CAR_PRICE_URL}">منبع: {CAR_SOURCE_NAME}</a>',
@@ -90,19 +95,39 @@ def format_car_prices(prices: list[CarPrice], previous: dict[str, int] | None = 
     return "\n".join(lines)
 
 
-def _telegraph_car_nodes(prices: list[CarPrice], previous: dict[str, int] | None = None) -> list[dict]:
+def _car_summary(prices: list[CarPrice], date_text: str) -> str:
+    visible = [item for item in prices if item.market_toman > 0]
+    if not visible:
+        return f"در فهرست قیمت روز خودرو ({date_text}) قیمت قابل انتشار در منبع ثبت نشده است."
+    highest = max(visible, key=lambda item: item.market_toman)
+    return (
+        f"در فهرست قیمت روز خودرو ({date_text})، گران‌ترین مدل "
+        f"{to_persian_digits(highest.name)} با قیمت {format_persian_number(highest.market_toman)} تومان ثبت شده است. "
+        f"این فهرست شامل {to_persian_digits(len(visible))} مدل دارای قیمت در منبع ماشین۳ است."
+    )
+
+
+def _telegraph_car_nodes(
+    prices: list[CarPrice],
+    previous: dict[str, int] | None = None,
+    now: datetime | None = None,
+) -> list[dict]:
     previous = previous or {}
+    date_text, time_text = tehran_persian_date_time(now)
+    visible = [item for item in prices if item.market_toman > 0]
     nodes: list[dict] = [
         {"tag": "figure", "children": [{"tag": "img", "attrs": {"src": CAR_BANNER_URL}}]},
+        {"tag": "p", "children": [{"tag": "strong", "children": [f"آخرین به‌روزرسانی: {date_text}، ساعت {time_text}"]}]},
+        {"tag": "blockquote", "children": [_car_summary(visible, date_text)]},
         {"tag": "hr"},
     ]
-    for item in prices:
+    for item in visible:
         change = _change_line(item.market_toman, previous.get(item.name))
         nodes.append({
             "tag": "p",
             "children": [
-                {"tag": "strong", "children": [item.name]},
-                f": {item.market_toman:,} تومان{change}",
+                {"tag": "strong", "children": [to_persian_digits(item.name)]},
+                f": {format_persian_number(item.market_toman)} تومان{change}",
             ],
         })
     nodes.extend([
@@ -141,7 +166,9 @@ def create_car_telegraph_page(
     previous: dict[str, int] | None = None,
     *,
     session=requests,
+    now: datetime | None = None,
 ) -> str:
+    date_text, _ = tehran_persian_date_time(now)
     account = _telegraph_result(session.post(
         f"{TELEGRAPH_API_URL}/createAccount",
         data={"short_name": "BiKhabaar", "author_name": "بی‌خبر", "author_url": CHANNEL_URL},
@@ -155,10 +182,10 @@ def create_car_telegraph_page(
         f"{TELEGRAPH_API_URL}/createPage",
         data={
             "access_token": token,
-            "title": "قیمت روز خودرو | بازار آزاد",
+            "title": f"قیمت روز خودرو | {date_text}",
             "author_name": "بی‌خبر",
             "author_url": CHANNEL_URL,
-            "content": json.dumps(_telegraph_car_nodes(prices, previous), ensure_ascii=False),
+            "content": json.dumps(_telegraph_car_nodes(prices, previous, now), ensure_ascii=False),
             "return_content": "false",
         },
         timeout=30,
@@ -169,10 +196,17 @@ def create_car_telegraph_page(
     return url
 
 
-def format_car_telegraph_post(page_url: str, count: int) -> str:
+def format_car_telegraph_post(
+    page_url: str,
+    count: int,
+    *,
+    now: datetime | None = None,
+) -> str:
     del count
+    date_text, time_text = tehran_persian_date_time(now)
     return "\n".join([
-        f'🚗 <a href="{escape(page_url, quote=True)}"><b>قیمت روز خودرو | بازار آزاد</b></a>',
+        f'🚗 <a href="{escape(page_url, quote=True)}"><b>قیمت روز خودرو | {date_text}</b></a>',
+        f"آخرین به‌روزرسانی: ساعت {time_text} به وقت ایران",
         "",
         f'📌 <a href="{CAR_PRICE_URL}">منبع: {CAR_SOURCE_NAME}</a>',
         "",
