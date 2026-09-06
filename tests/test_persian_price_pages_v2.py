@@ -58,17 +58,17 @@ def test_phone_page_uses_persian_jalali_title_time_digits_and_never_shows_missin
     assert data['title'] == 'قیمت روز موبایل | ۱۵ شهریور ۱۴۰۵'
     encoded = json.dumps(json.loads(data['content']), ensure_ascii=False)
     assert 'آخرین به‌روزرسانی: ۱۵ شهریور ۱۴۰۵، ساعت ۱۷:۴۸' in encoded
-    assert 'iPhone ۱۷ Pro Max' in encoded
+    assert 'Apple iPhone 17 Pro Max' in encoded
     assert '۴۳۹,۹۸۰,۰۰۰ تومان' in encoded
     assert '۳۰۰,۰۰۰,۰۰۰ تومان' in encoded
-    assert 'Galaxy S۲۶ Ultra' in encoded
+    assert 'Samsung Galaxy S26 Ultra' in encoded
     assert '۲۵۰,۰۰۰,۰۰۰ تومان' in encoded
-    assert 'Xiaomi ۱۷ Ultra' not in encoded
+    assert 'Xiaomi 17 Ultra' not in encoded
     assert 'در منبع ثبت نشده' not in encoded
     assert 'در فهرست قیمت روز موبایل' in encoded
 
 
-def test_car_page_uses_persian_jalali_title_time_and_digits():
+def test_car_page_uses_persian_jalali_title_time_and_price_digits_while_model_name_stays_exact():
     prices = [
         cars.CarPrice('تارا اتوماتیک V4 LX', 3_085_000_000),
         cars.CarPrice('شاهین G', 2_285_000_000),
@@ -79,7 +79,7 @@ def test_car_page_uses_persian_jalali_title_time_and_digits():
     assert data['title'] == 'قیمت روز خودرو | ۱۵ شهریور ۱۴۰۵'
     encoded = json.dumps(json.loads(data['content']), ensure_ascii=False)
     assert 'آخرین به‌روزرسانی: ۱۵ شهریور ۱۴۰۵، ساعت ۱۷:۴۸' in encoded
-    assert 'تارا اتوماتیک V۴ LX' in encoded
+    assert 'تارا اتوماتیک V4 LX' in encoded
     assert '۳,۰۸۵,۰۰۰,۰۰۰ تومان' in encoded
     assert 'در فهرست قیمت روز خودرو' in encoded
 
@@ -92,13 +92,13 @@ def test_telegram_titles_also_include_today_persian_date():
 
 
 def test_latest_redesign_forces_each_price_post_once_more_today():
-    car_state = {'car_last_sent_date': '2026-09-06', 'car_instant_republish_fresh_date': '2026-09-06'}
+    car_state = {'car_last_sent_date': '2026-09-06', 'car_instant_republish_fresh_2_date': '2026-09-06'}
     assert v9._car_due_with_persian_page_republish(car_state, NOW) is True
     assert v9._car_due_with_persian_page_republish(car_state, NOW) is False
 
     phone_state = {
         'phone_flagships_last_sent_date': '2026-09-06',
-        'phone_flagships_fresh_republish_date': '2026-09-06',
+        'phone_flagships_fresh_republish_2_date': '2026-09-06',
     }
     assert v10._phone_flagships_due_with_persian_page_republish(phone_state, NOW) is True
     assert v10._phone_flagships_due_with_persian_page_republish(phone_state, NOW) is False
