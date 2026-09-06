@@ -101,6 +101,7 @@ def _phone_flagships_due_with_fresh_republish(state: dict, now: datetime) -> boo
 
 
 def _phone_flagships_due_with_persian_page_republish(state: dict, now: datetime) -> bool:
+    """Force exactly one post for the latest Persian Instant View redesign."""
     local_date = now.astimezone(base.agent.TEHRAN).date().isoformat()
     if (
         local_date == _PHONE_40_REPUBLISH_DATE
@@ -108,7 +109,7 @@ def _phone_flagships_due_with_persian_page_republish(state: dict, now: datetime)
     ):
         state[_PHONE_PERSIAN_PAGE_STATE_KEY] = local_date
         return True
-    return _phone_flagships_due_with_fresh_republish(state, now)
+    return phone_flagships_due(state, now)
 
 
 def _publish_daily_flagships(now: datetime) -> None:
