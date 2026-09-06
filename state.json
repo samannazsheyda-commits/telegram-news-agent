@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41570",
   "news_seen": [
+    "7c3f407103c7bfeca9be49cc116f2ee817855cc2",
+    "fa1e455d36270eb14acec594969e51f627fd695a",
     "x:AJEnglish:2096723807092584462",
     "x:CENTCOM:2096397091769565468",
     "x:sfrantzman:2096676009101901879",
@@ -498,9 +500,7 @@
     "17c5391202f45155a1299353db8300f51a3b9e8c",
     "ab0b557beb6d3ef996cf8876365a6afe1b0d250d",
     "f3f4ebe007c4619e81e675a35e59e4480e90fb87",
-    "84cf552fb09556a8b9b9ea5e67c340ca7e117182",
-    "8bac07fca4f3da2ba87e2ab1dde9789289151b10",
-    "6af0767dc52a080e8d61c9548dd2c053a9affcf2"
+    "84cf552fb09556a8b9b9ea5e67c340ca7e117182"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
   "next_news_color": "red",
@@ -623,6 +623,24 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "7c3f407103c7bfeca9be49cc116f2ee817855cc2",
+      "source": "NOTAM / Airspace",
+      "title": "Israel struck targets without entering Iranian airspace - Israeli media - Iran International",
+      "reason": "not_today_tehran",
+      "published": "Mon, 08 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTFAxTlU4d2NfY21mRnluSW8tOUpQMHNWeUhnNk1Cb2xIV1ZTT2hDNkd2OGk4YklyZTNXQ29FdnM2eUpWeFctM3BBdzBSMmZUSXFuOXc?oc=5",
+      "checked_at": "2026-09-06T22:35:00.162472+00:00"
+    },
+    {
+      "key": "fa1e455d36270eb14acec594969e51f627fd695a",
+      "source": "NOTAM / Airspace",
+      "title": "Israel struck targets without entering Iranian airspace - Israeli media",
+      "reason": "not_today_tehran",
+      "published": "Mon, 08 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTFAxTlU4d2NfY21mRnluSW8tOUpQMHNWeUhnNk1Cb2xIV1ZTT2hDNkd2OGk4YklyZTNXQ29FdnM2eUpWeFctM3BBdzBSMmZUSXFuOXc?oc=5",
+      "checked_at": "2026-09-06T22:32:36.646830+00:00"
+    },
     {
       "key": "x:CENTCOM:2096397091769565468",
       "source": "CENTCOM / X",
@@ -2404,24 +2422,6 @@
       "published": "Sat, 05 Sep 2026 01:15:10 +0000",
       "link": "https://x.com/haaretzcom/status/2096044433254797421",
       "checked_at": "2026-09-05T09:05:26.566141+00:00"
-    },
-    {
-      "key": "x:haaretzcom:2096044433254797421",
-      "source": "Haaretz / X",
-      "title": "Analysis • Trump wants to stop the fighting. Iran has trouble knowing when to quit | Zvi Bar'el https://www.haaretz.com/middle-east-news/iran/2026-09-04/ty-article/.premium/trump-wants-to-stop-the-fighting-iran-has-trouble-knowing-when-to-quit/000001a0-6bd2-d60b-a1f2-efdee54c0000?taid=6a9b6d1eae1ff00001c207e8&utm_campaign=trueanthem&utm_medium=social&utm_source=twitter",
-      "reason": "translation_failed_retry_later",
-      "published": "Sat, 05 Sep 2026 01:15:10 +0000",
-      "link": "https://x.com/haaretzcom/status/2096044433254797421",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:AlArabiya_Eng:2096059197045555636",
-      "source": "Al Arabiya English / X",
-      "title": "US President Donald Trump tells reporters that the United States may hit Iran’s Pickaxe Mountain very soon.",
-      "reason": "duplicate_or_redundant",
-      "published": "Sat, 05 Sep 2026 02:13:50 +0000",
-      "link": "https://x.com/AlArabiya_Eng/status/2096059197045555636",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-06",
