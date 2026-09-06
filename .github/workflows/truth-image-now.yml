@@ -22,7 +22,12 @@ jobs:
 
           photo = "https://truth-archive.us-iad-1.linodeobjects.com/attachments/17977/ef4da83f66017163-4c1b09bf9dd9.jpg"
           truth_url = "https://truthsocial.com/@realDonaldTrump/117206799377569441"
-          caption = '<b>پست جدید ترامپ در تروت سوشال</b>\n\n<a href="' + truth_url + '">لینک پست اصلی</a>'
+          caption = (
+              '<b>پست جدید ترامپ در تروت سوشال</b>\n\n'
+              '<a href="' + truth_url + '">لینک پست اصلی</a>\n\n'
+              '📡 <a href="https://t.me/bikhabaar">بی‌خبر</a> ←\n'
+              'مانیتور تحولات ایران'
+          )
 
           token = os.environ["TELEGRAM_BOT_TOKEN"]
           chat = os.environ["TELEGRAM_CHAT_ID"]
