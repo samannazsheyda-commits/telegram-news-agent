@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 import src.main as main
+import src.runtime_v9 as v9
 from src.cars import CarPrice
 from src.sources import TruthPost
 
@@ -21,22 +22,28 @@ def test_daily_car_post_uses_telegraph_page_not_full_external_list(tmp_path, mon
 
     created = []
     monkeypatch.setattr(
-        main,
+        v9,
         "create_car_telegraph_page",
         lambda prices, previous: created.append((prices, previous)) or "https://telegra.ph/car-prices-today",
-        raising=False,
     )
     monkeypatch.setattr(
-        main,
+        v9,
         "format_car_telegraph_post",
         lambda url, count: f"CAR TELEGRAPH {count} {url}",
-        raising=False,
     )
     sent = []
     monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
 
-    now = datetime(2026, 9, 6, 8, 0, tzinfo=timezone.utc)  # 11:30 Tehran
-    assert main.run(now) == 0
-    assert created
-    assert sent == ["CAR TELEGRAPH 1 https://telegra.ph/car-prices-today"]
-    assert "mashin3.com" not in sent[0]
+    original_installed = v9._installed
+    original_formatter = main.format_car_prices
+    try:
+        v9._installed = False
+        v9.install_persian_only_output()
+        now = datetime(2026, 9, 6, 8, 0, tzinfo=timezone.utc)  # 11:30 Tehran
+        assert main.run(now) == 0
+        assert created
+        assert sent == ["CAR TELEGRAPH 1 https://telegra.ph/car-prices-today"]
+        assert "mashin3.com" not in sent[0]
+    finally:
+        main.format_car_prices = original_formatter
+        v9._installed = original_installed
