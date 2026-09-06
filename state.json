@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "x:JasonMBrodsky:2096549811755302943",
     "x:JasonMBrodsky:2096547854244327770",
     "x:AlArabiya_Eng:2096545131838963889",
     "8d66ef344434b94020da64ab9aa7676ee571b89f",
@@ -499,11 +500,10 @@
     "f4606b1fdc60f48e0299b6808d1d0c66049fb0af",
     "d8146ca2086ccae2bc398d978a91cec636e1ae78",
     "e595ad3153c2c51b23634cb54c13f76a677aa38f",
-    "c837dcdf44a41fe4a578e65349f342badad5a050",
-    "a4387ac138a7e609c8f620818a34bfe224b50a0c"
+    "c837dcdf44a41fe4a578e65349f342badad5a050"
   ],
-  "market_last_sent_at": "2026-09-06T08:41:33.445711+00:00",
-  "next_news_color": "white",
+  "market_last_sent_at": "2026-09-06T10:45:33.357422+00:00",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2790000000,
     "پژو 207 اتوماتیک پانوراما": 2960000000,
@@ -614,9 +614,9 @@
   "market_day_prices": {
     "date": "2026-09-06",
     "first_usd": 227205,
-    "last_usd": 225520,
+    "last_usd": 224905,
     "first_gold": 23674400,
-    "last_gold": 23501800,
+    "last_gold": 23431100,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:JasonMBrodsky:2096549811755302943",
+      "source": "Jason Brodsky / X",
+      "title": "The National Security Council issues an updated warning of terror threats against Israelis and Jews abroad ahead of the Jewish holiday season, which begins this weekend with Rosh Hashanah and ends three weeks later with the conclusion of Sukkot. In a statement, the NSC, which is part of the Prime Minister’s Office, says that Iran and its proxies Hamas and Hezbollah, and global jihadi groups Islamic State and al-Qaeda, remain highly motivated to target Israelis and Jews worldwide.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2096549811755302943",
+      "published": "Sun, 06 Sep 2026 10:43:21 +0000",
+      "sent_at": "2026-09-06T10:47:05.129904+00:00",
+      "fingerprint": "the national security council issues an updated warning of terror threats against israelis and jews abroad ahead of the jewish holiday season which begins this weekend with rosh hashanah and ends three weeks later with the conclusion of sukkot in a statement the nsc which is part of the prime minister s office says that iran and its proxies hamas and hezbollah and global jihadi groups islamic state and al qaeda remain highly motivated to target israelis and jews worldwide"
+    },
     {
       "key": "x:JasonMBrodsky:2096547854244327770",
       "source": "Jason Brodsky / X",
