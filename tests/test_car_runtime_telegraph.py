@@ -33,17 +33,10 @@ def test_daily_car_post_uses_telegraph_page_not_full_external_list(tmp_path, mon
     )
     sent = []
     monkeypatch.setattr(main, "send_telegram", lambda text, token, chat: sent.append(text))
+    monkeypatch.setattr(main, "format_car_prices", v9._format_car_via_telegraph)
 
-    original_installed = v9._installed
-    original_formatter = main.format_car_prices
-    try:
-        v9._installed = False
-        v9.install_persian_only_output()
-        now = datetime(2026, 9, 6, 8, 0, tzinfo=timezone.utc)  # 11:30 Tehran
-        assert main.run(now) == 0
-        assert created
-        assert sent == ["CAR TELEGRAPH 1 https://telegra.ph/car-prices-today"]
-        assert "mashin3.com" not in sent[0]
-    finally:
-        main.format_car_prices = original_formatter
-        v9._installed = original_installed
+    now = datetime(2026, 9, 6, 8, 0, tzinfo=timezone.utc)  # 11:30 Tehran
+    assert main.run(now) == 0
+    assert created
+    assert sent == ["CAR TELEGRAPH 1 https://telegra.ph/car-prices-today"]
+    assert "mashin3.com" not in sent[0]
