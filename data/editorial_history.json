@@ -1,5 +1,23 @@
 [
   {
+    "id": "defcbda10de53c44cd2f19a2ae617c13f3247310",
+    "news_key": "x:CENTCOM:2096397091769565468",
+    "source": "CENTCOM / X",
+    "source_url": "https://x.com/CENTCOM/status/2096397091769565468",
+    "original_title": "Thanks to the precision and professionalism of American service members, the M/T Kylo sank in the Gulf of Oman today and joined Iran’s navy at the bottom of the sea.",
+    "original_summary": "",
+    "persian_title": "",
+    "persian_body": "",
+    "published_at_source": "Sun, 06 Sep 2026 00:36:30 +0000",
+    "discovered_at": "2026-09-06T22:10:19.181039+00:00",
+    "rejection_reason": "not_today_tehran",
+    "status": "superseded",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-06T22:11:27.659284+00:00"
+  },
+  {
     "id": "e1317f3d3da9ecb1cdf6db33fbcfca1d80a0abe1",
     "news_key": "x:sfrantzman:2096676009101901879",
     "source": "Seth Frantzman / X",

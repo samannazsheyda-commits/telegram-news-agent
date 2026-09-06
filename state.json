@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41569",
   "news_seen": [
+    "x:CENTCOM:2096397091769565468",
     "x:sfrantzman:2096676009101901879",
     "x:AlArabiya_Eng:2096675106088997338",
     "x:marklevinshow:2096714311519342608",
@@ -499,8 +500,7 @@
     "84cf552fb09556a8b9b9ea5e67c340ca7e117182",
     "8bac07fca4f3da2ba87e2ab1dde9789289151b10",
     "6af0767dc52a080e8d61c9548dd2c053a9affcf2",
-    "38688faaf3843bca0fbbbde2780aa9a23f70ba7e",
-    "66691d8498aa0d34bceb2b7b3a6c12bc533587fa"
+    "38688faaf3843bca0fbbbde2780aa9a23f70ba7e"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
   "next_news_color": "white",
@@ -623,6 +623,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "x:CENTCOM:2096397091769565468",
+      "source": "CENTCOM / X",
+      "title": "Thanks to the precision and professionalism of American service members, the M/T Kylo sank in the Gulf of Oman today and joined Iran’s navy at the bottom of the sea.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 00:36:30 +0000",
+      "link": "https://x.com/CENTCOM/status/2096397091769565468",
+      "checked_at": "2026-09-06T22:10:19.181039+00:00"
+    },
     {
       "key": "x:sfrantzman:2096676009101901879",
       "source": "Seth Frantzman / X",
@@ -2412,15 +2421,6 @@
       "reason": "duplicate_or_redundant",
       "published": "Sat, 05 Sep 2026 02:13:50 +0000",
       "link": "https://x.com/AlArabiya_Eng/status/2096059197045555636",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:haaretzcom:2096082180216676858",
-      "source": "Haaretz / X",
-      "title": "IDF says it took over Hezbollah stronghold after reports of Iran threats https://www.haaretz.com/middle-east-news/lebanonnews/2026-09-03/ty-article/idf-says-it-took-over-hezbollah-stronghold-after-reports-of-iran-threats/000001a0-6874-d60b-a1f2-ec7eb70d0001?taid=6a9b9045ae1ff00001c208bd&utm_campaign=trueanthem&utm_medium=social&utm_source=twitter",
-      "reason": "duplicate_or_redundant",
-      "published": "Sat, 05 Sep 2026 03:45:09 +0000",
-      "link": "https://x.com/haaretzcom/status/2096082180216676858",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
