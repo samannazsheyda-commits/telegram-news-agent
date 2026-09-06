@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "x:AJEnglish:2096538507309359362",
     "39587fc86617e1904080e5bfbf3efdeb26b857a0",
     "946a63b90e0dc7af1b73438ef660ad4925719465",
     "f35ebc0af3312a97045fc089157023d804e32537",
@@ -499,11 +500,10 @@
     "a4387ac138a7e609c8f620818a34bfe224b50a0c",
     "5921d549c06640a3a0b415091d7731275a134016",
     "837577ffd01da07170f1f5031e48df86d323dc4d",
-    "b25c6919f45ca708f11f62d9032052fe38b8a8b1",
-    "3076578e1318c2f05f0502284ab9cb59fdbf2dd0"
+    "b25c6919f45ca708f11f62d9032052fe38b8a8b1"
   ],
   "market_last_sent_at": "2026-09-06T08:41:33.445711+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2790000000,
     "پژو 207 اتوماتیک پانوراما": 2960000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2096538507309359362",
+      "source": "Al Jazeera English / X",
+      "title": "Fighting has surged in Yemen as government-aligned forces counter Iran-backed Houthi rebels around Hodeidah and Taiz. Dozens have been killed and families displaced.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096538507309359362",
+      "published": "Sun, 06 Sep 2026 09:58:26 +0000",
+      "sent_at": "2026-09-06T10:04:14.363081+00:00",
+      "fingerprint": "fighting has surged in yemen as government aligned forces counter iran backed houthi rebels around hodeidah and taiz dozens have been killed and families displaced"
+    },
     {
       "key": "x:business:2096530110790737973",
       "source": "Bloomberg / X",
