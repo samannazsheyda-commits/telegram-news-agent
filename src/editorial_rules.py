@@ -71,10 +71,14 @@ COMPANY_TERMS = (
 OPERATIONAL_SECURITY_TERMS = (
     "suspend flights", "suspends flights", "suspended flights", "cancelled flights", "canceled flights",
     "flight cancellation", "airspace closure", "airspace closed", "closes airspace", "closed airspace",
+    "resume flight", "resumes flight", "resume flights", "resumes flights", "flights resume",
+    "resume overflight", "resumes overflight", "resume overflights", "resumes overflights", "overflights resume",
+    "reopen airspace", "reopens airspace", "airspace reopens", "airspace reopening",
     "avoid airspace", "avoid iranian airspace", "avoid iran airspace", "aviation warning", "security risk", "security risks",
     "notam", "evacuation", "attack", "attacked", "strike", "struck", "missile", "drone", "explosion",
     "sanction", "sanctions", "seized", "shutdown", "shut down", "facility hit", "infrastructure hit",
-    "تعلیق پرواز", "لغو پرواز", "بسته شدن حریم", "حریم هوایی بسته", "اجتناب از حریم هوایی", "هشدار هوانوردی",
+    "تعلیق پرواز", "لغو پرواز", "ازسرگیری پرواز", "از سرگیری پرواز", "بازگشایی حریم", "بازگشایی حریم هوایی",
+    "بسته شدن حریم", "حریم هوایی بسته", "اجتناب از حریم هوایی", "هشدار هوانوردی",
     "نوتام", "تخلیه", "حمله", "موشک", "پهپاد", "انفجار", "تحریم", "توقیف",
 )
 
