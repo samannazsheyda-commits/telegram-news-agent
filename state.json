@@ -1,6 +1,12 @@
 {
   "truth_last_id": "41569",
   "news_seen": [
+    "1a1a4f6d13489bff97c7b144118f1cd321bcdd05",
+    "2b7fbbd1ae06534ec393cac6c750d993ef99be60",
+    "x:RapidResponse47:2096627930562507193",
+    "x:TankerTrackers:2096414586933035424",
+    "x:JoeTruzman:2096635007590891980",
+    "x:FoxNews:2096404476605137090",
     "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
     "x:AJEnglish:2096680962515968032",
     "x:CBSNews:2096684024295018932",
@@ -494,13 +500,7 @@
     "3da9d2619473dadb06132e08b93c8b06bf3f17f5",
     "a341a2599eb0a37d56dfdc8afb090baa395e9342",
     "7854484690ed814576ad1ecb4a7678cd6b7bd139",
-    "6bf0f187ae69b500f6c457e54605fe5807273186",
-    "590a85b1af8c72d461bd587252ece86922ccb52a",
-    "8733c3cf440d3b7a99b028c409fd31f6f054631c",
-    "8ea2cf545985fcb0885cac8a6a24100920ef7554",
-    "51515ef1d7fc0eadbf6119ee8ed0ab729520596a",
-    "244dd75587ca7258bed1d8ea3f67fdccbb9eb07a",
-    "da7baa919be2f0bdbdad8878d259af93a0f0a920"
+    "6bf0f187ae69b500f6c457e54605fe5807273186"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
   "next_news_color": "red",
@@ -623,6 +623,60 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "1a1a4f6d13489bff97c7b144118f1cd321bcdd05",
+      "source": "وار نوآر / Telegram",
+      "title": "#Iran 🇮🇷 : Iranian Forces ( #IRGC ) reportedly seized a cache of weapons and materials belonging to Kurdish militants in Oshnavieh.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 14:38:00 +0000",
+      "link": "https://t.me/war_noir/25091",
+      "checked_at": "2026-09-06T20:33:00.322019+00:00"
+    },
+    {
+      "key": "2b7fbbd1ae06534ec393cac6c750d993ef99be60",
+      "source": "وار نوآر / Telegram",
+      "title": "#Iran / #USA 🇮🇷 🇺🇸 : Iranian Revolutionary Guard Corps ( #IRGC ) Navy struck 'unauthorized vessels' in the Strait of Hormuz.",
+      "reason": "not_today_tehran",
+      "published": "Sat, 05 Sep 2026 21:29:39 +0000",
+      "link": "https://t.me/war_noir/25086",
+      "checked_at": "2026-09-06T20:33:00.322019+00:00"
+    },
+    {
+      "key": "x:RapidResponse47:2096627930562507193",
+      "source": "White House Rapid Response / X",
+      "title": ".@SecretaryWright: \"The critical mission our Navy is doing is not just to escort the ships out, but it's to prevent any Iranian oil or any other export products from coming out... A nuclear armed Iran is an existential threat not just for the region, but for the world economy.\"",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 15:53:46 +0000",
+      "link": "https://x.com/RapidResponse47/status/2096627930562507193",
+      "checked_at": "2026-09-06T20:33:00.322019+00:00"
+    },
+    {
+      "key": "x:TankerTrackers:2096414586933035424",
+      "source": "TankerTrackers / X",
+      "title": "Crude oil exports out of the Middle East during August 2026 were down 39% since the January & February baseline of 18.5 million barrels per day. The lowest point was during May; down 67%. The current deficit is now only 7.2 Mbpd as opposed to 12.4 Mbpd. #OOTT #IranWar #Tankers",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 01:46:01 +0000",
+      "link": "https://x.com/TankerTrackers/status/2096414586933035424",
+      "checked_at": "2026-09-06T20:33:00.322019+00:00"
+    },
+    {
+      "key": "x:JoeTruzman:2096635007590891980",
+      "source": "Joe Truzman / X",
+      "title": "The Financial Times reports that US divers, robotic boats, and underwater craft spent four months covertly clearing mines from the Strait of Hormuz. - Divers operated from inflatable-hulled boats, supported by robotic surface craft and submersibles. Towed sonar arrays produced high-resolution images of seabed objects to help locate suspected mines. - After detection, a diver would typically approach the mine, attach an explosive charge and destroy it. Experts said remotely operated underwater vehicles could also place or deliver explosives. - FT identifies the Common Uncrewed Surface Vessel as an example of the detection platforms. Experts suggested SeaFox or Archerfish systems could have been used for neutralization, and that the USS Miguel Keith, an expeditionary mobile base, may have supported operations.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 16:21:54 +0000",
+      "link": "https://x.com/JoeTruzman/status/2096635007590891980",
+      "checked_at": "2026-09-06T20:33:00.322019+00:00"
+    },
+    {
+      "key": "x:FoxNews:2096404476605137090",
+      "source": "Fox News / X",
+      "title": "WATCH: The M/T Kylo plunges beneath the Gulf of Oman as U.S. forces sink the vessel in a dramatic operation. \"Thanks to the precision and professionalism of American service members, the M/T Kylo sank in the Gulf of Oman today and joined Iran’s navy at the bottom of the sea,\" CENTCOM said.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 01:05:51 +0000",
+      "link": "https://x.com/FoxNews/status/2096404476605137090",
+      "checked_at": "2026-09-06T20:33:00.322019+00:00"
+    },
     {
       "key": "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
       "source": "کلش ریپورت / Telegram",
@@ -2367,60 +2421,6 @@
       "reason": "duplicate_or_redundant",
       "published": "Sat, 05 Sep 2026 07:38:10 +0000",
       "link": "https://x.com/AJEnglish/status/2096140818335535225",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "5fc26d05852e9c264a578ce806086009b7997318",
-      "source": "NOTAM / Airspace",
-      "title": "President Trump Extends Deadline for Iran to Reach Deal - Global Guardian",
-      "reason": "not_today_tehran",
-      "published": "Mon, 06 Apr 2026 13:49:20 GMT",
-      "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQa293dy1CN2NnYlBtSDJwVjktSDlLcXdQT0Z2UTVtTkZoelNiUW9VNzVLRmtsZTRWSFJ0OElyU3lYQVd5c0RyMFBCWjQ0bGRHZkpVNVdjTWVOS3d0NXJxUHlUVHFtVDNTdEJhQ0ZiUXloVy0xaVZtdDVBN0M4MUFBUldyRkx6STJYOVBpaFI0bnVodmlETTFVQ2tyVQ?oc=5",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "e0cf08d952598dca107733f85068fc40b3718e2c",
-      "source": "NOTAM / Airspace",
-      "title": "Jordan intercepts 10 of 13 Iranian ballistic missiles entering its airspace - Arab Times Kuwait News",
-      "reason": "not_today_tehran",
-      "published": "Tue, 01 Sep 2026 21:27:04 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPVHpRV2Z2MWRUUlhxR09WT0Vwc2pzaW95WDdZVl9DQmFjQ2NFQUJYRWRUM1NScG1mYURGZzIzTk52VkJ6ZkRhaHZBSFZ3WU8yaUFzb1puSGg4ZWdVbm5IN282MnpfREM2cWlvSy1xWXlrdWFEelBQaDk5blZMWHZXS1c2Z3VmVXVIMF95ZzRiX0JwSGNDQlZkYmhaUF9XQjhPaTAxdTVwRFM1ekZwcEh4dHllSQ?oc=5",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:TankerTrackers:2094003065112109302",
-      "source": "TankerTrackers / X",
-      "title": "Over the past seven full days, crude oil exports departing the US Navy blockade line averaged 6.7 million barrels per day. This figure reflects our extensive research, which combines AIS data with hundreds of daily satellite images, including the visually identified AIS-offline tankers; some of which aren't even pinging in the Middle East. It also includes vessels that reactivate their AIS days after departing the blockade line. Folks, this isn't our first rodeo. #OOTT #IranWar #Tankers",
-      "reason": "not_today_tehran",
-      "published": "Sun, 30 Aug 2026 10:03:30 +0000",
-      "link": "https://x.com/TankerTrackers/status/2094003065112109302",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:TankerTrackers:2094354765169729926",
-      "source": "TankerTrackers / X",
-      "title": "The only ones that have conducted STS transfers previously in the Strait of Hormuz were the Iranians themselves. (updated with past tense correction to avoid confusion)",
-      "reason": "not_today_tehran",
-      "published": "Mon, 31 Aug 2026 09:21:01 +0000",
-      "link": "https://x.com/TankerTrackers/status/2094354765169729926",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:TankerTrackers:2094493456236499108",
-      "source": "TankerTrackers / X",
-      "title": "Over the past 28 days, Arab states shipped out 6.92 million barrels of crude oil per day via the US Navy blockade line. Of that total, 2.53 Mbpd came from oil terminals in the Gulf of Oman while another 4.39 Mbpd passed through the Strait of Hormuz mostly to supply other tankers waiting in the Gulf of Oman. #OOTT #IranWar #Tankers",
-      "reason": "not_today_tehran",
-      "published": "Mon, 31 Aug 2026 18:32:08 +0000",
-      "link": "https://x.com/TankerTrackers/status/2094493456236499108",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:TankerTrackers:2094823610200269240",
-      "source": "TankerTrackers / X",
-      "title": "Crude oil exports during August 2026 vs the immediate pre-war baseline of January & February 2026. - Iran: -100% - Iraq (Basrah and via Baniyas, Syria): -36% - Kuwait: -36% - Qatar: -48% - Saudi Arabia (both coasts): -48% - UAE (both coasts): -0.02% #OOTT #IranWar #Tankers",
-      "reason": "not_today_tehran",
-      "published": "Tue, 01 Sep 2026 16:24:03 +0000",
-      "link": "https://x.com/TankerTrackers/status/2094823610200269240",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
