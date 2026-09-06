@@ -21,6 +21,7 @@ _SOURCE_OVERRIDES = {
     "John Bolton / X": "جان بولتون / ایکس",
     "Al Jazeera English / X": "الجزیره انگلیسی / ایکس",
     "Al Arabiya English / X": "العربیه انگلیسی / ایکس",
+    "Clash Report / Telegram": "کلش ریپورت / تلگرام",
 }
 
 _AIRSPACE_SECURITY_TERMS = (
@@ -102,8 +103,6 @@ def install_persian_only_output() -> None:
     v7.v2.base.is_low_value_company_news = _newsroom_low_value_company_news
     v7.v2.base.agent._market_quiet_hours = _market_quiet_hours
     v7.v2.base.agent._market_summary_day = market_summary_day
-    # Main's daily car job calls this global. Replace it with the Telegraph publisher
-    # so the user opens telegra.ph in Telegram Instant View instead of the source site.
     v7.v2.base.agent.format_car_prices = _format_car_via_telegraph
     _installed = True
 
