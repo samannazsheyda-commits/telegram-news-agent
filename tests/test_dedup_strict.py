@@ -68,3 +68,27 @@ def test_netanyahu_warning_is_not_duplicate_of_us_tanker_attack():
         "US military strikes three Iranian oil tankers after IRGC missiles at US warships",
     )
     assert not is_strict_duplicate_story(warning, tanker)
+
+
+def test_centcom_same_maritime_progress_in_english_and_persian_is_duplicate():
+    english = _item(
+        "centcom-en", "CENTCOM / X",
+        "A U.S. Air Force F-35A stealth fighter jet patrols over regional waters as CENTCOM forces continue to enforce the maritime blockade against Iran. As of Sept. 6, U.S. forces have redirected 92 commercial vessels, disabled 3 and boarded 2 to ensure strict compliance.",
+    )
+    persian = _item(
+        "centcom-fa", "CENTCOM Farsi / X",
+        "یک فروند جت جنگنده رادارگریز F-35A نیروی هوایی ایالات متحده در حالی که نیروهای سنتکام همچنان به اجرای محاصره دریایی علیه ایران ادامه می‌دهند، بر فراز آب‌های منطقه‌ای گشت‌زنی می‌کند. تا 15 شهریور، نیروهای آمریکایی 92 کشتی تجاری را تغییر مسیر داده، 3 کشتی را غیرفعال کرده و 2 کشتی را توقیف کرده‌اند تا از رعایت دقیق این قوانین اطمینان حاصل کنند.",
+    )
+    assert is_strict_duplicate_story(english, persian)
+
+
+def test_centcom_changed_maritime_counter_is_a_new_update_across_languages():
+    english = _item(
+        "centcom-en", "CENTCOM / X",
+        "CENTCOM says U.S. forces have redirected 92 commercial vessels, disabled 3 and boarded 2 while enforcing the maritime blockade against Iran.",
+    )
+    persian_new = _item(
+        "centcom-fa-new", "CENTCOM Farsi / X",
+        "سنتکام اعلام کرد نیروهای آمریکایی در اجرای محاصره دریایی علیه ایران 93 کشتی تجاری را تغییر مسیر داده، 3 کشتی را غیرفعال کرده و 2 کشتی را توقیف کرده‌اند.",
+    )
+    assert not is_strict_duplicate_story(english, persian_new)
