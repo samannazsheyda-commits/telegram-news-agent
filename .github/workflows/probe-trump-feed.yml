@@ -8,16 +8,36 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Read latest archive feed
+      - run: pip install requests beautifulsoup4
+      - name: Inspect latest captionless archive posts
         run: |
           python - <<'PY'
-          import requests, xml.etree.ElementTree as ET
-          r=requests.get('https://www.trumpstruth.org/feed',headers={'User-Agent':'Mozilla/5.0'},timeout=30)
-          r.raise_for_status()
-          root=ET.fromstring(r.content)
-          for i,node in enumerate(root.findall('.//item')[:30]):
-              vals={}
-              for tag in ('title','link','guid','pubDate','description'):
-                  c=node.find(tag); vals[tag]=(c.text or '').strip() if c is not None else ''
-              print('ITEM',i,repr(vals))
+          import requests
+          from bs4 import BeautifulSoup
+          s=requests.Session(); s.headers.update({'User-Agent':'Mozilla/5.0'})
+          for sid in [41534,41535,41536,41537,41538,41539,41541,41542]:
+              u=f'https://www.trumpstruth.org/statuses/{sid}'
+              r=s.get(u,timeout=30); print('STATUS',sid,r.status_code)
+              if not r.ok: continue
+              soup=BeautifulSoup(r.text,'html.parser')
+              orig=None
+              for a in soup.find_all('a',href=True):
+                  h=a['href']
+                  if 'truthsocial.com/@realDonaldTrump/' in h or 'truthsocial.com/users/realDonaldTrump/statuses/' in h:
+                      orig=h; break
+              text=' '.join(soup.stripped_strings)
+              descs=[]
+              marker='Image Description:'
+              pos=0
+              while True:
+                  i=text.find(marker,pos)
+                  if i<0: break
+                  descs.append(text[i:i+700])
+                  pos=i+len(marker)
+              downloads=[]
+              for a in soup.find_all('a',href=True):
+                  if 'download' in ' '.join(a.stripped_strings).lower(): downloads.append(a['href'])
+              print('ORIGINAL',orig)
+              print('DESCS',descs[:3])
+              print('DOWNLOADS',downloads[:5])
           PY
