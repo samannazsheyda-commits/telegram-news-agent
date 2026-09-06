@@ -10,43 +10,41 @@ from typing import Iterable
 from zoneinfo import ZoneInfo
 
 import requests
-from PIL import ImageDraw, ImageOps
+from PIL import ImageDraw
 from staticmap import StaticMap
 
 from .persian_datetime import gregorian_to_jalali, to_persian_digits
 
 TEHRAN = ZoneInfo("Asia/Tehran")
-REGION_BOUNDS = {
-    "min_lat": 20.5,
-    "max_lat": 42.0,
-    "min_lon": 35.0,
-    "max_lon": 66.0,
-}
-CENTER_LAT = 31.5
-CENTER_LON = 51.5
-MAP_WIDTH = 1400
-MAP_HEIGHT = 900
-MAP_ZOOM = 6
+REGION_BOUNDS = {"min_lat": 8.0, "max_lat": 58.0, "min_lon": 20.0, "max_lon": 72.0}
+CENTER_LAT = 31.0
+CENTER_LON = 48.5
+MAP_WIDTH = 900
+MAP_HEIGHT = 1600
+MAP_ZOOM = 5
 QUERY_RADIUS_NM = 250
 PROVIDERS = (
     "https://api.adsb.lol/v2/point/{lat}/{lon}/{radius}",
     "https://api.airplanes.live/v2/point/{lat}/{lon}/{radius}",
 )
 QUERY_CENTERS = (
-    (33.3, 36.3),  # Syria
-    (33.3, 44.4),  # Iraq
-    (38.0, 46.0),
-    (35.7, 51.4),  # Tehran / central Iran
-    (36.3, 59.6),
-    (31.0, 60.5),
-    (28.5, 52.5),
-    (27.2, 56.3),
-    (24.7, 46.7),  # eastern Saudi
-    (26.0, 51.0),  # Bahrain / Qatar
-    (25.2, 55.3),  # UAE
-    (23.6, 58.4),  # Oman
+    (41.0, 29.0),   # Turkey
+    (33.3, 36.3),   # Syria
+    (33.3, 44.4),   # Iraq
+    (38.0, 46.0),   # Caucasus / NW Iran
+    (35.7, 51.4),   # Tehran
+    (36.3, 59.6),   # NE Iran
+    (31.0, 60.5),   # east Iran
+    (28.5, 52.5),   # central/south Iran
+    (30.0, 31.2),   # Egypt
+    (24.7, 46.7),   # Saudi Arabia
+    (26.0, 51.0),   # Bahrain / Qatar
+    (25.2, 55.3),   # UAE
+    (23.6, 58.4),   # Oman
+    (15.4, 44.2),   # Yemen
+    (33.7, 73.1),   # Pakistan edge
 )
-USER_AGENT = "bikhabaar-air-traffic/1.1"
+USER_AGENT = "bikhabaar-air-traffic/1.2"
 
 
 def _tehran_jalali(now: datetime | None = None) -> tuple[str, str]:
@@ -66,9 +64,7 @@ def build_caption(now: datetime | None = None) -> str:
     return f"وضعیت ترافیک هوایی خاورمیانه\n⏰ {date_text} — {time_text}"
 
 
-def filter_middle_east_aircraft(
-    rows: Iterable[dict], *, max_seen_seconds: float = 90
-) -> list[dict]:
+def filter_middle_east_aircraft(rows: Iterable[dict], *, max_seen_seconds: float = 90) -> list[dict]:
     kept: list[dict] = []
     for row in rows:
         if not isinstance(row, dict):
@@ -81,11 +77,8 @@ def filter_middle_east_aircraft(
             continue
         if seen_pos > max_seen_seconds:
             continue
-        if not (REGION_BOUNDS["min_lat"] <= lat <= REGION_BOUNDS["max_lat"]):
-            continue
-        if not (REGION_BOUNDS["min_lon"] <= lon <= REGION_BOUNDS["max_lon"]):
-            continue
-        kept.append(row)
+        if REGION_BOUNDS["min_lat"] <= lat <= REGION_BOUNDS["max_lat"] and REGION_BOUNDS["min_lon"] <= lon <= REGION_BOUNDS["max_lon"]:
+            kept.append(row)
     return kept
 
 
@@ -94,11 +87,7 @@ def _fetch_center(lat: float, lon: float, *, session=requests) -> list[dict]:
     for template in PROVIDERS:
         url = template.format(lat=lat, lon=lon, radius=QUERY_RADIUS_NM)
         try:
-            response = session.get(
-                url,
-                headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
-                timeout=20,
-            )
+            response = session.get(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"}, timeout=20)
             response.raise_for_status()
             payload = response.json()
             rows = payload.get("ac") if isinstance(payload, dict) else None
@@ -148,24 +137,17 @@ def _screen_pixel(lon: float, lat: float) -> tuple[float, float]:
 
 def _plane_polygon(px: float, py: float, heading: float) -> list[tuple[float, float]]:
     shape = [
-        (0, -11), (2.5, -4), (4, -1), (10, 2), (10, 4), (3.5, 3),
-        (2.3, 8), (5, 10), (5, 12), (0, 10), (-5, 12), (-5, 10),
-        (-2.3, 8), (-3.5, 3), (-10, 4), (-10, 2), (-4, -1), (-2.5, -4),
+        (0, -13), (3, -5), (4, -1), (11, 2), (11, 5), (4, 4),
+        (2, 9), (5, 11), (5, 13), (0, 11), (-5, 13), (-5, 11),
+        (-2, 9), (-4, 4), (-11, 5), (-11, 2), (-4, -1), (-3, -5),
     ]
     angle = math.radians(heading % 360.0)
     cos_a, sin_a = math.cos(angle), math.sin(angle)
-    return [
-        (px + x * cos_a - y * sin_a, py + x * sin_a + y * cos_a)
-        for x, y in shape
-    ]
+    return [(px + x * cos_a - y * sin_a, py + x * sin_a + y * cos_a) for x, y in shape]
 
 
 def render_air_traffic_map(aircraft: Iterable[dict], output_path: str | Path) -> Path:
-    canvas = StaticMap(
-        MAP_WIDTH,
-        MAP_HEIGHT,
-        url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    )
+    canvas = StaticMap(MAP_WIDTH, MAP_HEIGHT, url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png")
     rows: list[dict] = []
     for row in aircraft:
         try:
@@ -177,23 +159,20 @@ def render_air_traffic_map(aircraft: Iterable[dict], output_path: str | Path) ->
     if not rows:
         raise ValueError("no aircraft positions to render")
 
+    # Keep a bright, map-first look close to the user's FR24 reference.
     image = canvas.render(zoom=MAP_ZOOM, center=(CENTER_LON, CENTER_LAT)).convert("RGB")
-    gray = ImageOps.grayscale(image)
-    image = ImageOps.colorize(gray, black="#273036", white="#b9c1c5").convert("RGB")
     draw = ImageDraw.Draw(image)
-
     for row in rows:
         lat = float(row["lat"])
         lon = float(row["lon"])
         px, py = _screen_pixel(lon, lat)
-        if not (-20 <= px <= MAP_WIDTH + 20 and -20 <= py <= MAP_HEIGHT + 20):
+        if not (-24 <= px <= MAP_WIDTH + 24 and -24 <= py <= MAP_HEIGHT + 24):
             continue
         try:
             heading = float(row.get("track", row.get("true_heading", 0)) or 0)
         except (TypeError, ValueError):
             heading = 0.0
-        polygon = _plane_polygon(px, py, heading)
-        draw.polygon(polygon, fill="#f7c843", outline="#6f5a16")
+        draw.polygon(_plane_polygon(px, py, heading), fill="#ffc400", outline="#6f5800")
 
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -201,43 +180,22 @@ def render_air_traffic_map(aircraft: Iterable[dict], output_path: str | Path) ->
     return path
 
 
-def send_telegram_photo(
-    image_path: str | Path,
-    caption: str,
-    bot_token: str,
-    chat_id: str,
-    *,
-    session=requests,
-) -> None:
+def send_telegram_photo(image_path: str | Path, caption: str, bot_token: str, chat_id: str, *, session=requests) -> None:
     if not bot_token or not chat_id:
         raise RuntimeError("Telegram credentials are required")
     url = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
     with Path(image_path).open("rb") as image_file:
-        response = session.post(
-            url,
-            data={"chat_id": chat_id, "caption": caption},
-            files={"photo": ("middle-east-air-traffic.png", image_file, "image/png")},
-            timeout=45,
-        )
+        response = session.post(url, data={"chat_id": chat_id, "caption": caption}, files={"photo": ("middle-east-air-traffic.png", image_file, "image/png")}, timeout=45)
     response.raise_for_status()
     payload = response.json()
     if not isinstance(payload, dict) or not payload.get("ok"):
         raise RuntimeError(f"Telegram rejected air traffic post: {payload}")
 
 
-def publish_air_traffic_snapshot(
-    *,
-    now: datetime | None = None,
-    output_path: str | Path = "/tmp/middle-east-air-traffic.png",
-) -> Path:
+def publish_air_traffic_snapshot(*, now: datetime | None = None, output_path: str | Path = "/tmp/middle-east-air-traffic.png") -> Path:
     aircraft = fetch_live_aircraft()
     path = render_air_traffic_map(aircraft, output_path)
-    send_telegram_photo(
-        path,
-        build_caption(now),
-        os.environ.get("TELEGRAM_BOT_TOKEN", ""),
-        os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"),
-    )
+    send_telegram_photo(path, build_caption(now), os.environ.get("TELEGRAM_BOT_TOKEN", ""), os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"))
     return path
 
 
