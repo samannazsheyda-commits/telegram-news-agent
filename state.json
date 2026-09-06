@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "x:AJEnglish:2096555382197936399",
     "x:JasonMBrodsky:2096549811755302943",
     "x:JasonMBrodsky:2096547854244327770",
     "x:AlArabiya_Eng:2096545131838963889",
@@ -499,11 +500,10 @@
     "49eb717c82e416052929cf3000656e047350d0ee",
     "f4606b1fdc60f48e0299b6808d1d0c66049fb0af",
     "d8146ca2086ccae2bc398d978a91cec636e1ae78",
-    "e595ad3153c2c51b23634cb54c13f76a677aa38f",
-    "c837dcdf44a41fe4a578e65349f342badad5a050"
+    "e595ad3153c2c51b23634cb54c13f76a677aa38f"
   ],
   "market_last_sent_at": "2026-09-06T10:45:33.357422+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2790000000,
     "پژو 207 اتوماتیک پانوراما": 2960000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2096555382197936399",
+      "source": "Al Jazeera English / X",
+      "title": "Iran’s Energy Minister Abbas Aliabadi says efforts are currently aimed at stopping power outages but warned there will be occasions when blackouts cannot be avoided. 🔴 LIVE updates ⤵️",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096555382197936399",
+      "published": "Sun, 06 Sep 2026 11:05:29 +0000",
+      "sent_at": "2026-09-06T11:15:00.431331+00:00",
+      "fingerprint": "iran s energy minister abbas aliabadi says efforts are currently aimed at stopping power outages but warned there will be occasions when blackouts cannot be avoided live updates"
+    },
     {
       "key": "x:JasonMBrodsky:2096549811755302943",
       "source": "Jason Brodsky / X",
