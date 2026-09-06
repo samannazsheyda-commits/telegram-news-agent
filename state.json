@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41532",
   "news_seen": [
+    "9ef0dabde57c080cb9239955bd4c6b11535c28af",
     "x:CENTCOMFarsi:2096613479004188731",
     "x:AJEnglish:2096610623048323296",
     "x:TankerTrackers:2096605307552096296",
@@ -499,8 +500,7 @@
     "ee640e849784bc1110433cdd2e5041dc219e9836",
     "d04cb173ec65e06cec715e675c78a7d5f51f89a4",
     "b748b16679acfe4953d887c9d6bb8abeb0d6c70c",
-    "3f1231d8e161e78fed1fb576a6c8a18f0652f859",
-    "2e795c26073bee1210b20050cc6ba2aae108ff75"
+    "3f1231d8e161e78fed1fb576a6c8a18f0652f859"
   ],
   "market_last_sent_at": "2026-09-06T14:49:57.247923+00:00",
   "next_news_color": "white",
@@ -623,6 +623,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "9ef0dabde57c080cb9239955bd4c6b11535c28af",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Iran's Ghalibaf mocks Bessent.",
+      "reason": "low_signal_or_unapproved_source",
+      "published": "Sun, 06 Sep 2026 15:19:22 +0000",
+      "link": "https://t.me/ClashReport/95302",
+      "checked_at": "2026-09-06T15:18:52.831758+00:00"
+    },
     {
       "key": "8811c8649ac3c6bfa5dccaae88a25357bf6372e3",
       "source": "Reuters",
@@ -2412,15 +2421,6 @@
       "reason": "not_today_tehran",
       "published": "Fri, 17 Jul 2026 19:11:50 +0000",
       "link": "https://x.com/ir_rezaee/status/2078195992382280039",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:ir_rezaee:2080330255978438917",
-      "source": "Mohsen Rezaei / X",
-      "title": "رئیس جمهور متوهم آمریکا با اشتباهات مهلک از «بازی مرد دیوانه» به «بازی مرد مستاصل» رسیده است. حمله به زائران در شلمچه و تهدید به حملات زیرساختی چیزی جز استیصال و درماندگی نیست. پاسخ ایران به حملات زیرساختی تصاعدی و شدید خواهد بود.",
-      "reason": "not_today_tehran",
-      "published": "Thu, 23 Jul 2026 16:32:38 +0000",
-      "link": "https://x.com/ir_rezaee/status/2080330255978438917",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
