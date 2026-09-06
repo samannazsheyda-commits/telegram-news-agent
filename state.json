@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41533",
   "news_seen": [
+    "x:FT:2096650665590198551",
+    "x:CBSNews:2096649632738574803",
     "x:haaretzcom:2096642473632096362",
     "x:JasonMBrodsky:2096640287695048713",
     "fd7b4ec7a5bd5ad558e166a2f3be65bb581d1b46",
@@ -498,9 +500,7 @@
     "6651d683c09b6e15520b101418da656cff64e3aa",
     "ead661fa7041f3768ea84686a215606c086491ce",
     "8d123bd438a939f3bd00e2aa1cc7bad1c4e34694",
-    "1b4bbc816ea96d6bbba6dbc80b326497bdadbe7d",
-    "2ed3c020bc612a0a6dfd699f6ddc0986d61dc3d5",
-    "f57931fe192fe4b32275f2d519cab0342603b1a0"
+    "1b4bbc816ea96d6bbba6dbc80b326497bdadbe7d"
   ],
   "market_last_sent_at": "2026-09-06T16:53:35.925783+00:00",
   "next_news_color": "red",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:FT:2096650665590198551",
+      "source": "Financial Times / X",
+      "title": "In an interview with the first journalist the Taliban has allowed to visit him in the past three years, Afghanistan’s first elected leader discusses the US-Iran conflict, his fight for female education — and why he chose to stay after the Taliban takeover:",
+      "summary": "",
+      "link": "https://x.com/FT/status/2096650665590198551",
+      "published": "Sun, 06 Sep 2026 17:24:07 +0000",
+      "sent_at": "2026-09-06T17:24:59.945600+00:00",
+      "fingerprint": "in an interview with the first journalist the taliban has allowed to visit him in the past three years afghanistan s first elected leader discusses the us iran conflict his fight for female education and why he chose to stay after the taliban takeover"
+    },
+    {
+      "key": "x:CBSNews:2096649632738574803",
+      "source": "CBS News / X",
+      "title": "The U.S. military dismissed Iran's claim of a strike on a U.S. ship in the Strait of Hormuz, calling it \"a total lie.\" More updates:",
+      "summary": "",
+      "link": "https://x.com/CBSNews/status/2096649632738574803",
+      "published": "Sun, 06 Sep 2026 17:20:00 +0000",
+      "sent_at": "2026-09-06T17:21:51.345925+00:00",
+      "fingerprint": "the u s military dismissed iran s claim of a strike on a u s ship in the strait of hormuz calling it a total lie more updates"
+    },
     {
       "key": "x:haaretzcom:2096642473632096362",
       "source": "Haaretz / X",
