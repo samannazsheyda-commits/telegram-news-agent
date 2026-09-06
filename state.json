@@ -3683,5 +3683,11 @@
   ],
   "car_telegraph_republish_date": "2026-09-06",
   "car_telegraph_republish_date_2": "2026-09-06",
-  "car_native_republish_date": "2026-09-06"
+  "car_native_republish_date": "2026-09-06",
+  "phone_flagships_last_sent_date": "2026-09-06",
+  "phone_flagships_last_prices": {
+    "Apple iPhone 17 Pro Max": 296620000,
+    "Samsung Galaxy S26 Ultra": 198000000,
+    "Xiaomi 17 Ultra": 280000000
+  }
 }
