@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 from dataclasses import dataclass
 from html import escape
@@ -12,20 +13,39 @@ MOBILE_PRICE_URL = "https://www.mobile.ir/phones/prices.aspx"
 CHANNEL_URL = "https://t.me/bikhabaar"
 USER_AGENT = "Mozilla/5.0 (compatible; TelegramNewsAgent/2.0)"
 TEHRAN = ZoneInfo("Asia/Tehran")
+TELEGRAPH_API_URL = "https://api.telegra.ph"
 
 _PERSIAN_TO_ASCII = str.maketrans("۰۱۲۳۴۵۶۷۸۹٬", "0123456789,")
 
-# Ordered by how the list should appear in Telegram. The numeric series is
-# discovered from current seller rows so the post automatically rolls forward
-# when a newer flagship generation actually appears for sale.
-_FLAGSHIP_FAMILIES: tuple[tuple[str, re.Pattern[str]], ...] = (
-    ("Apple", re.compile(r"^Apple iPhone (?P<series>\d+) Pro Max$", re.I)),
-    ("Samsung", re.compile(r"^Samsung Galaxy S(?P<series>\d+) Ultra$", re.I)),
-    ("Xiaomi", re.compile(r"^Xiaomi (?P<series>\d+) Ultra$", re.I)),
-    ("Google", re.compile(r"^Google Pixel (?P<series>\d+) Pro XL$", re.I)),
+# Search enough premium/current families to reliably fill a 40-model daily card.
+_SEARCH_TERMS = (
+    "iPhone",
+    "Samsung Galaxy S",
+    "Samsung Galaxy Z",
+    "Xiaomi",
+    "Google Pixel",
+    "Honor Magic",
+    "OnePlus",
+    "Huawei",
+    "Oppo Find",
+    "vivo X",
+    "Nothing Phone",
+    "Motorola Edge",
+    "Sony Xperia",
 )
 
-_SEARCH_TERMS = ("iPhone", "Galaxy S", "Xiaomi", "Pixel")
+_OTHER_PREFIXES = (
+    "Google Pixel",
+    "Honor Magic",
+    "OnePlus",
+    "Huawei ",
+    "Oppo Find",
+    "vivo X",
+    "Vivo X",
+    "Nothing Phone",
+    "Motorola Edge",
+    "Sony Xperia",
+)
 
 
 @dataclass(frozen=True)
@@ -42,19 +62,72 @@ def _parse_price(text: str) -> int | None:
     return int(match.group(1).replace(",", ""))
 
 
-def _family_match(value: str):
-    name = (value or "").strip()
-    for _, pattern in _FLAGSHIP_FAMILIES:
-        match = pattern.fullmatch(name)
-        if match:
-            return name, pattern, int(match.group("series"))
+def _bucket(name: str) -> str | None:
+    value = (name or "").strip()
+    if value.startswith("Apple iPhone"):
+        return "apple"
+    if re.match(r"^Samsung Galaxy (?:S\d|Z (?:Fold|Flip)\d)", value, re.I):
+        return "samsung"
+    if value.startswith("Xiaomi "):
+        return "xiaomi"
+    if value.startswith(_OTHER_PREFIXES):
+        return "other"
     return None
 
 
+def _variant_weight(name: str) -> int:
+    value = name.lower()
+    if "pro max" in value:
+        return 50
+    if "ultra" in value:
+        return 45
+    if "pro" in value:
+        return 40
+    if "fold" in value:
+        return 38
+    if "air" in value:
+        return 35
+    if "+" in value or "plus" in value:
+        return 30
+    if "flip" in value:
+        return 28
+    return 20
+
+
+def _priority_score(item: FlagshipPhonePrice, bucket: str) -> int:
+    name = item.name
+    if bucket == "apple":
+        match = re.search(r"iPhone\s+(\d+)", name, re.I)
+        series = int(match.group(1)) if match else 0
+        return series * 100 + _variant_weight(name)
+
+    if bucket == "samsung":
+        sm = re.search(r"Galaxy S(\d+)", name, re.I)
+        if sm:
+            return int(sm.group(1)) * 100 + _variant_weight(name)
+        zm = re.search(r"Galaxy Z (?:Fold|Flip)(\d+)", name, re.I)
+        if zm:
+            # Keep the newest foldables among the current S-series flagships.
+            return 2500 + int(zm.group(1)) * 10 + _variant_weight(name)
+        return 0
+
+    if bucket == "xiaomi":
+        match = re.search(r"^Xiaomi\s+(\d+)", name, re.I)
+        if match:
+            return int(match.group(1)) * 100 + _variant_weight(name)
+        mix = re.search(r"MIX\s+(?:Fold|Flip)\s*(\d+)", name, re.I)
+        if mix:
+            return 1500 + int(mix.group(1)) * 10 + _variant_weight(name)
+        return 0
+
+    return 0
+
+
 def parse_flagship_phone_prices(html: str) -> list[FlagshipPhonePrice]:
-    """Parse seller rows from mobile.ir regardless of leading seller/city/date cells."""
+    """Return up to 10 Apple, 10 Samsung, 10 Xiaomi and 10 other premium models."""
     soup = BeautifulSoup(html or "", "html.parser")
-    rows: list[tuple[str, int]] = []
+    lowest_by_name: dict[str, int] = {}
+    order: list[str] = []
 
     for tr in soup.find_all("tr"):
         cells = [c.get_text(" ", strip=True) for c in tr.find_all(["td", "th"])]
@@ -62,38 +135,44 @@ def parse_flagship_phone_prices(html: str) -> list[FlagshipPhonePrice]:
             continue
 
         for index, cell in enumerate(cells):
-            matched = _family_match(cell)
-            if not matched:
+            name = cell.strip()
+            if _bucket(name) is None:
                 continue
-            name, _, _ = matched
 
-            # On mobile.ir the advertised model is followed by its numeric price.
-            # Scan only cells to its right so seller phone numbers/descriptions can
-            # never be mistaken for a handset price.
+            # mobile.ir puts the advertised price immediately after the model in
+            # the table. Scan only to the right so phone numbers cannot be parsed.
             price = next(
                 (value for value in (_parse_price(x) for x in cells[index + 1 :]) if value),
                 None,
             )
-            if price:
-                rows.append((name, price))
+            if not price:
+                break
+
+            if name not in lowest_by_name:
+                order.append(name)
+                lowest_by_name[name] = price
+            else:
+                lowest_by_name[name] = min(lowest_by_name[name], price)
             break
 
-    selected: list[FlagshipPhonePrice] = []
-    for _, pattern in _FLAGSHIP_FAMILIES:
-        matches: list[tuple[int, str, int]] = []
-        for name, price in rows:
-            match = pattern.fullmatch(name)
-            if match:
-                matches.append((int(match.group("series")), name, price))
-        if not matches:
-            continue
+    items = [FlagshipPhonePrice(name, lowest_by_name[name]) for name in order]
+    grouped: dict[str, list[FlagshipPhonePrice]] = {"apple": [], "samsung": [], "xiaomi": [], "other": []}
+    for item in items:
+        bucket = _bucket(item.name)
+        if bucket:
+            grouped[bucket].append(item)
 
-        latest_series = max(series for series, _, _ in matches)
-        current = [(name, price) for series, name, price in matches if series == latest_series]
-        name = current[0][0]
-        price = min(price for _, price in current)
-        selected.append(FlagshipPhonePrice(name, price))
+    for bucket in ("apple", "samsung", "xiaomi"):
+        grouped[bucket].sort(key=lambda item: _priority_score(item, bucket), reverse=True)
 
+    # Other brands intentionally preserve source/search order so the section is
+    # diverse instead of being dominated by incomparable model numbers.
+    selected = (
+        grouped["apple"][:10]
+        + grouped["samsung"][:10]
+        + grouped["xiaomi"][:10]
+        + grouped["other"][:10]
+    )
     if not selected:
         raise ValueError("flagship phone prices not found")
     return selected
@@ -108,7 +187,7 @@ def fetch_flagship_phone_prices(session=requests) -> list[FlagshipPhonePrice]:
                 MOBILE_PRICE_URL,
                 params={
                     "brandid": 0,
-                    "duration": 1,
+                    "duration": 14,
                     "pagesize": 200,
                     "price_from": -1,
                     "price_to": -1,
@@ -130,7 +209,11 @@ def fetch_flagship_phone_prices(session=requests) -> list[FlagshipPhonePrice]:
         if last_error:
             raise last_error
         raise RuntimeError("mobile.ir returned no flagship pages")
-    return parse_flagship_phone_prices("\n".join(pages))
+
+    prices = parse_flagship_phone_prices("\n".join(pages))
+    if len(prices) != 40:
+        raise RuntimeError(f"mobile.ir returned only {len(prices)} selected premium models; expected 40")
+    return prices
 
 
 def phone_flagships_due(state: dict, now) -> bool:
@@ -139,6 +222,7 @@ def phone_flagships_due(state: dict, now) -> bool:
 
 
 def format_flagship_phone_prices(prices: list[FlagshipPhonePrice]) -> str:
+    """Legacy direct-list formatter retained for compatibility/tests."""
     lines = ["📱 <b>پرچمدارهای موبایل | بازار ایران</b>"]
     for item in prices:
         lines += ["", f"▫️ <b>{escape(item.name)}</b>: از {item.price_toman:,} تومان"]
@@ -150,3 +234,104 @@ def format_flagship_phone_prices(prices: list[FlagshipPhonePrice]) -> str:
         "مانیتور تحولات ایران",
     ]
     return "\n".join(lines)
+
+
+def _section_for(item: FlagshipPhonePrice) -> str:
+    bucket = _bucket(item.name)
+    return {
+        "apple": "آیفون",
+        "samsung": "سامسونگ",
+        "xiaomi": "شیائومی",
+        "other": "سایر برندها",
+    }.get(bucket or "", "سایر برندها")
+
+
+def _telegraph_phone_nodes(prices: list[FlagshipPhonePrice]) -> list[dict]:
+    nodes: list[dict] = []
+    sections = ("آیفون", "سامسونگ", "شیائومی", "سایر برندها")
+    for section in sections:
+        rows = [item for item in prices if _section_for(item) == section]
+        if not rows:
+            continue
+        nodes.append({"tag": "h3", "children": [section]})
+        for item in rows:
+            nodes.append({
+                "tag": "p",
+                "children": [
+                    {"tag": "strong", "children": [item.name]},
+                    f": {item.price_toman:,} تومان",
+                ],
+            })
+        nodes.append({"tag": "hr"})
+
+    nodes.extend([
+        {
+            "tag": "p",
+            "children": [
+                "منبع: ",
+                {"tag": "a", "attrs": {"href": MOBILE_PRICE_URL}, "children": ["mobile.ir"]},
+            ],
+        },
+        {
+            "tag": "p",
+            "children": [
+                {"tag": "a", "attrs": {"href": CHANNEL_URL}, "children": ["📡 بی‌خبر"]},
+                " ← مانیتور تحولات ایران",
+            ],
+        },
+    ])
+    return nodes
+
+
+def _telegraph_result(response) -> dict:
+    response.raise_for_status()
+    payload = response.json()
+    if not payload.get("ok"):
+        raise RuntimeError(str(payload.get("error") or "Telegraph API error"))
+    result = payload.get("result")
+    if not isinstance(result, dict):
+        raise RuntimeError("Telegraph API returned no result")
+    return result
+
+
+def create_phone_telegraph_page(prices: list[FlagshipPhonePrice], *, session=requests) -> str:
+    account = _telegraph_result(session.post(
+        f"{TELEGRAPH_API_URL}/createAccount",
+        data={"short_name": "BiKhabaar", "author_name": "بی‌خبر", "author_url": CHANNEL_URL},
+        timeout=30,
+    ))
+    token = str(account.get("access_token") or "")
+    if not token:
+        raise RuntimeError("Telegraph access token missing")
+
+    page = _telegraph_result(session.post(
+        f"{TELEGRAPH_API_URL}/createPage",
+        data={
+            "access_token": token,
+            "title": "قیمت روز موبایل | ۴۰ مدل منتخب",
+            "author_name": "بی‌خبر",
+            "author_url": CHANNEL_URL,
+            "content": json.dumps(_telegraph_phone_nodes(prices), ensure_ascii=False),
+            "return_content": "false",
+        },
+        timeout=30,
+    ))
+    url = str(page.get("url") or "")
+    if not url.startswith("https://telegra.ph/"):
+        raise RuntimeError("Telegraph page URL missing")
+    return url
+
+
+def format_phone_telegraph_post(page_url: str, count: int) -> str:
+    return "\n".join([
+        "📱 <b>قیمت روز موبایل | مدل‌های منتخب بازار</b>",
+        "",
+        f"لیست {count} مدل: آیفون، سامسونگ، شیائومی و سایر برندها",
+        "",
+        f'👉🏻 <a href="{escape(page_url, quote=True)}"><b>مشاهده لیست کامل قیمت موبایل‌ها</b></a>',
+        "",
+        f'📌 <a href="{MOBILE_PRICE_URL}">منبع: mobile.ir</a>',
+        "",
+        f'📡 <a href="{CHANNEL_URL}">بی‌خبر</a> ←',
+        "مانیتور تحولات ایران",
+    ])
