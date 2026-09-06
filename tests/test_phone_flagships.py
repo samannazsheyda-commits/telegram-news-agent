@@ -8,7 +8,7 @@ from src.phones import (
 )
 
 
-def test_parse_flagships_picks_latest_series_and_lowest_listed_price():
+def test_parse_phone_rows_keeps_multiple_models_and_lowest_duplicate_price():
     html = '''
     <table>
       <tr><td>Apple iPhone 16 Pro Max</td><td>392,000,000 تومان</td></tr>
@@ -25,8 +25,11 @@ def test_parse_flagships_picks_latest_series_and_lowest_listed_price():
     rows = parse_flagship_phone_prices(html)
     assert [(x.name, x.price_toman) for x in rows] == [
         ('Apple iPhone 17 Pro Max', 273_980_000),
+        ('Apple iPhone 16 Pro Max', 392_000_000),
         ('Samsung Galaxy S26 Ultra', 232_980_000),
+        ('Samsung Galaxy S25 Ultra', 210_000_000),
         ('Xiaomi 17 Ultra', 280_000_000),
+        ('Xiaomi 16 Ultra', 190_000_000),
         ('Google Pixel 11 Pro XL', 205_000_000),
     ]
 
