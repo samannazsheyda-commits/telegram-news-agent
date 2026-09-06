@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "8c5f18d959b1b70c6fadb13f3e60d162a4386512",
     "x:AlArabiya_Eng:2096506704779255816",
     "77552fc5107aff588ed597aec7f34bd70167e4a0",
     "c2e341b47a8f9c93466c9f488d8d5633a4be1811",
@@ -499,8 +500,7 @@
     "32bbe1e0b12bece2a4b3407987e6a74d2608e2b1",
     "39f4693c6d6b4c00893650a78fe461a7b21f4e78",
     "af58b9bffe817d2cd9b13541913c4b94d1eddf59",
-    "bb5ac693eb887d2023fca0bdad6292835df020bc",
-    "13ba0b4a2e408af69976087364bc4fa686ffd10a"
+    "bb5ac693eb887d2023fca0bdad6292835df020bc"
   ],
   "market_last_sent_at": "2026-09-06T06:29:34.820132+00:00",
   "next_news_color": "white",
@@ -623,6 +623,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "8c5f18d959b1b70c6fadb13f3e60d162a4386512",
+      "source": "NOTAM / Airspace",
+      "title": "Iran Reopens Airspace in Eastern Regions - WANA News Agency",
+      "reason": "not_today_tehran",
+      "published": "Sat, 18 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1hMWMwaE9CYXJLRGJWSElrVVdfNTVHWXpMTWRraUd0RVQ5YzUyYk9xRGItMWJLSVJ2aXJRZnRzMmVHTmJtSWxDaGlLMmJvSHNIYmFaLVM2WVF2eU4wcXpnT2RWbFRINDNKbjU5Vw?oc=5",
+      "checked_at": "2026-09-06T08:08:33.439971+00:00"
+    },
     {
       "key": "77552fc5107aff588ed597aec7f34bd70167e4a0",
       "source": "NOTAM / Airspace",
@@ -2412,15 +2421,6 @@
       "reason": "not_today_tehran",
       "published": "Wed, 26 Aug 2026 16:09:39 +0000",
       "link": "https://x.com/Doranimated/status/2092645659086098459",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:Doranimated:2093694397955076245",
-      "source": "Michael Doran / X",
-      "title": "Iran’s rial hit another record low on Saturday, trading at 2.06 million rials per US dollar on the open market.",
-      "reason": "not_today_tehran",
-      "published": "Sat, 29 Aug 2026 13:36:58 +0000",
-      "link": "https://x.com/Doranimated/status/2093694397955076245",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
