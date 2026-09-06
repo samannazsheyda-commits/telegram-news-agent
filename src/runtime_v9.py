@@ -9,7 +9,7 @@ from dataclasses import replace
 
 from . import runtime_v7 as v7
 from . import runtime_v8 as v8
-from .cars import create_car_telegraph_page, format_car_telegraph_post
+from .cars import create_car_telegraph_page, format_car_prices as format_car_native, format_car_telegraph_post
 from .market_policy import market_summary_day, regular_market_allowed
 
 _installed = False
@@ -139,18 +139,30 @@ def _send_with_telegraph_preview(text: str, bot_token: str, chat_id: str, *args,
 
 
 def _format_car_via_telegraph(prices, previous=None) -> str:
-    """Create an in-Telegram Telegraph page and return only its compact Telegram card."""
+    """Legacy Telegraph formatter retained for compatibility/tests; production no longer uses it."""
     page_url = create_car_telegraph_page(prices, previous or {})
     return format_car_telegraph_post(page_url, len(prices))
 
 
-def _car_due_with_one_time_telegraph_republish(state: dict, now) -> bool:
+def _format_car_for_telegram(prices, previous=None) -> str:
+    """Render the full car-price list directly in Telegram, without a Telegraph/Instant View hop."""
+    return format_car_native(prices, previous or {})
+
+
+def _car_due_with_one_time_native_republish(state: dict, now) -> bool:
     local_date = now.astimezone(v7.v2.base.agent.TEHRAN).date().isoformat()
-    if local_date == _CAR_REPUBLISH_DATE and state.get("car_telegraph_republish_date_2") != local_date:
+    if local_date == _CAR_REPUBLISH_DATE and state.get("car_native_republish_date") != local_date:
+        state["car_native_republish_date"] = local_date
+        # Preserve older migration markers so persisted state remains backward-compatible.
         state["car_telegraph_republish_date"] = local_date
         state["car_telegraph_republish_date_2"] = local_date
         return True
     return _original_car_due(state, now)
+
+
+def _car_due_with_one_time_telegraph_republish(state: dict, now) -> bool:
+    """Backward-compatible alias for older tests/state readers."""
+    return _car_due_with_one_time_native_republish(state, now)
 
 
 def install_persian_only_output() -> None:
@@ -166,8 +178,8 @@ def install_persian_only_output() -> None:
     v7.v2.base.is_low_value_company_news = _newsroom_low_value_company_news
     v7.v2.base.agent._market_quiet_hours = _market_quiet_hours
     v7.v2.base.agent._market_summary_day = market_summary_day
-    v7.v2.base.agent.format_car_prices = _format_car_via_telegraph
-    v7.v2.base.agent._car_due = _car_due_with_one_time_telegraph_republish
+    v7.v2.base.agent.format_car_prices = _format_car_for_telegram
+    v7.v2.base.agent._car_due = _car_due_with_one_time_native_republish
     _installed = True
 
 
