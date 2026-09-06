@@ -3,11 +3,14 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
+from datetime import datetime
 from html import escape
 from zoneinfo import ZoneInfo
 
 import requests
 from bs4 import BeautifulSoup
+
+from .persian_datetime import format_persian_number, tehran_persian_date_time, to_persian_digits
 
 MOBILE_PRICE_URL = "https://www.mobile.ir/phones/prices.aspx"
 CHANNEL_URL = "https://t.me/bikhabaar"
@@ -141,7 +144,7 @@ def _priority_score(item: FlagshipPhonePrice, bucket: str) -> int:
 
 
 def parse_flagship_phone_prices(html: str) -> list[FlagshipPhonePrice]:
-    """Return up to 10 Apple, 10 Samsung, 10 Xiaomi and 10 other premium models."""
+    """Return up to 10 Apple, 10 Samsung, 10 Xiaomi and 10 other premium models with real prices."""
     soup = BeautifulSoup(html or "", "html.parser")
     by_name: dict[str, dict[str, int | None]] = {}
     order: list[str] = []
@@ -187,6 +190,7 @@ def parse_flagship_phone_prices(html: str) -> list[FlagshipPhonePrice]:
             unregistered_toman=(int(by_name[name]["unregistered"]) if by_name[name]["unregistered"] is not None else None),
         )
         for name in order
+        if int(by_name[name]["lowest"] or 0) > 0
     ]
     grouped: dict[str, list[FlagshipPhonePrice]] = {"apple": [], "samsung": [], "xiaomi": [], "other": []}
     for item in items:
@@ -240,10 +244,7 @@ def fetch_flagship_phone_prices(session=requests) -> list[FlagshipPhonePrice]:
             raise last_error
         raise RuntimeError("mobile.ir returned no flagship pages")
 
-    prices = parse_flagship_phone_prices("\n".join(pages))
-    if len(prices) != 40:
-        raise RuntimeError(f"mobile.ir returned only {len(prices)} selected premium models; expected 40")
-    return prices
+    return parse_flagship_phone_prices("\n".join(pages))
 
 
 def phone_flagships_due(state: dict, now) -> bool:
@@ -254,7 +255,9 @@ def phone_flagships_due(state: dict, now) -> bool:
 def format_flagship_phone_prices(prices: list[FlagshipPhonePrice]) -> str:
     lines = ["📱 <b>پرچمدارهای موبایل | بازار ایران</b>"]
     for item in prices:
-        lines += ["", f"▫️ <b>{escape(item.name)}</b>: از {item.price_toman:,} تومان"]
+        if item.price_toman <= 0:
+            continue
+        lines += ["", f"▫️ <b>{escape(to_persian_digits(item.name))}</b>: از {format_persian_number(item.price_toman)} تومان"]
     lines += [
         "",
         f'📌 <a href="{MOBILE_PRICE_URL}">منبع: mobile.ir</a>',
@@ -275,32 +278,56 @@ def _section_for(item: FlagshipPhonePrice) -> str:
     }.get(bucket or "", "سایر برندها")
 
 
-def _price_or_missing(value: int | None) -> str:
-    return f"{value:,} تومان" if value is not None else "در منبع ثبت نشده"
+def _has_price(item: FlagshipPhonePrice) -> bool:
+    return any((item.price_toman > 0, (item.registered_toman or 0) > 0, (item.unregistered_toman or 0) > 0))
 
 
-def _telegraph_phone_nodes(prices: list[FlagshipPhonePrice]) -> list[dict]:
+def _phone_price_children(item: FlagshipPhonePrice) -> list:
+    children: list = [{"tag": "strong", "children": [to_persian_digits(item.name)]}]
+    if item.registered_toman:
+        children.extend([{"tag": "br"}, f"با رجیستر: {format_persian_number(item.registered_toman)} تومان"])
+    if item.unregistered_toman:
+        children.extend([{"tag": "br"}, f"بدون رجیستر: {format_persian_number(item.unregistered_toman)} تومان"])
+    if not item.registered_toman and not item.unregistered_toman and item.price_toman > 0:
+        children.extend([{"tag": "br"}, f"قیمت بازار: {format_persian_number(item.price_toman)} تومان"])
+    return children
+
+
+def _phone_summary(prices: list[FlagshipPhonePrice], date_text: str) -> str:
+    visible = [item for item in prices if _has_price(item)]
+    if not visible:
+        return f"در فهرست قیمت روز موبایل ({date_text}) قیمت قابل انتشار در منبع ثبت نشده است."
+
+    def peak(item: FlagshipPhonePrice) -> int:
+        return max(item.registered_toman or 0, item.unregistered_toman or 0, item.price_toman or 0)
+
+    highest = max(visible, key=peak)
+    amount = peak(highest)
+    status = " (با رجیستر)" if highest.registered_toman and amount == highest.registered_toman else ""
+    return (
+        f"در فهرست قیمت روز موبایل ({date_text})، گران‌ترین مدل دارای قیمت "
+        f"{to_persian_digits(highest.name)} با قیمت {format_persian_number(amount)} تومان{status} ثبت شده است. "
+        f"این فهرست فقط مدل‌هایی را نمایش می‌دهد که قیمت واقعی در منبع دارند. منبع: mobile.ir"
+    )
+
+
+def _telegraph_phone_nodes(prices: list[FlagshipPhonePrice], now: datetime | None = None) -> list[dict]:
+    date_text, time_text = tehran_persian_date_time(now)
+    visible = [item for item in prices if _has_price(item)]
     nodes: list[dict] = [
         {"tag": "figure", "children": [{"tag": "img", "attrs": {"src": PHONE_BANNER_URL}}]},
+        {"tag": "p", "children": [{"tag": "strong", "children": [f"آخرین به‌روزرسانی: {date_text}، ساعت {time_text}"]}]},
+        {"tag": "blockquote", "children": [_phone_summary(visible, date_text)]},
         {"tag": "hr"},
     ]
     sections = ("آیفون", "سامسونگ", "شیائومی", "سایر برندها")
     for section in sections:
-        rows = [item for item in prices if _section_for(item) == section]
+        rows = [item for item in visible if _section_for(item) == section]
         if not rows:
             continue
         nodes.append({"tag": "h3", "children": [section]})
         for item in rows:
-            nodes.append({
-                "tag": "p",
-                "children": [
-                    {"tag": "strong", "children": [item.name]},
-                    {"tag": "br"},
-                    f"با رجیستر: {_price_or_missing(item.registered_toman)}",
-                    {"tag": "br"},
-                    f"بدون رجیستر: {_price_or_missing(item.unregistered_toman)}",
-                ],
-            })
+            nodes.append({"tag": "p", "children": _phone_price_children(item)})
         nodes.append({"tag": "hr"})
 
     nodes.extend([
@@ -333,7 +360,13 @@ def _telegraph_result(response) -> dict:
     return result
 
 
-def create_phone_telegraph_page(prices: list[FlagshipPhonePrice], *, session=requests) -> str:
+def create_phone_telegraph_page(
+    prices: list[FlagshipPhonePrice],
+    *,
+    session=requests,
+    now: datetime | None = None,
+) -> str:
+    date_text, _ = tehran_persian_date_time(now)
     account = _telegraph_result(session.post(
         f"{TELEGRAPH_API_URL}/createAccount",
         data={"short_name": "BiKhabaar", "author_name": "بی‌خبر", "author_url": CHANNEL_URL},
@@ -347,10 +380,10 @@ def create_phone_telegraph_page(prices: list[FlagshipPhonePrice], *, session=req
         f"{TELEGRAPH_API_URL}/createPage",
         data={
             "access_token": token,
-            "title": "قیمت روز موبایل | ۴۰ مدل منتخب",
+            "title": f"قیمت روز موبایل | {date_text}",
             "author_name": "بی‌خبر",
             "author_url": CHANNEL_URL,
-            "content": json.dumps(_telegraph_phone_nodes(prices), ensure_ascii=False),
+            "content": json.dumps(_telegraph_phone_nodes(prices, now), ensure_ascii=False),
             "return_content": "false",
         },
         timeout=30,
@@ -361,12 +394,17 @@ def create_phone_telegraph_page(prices: list[FlagshipPhonePrice], *, session=req
     return url
 
 
-def format_phone_telegraph_post(page_url: str, count: int) -> str:
+def format_phone_telegraph_post(
+    page_url: str,
+    count: int,
+    *,
+    now: datetime | None = None,
+) -> str:
     del count
+    date_text, time_text = tehran_persian_date_time(now)
     return "\n".join([
-        f'📱 <a href="{escape(page_url, quote=True)}"><b>قیمت روز موبایل | بازار ایران</b></a>',
-        "",
-        "قیمت با رجیستر و بدون رجیستر بر اساس آگهی‌های موجود در منبع",
+        f'📱 <a href="{escape(page_url, quote=True)}"><b>قیمت روز موبایل | {date_text}</b></a>',
+        f"آخرین به‌روزرسانی: ساعت {time_text} به وقت ایران",
         "",
         f'📌 <a href="{MOBILE_PRICE_URL}">منبع: mobile.ir</a>',
         "",
