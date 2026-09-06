@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41542",
   "news_seen": [
+    "x:CBSNews:2096684024295018932",
+    "x:Reuters:2096683625106301379",
+    "x:AJEnglish:2096682102167130140",
     "b0b4eb9246ea46545b988b91ee491bd4c833303f",
     "56a919506ae1ec7295855f351baa9555de219768",
     "fafc1b1eab367301c224547b3faeda44c240e8f8",
@@ -497,13 +500,10 @@
     "244dd75587ca7258bed1d8ea3f67fdccbb9eb07a",
     "da7baa919be2f0bdbdad8878d259af93a0f0a920",
     "bd359d3212f780e33a7e84399f3159d37e5ee7f6",
-    "863ec3aca1adda25644f10f4b023ce7f5c4ec24b",
-    "f7b4ed733aa5f4cdef23da496cfa3d39453e017c",
-    "257826d29dc8dfc797d33e7d1586341081b8f310",
-    "0e8297ad51259db79a6322eca4aa7b5f24a445de"
+    "863ec3aca1adda25644f10f4b023ce7f5c4ec24b"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,36 @@
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2096682102167130140",
+      "source": "Al Jazeera English / X",
+      "title": "The rumours circulating about a shortage of basic materials in the country due to sanctions and the economic siege are false, Iran’s security chief Mohsen Rezaei is quoted as saying by state media.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096682102167130140",
+      "published": "Sun, 06 Sep 2026 19:29:02 +0000",
+      "sent_at": "2026-09-06T19:37:39.871904+00:00",
+      "fingerprint": "the rumours circulating about a shortage of basic materials in the country due to sanctions and the economic siege are false iran s security chief mohsen rezaei is quoted as saying by state media"
+    },
+    {
+      "key": "x:Reuters:2096683625106301379",
+      "source": "Reuters / X",
+      "title": "Iran's government to raise fuel price for heavy users",
+      "summary": "",
+      "link": "https://x.com/Reuters/status/2096683625106301379",
+      "published": "Sun, 06 Sep 2026 19:35:05 +0000",
+      "sent_at": "2026-09-06T19:37:39.871904+00:00",
+      "fingerprint": "iran s government to raise fuel price for heavy users"
+    },
+    {
+      "key": "x:CBSNews:2096684024295018932",
+      "source": "CBS News / X",
+      "title": "The U.S. says it struck and “permanently disabled” three Iranian oil tankers in the Persian Gulf and Gulf of Oman on Saturday, after Iran’s Revolutionary Guard fired ballistic missiles at a U.S. aircraft carrier and guided-missile destroyer.",
+      "summary": "",
+      "link": "https://x.com/CBSNews/status/2096684024295018932",
+      "published": "Sun, 06 Sep 2026 19:36:40 +0000",
+      "sent_at": "2026-09-06T19:37:39.871904+00:00",
+      "fingerprint": "the u s says it struck and permanently disabled three iranian oil tankers in the persian gulf and gulf of oman on saturday after iran s revolutionary guard fired ballistic missiles at a u s aircraft carrier and guided missile destroyer"
+    },
     {
       "key": "a03b57ae9e92c6873f23699c165f876195c0bfdf",
       "source": "کلش ریپورت / Telegram",
