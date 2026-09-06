@@ -1,4 +1,4 @@
-name: Publish Latest Trump Image Truth
+name: Publish Trump Iran Image Truths
 
 on:
   push:
@@ -10,35 +10,78 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
-      - name: Publish missed captionless Trump Iran image Truth
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests playwright
+      - run: python -m playwright install chromium
+      - name: Republish both Trump Iran image Truths
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: "@bikhabaar"
         run: |
           python - <<'PY'
-          import os, requests
-
-          photo = "https://truth-archive.us-iad-1.linodeobjects.com/attachments/17977/ef4da83f66017163-4c1b09bf9dd9.jpg"
-          truth_url = "https://truthsocial.com/@realDonaldTrump/117206799377569441"
-          caption = (
-              '<b>پست جدید ترامپ در تروت سوشال</b>\n\n'
-              '<a href="' + truth_url + '">لینک پست اصلی</a>\n\n'
-              '📡 <a href="https://t.me/bikhabaar">بی‌خبر</a> ←\n'
-              'مانیتور تحولات ایران'
-          )
+          import os, requests, asyncio
+          from pathlib import Path
+          from playwright.async_api import async_playwright
 
           token = os.environ["TELEGRAM_BOT_TOKEN"]
           chat = os.environ["TELEGRAM_CHAT_ID"]
-          res = requests.post(
-              f"https://api.telegram.org/bot{token}/sendPhoto",
-              json={"chat_id": chat, "photo": photo, "caption": caption, "parse_mode": "HTML"},
-              timeout=30,
-          )
-          res.raise_for_status()
-          data = res.json()
-          if not data.get("ok"):
-              raise SystemExit(f"Telegram rejected: {data}")
-          print("TRUTH_IMAGE_PUBLISHED", truth_url)
+          endpoint = f"https://api.telegram.org/bot{token}/sendPhoto"
+
+          def caption(url):
+              return (
+                  '<b>پست جدید ترامپ در تروت سوشال</b>\n\n'
+                  f'<a href="{url}">لینک پست اصلی</a>\n\n'
+                  '📡 <a href="https://t.me/bikhabaar">بی‌خبر</a> ←\n'
+                  'مانیتور تحولات ایران'
+              )
+
+          def send_url(photo, url):
+              r = requests.post(endpoint, json={
+                  "chat_id": chat,
+                  "photo": photo,
+                  "caption": caption(url),
+                  "parse_mode": "HTML",
+              }, timeout=45)
+              r.raise_for_status()
+              data = r.json()
+              if not data.get("ok"):
+                  raise RuntimeError(data)
+              print("PUBLISHED", url)
+
+          def send_file(path, url):
+              with open(path, "rb") as f:
+                  r = requests.post(endpoint, data={
+                      "chat_id": chat,
+                      "caption": caption(url),
+                      "parse_mode": "HTML",
+                  }, files={"photo": (Path(path).name, f, "image/png")}, timeout=60)
+              r.raise_for_status()
+              data = r.json()
+              if not data.get("ok"):
+                  raise RuntimeError(data)
+              print("PUBLISHED", url)
+
+          old_url = "https://truthsocial.com/@realDonaldTrump/117206799377569441"
+          old_photo = "https://truth-archive.us-iad-1.linodeobjects.com/attachments/17977/ef4da83f66017163-4c1b09bf9dd9.jpg"
+          send_url(old_photo, old_url)
+
+          latest_url = "https://truthsocial.com/@realDonaldTrump/117225346749407203"
+          out = "/tmp/latest-trump-truth.png"
+
+          async def shot():
+              async with async_playwright() as p:
+                  browser = await p.chromium.launch(headless=True)
+                  page = await browser.new_page(viewport={"width": 690, "height": 1536}, device_scale_factor=1)
+                  await page.goto(latest_url, wait_until="domcontentloaded", timeout=60000)
+                  await page.wait_for_timeout(9000)
+                  await page.screenshot(path=out, full_page=False)
+                  await browser.close()
+
+          asyncio.run(shot())
+          send_file(out, latest_url)
           PY
