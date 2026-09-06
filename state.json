@@ -1,5 +1,5 @@
 {
-  "truth_last_id": "41530",
+  "truth_last_id": "41532",
   "news_seen": [
     "x:AlArabiya_Eng:2096592443059614116",
     "x:AJEnglish:2096589677415268663",
@@ -3767,8 +3767,10 @@
     "Vivo X300 Pro": 264600000,
     "Nothing Phone (2a)": 129880000
   },
-  "phone_flagships_last_page_url": "https://telegra.ph/قیمت-روز-موبایل--۴۰-مدل-منتخب-09-06-2",
+  "phone_flagships_last_page_url": "https://telegra.ph/قیمت-روز-موبایل--۴۰-مدل-منتخب-09-06-3",
   "phone_flagships_republish_40_date": "2026-09-06",
   "phone_flagships_fresh_republish_date": "2026-09-06",
-  "car_instant_republish_fresh_date": "2026-09-06"
+  "car_instant_republish_fresh_date": "2026-09-06",
+  "phone_flagships_fresh_republish_2_date": "2026-09-06",
+  "car_instant_republish_fresh_2_date": "2026-09-06"
 }
