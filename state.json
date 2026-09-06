@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "x:AJEnglish:2096589677415268663",
+    "8811c8649ac3c6bfa5dccaae88a25357bf6372e3",
+    "39436b396950d5aa5351f7bcb51f1460bf239aa1",
     "x:Reuters:2096584271855071653",
     "x:AlArabiya_Eng:2096580287438225439",
     "x:Jerusalem_Post:2096574389500137967",
@@ -497,13 +500,10 @@
     "92ba04c4c765f484257de60c1db456a1cdf7067f",
     "ddc9242e4fb8954ece244aea36187270cd130eb8",
     "4ad49c9959a2d30657c94cd619eee24772cd218c",
-    "dac5d64fee016b1fc22cb4db4367e88152ed15b8",
-    "ce44717186c35aadeb657fc3a227b1b77da78e20",
-    "46e18e13e4fdac34563478b8f23326cb14aede67",
-    "a3c64a8dd54dc01d26424b84c922c2a9db9930e9"
+    "dac5d64fee016b1fc22cb4db4367e88152ed15b8"
   ],
   "market_last_sent_at": "2026-09-06T12:45:51.668902+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -623,6 +623,24 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "8811c8649ac3c6bfa5dccaae88a25357bf6372e3",
+      "source": "Reuters",
+      "title": "US spy drone retreats near Iranian airspace, Nournews says",
+      "reason": "not_today_tehran",
+      "published": "Mon, 17 Mar 2025 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNSmxLMDFxMmpsT2l0T0JlVGxFekFwUzVZTi1QWXROb3JDa2M5cWZoTzZWZGNOU3Z2SzVDSDN2MkdIdF9tZGliS1pKMzZBSWNneWRLMmoxcV8yWDZuSWttelVBOF9TTnF6TnZ2VkJsYUtHTDdWeXZldW1HU0hNZ2Z0TExvODdPWXRFMXh0TmhGdTF1dHM2R3Uxb0RHbm5jeUNHRk10THNfX0Y2SkNuXy00UA?oc=5",
+      "checked_at": "2026-09-06T13:22:18.657521+00:00"
+    },
+    {
+      "key": "39436b396950d5aa5351f7bcb51f1460bf239aa1",
+      "source": "BBC News",
+      "title": "Flights cancelled as new travel warnings issued after US-Israeli strikes on Iran",
+      "reason": "not_today_tehran",
+      "published": "Sun, 01 Mar 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBILVRKS0lsUGpKTTdQeHFIT3d4N1BpbnhXLTZONUY4Nlh2Wm9ib2JLR2NvakJaOVVqeTlRc3NMcGE4eV9RZy1qd0tWc1RTSTJyMndLdWdqT2lfZw?oc=5",
+      "checked_at": "2026-09-06T13:22:18.657521+00:00"
+    },
     {
       "key": "05b519493e12bc70566a2252982875d2cac99d9d",
       "source": "دِ کریدل / Telegram",
@@ -2404,28 +2422,20 @@
       "published": "Thu, 23 Jul 2026 16:32:38 +0000",
       "link": "https://x.com/ir_rezaee/status/2080330255978438917",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:ir_rezaee:2084372249461575696",
-      "source": "Mohsen Rezaei / X",
-      "title": "If the blockade continues, American vessels and forces will face serious risks and casualties. The U.S. must change its behavior — or we will not tolerate this. We will never permit the opening of a second corridor in the Strait of Hormuz.",
-      "reason": "not_today_tehran",
-      "published": "Mon, 03 Aug 2026 20:14:04 +0000",
-      "link": "https://x.com/ir_rezaee/status/2084372249461575696",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:ir_rezaee:2087223141630132399",
-      "source": "Mohsen Rezaei / X",
-      "title": "IRAN’s message is clear: the Strait of Hormuz will not reopen until the U.S. ends the war and blockade, releases Iran’s frozen assets, and agrees to a region-wide ceasefire, including in Lebanon and Gaza. Until all conditions are met, the Strait will remain closed.",
-      "reason": "not_today_tehran",
-      "published": "Tue, 11 Aug 2026 17:02:30 +0000",
-      "link": "https://x.com/ir_rezaee/status/2087223141630132399",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2096589677415268663",
+      "source": "Al Jazeera English / X",
+      "title": "Iran says it is lifting a ban on foreign social media platforms “so that the government can respond and combat rumors directly on platforms where people are present”.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096589677415268663",
+      "published": "Sun, 06 Sep 2026 13:21:46 +0000",
+      "sent_at": "2026-09-06T13:22:18.657521+00:00",
+      "fingerprint": "iran says it is lifting a ban on foreign social media platforms so that the government can respond and combat rumors directly on platforms where people are present"
+    },
     {
       "key": "x:Reuters:2096584271855071653",
       "source": "Reuters / X",
