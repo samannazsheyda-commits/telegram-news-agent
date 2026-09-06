@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-RUNTIME_COMMAND = 'python -m src.runtime_v9 --monitor'
+RUNTIME_COMMAND = 'python -m src.runtime_v10 --monitor'
 
 
 def _workflow_text() -> str:
@@ -40,3 +40,8 @@ def test_workflow_persists_only_if_monitor_step_was_not_skipped():
     text = _workflow_text()
     assert 'id: monitor' in text
     assert "steps.monitor.outcome != 'skipped'" in text
+
+
+def test_workflow_has_no_hardcoded_one_off_market_post():
+    text = _workflow_text()
+    assert 'publish_once_market' not in text
