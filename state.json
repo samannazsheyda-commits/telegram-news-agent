@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41530",
   "news_seen": [
+    "x:JasonMBrodsky:2096547854244327770",
+    "x:AlArabiya_Eng:2096545131838963889",
+    "8d66ef344434b94020da64ab9aa7676ee571b89f",
     "x:AJEnglish:2096538507309359362",
     "39587fc86617e1904080e5bfbf3efdeb26b857a0",
     "946a63b90e0dc7af1b73438ef660ad4925719465",
@@ -497,10 +500,7 @@
     "d8146ca2086ccae2bc398d978a91cec636e1ae78",
     "e595ad3153c2c51b23634cb54c13f76a677aa38f",
     "c837dcdf44a41fe4a578e65349f342badad5a050",
-    "a4387ac138a7e609c8f620818a34bfe224b50a0c",
-    "5921d549c06640a3a0b415091d7731275a134016",
-    "837577ffd01da07170f1f5031e48df86d323dc4d",
-    "b25c6919f45ca708f11f62d9032052fe38b8a8b1"
+    "a4387ac138a7e609c8f620818a34bfe224b50a0c"
   ],
   "market_last_sent_at": "2026-09-06T08:41:33.445711+00:00",
   "next_news_color": "white",
@@ -623,6 +623,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "8d66ef344434b94020da64ab9aa7676ee571b89f",
+      "source": "ABC News",
+      "title": "'No air defenses': Trump, Hegseth touted American dominance in Iran before jet was downed",
+      "reason": "not_today_tehran",
+      "published": "Fri, 03 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxOSDcxeEQydl9BaGhpNlNXcVQtcTB6MXpuNy1FcEhscGZlR3otV2hPdGJJdWlQTHJ0dThOQXB4WFNBakpENm5BVUktY2IxSG5pVlVNcExJcWRSRWdWTFpVVjFRUXg4MklWbXEwY0R3RzFOLUpOeFNvZmFkY1lrekRMVVBjbUxUaUY3UlE0QTUyZXN6TFhrcm8xSVR2NzdLanJsWmVHbXNaY0fSAa4BQVVfeXFMTVhra3JPQnpVTVFDdFd1Y1gxQ2dXX3ppOW9leXpuWVJ2ZjlqMTdkeXNiY09uc3NZdFk4R1N1djRCdzJlN2xlcklLbm5JNm1FRnI3ZU15QUQwNnJCWXgwVU1NVFRSdUUwVWw2akljUVg1blBxRHBjTFc2RkF6QWZyeU00SHM0d3dHNVNKY3lqTEFYQkotQ3l6RS1VcWZtVHE4MkJBTUtaMXZNNVd3bF9n?oc=5",
+      "checked_at": "2026-09-06T10:34:04.311975+00:00"
+    },
     {
       "key": "39587fc86617e1904080e5bfbf3efdeb26b857a0",
       "source": "DW",
@@ -2413,19 +2422,30 @@
       "published": "Tue, 18 Aug 2026 17:17:24 +0000",
       "link": "https://x.com/ir_rezaee/status/2089763608146088296",
       "checked_at": "2026-09-05T09:03:17.310539+00:00"
-    },
-    {
-      "key": "x:ir_rezaee:2091601549931827456",
-      "source": "Mohsen Rezaei / X",
-      "title": "If the economic war continues, not a single drop of oil will be exported٫ neither through the Strait of Hormuz nor from anywhere in the Persian Gulf. Iran will regard any country’s participation in or support for America’s economic war against the Iranian people as an act of war.",
-      "reason": "not_today_tehran",
-      "published": "Sun, 23 Aug 2026 19:00:44 +0000",
-      "link": "https://x.com/ir_rezaee/status/2091601549931827456",
-      "checked_at": "2026-09-05T09:03:17.310539+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-05",
   "recent_published_news": [
+    {
+      "key": "x:JasonMBrodsky:2096547854244327770",
+      "source": "Jason Brodsky / X",
+      "title": "Two luxury flats linked to #Iran’s regime's supreme leader and which overlook Kensington Palace have been put on the market. Any “profit” left over from the sale of the flats is expected to be frozen by the government while Ali Ansari remains sanctioned.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2096547854244327770",
+      "published": "Sun, 06 Sep 2026 10:35:35 +0000",
+      "sent_at": "2026-09-06T10:36:59.479450+00:00",
+      "fingerprint": "two luxury flats linked to iran s regime s supreme leader and which overlook kensington palace have been put on the market any profit left over from the sale of the flats is expected to be frozen by the government while ali ansari remains sanctioned"
+    },
+    {
+      "key": "x:AlArabiya_Eng:2096545131838963889",
+      "source": "Al Arabiya English / X",
+      "title": "BREAKING: Saudi Foreign Minister Prince Faisal bin Farhan discusses with his Iranian counterpart ongoing efforts to safeguard security in the region.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096545131838963889",
+      "published": "Sun, 06 Sep 2026 10:24:46 +0000",
+      "sent_at": "2026-09-06T10:35:33.773131+00:00",
+      "fingerprint": "breaking saudi foreign minister prince faisal bin farhan discusses with his iranian counterpart ongoing efforts to safeguard security in the region"
+    },
     {
       "key": "x:AJEnglish:2096538507309359362",
       "source": "Al Jazeera English / X",
