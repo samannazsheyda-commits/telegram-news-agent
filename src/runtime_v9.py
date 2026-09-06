@@ -8,6 +8,7 @@ from dataclasses import replace
 
 from . import runtime_v7 as v7
 from . import runtime_v8 as v8
+from .cars import create_car_telegraph_page, format_car_telegraph_post
 from .market_policy import market_summary_day, regular_market_allowed
 
 _installed = False
@@ -36,8 +37,6 @@ def _persian_source_item(item):
         mapped = v7.v2.base.news_formatters.SOURCE_FA.get(source, source)
     mapped = mapped.replace(" / Telegram", " / تلگرام").replace(" / X", " / ایکس")
 
-    # Keep a valid story publishable even when a new/unknown source name has not
-    # been transliterated yet. Never expose a Latin source label in the channel.
     if _LATIN_VISIBLE_RE.search(mapped):
         if source.endswith(" / X"):
             mapped = "منبع در ایکس"
@@ -50,7 +49,6 @@ def _persian_source_item(item):
 
 
 def _visible_text(message: str) -> str:
-    # Remove HTML tags (and therefore href URLs) before checking visible output.
     return re.sub(r"<[^>]+>", "", html.unescape(message or ""))
 
 
@@ -63,12 +61,8 @@ def _format_persian_only(item, title_fa: str, summary_fa: str, marker_override=N
     )
     if not message:
         return ""
-    # The pointing-hand decoration is intentionally forbidden in the final card.
     message = message.replace("👉🏻 ", "").replace("👉 ", "")
 
-    # Keep the story if a short acronym/model name remains in an otherwise Persian
-    # body, but never allow a raw Latin source label because _persian_source_item
-    # replaces unknown source names before formatting.
     visible = _visible_text(message)
     if _LATIN_VISIBLE_RE.search(visible):
         print(
@@ -91,22 +85,26 @@ def _market_quiet_hours(now) -> bool:
     return not regular_market_allowed(now)
 
 
+def _format_car_via_telegraph(prices, previous=None) -> str:
+    """Create an in-Telegram Telegraph page and return only its compact Telegram card."""
+    page_url = create_car_telegraph_page(prices, previous or {})
+    return format_car_telegraph_post(page_url, len(prices))
+
+
 def install_persian_only_output() -> None:
     global _installed
     if _installed:
         return
-    # Patch before v8 installs v7 hooks so the production formatter points to this gate.
     v7._display_item = _persian_source_item
     v7._format_news_with_footer_icons = _format_persian_only
     v8.install_strict_dedup_policy()
-    # v7 may already have installed its formatter during v8 setup; force the final gate.
     v7.v2._format_news_with_flags = _format_persian_only
-    # The production fetcher resolves this global at runtime; keep security/airspace news.
     v7.v2.base.is_low_value_company_news = _newsroom_low_value_company_news
-    # Market policy: ordinary cards 08:00-22:00, daily recap at 23:00,
-    # no market posts on Fridays or official Iranian holidays.
     v7.v2.base.agent._market_quiet_hours = _market_quiet_hours
     v7.v2.base.agent._market_summary_day = market_summary_day
+    # Main's daily car job calls this global. Replace it with the Telegraph publisher
+    # so the user opens telegra.ph in Telegram Instant View instead of the source site.
+    v7.v2.base.agent.format_car_prices = _format_car_via_telegraph
     _installed = True
 
 
