@@ -15,7 +15,7 @@ USER_AGENT = "Mozilla/5.0 (compatible; TelegramNewsAgent/2.0)"
 TELEGRAPH_API_URL = "https://api.telegra.ph"
 CAR_BANNER_URL = (
     "https://raw.githubusercontent.com/samannazsheyda-commits/telegram-news-agent/"
-    "main/assets/car_price_banner.svg"
+    "main/assets/car_price_banner.jpg"
 )
 
 PERSIAN_TO_ASCII = str.maketrans("۰۱۲۳۴۵۶۷۸۹٬", "0123456789,")
@@ -76,7 +76,6 @@ def _isolated_name(name: str) -> str:
 
 
 def format_car_prices(prices: list[CarPrice], previous: dict[str, int] | None = None) -> str:
-    """Full Telegram-style list retained for fallback/tests; source names are never rewritten."""
     previous = previous or {}
     lines = ["🚗 <b>قیمت روز خودرو | بازار آزاد</b>"]
     for item in prices:
@@ -99,11 +98,13 @@ def _telegraph_car_nodes(prices: list[CarPrice], previous: dict[str, int] | None
     ]
     for item in prices:
         change = _change_line(item.market_toman, previous.get(item.name))
-        children: list = [
-            {"tag": "strong", "children": [item.name]},
-            f": {item.market_toman:,} تومان{change}",
-        ]
-        nodes.append({"tag": "p", "children": children})
+        nodes.append({
+            "tag": "p",
+            "children": [
+                {"tag": "strong", "children": [item.name]},
+                f": {item.market_toman:,} تومان{change}",
+            ],
+        })
     nodes.extend([
         {"tag": "hr"},
         {
@@ -141,7 +142,6 @@ def create_car_telegraph_page(
     *,
     session=requests,
 ) -> str:
-    """Create a fresh Telegraph page containing every current source row and the approved banner."""
     account = _telegraph_result(session.post(
         f"{TELEGRAPH_API_URL}/createAccount",
         data={"short_name": "BiKhabaar", "author_name": "بی‌خبر", "author_url": CHANNEL_URL},
