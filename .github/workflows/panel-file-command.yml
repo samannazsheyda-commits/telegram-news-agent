@@ -1,0 +1,62 @@
+name: Browser Panel File Command
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "panel_commands/*.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: telegram-news-agent
+  cancel-in-progress: false
+
+jobs:
+  command:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Process browser commands
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: "@bikhabaar"
+        run: |
+          set -e
+          shopt -s nullglob
+          files=(panel_commands/*.json)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No commands"
+            exit 0
+          fi
+          for file in "${files[@]}"; do
+            python -m src.panel_command_file "$file"
+            rm -f "$file"
+          done
+
+      - name: Persist result
+        run: |
+          git config user.name "telegram-news-agent[bot]"
+          git config user.email "telegram-news-agent[bot]@users.noreply.github.com"
+          git add state.json data/editorial_queue.json data/editorial_history.json panel_commands || true
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "chore: consume panel command"
+          git pull --rebase origin main
+          git push
