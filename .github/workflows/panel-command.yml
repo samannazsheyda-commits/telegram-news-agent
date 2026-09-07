@@ -49,12 +49,16 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: "@bikhabaar"
+          PANEL_ACTION: ${{ inputs.action }}
+          PANEL_ITEM_ID: ${{ inputs.item_id }}
+          PANEL_TITLE: ${{ inputs.title }}
+          PANEL_BODY: ${{ inputs.body }}
         run: |
           python -m src.panel_command \
-            "${{ inputs.action }}" \
-            "${{ inputs.item_id }}" \
-            --title "${{ inputs.title }}" \
-            --body "${{ inputs.body }}"
+            "$PANEL_ACTION" \
+            "$PANEL_ITEM_ID" \
+            --title "$PANEL_TITLE" \
+            --body "$PANEL_BODY"
 
       - name: Persist editorial state
         run: |
