@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41579",
   "news_seen": [
+    "x:Jerusalem_Post:2096776291127091272",
     "7befc53bc0c09657fa1f2003f8aee94bf53b21f6",
     "8386754439e1a69c8d20aa6fe52c3c20cfac23e2",
     "x:AlArabiya_Eng:2096765394237190159",
@@ -499,11 +500,10 @@
     "330e5f6284ec19ef4908a4b0fe5ff4c9e882fb81",
     "92b3bc46b950ce0dd663a241dcf2bb697d711ca6",
     "93bd552fc45835b95544a5cc616ee96fd5174d8d",
-    "28b1a9ca7e0d10fb31cd2d4d7e290fe59f99ac1a",
-    "b770e9911a6c1db8095e99bd22979756869b11f0"
+    "28b1a9ca7e0d10fb31cd2d4d7e290fe59f99ac1a"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:Jerusalem_Post:2096776291127091272",
+      "source": "Jerusalem Post / X",
+      "title": "Report: US special forces spent four months conducting a secret mine-clearing mission in the Strait of Hormuz in an attempt to make the waterway safer for commercial vessels, the Financial Times reported Sunday.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096776291127091272",
+      "published": "Mon, 07 Sep 2026 01:43:18 +0000",
+      "sent_at": "2026-09-07T01:51:04.458119+00:00",
+      "fingerprint": "report us special forces spent four months conducting a secret mine clearing mission in the strait of hormuz in an attempt to make the waterway safer for commercial vessels the financial times reported sunday"
+    },
     {
       "key": "x:AlArabiya_Eng:2096765394237190159",
       "source": "Al Arabiya English / X",
