@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41619",
   "news_seen": [
+    "x:JasonMBrodsky:2097043613016301905",
+    "x:AJEnglish:2097043355364389337",
+    "x:Jerusalem_Post:2097040972936888350",
     "x:AlArabiya_Eng:2097039332167094387",
     "afb47f80fda3233bc33f2f0a3a5dae5d26ae4e22",
     "e792829fab8dc2d1c1dbb9e9db54867a5a9fe5db",
@@ -497,13 +500,10 @@
     "x:mdubowitz:2095636047400992995",
     "x:mdubowitz:2095885258457481261",
     "x:mdubowitz:2095886488856564035",
-    "x:mdubowitz:2095889790990184936",
-    "x:JasonMBrodsky:2095824486431858777",
-    "x:JasonMBrodsky:2095825250701267327",
-    "x:JasonMBrodsky:2095873000092373105"
+    "x:mdubowitz:2095889790990184936"
   ],
   "market_last_sent_at": "2026-09-07T18:20:33.841773+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,36 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:JasonMBrodsky:2097043613016301905",
+      "source": "Jason Brodsky / X",
+      "title": "Rouhani has no power. He's been calling for a referendum for years to no avail. And while some like to portray him as a \"moderate,\" this is the same man who served as chairman of the SNSC in 2019 when 1500 Iranians were slaughtered during Bloody Aban.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2097043613016301905",
+      "published": "Mon, 07 Sep 2026 19:25:33 +0000",
+      "sent_at": "2026-09-07T19:26:12.603743+00:00",
+      "fingerprint": "rouhani has no power he s been calling for a referendum for years to no avail and while some like to portray him as a moderate this is the same man who served as chairman of the snsc in 2019 when 1500 iranians were slaughtered during bloody aban"
+    },
+    {
+      "key": "x:Jerusalem_Post:2097040972936888350",
+      "source": "Jerusalem Post / X",
+      "title": "Opinion: Iran’s grip on Hormuz was never as strong as it looked, with US estimates indicating that some 15 million barrels of Gulf oil are now leaving the region each day.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2097040972936888350",
+      "published": "Mon, 07 Sep 2026 19:15:03 +0000",
+      "sent_at": "2026-09-07T19:24:39.357187+00:00",
+      "fingerprint": "opinion iran s grip on hormuz was never as strong as it looked with us estimates indicating that some 15 million barrels of gulf oil are now leaving the region each day"
+    },
+    {
+      "key": "x:AJEnglish:2097043355364389337",
+      "source": "Al Jazeera English / X",
+      "title": "Turkish President Recep Tayyip Erdogan has accused Israel of undermining efforts to end the US-Israeli war against Iran.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097043355364389337",
+      "published": "Mon, 07 Sep 2026 19:24:31 +0000",
+      "sent_at": "2026-09-07T19:24:39.357187+00:00",
+      "fingerprint": "turkish president recep tayyip erdogan has accused israel of undermining efforts to end the us israeli war against iran"
+    },
     {
       "key": "x:AlArabiya_Eng:2097039332167094387",
       "source": "Al Arabiya English / X",
