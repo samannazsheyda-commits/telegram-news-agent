@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "e930cc5c4c6bb70b65e164ba7226b98ca3c221f0",
+    "news_key": "c94c78126234839b88f6653b9236afd4bc4a5ec0",
+    "source": "CBS News",
+    "source_url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE05aGFRUldRc25BT3ZCbDhTVDE3VEEtSlQtbVZSVUtnMVZEekZzZDFaNnBiRmg2MDBzcDJCWEh1WWxBcmtBZV9mcF8wX1BuTlpycE1mUkVuMXZxcHRTSUNrbGhpc05rYURpbzYxYnA3VC1pTzJ0a05QaWpvOA?oc=5",
+    "original_title": "Trump calls Iran conflict \"small potatoes\"",
+    "original_summary": "Trump calls Iran conflict \"small potatoes\" CBS News",
+    "persian_title": "ترامپ درگیری با ایران را «مسئله‌ای کم‌اهمیت» می‌خواند",
+    "persian_body": "",
+    "published_at_source": "Mon, 07 Sep 2026 11:10:00 GMT",
+    "discovered_at": "2026-09-07T13:21:35.272236+00:00",
+    "rejection_reason": "panel_refresh",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-07T13:21:59.175751+00:00"
+  }
+]
