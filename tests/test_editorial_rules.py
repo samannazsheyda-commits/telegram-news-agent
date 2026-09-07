@@ -60,6 +60,62 @@ def test_distinct_development_on_same_broad_topic_is_not_duplicate():
     assert not is_duplicate_story(old, new)
 
 
+def test_distinct_hormuz_policy_updates_are_not_duplicates():
+    restricted_zone = _item(
+        "restricted-zone",
+        "Al Jazeera English / X",
+        "Iran's security chief Mohsen Rezaei says Tehran will announce a restricted zone around the Strait of Hormuz and parts of the Gulf, with ships entering the zone to be placed on a sanctions list.",
+    )
+    shipping_corridor = _item(
+        "shipping-corridor",
+        "Al Jazeera English / X",
+        "Iran's top security official Mohsen Rezaei says Tehran will announce a new shipping route for the Strait of Hormuz, agreed in talks with Oman, in the coming days.",
+    )
+    assert not is_duplicate_story(restricted_zone, shipping_corridor)
+
+
+def test_distinct_airspace_events_are_not_duplicates_just_because_both_concern_iran_war():
+    spain_closure = _item(
+        "spain-closure",
+        "BBC News",
+        "Spain closes airspace to US aircraft involved in Iran war",
+    )
+    iran_reopening = _item(
+        "iran-reopening",
+        "Al Jazeera",
+        "Iran reopens airspace after closure to most flights amid US attack threats",
+    )
+    assert not is_duplicate_story(spain_closure, iran_reopening)
+
+
+def test_new_centcom_blockade_count_is_not_duplicate_of_older_count():
+    old = _item(
+        "centcom-87",
+        "CENTCOM Farsi / X",
+        "US forces have redirected 87 commercial vessels, disabled 3 and boarded 2 while enforcing the maritime blockade against Iran.",
+    )
+    new = _item(
+        "centcom-92",
+        "CENTCOM / X",
+        "As of Sept. 6, US forces have redirected 92 commercial vessels, disabled 3 and boarded 2 while enforcing the maritime blockade against Iran.",
+    )
+    assert not is_duplicate_story(old, new)
+
+
+def test_same_three_tanker_strike_remains_duplicate_across_outlets():
+    ap = _item(
+        "ap-tankers",
+        "Associated Press / X",
+        "U.S. military says it struck three Iranian oil tankers after Navy warships were targeted with missiles.",
+    )
+    cnn = _item(
+        "cnn-tankers",
+        "CNN / X",
+        "The US military says its forces struck three Iranian crude oil carriers after Iran launched ballistic missiles toward two US Navy warships.",
+    )
+    assert is_duplicate_story(ap, cnn)
+
+
 def test_low_value_company_performance_story_is_filtered_even_when_war_is_context():
     item = _item(
         "etihad-profit",
