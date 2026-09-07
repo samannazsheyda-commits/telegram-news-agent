@@ -15,16 +15,19 @@
         <p>مانیتور تحولات ایران — پنل مرورگری</p>
       </div>
       <div class="actions">
+        <button id="connectBtn" class="btn">اتصال گیت‌هاب</button>
+        <button id="runAgentBtn" class="btn">اجرای دستی ایجنت</button>
         <button id="refreshBtn" class="btn primary">بروزرسانی</button>
-        <a id="runAgentBtn" class="btn" target="_blank" rel="noopener">اجرای دستی ایجنت</a>
       </div>
     </header>
 
+    <section id="authBanner" class="health warn">
+      <div><strong id="authTitle">حالت مشاهده</strong><span id="authText">برای انتشار و رد مستقیم، گیت‌هاب را یک‌بار وصل کن.</span></div>
+      <div class="muted">توکن فقط در همین تب مرورگر نگه داشته می‌شود.</div>
+    </section>
+
     <section id="healthBanner" class="health loading">
-      <div>
-        <strong id="healthTitle">در حال خواندن وضعیت…</strong>
-        <span id="healthText">اطلاعات از GitHub خوانده می‌شود.</span>
-      </div>
+      <div><strong id="healthTitle">در حال خواندن وضعیت…</strong><span id="healthText">اطلاعات از GitHub خوانده می‌شود.</span></div>
       <div id="lastRefresh" class="muted"></div>
     </section>
 
@@ -43,17 +46,14 @@
 
     <section id="pending" class="panel active">
       <div class="section-head">
-        <div><h2>خبرهای در انتظار بررسی</h2><p>مواردی که هنوز تعیین تکلیف نهایی نشده‌اند.</p></div>
-        <a id="queueGitHubLink" class="text-link" target="_blank" rel="noopener">باز کردن فایل صف در GitHub</a>
+        <div><h2>خبرهای در انتظار بررسی</h2><p>تیتر و متن را می‌توانی قبل از انتشار ویرایش کنی.</p></div>
+        <a id="queueGitHubLink" class="text-link" target="_blank" rel="noopener">فایل صف</a>
       </div>
       <div id="pendingList" class="cards"><div class="empty">در حال بارگذاری…</div></div>
     </section>
 
     <section id="history" class="panel">
-      <div class="section-head">
-        <div><h2>آخرین تصمیم‌ها</h2><p>انتشار، رد و موارد جایگزین‌شده.</p></div>
-        <a id="historyGitHubLink" class="text-link" target="_blank" rel="noopener">باز کردن تاریخچه در GitHub</a>
-      </div>
+      <div class="section-head"><div><h2>آخرین تصمیم‌ها</h2><p>انتشار، رد و موارد جایگزین‌شده.</p></div><a id="historyGitHubLink" class="text-link" target="_blank" rel="noopener">تاریخچه</a></div>
       <div id="historyList" class="cards"><div class="empty">در حال بارگذاری…</div></div>
     </section>
 
@@ -67,7 +67,7 @@
       </div>
     </section>
 
-    <footer>این پنل هیچ توکن یا رمز محرمانه‌ای داخل مرورگر نگه نمی‌دارد.</footer>
+    <footer>توکن تلگرام هرگز وارد مرورگر نمی‌شود؛ انتشار داخل GitHub Actions انجام می‌شود.</footer>
   </main>
   <script src="./app.js" defer></script>
 </body>
