@@ -8,8 +8,8 @@ JS = ROOT / "docs/newsroom-v1.js"
 
 def test_newsroom_assets_and_views_are_loaded():
     html = HTML.read_text(encoding="utf-8")
-    assert 'href="newsroom-v1.css"' in html
-    assert 'src="newsroom-v1.js"' in html
+    assert 'href="newsroom-v1.css?v=' in html
+    assert 'src="newsroom-v1.js?v=' in html
     assert 'data-view="analytics"' in html
     assert 'data-view="settings"' in html
     assert 'id="view-analytics"' in html

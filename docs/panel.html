@@ -8,8 +8,8 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>بی‌خبر | اتاق خبر</title>
-<link rel="stylesheet" href="panel.css?v=20260907-4">
-<link rel="stylesheet" href="newsroom-v1.css?v=20260907-4">
+<link rel="stylesheet" href="panel.css?v=20260907-5">
+<link rel="stylesheet" href="newsroom-v1.css?v=20260907-5">
 </head>
 <body>
 <main class="app">
@@ -17,19 +17,16 @@
   <div><div class="brand"><span class="dot"></span><h1>بی‌خبر</h1></div><div class="subtitle">مانیتور تحولات ایران — اتاق خبر</div></div>
   <div class="top-actions"><span id="connectionBadge" class="badge">بررسی اتصال…</span><span id="staleBadge" class="badge bad" hidden>داده تازه نیست</span><button id="connectBtn" class="btn ghost">اتصال به ایجنت بی‌خبر</button><button id="refreshBtn" class="btn">اسکن فوری</button></div>
 </header>
-
 <section id="connectSheet" class="sheet" aria-label="اتصال به ایجنت بی‌خبر">
   <div class="sheet-row"><input id="tokenInput" class="field" type="password" autocomplete="off" placeholder="توکن دسترسی ایجنت بی‌خبر"><button id="saveTokenBtn" class="btn green">اتصال به ایجنت بی‌خبر</button></div>
   <div class="meta"><span>این اتصال فقط برای مخزن ایجنت بی‌خبر ذخیره می‌شود. توکن باید دسترسی Contents: Read and write به telegram-news-agent داشته باشد.</span><button id="disconnectBtn" class="btn ghost">قطع اتصال</button></div>
 </section>
-
 <section class="stats">
   <article class="stat"><span>در انتظار</span><strong id="pendingCount">۰</strong></article>
   <article class="stat"><span>در حال انتشار</span><strong id="processingCount">۰</strong></article>
   <article class="stat"><span>منتشرشده امروز</span><strong id="publishedCount">۰</strong></article>
   <article class="stat"><span>ردشده امروز</span><strong id="rejectedCount">۰</strong></article>
 </section>
-
 <nav class="tabs" aria-label="بخش‌های پنل">
   <button class="tab active" data-view="pending">در انتظار</button>
   <button class="tab" data-view="processing">در حال انجام</button>
@@ -39,7 +36,6 @@
   <button class="tab" data-view="settings">تنظیمات</button>
   <button class="tab" data-view="system">سیستم</button>
 </nav>
-
 <section id="view-pending" class="view active">
   <div class="toolbar">
     <input id="queueSearch" class="field" type="search" placeholder="جست‌وجو در تیتر، متن یا منبع">
@@ -50,7 +46,6 @@
   </div>
   <div id="queueList" class="queue"><div class="skeleton"></div><div class="skeleton"></div></div>
 </section>
-
 <section id="view-processing" class="view"><div id="processingList" class="queue"><div class="empty">فرمان فعالی نیست.</div></div></section>
 <section id="view-published" class="view"><div id="publishedList" class="queue"></div></section>
 <section id="view-rejected" class="view"><div id="rejectedList" class="queue"></div></section>
@@ -67,9 +62,10 @@
 <div class="meta" style="margin-top:14px"><span id="lastRefresh">—</span></div>
 </main>
 <div id="toast" class="toast" role="status" aria-live="polite"><span id="toastText"></span><button id="toastAction"></button></div>
-<script src="panel.js?v=20260907-4" defer></script>
-<script src="panel-live-refresh.js?v=20260907-4" defer></script>
-<script src="newsroom-v1.js?v=20260907-4" defer></script>
-<script src="panel-command-sync.js?v=20260907-4" defer></script>
+<script src="panel.js?v=20260907-5" defer></script>
+<script src="panel-live-refresh.js?v=20260907-5" defer></script>
+<script src="newsroom-v1.js?v=20260907-5" defer></script>
+<script src="panel-command-sync.js?v=20260907-5" defer></script>
+<script src="panel-publish-visibility.js?v=20260907-5" defer></script>
 </body>
 </html>
