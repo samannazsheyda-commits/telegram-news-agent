@@ -1,6 +1,10 @@
 {
   "truth_last_id": "41618",
   "news_seen": [
+    "x:SecScottBessent:2095889823177269752",
+    "x:SecScottBessent:2095907853877874926",
+    "x:JasonMBrodsky:2097009134327541823",
+    "x:USTreasury:2095888925646553249",
     "x:Jerusalem_Post:2097007962803843133",
     "x:AJEnglish:2097007515552628738",
     "x:CENTCOM:2094411076729262413",
@@ -496,14 +500,10 @@
     "x:marklevinshow:2095923413990740027",
     "x:statedeptspox:2095568528007127326",
     "x:statedeptspox:2095946450375233872",
-    "x:StateDept:2095212662422376755",
-    "x:SecScottBessent:2095654604943815139",
-    "x:SecScottBessent:2095889823177269752",
-    "x:SecScottBessent:2095907853877874926",
-    "x:USTreasury:2095888927215214639"
+    "x:StateDept:2095212662422376755"
   ],
   "market_last_sent_at": "2026-09-07T16:01:34.128941+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -623,6 +623,33 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "x:SecScottBessent:2095889823177269752",
+      "source": "Scott Bessent / X",
+      "title": "Financial institutions continue to find out the hard way that we are serious about Operation Economic Outcast. While we hope no more banks will need to be sanctioned, that ultimately depends on how quickly the international community comes to its senses and ceases support of the murderous Iranian regime. We know who you are, we know where you are, and we will continue to take action together with our allies and partners until we have buried the head of the Iranian snake.",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 15:00:48 +0000",
+      "link": "https://x.com/SecScottBessent/status/2095889823177269752",
+      "checked_at": "2026-09-07T17:22:45.591971+00:00"
+    },
+    {
+      "key": "x:SecScottBessent:2095907853877874926",
+      "source": "Scott Bessent / X",
+      "title": "Since the U.S. reinstated its blockade, no Iranian crude cargoes have successfully transited the Strait of Hormuz to China. Inventory cannot be replenished as crude piles up aboard vessels trapped inside the strait. Iran’s export lifeline is being cut off: stranded oil, finite storage, and rapidly shrinking revenue.",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 16:12:27 +0000",
+      "link": "https://x.com/SecScottBessent/status/2095907853877874926",
+      "checked_at": "2026-09-07T17:21:11.612207+00:00"
+    },
+    {
+      "key": "x:USTreasury:2095888925646553249",
+      "source": "US Treasury / X",
+      "title": "Today, as part of Operation Economic Outcast, Treasury severed the Iranian regime’s critical financial lifelines in Türkiye. The Office of Foreign Assets Control designated Türkiye-based Golden Global Bank and its subsidiaries, which have facilitated tens of millions of dollars’ worth of transactions for the Islamic Revolutionary Guard Corps-Qods Force and provide the Iranian regime with key correspondent banking access that allows it to move its funds internationally.",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 14:57:14 +0000",
+      "link": "https://x.com/USTreasury/status/2095888925646553249",
+      "checked_at": "2026-09-07T17:19:33.445414+00:00"
+    },
     {
       "key": "x:CENTCOM:2094411076729262413",
       "source": "CENTCOM / X",
@@ -2395,37 +2422,20 @@
       "published": "Thu, 05 Mar 2026 08:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPM3pUTnFsNWhscG9OQjFhZVFvVGhNVEd0U1h6RkVNdU95dmczNW1NdWU5SEN3Q05KQWRYcXVka3F5eDRNT0hfTHZoc0piM3lmQnQ0SVE0NjJJVDdxOTVVX2FPT3F2TlpzT0N6bnZhTGxwMkZlTTZVRUppcnJDY1ZpZXNYSFh6c2pDMG1EUQ?oc=5",
       "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "9e4e8c237f50c15e9bcbd7da5a3bfe51d25abab3",
-      "source": "NOTAM / Airspace",
-      "title": "Iran reopens airspace after Trump says protest crackdown has eased - The Washington Post",
-      "reason": "not_today_tehran",
-      "published": "Thu, 15 Jan 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxPNWZ6WHlBRXg1Qzg4dmlieExjM0lUUG1UNlZpR2txem5KTjh2VnhPOUpFTU9oUzBZaE1CbDdVdGRXSUFCTkx4azc0VTFhZXZ3Z0lXZ21OS2xXY3V4bDFSOEp5dS1yTjVnQlB3Z1ZYTzV6bEJFLUJBZjYzMG9MajFZZXpTMGxNemp1b09ORy1fVEs?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "d4440958b0ecf46590959ae1eb100fe0af6bc7d8",
-      "source": "NOTAM / Airspace",
-      "title": "Central Asian Airlines Reroute Flights During Iranian Airspace Closure - The Times Of Central Asia",
-      "reason": "not_today_tehran",
-      "published": "Thu, 15 Jan 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxOSV9BRkpoYUtPY21Tajk2Z2RvdWVnNHRxMTRteGZLYlVQV1N3c1d6X0lRazBIcXNCbVlhRjdJcFhuZ3pUcEJjcUVoaWhSWE9CZjg4SUt5MnFkQXd5YzFBRXJEbTFjaXgzaEJ4Mmlld2luQU10T040cDd6NHR4LXkxVFZUOExvSWRKeDQxNDdyeDA4cFJXeXc?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "84e8e2bee9d4e051260c05b537f38e6ede691896",
-      "source": "NBC News",
-      "title": "Flight animation shows planes avoiding Iranian airspace",
-      "reason": "not_today_tehran",
-      "published": "Sat, 28 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxOeldGb0hEcm1oZVIyMHV6OHpTcG1paXloY0t6cm9TQm4xN0VQY1g5QzJUdTFKTW1SU3h1SkdYSTFyT3NQRVA5cWwxblMzZTdlNXVoY2dwWHZGV25nellIem82VjA3YUE3cThRZnlVVTZabW1XRW10dGF2WnRSamxXc3h1RjBtNmtCczJZaG1Wb0E1M2puWHRzTWZtLTZmN0FBaVZnTklJb00?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:JasonMBrodsky:2097009134327541823",
+      "source": "Jason Brodsky / X",
+      "title": "Employees of #Iran’s oil industry held protests Monday at offshore platforms operated by Pars Oil and Gas Company and in the southern energy hub of Assaluyeh, demanding changes to pay, taxes and benefits as US economic pressure weighs on Iran’s oil exports and wider economy.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2097009134327541823",
+      "published": "Mon, 07 Sep 2026 17:08:32 +0000",
+      "sent_at": "2026-09-07T17:19:33.445414+00:00",
+      "fingerprint": "employees of iran s oil industry held protests monday at offshore platforms operated by pars oil and gas company and in the southern energy hub of assaluyeh demanding changes to pay taxes and benefits as us economic pressure weighs on iran s oil exports and wider economy"
+    },
     {
       "key": "x:Jerusalem_Post:2097007962803843133",
       "source": "Jerusalem Post / X",
