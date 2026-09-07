@@ -1,37 +1,64 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>بی‌خبر | کنترل</title>
-<style>
-:root{font-family:Tahoma,system-ui,sans-serif;color:#f5f7fa;background:#0b0d10;--card:#15191f;--line:#29303a;--muted:#98a2ad;--good:#25b979;--bad:#d64d4d;--accent:#e53935}*{box-sizing:border-box}body{margin:0;background:#0b0d10}.wrap{max-width:1050px;margin:auto;padding:22px 14px 50px}header{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:16px}h1{margin:0;font-size:30px}.sub{color:var(--muted);margin-top:5px}.box,.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px}.auth{display:grid;grid-template-columns:1fr auto;gap:8px}.auth input,.edit input,.edit textarea{width:100%;background:#0d1014;border:1px solid var(--line);border-radius:10px;color:white;padding:11px;font:inherit}.btn{border:1px solid var(--line);background:#20262e;color:white;border-radius:10px;padding:10px 14px;cursor:pointer;font:inherit}.btn.primary{background:var(--accent);border-color:var(--accent)}.btn.good{background:#16794f;border-color:#16794f}.btn.bad{background:#8f2f2f;border-color:#8f2f2f}.status{font-size:13px;color:var(--muted);margin-top:8px;min-height:20px}.status.good{color:#72e8b2}.status.bad{color:#ff9696}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.stat strong{display:block;font-size:25px;margin-top:5px}.stat span{color:var(--muted);font-size:13px}.cards{display:grid;gap:10px}.card{transition:.18s ease}.card.removing{opacity:0;transform:translateY(-5px)}.top{display:flex;justify-content:space-between;gap:10px}.card h3{margin:0;line-height:1.75;font-size:16px}.badge{font-size:12px;color:#ff9a9a;background:#4a2020;padding:5px 8px;border-radius:20px;height:max-content}.meta{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:8px}.edit{display:grid;gap:7px;margin-top:11px}.edit textarea{min-height:80px;resize:vertical}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.empty{text-align:center;color:var(--muted);padding:35px}.headrow{display:flex;justify-content:space-between;align-items:center;margin:18px 0 10px}.headrow h2{margin:0;font-size:18px}a.btn{text-decoration:none}.note{font-size:12px;color:var(--muted);margin-top:7px}@media(max-width:650px){header{align-items:stretch;flex-direction:column}.auth{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.top{flex-direction:column}}
-</style></head>
-<body><main class="wrap">
-<header><div><h1>بی‌خبر</h1><div class="sub">پنل مرورگری کنترل خبر</div></div><div><button id="refresh" class="btn primary">بروزرسانی</button> <a class="btn" href="https://github.com/samannazsheyda-commits/telegram-news-agent/actions" target="_blank">Actions</a></div></header>
-<section class="box"><div class="auth"><input id="token" type="password" autocomplete="off" placeholder="GitHub token — فقط Contents: Read and write لازم است"><button id="save" class="btn good">اتصال</button></div><div id="authStatus" class="status">توکن فقط داخل همین تب مرورگر نگه داشته می‌شود.</div><div class="note">این نسخه برای رد/انتشار از Actions API استفاده نمی‌کند؛ فرمان را به‌صورت فایل داخل ریپو ثبت می‌کند.</div></section>
-<section class="stats"><div class="box stat"><span>در انتظار</span><strong id="pendingCount">—</strong></div><div class="box stat"><span>منتشرشده امروز</span><strong id="publishedCount">—</strong></div><div class="box stat"><span>ردشده امروز</span><strong id="rejectedCount">—</strong></div></section>
-<div class="headrow"><h2>خبرهای در انتظار</h2><span id="updated" class="status"></span></div><section id="list" class="cards"><div class="empty box">در حال بارگذاری…</div></section>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d10">
+<title>بی‌خبر | اتاق خبر</title>
+<link rel="stylesheet" href="panel.css">
+</head>
+<body>
+<main class="app">
+<header class="top">
+  <div><div class="brand"><span class="dot"></span><h1>بی‌خبر</h1></div><div class="subtitle">مانیتور تحولات ایران — اتاق خبر</div></div>
+  <div class="top-actions"><span id="connectionBadge" class="badge">بررسی اتصال…</span><span id="staleBadge" class="badge bad" hidden>داده تازه نیست</span><button id="connectBtn" class="btn ghost">اتصال</button><button id="refreshBtn" class="btn">بروزرسانی</button></div>
+</header>
+
+<section id="connectSheet" class="sheet" aria-label="اتصال GitHub">
+  <div class="sheet-row"><input id="tokenInput" class="field" type="password" autocomplete="off" placeholder="Fine-grained GitHub token با Contents: Read and write"><button id="saveTokenBtn" class="btn green">وصل شو</button></div>
+  <div class="meta"><span>توکن فقط در sessionStorage همین تب نگه داشته می‌شود.</span><button id="disconnectBtn" class="btn ghost">قطع اتصال</button></div>
+</section>
+
+<section class="stats">
+  <article class="stat"><span>در انتظار</span><strong id="pendingCount">—</strong></article>
+  <article class="stat"><span>در حال انتشار</span><strong id="processingCount">۰</strong></article>
+  <article class="stat"><span>منتشرشده امروز</span><strong id="publishedCount">—</strong></article>
+  <article class="stat"><span>ردشده امروز</span><strong id="rejectedCount">—</strong></article>
+</section>
+
+<nav class="tabs" aria-label="بخش‌های پنل">
+  <button class="tab active" data-view="pending">در انتظار</button>
+  <button class="tab" data-view="processing">در حال انجام</button>
+  <button class="tab" data-view="published">منتشرشده</button>
+  <button class="tab" data-view="rejected">ردشده</button>
+  <button class="tab" data-view="system">سیستم</button>
+</nav>
+
+<section id="view-pending" class="view active">
+  <div class="toolbar">
+    <input id="queueSearch" class="field" type="search" placeholder="جست‌وجو در تیتر، متن یا منبع">
+    <select id="sourceFilter" class="field"><option value="">همه منابع</option></select>
+    <select id="reasonFilter" class="field"><option value="">همه دلایل</option></select>
+    <select id="sortOrder" class="field"><option value="newest">جدیدترین</option><option value="oldest">قدیمی‌ترین</option></select>
+    <button id="clearFilters" class="btn ghost">پاک کردن فیلتر</button>
+  </div>
+  <div id="queueList" class="queue"><div class="skeleton"></div><div class="skeleton"></div></div>
+</section>
+
+<section id="view-processing" class="view"><div id="processingList" class="queue"><div class="empty">فرمان فعالی نیست.</div></div></section>
+<section id="view-published" class="view"><div id="publishedList" class="queue"></div></section>
+<section id="view-rejected" class="view"><div id="rejectedList" class="queue"></div></section>
+<section id="view-system" class="view">
+  <div class="system-grid">
+    <article class="system-card"><span>آخرین Workflow</span><strong id="systemWorkflow">—</strong></article>
+    <article class="system-card"><span>شماره اجرا</span><strong id="systemRun">—</strong></article>
+    <article class="system-card"><span>Runtime</span><strong id="systemRuntime">—</strong></article>
+    <article class="system-card" style="grid-column:1/-1"><span>State</span><strong id="systemState">—</strong></article>
+  </div>
+</section>
+<div class="meta" style="margin-top:14px"><span id="lastRefresh">—</span></div>
 </main>
-<script>
-const OWNER='samannazsheyda-commits',REPO='telegram-news-agent',BRANCH='main';
-const RAW=`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}`;
-const API=`https://api.github.com/repos/${OWNER}/${REPO}`;
-const $=id=>document.getElementById(id);let current=[];
-const terminal=new Set(['published_manual','published_auto','rejected_manual','superseded']);
-function esc(v=''){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function tok(){return sessionStorage.getItem('bikhabar_contents_token')||''}
-function setStatus(t,k=''){const e=$('authStatus');e.textContent=t;e.className='status '+k}
-function fmt(v){if(!v)return'—';const d=new Date(v);if(Number.isNaN(d.getTime()))return v;return new Intl.DateTimeFormat('fa-IR',{dateStyle:'short',timeStyle:'short',timeZone:'Asia/Tehran'}).format(d)}
-function day(v){if(!v)return'';const d=new Date(v);if(Number.isNaN(d.getTime()))return'';return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tehran',year:'numeric',month:'2-digit',day:'2-digit'}).format(d)}
-async function json(url){const r=await fetch(url+(url.includes('?')?'&':'?')+'_='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error(r.status+' '+r.statusText);return r.json()}
-function b64Unicode(text){const bytes=new TextEncoder().encode(text);let bin='';bytes.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
-function headers(){return{'Accept':'application/vnd.github+json','Authorization':'Bearer '+tok(),'X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'}}
-async function saveToken(){const t=$('token').value.trim();if(!t){setStatus('توکن را وارد کن.','bad');return}sessionStorage.setItem('bikhabar_contents_token',t);$('token').value='';try{const r=await fetch(API,{headers:headers(),cache:'no-store'});if(!r.ok)throw Error(r.status+' '+await r.text());setStatus('اتصال GitHub برقرار است.','good')}catch(e){sessionStorage.removeItem('bikhabar_contents_token');setStatus('توکن پذیرفته نشد: '+e.message,'bad')}}
-async function command(payload){if(!tok()){setStatus('اول توکن را وارد کن.','bad');$('token').focus();return false}const rand=(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2));const path=`panel_commands/${Date.now()}-${rand}.json`;const body={message:`panel: ${payload.action} ${payload.item_id.slice(0,10)}`,content:b64Unicode(JSON.stringify(payload,null,2)),branch:BRANCH};try{const r=await fetch(`${API}/contents/${path}`,{method:'PUT',headers:headers(),body:JSON.stringify(body)});if(!r.ok){const txt=await r.text();setStatus(`GitHub ${r.status}: ${txt.slice(0,350)}`,'bad');return false}setStatus('فرمان ثبت شد و در صف اجراست.','good');return true}catch(e){setStatus('خطای ارتباط: '+e.message,'bad');return false}}
-function effective(q,h){const done=new Set(h.filter(x=>terminal.has(x.status)).map(x=>x.id));return q.filter(x=>(x.status||'pending')==='pending'&&!done.has(x.id))}
-function render(items){current=items;const el=$('list');if(!items.length){el.innerHTML='<div class="empty box">فعلاً خبر در انتظاری نیست.</div>';return}el.innerHTML=items.slice(0,100).map((r,i)=>`<article class="card" id="c-${esc(r.id||i)}"><div class="top"><h3>${esc(r.persian_title||r.original_title||'بدون تیتر')}</h3><span class="badge">${esc(r.rejection_reason||r.reason||'نیازمند بررسی')}</span></div><div class="meta"><span>${esc(r.source||'')}</span><span>${fmt(r.published_at_source)}</span><span>${esc((r.id||'').slice(0,10))}</span></div><div class="edit"><input id="t${i}" value="${esc(r.persian_title||r.original_title||'')}"><textarea id="b${i}">${esc(r.persian_body||r.original_summary||'')}</textarea></div><div class="actions"><button class="btn good" onclick="publishItem(${i})">انتشار</button><button class="btn bad" onclick="rejectItem(${i})">رد</button>${r.source_url?`<a class="btn" href="${esc(r.source_url)}" target="_blank">منبع</a>`:''}</div></article>`).join('')}
-function remove(id){current=current.filter(x=>x.id!==id);const c=document.getElementById('c-'+id);if(c){c.classList.add('removing');setTimeout(()=>render(current),180)}else render(current);$('pendingCount').textContent=current.length.toLocaleString('fa-IR')}
-async function rejectItem(i){const r=current[i];if(!r)return;const ok=await command({action:'reject',item_id:r.id,title:'',body:''});if(ok)remove(r.id)}
-async function publishItem(i){const r=current[i];if(!r)return;const ok=await command({action:'publish',item_id:r.id,title:$('t'+i).value,body:$('b'+i).value});if(ok)remove(r.id)}
-async function load(){try{const[q,h]=await Promise.all([json(`${RAW}/data/editorial_queue.json`),json(`${RAW}/data/editorial_history.json`)]);const Q=Array.isArray(q)?q:[],H=Array.isArray(h)?h:[],e=effective(Q,H),today=day(new Date().toISOString());$('pendingCount').textContent=e.length.toLocaleString('fa-IR');$('publishedCount').textContent=H.filter(x=>['published_manual','published_auto'].includes(x.status)&&day(x.decision_at||x.updated_at)===today).length.toLocaleString('fa-IR');$('rejectedCount').textContent=H.filter(x=>['rejected_manual','superseded'].includes(x.status)&&day(x.decision_at||x.updated_at)===today).length.toLocaleString('fa-IR');render(e);$('updated').textContent='بروزرسانی '+new Intl.DateTimeFormat('fa-IR',{timeStyle:'medium'}).format(new Date())}catch(e){$('list').innerHTML='<div class="empty box">خطا در دریافت داده: '+esc(e.message)+'</div>'}}
-$('save').onclick=saveToken;$('token').addEventListener('keydown',e=>{if(e.key==='Enter')saveToken()});$('refresh').onclick=load;if(tok())setStatus('توکن برای این تب ذخیره است.','good');load();setInterval(load,60000);
-</script></body></html>
+<div id="toast" class="toast" role="status" aria-live="polite"><span id="toastText"></span><button id="toastAction"></button></div>
+<script src="panel.js" defer></script>
+</body>
+</html>
