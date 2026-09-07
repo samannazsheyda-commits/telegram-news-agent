@@ -61,13 +61,26 @@ forceRefresh=async function(){
     if(result.status==='failed')throw Error(result.message||'اسکن ناموفق بود');
     if(result.status==='timeout')throw Error('اسکن طولانی شد؛ دوباره تلاش کن');
     await load(false);await loadSystem();
-    toast(result.message||'بروزرسانی انجام شد');
+    const message=result.message||'بروزرسانی انجام شد';
+    $('lastRefresh').textContent=message;
+    toast(message,10000);
   }catch(e){
-    toast('بروزرسانی انجام نشد: '+e.message,15000);
+    const message='بروزرسانی انجام نشد: '+e.message;
+    $('lastRefresh').textContent=message;
+    toast(message,15000);
   }finally{
     refreshRunning=false;btn.disabled=false;btn.textContent=old;
   }
 };
 
-// panel.js attached the old function directly, so replace the click handler too.
-$('refreshBtn').onclick=forceRefresh;
+// panel.js registered its original listener with addEventListener. An onclick
+// assignment cannot replace that listener, so intercept in capture phase and
+// make this API-backed refresh implementation the single authoritative handler.
+const refreshButton=$('refreshBtn');
+if(refreshButton){
+  refreshButton.addEventListener('click',event=>{
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    forceRefresh();
+  },true);
+}
