@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41618",
   "news_seen": [
+    "x:Jerusalem_Post:2097007962803843133",
+    "x:AJEnglish:2097007515552628738",
     "x:CENTCOM:2094411076729262413",
     "x:CENTCOM:2094795462578467050",
     "x:CENTCOM:2094826294466810366",
@@ -498,9 +500,7 @@
     "x:SecScottBessent:2095654604943815139",
     "x:SecScottBessent:2095889823177269752",
     "x:SecScottBessent:2095907853877874926",
-    "x:USTreasury:2095888927215214639",
-    "x:USTreasury:2095888925646553249",
-    "x:CENTCOM:2093487410340307396"
+    "x:USTreasury:2095888927215214639"
   ],
   "market_last_sent_at": "2026-09-07T16:01:34.128941+00:00",
   "next_news_color": "white",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:Jerusalem_Post:2097007962803843133",
+      "source": "Jerusalem Post / X",
+      "title": "Despite Israeli strikes against Iran's nuclear program, multiple sources confirmed to The Jerusalem Post that potential future danger remains real, even though there are no imminent threats. Reports @jeremybob1",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2097007962803843133",
+      "published": "Mon, 07 Sep 2026 17:03:53 +0000",
+      "sent_at": "2026-09-07T17:04:45.833023+00:00",
+      "fingerprint": "despite israeli strikes against iran s nuclear program multiple sources confirmed to the jerusalem post that potential future danger remains real even though there are no imminent threats reports jeremybob1"
+    },
+    {
+      "key": "x:AJEnglish:2097007515552628738",
+      "source": "Al Jazeera English / X",
+      "title": "A senior US official has told Al Jazeera that the Strait of Hormuz is fully open and under US Navy control while responding to questions over Iranian threats to establish a restricted zone in the waterway.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097007515552628738",
+      "published": "Mon, 07 Sep 2026 17:02:06 +0000",
+      "sent_at": "2026-09-07T17:03:15.102819+00:00",
+      "fingerprint": "a senior us official has told al jazeera that the strait of hormuz is fully open and under us navy control while responding to questions over iranian threats to establish a restricted zone in the waterway"
+    },
     {
       "key": "x:business:2096999470390993243",
       "source": "Bloomberg / X",
