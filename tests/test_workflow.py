@@ -14,7 +14,7 @@ def test_workflow_runs_bounded_monitor_and_keeps_manual_dispatch():
     assert RUNTIME_COMMAND in text
     assert 'timeout-minutes: 7' in text
     assert 'concurrency:' in text
-    assert 'cancel-in-progress: false' in text
+    assert "cancel-in-progress: ${{ github.event_name == 'push' }}" in text
     assert 'data/editorial_queue.json' in text
     assert 'data/editorial_history.json' in text
     assert 'POLL_SECONDS: "60"' in text
