@@ -188,15 +188,24 @@ def process_command_file(
         return terminal
 
 
+def _apply_paths(path: str | Path) -> tuple[Path, Path]:
+    """Use repo-level runtime paths for real panel commands, isolated paths for tests/tools."""
+    command_path = Path(path)
+    if command_path.parent.name == "panel_commands":
+        return Path("state.json"), Path("panel_results")
+    return command_path.parent / "state.json", command_path.parent / "panel_results"
+
+
 def apply_command(path: str | Path) -> dict:
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
     chat_id = os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar").strip()
+    state_path, result_dir = _apply_paths(path)
     result = process_command_file(
         path,
         token=token,
         chat_id=chat_id,
-        state_path="state.json",
-        result_dir="panel_results",
+        state_path=state_path,
+        result_dir=result_dir,
     )
     if result.get("status") == "failed":
         raise RuntimeError(str(result.get("message") or "panel_command_failed"))
