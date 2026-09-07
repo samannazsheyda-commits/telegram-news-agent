@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41603",
   "news_seen": [
+    "x:IsraelHayomEng:2095457432407343246",
+    "x:IsraelHayomEng:2095579893438329190",
+    "x:CBSNews:2096984896430284994",
     "6dad6bc25103b20ea38ee4c726ba50d224faacda",
     "x:CBSNews:2096964202837455043",
     "x:nytimesworld:2028456205417349268",
@@ -497,13 +500,10 @@
     "x:IDF:2095569785522360508",
     "x:kann_news:2095891154633957403",
     "x:IsraelHayomEng:2095137917668577474",
-    "x:IsraelHayomEng:2095183478719480056",
-    "x:IsraelHayomEng:2095225700592554276",
-    "x:IsraelHayomEng:2095457432407343246",
-    "x:IsraelHayomEng:2095579893438329190"
+    "x:IsraelHayomEng:2095183478719480056"
   ],
   "market_last_sent_at": "2026-09-07T14:01:28.930413+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -623,6 +623,24 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "x:IsraelHayomEng:2095457432407343246",
+      "source": "Israel Hayom / X",
+      "title": "Iran threatens to reignite war over Hezbollah mountain bunker",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 10:22:38 +0000",
+      "link": "https://x.com/IsraelHayomEng/status/2095457432407343246",
+      "checked_at": "2026-09-07T15:37:07.270693+00:00"
+    },
+    {
+      "key": "x:IsraelHayomEng:2095579893438329190",
+      "source": "Israel Hayom / X",
+      "title": "Netanyahu makes it official: Toppling Iran's regime is now a war aim",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 18:29:15 +0000",
+      "link": "https://x.com/IsraelHayomEng/status/2095579893438329190",
+      "checked_at": "2026-09-07T15:35:38.243384+00:00"
+    },
     {
       "key": "6dad6bc25103b20ea38ee4c726ba50d224faacda",
       "source": "NOTAM / Airspace",
@@ -2404,28 +2422,20 @@
       "published": "Mon, 17 Aug 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQTG9kN3lPQ1p4Rlh6M0VxMzBIb3d1UzdJbFBUZU1QZG9QeEZ6dmNSd20xeVhNS2FTTlJDRkpadk16ZjQtb2EwZGNSLTVwVldFWlc3bHZrek5iZ0Zia1Z1elA3MnhlMFJNWlVsRWliSlcyc281Qld1VDUwSDZPdlBNOHc0QnFwTEtIb3hKcTNGQ3ZWcDJlMkpXVVdERkREY29tcWNXV1kxVzNWX0hkbHc?oc=5",
       "checked_at": "2026-09-05T11:58:36.897111+00:00"
-    },
-    {
-      "key": "b7f38256245730b44d39bd30364b452854d7ac99",
-      "source": "NOTAM / Airspace",
-      "title": "EU Aviation Safety Agency Narrows Persian Gulf Airspace Warning",
-      "reason": "not_today_tehran",
-      "published": "Tue, 01 Sep 2026 11:14:35 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNLXBMSkE0Y1dYYTVrVklRSjFoTE1QcXZ1R21hLTgxZGxvTnE3Q3hjaUU3Ym1XRVNyRFViQXIyRFlsTTZFSXlqZThmT0dBRnU2c1hieTlpSGhuR1pMb185RW9ia1ZaLUN3VTRJWmhyMlNnYzlmaklqX3IxaWFBaFJCeHByQzlEZVlJVjg4YUFTcjduaU1zb1E2MTc1VXEtbkxRd0E?oc=5",
-      "checked_at": "2026-09-05T11:20:52.885911+00:00"
-    },
-    {
-      "key": "x:AlArabiya_Eng:2096175236408344804",
-      "source": "Al Arabiya English / X",
-      "title": "Iranian experts are taking part in directing Houthi military operations in Yemen’s southwestern province of Taiz, Yemeni military sources tell Al Arabiya English 🔴 The sources said dozens of Houthi fighters had been killed in intense battles as Yemeni armed forces made advances on several fronts over the past few hours 🔴 Yemen’s air force also carried out a series of airstrikes against Houthi positions in Taiz and the western province of Hodeidah, according to the sources 🔴 The strikes helped thwart Houthi attempts to advance along several axes, the sources added",
-      "reason": "translation_failed_retry_later",
-      "published": "Sat, 05 Sep 2026 09:54:56 +0000",
-      "link": "https://x.com/AlArabiya_Eng/status/2096175236408344804",
-      "checked_at": "2026-09-05T10:23:58.744213+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:CBSNews:2096984896430284994",
+      "source": "CBS News / X",
+      "title": "The head of Iran's Supreme National Security Council said Monday that Tehran is planning to announce a maritime \"exclusion zone\" outside the Strait of Hormuz where it intends to stop vessels attempting to transit the waterway without Iranian permission.",
+      "summary": "",
+      "link": "https://x.com/CBSNews/status/2096984896430284994",
+      "published": "Mon, 07 Sep 2026 15:32:14 +0000",
+      "sent_at": "2026-09-07T15:34:05.664523+00:00",
+      "fingerprint": "the head of iran s supreme national security council said monday that tehran is planning to announce a maritime exclusion zone outside the strait of hormuz where it intends to stop vessels attempting to transit the waterway without iranian permission"
+    },
     {
       "key": "x:CBSNews:2096964202837455043",
       "source": "CBS News / X",
