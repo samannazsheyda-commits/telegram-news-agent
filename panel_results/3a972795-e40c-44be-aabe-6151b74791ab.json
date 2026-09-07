@@ -1,0 +1,12 @@
+{
+  "command_id": "3a972795-e40c-44be-aabe-6151b74791ab",
+  "item_id": "",
+  "action": "clear",
+  "status": "succeeded",
+  "message": "0 خبر از صف انتظار پاک شد",
+  "scope": "pending",
+  "ids": [
+    "34262f822278887e01fca6e18d751f5431d0c6be"
+  ],
+  "updated_at": "2026-09-07T12:26:35.968864+00:00"
+}
