@@ -1,6 +1,13 @@
 {
   "truth_last_id": "41618",
   "news_seen": [
+    "x:statedeptspox:2095568528007127326",
+    "3f1a9f7bef42ca31ee3aeb987f55ecbfdada4384",
+    "fc6c65417ebaf201b330f7ade2b342992f7e9f75",
+    "c6ca2171544a3897a1aa4c00c535666433c189e1",
+    "212d686c4db1fa92e44a31d4ab5011122e217be2",
+    "e29b1d4b3c9ba7e0afdc5f8eef85678320802a3f",
+    "x:SecScottBessent:2095654604943815139",
     "x:SecScottBessent:2095889823177269752",
     "x:SecScottBessent:2095907853877874926",
     "x:JasonMBrodsky:2097009134327541823",
@@ -493,14 +500,7 @@
     "x:JasonMBrodsky:2095873000092373105",
     "x:JasonMBrodsky:2095887071613190529",
     "x:JasonMBrodsky:2095889532616900608",
-    "x:JasonMBrodsky:2095897761962959227",
-    "x:JasonMBrodsky:2095884456905056435",
-    "x:JasonMBrodsky:2095941291506823422",
-    "x:marklevinshow:2095896137794281475",
-    "x:marklevinshow:2095923413990740027",
-    "x:statedeptspox:2095568528007127326",
-    "x:statedeptspox:2095946450375233872",
-    "x:StateDept:2095212662422376755"
+    "x:JasonMBrodsky:2095897761962959227"
   ],
   "market_last_sent_at": "2026-09-07T16:01:34.128941+00:00",
   "next_news_color": "red",
@@ -623,6 +623,69 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "x:statedeptspox:2095568528007127326",
+      "source": "State Department Spokesperson / X",
+      "title": "The United States commends Peru's decision to sever diplomatic relations with Iran. The Iranian regime has long exploited its diplomatic presence abroad to sow chaos and terror. Peru’s bold step sends a clear message: the regime's terrorism—at home and abroad— will not go unanswered.",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 17:44:05 +0000",
+      "link": "https://x.com/statedeptspox/status/2095568528007127326",
+      "checked_at": "2026-09-07T17:35:12.484193+00:00"
+    },
+    {
+      "key": "3f1a9f7bef42ca31ee3aeb987f55ecbfdada4384",
+      "source": "NOTAM / Airspace",
+      "title": "Iran briefly closes western airspace for military drills - Iran International",
+      "reason": "not_today_tehran",
+      "published": "Fri, 22 Aug 2025 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1lNEJzTklnbHN4Ni1QNWpkeGtKQXFHbzVQREE2RFZidV9hZGdZaGMxRFRLcVBySDhTUEhHdjJVc0pHclVQYmlKZU9QblllNnpVOHc?oc=5",
+      "checked_at": "2026-09-07T17:33:33.606854+00:00"
+    },
+    {
+      "key": "fc6c65417ebaf201b330f7ade2b342992f7e9f75",
+      "source": "NOTAM / Airspace",
+      "title": "Bracing for impact: Gulf airlines could face costly reroutes as US-Iran tension threatens airspace",
+      "reason": "not_today_tehran",
+      "published": "Sat, 21 Feb 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxNdTFWYzhZMFhnU25VT1lLTF9TalNqa19NRm5Fd0JlR0thUlNWcGlySWFHNzgxcnBMTkN4bm5qdW1WRHdTMi1pdFZ2QTVvY29yWC14TVpPbGM5d09xN1QzZnV4bU1HaFdPT0U2SlhIMGtMc0diVFdNWlFneEhYOXFvcEVyWjR1Z2VUZzhZ?oc=5",
+      "checked_at": "2026-09-07T17:33:33.606854+00:00"
+    },
+    {
+      "key": "c6ca2171544a3897a1aa4c00c535666433c189e1",
+      "source": "NOTAM / Airspace",
+      "title": "International Carriers Suspend Flights To Iran As Deadly Crackdown Escalates - Simple Flying",
+      "reason": "not_today_tehran",
+      "published": "Sun, 11 Jan 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxNNDMyWVpNUmhhRkc3cWpYbkxJS1VrSnFhOXNLTWxyVGs3YlRUTE55aGFIN0VGUjJUSE1fMmZDVnd6STNCdVFLRWlOTUVwYUZqOF9SdGw0UGFtZlN1QzhEb2FLZXZKa2lHSjYySlhSVDE3WEl1UEdISjZHS3ZPRVZReTh3bWRkdkNDVkFaRVEwbDhKN0U?oc=5",
+      "checked_at": "2026-09-07T17:33:33.606854+00:00"
+    },
+    {
+      "key": "212d686c4db1fa92e44a31d4ab5011122e217be2",
+      "source": "NOTAM / Airspace",
+      "title": "Airlines Told To Avoid Iran, Iraq And Lebanon Airspace - Aviation Business Middle East",
+      "reason": "not_today_tehran",
+      "published": "Thu, 25 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxORmJQdnhFVkJTNEhETm9VMmd4LXQ2TjBUa0ZoODVpVjZhczZKSUh0T2VWSnBOb1phNTdBSFdOMUdYeUV1NFE1M1E4aHB5cl92OGl4SFV2S04wcXVVZ1h0M1JSR2sybGlXdUEwdkU5aHR3N3ZhTnZrTk04WUtocTF0Z1dTekI1Z1p4NUEzMkdsYmVNeEhxa1hHRg?oc=5",
+      "checked_at": "2026-09-07T17:33:33.606854+00:00"
+    },
+    {
+      "key": "e29b1d4b3c9ba7e0afdc5f8eef85678320802a3f",
+      "source": "Al Arabiya",
+      "title": "Airlines should still avoid Iranian airspace, EU agency says",
+      "reason": "not_today_tehran",
+      "published": "Wed, 01 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxOaGQtaEhQOC1xM3ZIN2QyM2VDaXViUW95U2ttMy03dWZlaV9nT1JpRlZaQW1nX1lLNmowTlpMN2U0aXktRWhvcTdyUDJSdmNHRlozNGtzOHlxNGxBbF9KMmJFZW5kSUtnNUFOSXZ2VmFWSG9FVmtTTVluRHo4c0ZXLW9rTVJxVGM4UmlPWGVjdzUzdTRyZExUV24zcTQ4SFBBV1pLWGJCQy1GcER1NGJxOGJSUHktZHFnVVduM1pfNVRrMkVSSzJZbkMtZXVQd9IB0wFBVV95cUxOaUJxMG8xZndMVS1XcGk4QTBUTWw1WGhWYzhCSUJiTFdYSmE1T296anFjRzJFeU9Dczd6MXpubEJCVk5CSE8yVnRRVklQcFdBbmVNTlJJMTZwd2V6SDFGNzNVdk9jV1ZCdW1RUzNnUTdLVFpJY0g3QmJZbUVZWWNBZGdNWms5S1cwaEhxNnRad2ZMcExndThqeDI0RFNPU3FvX2VFYzlqMHBETjBYMk9UaFlJb1F0elh0aVRLX3MxVHY3WEh6R0NfUXEyN3FCYnliWUxn?oc=5",
+      "checked_at": "2026-09-07T17:33:33.606854+00:00"
+    },
+    {
+      "key": "x:SecScottBessent:2095654604943815139",
+      "source": "Scott Bessent / X",
+      "title": "The European Union has officially joined Operation Economic Outcast and we appreciate their strong and early stance. The United States stands firm with our allies in ensuring the murderous Iranian regime cannot exploit the global financial system to fund its nuclear ambitions, weapons programs, and terror proxies. The world is sending a clear message to the Iranian regime: We will not stop until every remaining financial lifeline has been severed.",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 23:26:07 +0000",
+      "link": "https://x.com/SecScottBessent/status/2095654604943815139",
+      "checked_at": "2026-09-07T17:33:33.606854+00:00"
+    },
     {
       "key": "x:SecScottBessent:2095889823177269752",
       "source": "Scott Bessent / X",
@@ -2358,69 +2421,6 @@
       "reason": "not_today_tehran",
       "published": "Wed, 02 Jul 2025 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPZ2I0ODJyXzRrWi1yR1FPbHl3TEFJcy0zNU1MWlAxOTBuRFBoZEFDYUtlTTJfeGNxUG9lRTB4eUlXMEhmNWdOZFU4VDBKbjdyVWlPNHRqUkpwT1hKZ2FXaGNIVzl0YTZka3lQcjFVbnpXV0p2VUN5d3hfZHBaTno4TXN5NTcyV1IyaG5aeVZLeG1xNzlfRXlvUWZYZGo1eXlDcmc?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "6b15a7db9ba4018ad0959e5e3ea8fa1a6453d70e",
-      "source": "NOTAM / Airspace",
-      "title": "How Israel Took Control of Iran’s Skies - Time Magazine",
-      "reason": "not_today_tehran",
-      "published": "Tue, 17 Jun 2025 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE05eTdGMWlrVklRR3RDX3d0THhMbVNyV05vNTQ2VjJ6VXpLU05LRHQ4MG9VOTZIV0RYdDFGT3B0Z1M3MEF4TlRLaU1RWndSTC1vT29ucGxxZlNwSG04MU9VWnhfNHFSZm5DZ0E?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "17347c27166a060350dd0ac1673839bcebcf94e6",
-      "source": "Financial Times",
-      "title": "Air travel heavily disrupted following Iranian strikes",
-      "reason": "not_today_tehran",
-      "published": "Sun, 01 Mar 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNd0FwYXR6S1dSM0Y4TmFCYTNOdWFpUjJVVFA2WjI1a195cUpNR2RkVmFZN2c3N3hrSmdxRHIyZ2w5TEJPRFlyOGlhN3hEeUdPcWROdkxtR3I5OHVHZ0lodnU5T1BzdEcxaFZiSEtES1FBTDBIY1Jvc2RoeUk1TVZyWjNVYUw?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "c1eb0661bd2ded6ea29e5bcae875c9998cb1bb10",
-      "source": "NOTAM / Airspace",
-      "title": "The Iran war has sparked travel chaos. How will flights be rerouted and can other airports meet the surge in demand? - The Guardian",
-      "reason": "not_today_tehran",
-      "published": "Tue, 03 Mar 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOVHBuQkF6VkhNM2JXN2JSc3hoX0ZFY04wTldIWkdDeDVFSk5OMjBpSmtXVnFUdUJ0TkdodVNSc2l2MzlUUmwybzdTUjdtdFF0TDNvNWw4anZhc21ydUFxc05BbE5ReTh4aXQ1bjMyN19ndTNjWThZZ3BmWEhtN1BRVWQxaXBZZHJZLVl3dA?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "7701583c5a30cfad14b550d36345ee1b8810de4d",
-      "source": "NOTAM / Airspace",
-      "title": "Eurowings flight faced overnight delay to avoid Iranian airspace - The Independent",
-      "reason": "not_today_tehran",
-      "published": "Thu, 05 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOTE9Td1BWMjBLYWUwOGJHREJtb0JyTkNfRzNkSXhLM1FHYTZKT19NaFo2eHhoWVo5bWlGU2ZXUU42bUw1Rkdvc2kxYnJNcGJXbDRGTjdNQmYxVXBVbENxTERGTjRYLUxrUTBtY0JTXzZVQUp5RWNLWUF1YWNfX1JfZ3ZxZDlNMVJqRDZEYWxUQU9IdmRkRk8wVVlOTXJKQnotMlZHTHZFaE96MF85c2luaA?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "d00cf4433a82553d8600d7123450dd159a7f64a6",
-      "source": "NOTAM / Airspace",
-      "title": "CNO Caudle: Navy must launch F/A-XX program now to penetrate Iranian airspace in 10 years - Breaking Defense",
-      "reason": "not_today_tehran",
-      "published": "Tue, 27 Jan 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxQZF8tbTFCN25wT1g5dWZ6clUyY3RiTVRTTXRYQzdVTmxXVThZdzM4aktwS243Nnd3Nno5TFB2MWFNM3NERm9YZGxpRU5WSmdZLXBkZGFyMGxuTGJna3ZMU05lRDdsaUFTbFNyUmdrcV9sckw3bGI3UTJsS1F0UXhkdTVqUENUUFNPMFFLSmJJR2RTQXpZOEVic2I2c3lWTnNMa21CWWl2OGUzcnRIeXRERlZoZmctOTZVbVhiUnNObFRJLWc?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "62200e1417f9880ca4399604e8bf02b3fda46353",
-      "source": "NOTAM / Airspace",
-      "title": "U.S. ‘well on its way’ to controlling Iranian airspace, Leavitt says - National - Global News",
-      "reason": "not_today_tehran",
-      "published": "Fri, 06 Mar 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE0zZnEwektmZXNPYlg3Vkl1eklVMzBHMVBGdXhIeG1Tb05yTmJOUDhkMVk0aV9YZ2VhOG9KaldRYnkyTFItUEZ5aE4zNkVkVERCM2RYV01tU2lnNTlOSnhNZV9LbURTM0xWQjVERV9R?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "bffd29467fe10f7442265a2de2d16c2024e5fa39",
-      "source": "NOTAM / Airspace",
-      "title": "Azerbaijan Shuts Southern Airspace After Iranian Drone Incursion - Simple Flying",
-      "reason": "not_today_tehran",
-      "published": "Thu, 05 Mar 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPM3pUTnFsNWhscG9OQjFhZVFvVGhNVEd0U1h6RkVNdU95dmczNW1NdWU5SEN3Q05KQWRYcXVka3F5eDRNT0hfTHZoc0piM3lmQnQ0SVE0NjJJVDdxOTVVX2FPT3F2TlpzT0N6bnZhTGxwMkZlTTZVRUppcnJDY1ZpZXNYSFh6c2pDMG1EUQ?oc=5",
       "checked_at": "2026-09-05T12:01:36.897469+00:00"
     }
   ],
