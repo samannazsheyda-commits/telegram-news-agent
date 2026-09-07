@@ -12,6 +12,7 @@ class FakeData:
         self.files = {
             "data/editorial_queue.json": [],
             "data/editorial_history.json": [],
+            "data/panel_live_feed.json": [],
             "data/custom_sources.json": [],
             "state.json": {"news_seen": []},
         }
@@ -29,7 +30,7 @@ class FakeData:
         self.files["state.json"]["news_seen"] = seen
 
 
-def _app():
+def _app(data=None):
     return create_app(
         {
             "TESTING": True,
@@ -37,7 +38,7 @@ def _app():
             "PANEL_PASSWORD_HASH": generate_password_hash("panel-pass"),
             "TELEGRAM_BOT_TOKEN": "telegram-secret-value",
             "GITHUB_DATA_TOKEN": "github-secret-value",
-            "DATA_BACKEND": FakeData(),
+            "DATA_BACKEND": data or FakeData(),
         }
     )
 
@@ -78,7 +79,41 @@ def test_authenticated_dashboard_loads():
     text = response.get_data(as_text=True)
     assert response.status_code == 200
     assert "داشبورد" in text
-    assert "نیاز به بررسی" in text
+    assert "در انتظار" in text
+    assert "ورودی زنده" in text
+    assert "منتشرشده" in text
+
+
+def test_dashboard_shows_live_items_when_pending_queue_is_empty():
+    data = FakeData()
+    data.files["data/panel_live_feed.json"] = [
+        {
+            "item_id": f"live-{index}",
+            "event_id": f"event-{index}",
+            "source": "Reuters",
+            "source_url": f"https://example.com/{index}",
+            "title": f"Live story {index}",
+            "published_at_source": "2026-09-07T12:00:00+00:00",
+            "discovered_at": "2026-09-07T12:01:00+00:00",
+            "decision": "new_event",
+            "decision_reason": "no_matching_event",
+            "duplicate_of": "",
+            "telegram_message_id": None,
+            "panel_status": "new",
+            "updated_at": "2026-09-07T12:01:00+00:00",
+        }
+        for index in range(5)
+    ]
+    app = _app(data)
+    client = app.test_client()
+    response = _login(client)
+    text = response.get_data(as_text=True)
+    assert response.status_code == 200
+    assert "ورودی زنده" in text
+    assert ">5<" in text
+    assert "Live story 0" in text
+    assert "در انتظار" in text
+    assert ">0<" in text
 
 
 def test_mutation_without_csrf_is_rejected():
