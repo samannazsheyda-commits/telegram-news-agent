@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41619",
   "news_seen": [
+    "45f3615345f9e90a9c2687cf0bb7e55552c3a171",
     "x:statedeptspox:2095568528007127326",
     "3f1a9f7bef42ca31ee3aeb987f55ecbfdada4384",
     "fc6c65417ebaf201b330f7ade2b342992f7e9f75",
@@ -499,8 +500,7 @@
     "x:JasonMBrodsky:2095825250701267327",
     "x:JasonMBrodsky:2095873000092373105",
     "x:JasonMBrodsky:2095887071613190529",
-    "x:JasonMBrodsky:2095889532616900608",
-    "x:JasonMBrodsky:2095897761962959227"
+    "x:JasonMBrodsky:2095889532616900608"
   ],
   "market_last_sent_at": "2026-09-07T18:20:33.841773+00:00",
   "next_news_color": "red",
