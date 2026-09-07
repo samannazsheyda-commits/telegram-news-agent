@@ -1,6 +1,10 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
+    "x:AJEnglish:2096930970754593010",
+    "x:AlArabiya_Eng:2096923191784439907",
+    "x:Jerusalem_Post:2096920552883568757",
+    "x:ABC:2096919248895373573",
     "94d8d4a2bc1075362a3bea828cf52b1313b45afb",
     "x:JasonMBrodsky:2096916050788954487",
     "x:AlArabiya_Eng:2096914987579048223",
@@ -496,13 +500,9 @@
     "11793538e614e35d40c505011db03cdca00c5744",
     "3dab26bc356e575606b6b0e0e34804c9ee255666",
     "04c9e689cefa832263ff2b66498f7183a7ae6bbd",
-    "875b8701be5bf56895ab970caaf781248e650f93",
-    "4c49e7003ec2f42c4edf9370201143f60aa1b8c2",
-    "c407477fd511b756dec01873b08db1b92215ea90",
-    "b8921012ad5f44aaed9e40e057183bd7589868de",
-    "5ae94dc5bc69e0022312772764e5812c192cd91c"
+    "875b8701be5bf56895ab970caaf781248e650f93"
   ],
-  "market_last_sent_at": "2026-09-07T09:44:07.520870+00:00",
+  "market_last_sent_at": "2026-09-07T11:57:41.209563+00:00",
   "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
@@ -614,9 +614,9 @@
   "market_day_prices": {
     "date": "2026-09-07",
     "first_usd": 223000,
-    "last_usd": 222870,
+    "last_usd": 223100,
     "first_gold": 23353600,
-    "last_gold": 23063200,
+    "last_gold": 23101000,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
@@ -2426,6 +2426,46 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2096930970754593010",
+      "source": "Al Jazeera English / X",
+      "title": "Ship fuel is running short as the US-Israel war on Iran and Russia’s war on Ukraine disrupt crude supplies, while refiners prioritise more profitable diesel. Tighter bunker fuel could raise shipping costs and impact global trade.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096930970754593010",
+      "published": "Mon, 07 Sep 2026 11:57:57 +0000",
+      "sent_at": "2026-09-07T11:59:22.939657+00:00",
+      "fingerprint": "ship fuel is running short as the us israel war on iran and russia s war on ukraine disrupt crude supplies while refiners prioritise more profitable diesel tighter bunker fuel could raise shipping costs and impact global trade"
+    },
+    {
+      "key": "x:ABC:2096919248895373573",
+      "source": "ABC News / X",
+      "title": "The speaker of the Iranian parliament, Mohammad Bagher Ghalibaf, posted to X on Monday in response to Secretary Pete Hegseth's threat to sink Iranian oil tankers if Iran targeted the U.S. Navy. Follow",
+      "summary": "",
+      "link": "https://x.com/ABC/status/2096919248895373573",
+      "published": "Mon, 07 Sep 2026 11:11:22 +0000",
+      "sent_at": "2026-09-07T11:57:41.209563+00:00",
+      "fingerprint": "the speaker of the iranian parliament mohammad bagher ghalibaf posted to x on monday in response to secretary pete hegseth s threat to sink iranian oil tankers if iran targeted the u s navy follow"
+    },
+    {
+      "key": "x:Jerusalem_Post:2096920552883568757",
+      "source": "Jerusalem Post / X",
+      "title": "Oman said it had evacuated 16 crew members from the Saudi-owned tanker Sidr, after it was attacked by Iran, according to a statement posted on X/Twitter by its Maritime Security Center.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096920552883568757",
+      "published": "Mon, 07 Sep 2026 11:16:33 +0000",
+      "sent_at": "2026-09-07T11:57:41.209563+00:00",
+      "fingerprint": "oman said it had evacuated 16 crew members from the saudi owned tanker sidr after it was attacked by iran according to a statement posted on x twitter by its maritime security center"
+    },
+    {
+      "key": "x:AlArabiya_Eng:2096923191784439907",
+      "source": "Al Arabiya English / X",
+      "title": "Qatar’s Foreign Ministry spokesman Majed al-Ansari says the Iran war shows Gulf states cannot rely solely on the United States for security, calling for greater regional self-sufficiency while maintaining international alliances.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096923191784439907",
+      "published": "Mon, 07 Sep 2026 11:27:02 +0000",
+      "sent_at": "2026-09-07T11:57:41.209563+00:00",
+      "fingerprint": "qatar s foreign ministry spokesman majed al ansari says the iran war shows gulf states cannot rely solely on the united states for security calling for greater regional self sufficiency while maintaining international alliances"
+    },
     {
       "key": "x:JasonMBrodsky:2096916050788954487",
       "source": "Jason Brodsky / X",
