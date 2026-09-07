@@ -21,8 +21,19 @@ jobs:
         run: pip install -r requirements-dev.txt
       - name: Check newsroom JavaScript syntax
         run: node --check docs/newsroom-v1.js
-      - name: Run tests
-        run: python -m pytest -q
+      - name: Run V2 focused tests
+        if: github.head_ref == 'design/newsroom-v2-2026-09-07'
+        run: >-
+          python -m pytest -q
+          tests/test_newsroom_raw_intake.py
+          tests/test_newsroom_models.py
+          tests/test_newsroom_normalize.py
+          tests/test_newsroom_fingerprint.py
+          tests/test_event_ledger.py
+          tests/test_newsroom_decision.py
+          tests/test_panel_live_feed.py
+          tests/test_newsroom_v2_integration.py
+          tests/test_truth_social.py
       - name: Run live V2 shadow cycle
         if: github.head_ref == 'design/newsroom-v2-2026-09-07'
         env:
@@ -40,3 +51,5 @@ jobs:
           assert all(row.get('telegram_message_id') in (None, '') for row in rows)
           print('SHADOW_FEED_RECORDS', len(rows))
           PY
+      - name: Run full regression suite
+        run: python -m pytest -q
