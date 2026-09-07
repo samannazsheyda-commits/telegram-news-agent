@@ -1,6 +1,7 @@
 from pathlib import Path
 
 WORKFLOW = Path('.github/workflows/panel-file-command.yml')
+REFRESH_JS = Path('docs/panel-live-refresh.js')
 
 
 def test_pending_clear_ids_are_reapplied_after_merge():
@@ -10,6 +11,8 @@ def test_pending_clear_ids_are_reapplied_after_merge():
 
 
 def test_refresh_result_message_is_rendered_to_operator():
-    js = Path('docs/newsroom-v1.js').read_text(encoding='utf-8')
+    js = REFRESH_JS.read_text(encoding='utf-8')
     assert "result.message" in js
+    assert "lastRefresh" in js
+    assert "stopImmediatePropagation" in js
     assert "بروزرسانی" in js
