@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Callable, Iterable
+from typing import Callable
 
 from .editorial_store import LocalEditorialStore, ReviewItem
 from .event_ledger import EventLedger
 from .newsroom_decision import decide_item
+from .newsroom_eligibility import evaluate_eligibility
 from .newsroom_fingerprint import build_fingerprint
 from .newsroom_models import LiveFeedRecord, NormalizedNewsItem, RawNewsItem
 from .newsroom_normalize import normalize_item
@@ -22,6 +23,8 @@ class CycleSummary:
     material_updates: int = 0
     exact_duplicates: int = 0
     same_claim_duplicates: int = 0
+    stale: int = 0
+    filtered: int = 0
     review_items: int = 0
     published: int = 0
     publish_failed: int = 0
@@ -184,6 +187,32 @@ def run_cycle(
             event_id = event.event_id
             if decision.decision == "new_event":
                 summary.new_events += 1
+
+        eligibility = evaluate_eligibility(item, now)
+        if not eligibility.eligible:
+            if eligibility.reason == "stale":
+                summary.stale += 1
+            elif eligibility.review:
+                summary.review_items += 1
+            else:
+                summary.filtered += 1
+
+            if eligibility.review:
+                _queue_item(editorial_store, item, eligibility.reason, now)
+                panel_status = "waiting"
+            else:
+                panel_status = "rejected"
+
+            live_feed.upsert(_feed_record(
+                item,
+                event_id=event_id,
+                decision=decision.decision,
+                reason=eligibility.reason,
+                panel_status=panel_status,
+                message_id=None,
+                now=now,
+            ))
+            continue
 
         auto_publish = settings.get("auto_publish") is not False
         needs_review = decision.decision == "needs_editorial_review" or not auto_publish
