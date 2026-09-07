@@ -5,6 +5,7 @@ import json
 from src.custom_sources import (
     XSource,
     discover_feed_url,
+    extract_public_telegram_source_links,
     fetch_custom_news_items,
     normalize_x_handle,
     parse_public_feed,
@@ -126,3 +127,21 @@ def test_reference_custom_sources_are_context_only_and_never_auto_published(tmp_
 
     assert fetch_custom_news_items(path=path, session=session) == []
     assert session.calls == []
+
+
+def test_own_channel_history_exposes_embedded_original_source_link():
+    html = '''
+    <div class="tgme_widget_message" data-post="bikhabaar/501">
+      <div class="tgme_widget_message_text">
+        ⚪️ تبز لایو / Telegram: نتانیاهو درباره ایران: هنوز کارهای بیشتری باید انجام شود.
+        <a href="https://t.me/tabzlive/102008">📌 لینک منبع خبر</a>
+        <a href="https://t.me/bikhabaar">📡 بی‌خبر</a>
+      </div>
+      <time datetime="2026-09-06T19:33:00+00:00"></time>
+    </div>
+    '''
+
+    links = extract_public_telegram_source_links(html, "bikhabaar")
+
+    assert "https://t.me/tabzlive/102008" in links
+    assert "https://t.me/bikhabaar" not in links
