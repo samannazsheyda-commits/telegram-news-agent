@@ -9,14 +9,15 @@ def test_panel_workflow_is_isolated_and_targeted():
     assert "browser-panel-command" in text
     assert "telegram-news-agent" not in text.split("concurrency:", 1)[1].split("jobs:", 1)[0]
     assert "pytest -q" not in text
-    assert "src.panel_command_file" in text
+    assert "src.panel_command_router" in text
 
 
-def test_panel_workflow_persists_results_and_runtime_data():
+def test_panel_workflow_persists_results_runtime_data_and_newsroom_settings():
     text = WORKFLOW.read_text(encoding="utf-8")
     assert "panel_results" in text
     assert "editorial_queue.json" in text
     assert "editorial_history.json" in text
+    assert "newsroom_settings.json" in text
     assert "state.json" in text
 
 
