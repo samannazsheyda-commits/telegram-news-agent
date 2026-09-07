@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from .editorial_rules import _specific_facts, _tokens
+from .editorial_rules import _named_speakers, _shared_distinctive_bigram, _specific_facts, _tokens
 from .sources import NewsItem
 
 _PROGRESS_TERMS = (
@@ -101,8 +101,9 @@ def is_strict_duplicate_story(left: NewsItem, right: NewsItem) -> bool:
 
     Broad shared context such as Iran/US/war is never enough by itself. A duplicate
     needs substantial lexical overlap after the project's canonical normalization,
-    or the same multilingual rolling operational counters in the same context.
-    Materially changed operational counters are treated as a new update.
+    the same distinctive phrase from the same named speaker, or the same multilingual
+    rolling operational counters in the same context. Materially changed operational
+    counters are treated as a new update.
     """
     a, b = _tokens(left), _tokens(right)
     if not a or not b:
@@ -125,4 +126,8 @@ def is_strict_duplicate_story(left: NewsItem, right: NewsItem) -> bool:
 
     common = a & b
     overlap = len(common) / max(1, min(len(a), len(b)))
-    return len(common) >= 5 and overlap >= 0.50
+    if len(common) >= 5 and overlap >= 0.50:
+        return True
+
+    shared_speakers = _named_speakers(left) & _named_speakers(right)
+    return bool(shared_speakers) and len(common) >= 4 and _shared_distinctive_bigram(left, right)

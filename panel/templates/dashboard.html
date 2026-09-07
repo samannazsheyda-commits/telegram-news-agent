@@ -3,17 +3,64 @@
 {% block content %}
 <h1>داشبورد</h1>
 <div class="stats">
-  <a class="stat" href="{{ url_for('review_queue') }}"><b>{{ queue_count }}</b><span>نیاز به بررسی</span></a>
-  <a class="stat" href="{{ url_for('history', status='published_manual') }}"><b>{{ published_today }}</b><span>منتشرشده امروز</span></a>
+  <div class="stat"><b>{{ live_count }}</b><span>ورودی زنده</span></div>
+  <a class="stat" href="{{ url_for('review_queue') }}"><b>{{ queue_count }}</b><span>در انتظار</span></a>
+  <a class="stat" href="{{ url_for('history') }}"><b>{{ published_today }}</b><span>منتشرشده امروز</span></a>
   <a class="stat" href="{{ url_for('history', status='rejected_manual') }}"><b>{{ rejected_today }}</b><span>ردشده امروز</span></a>
 </div>
+
 <section class="card">
   <div class="row"><span>وضعیت ربات</span><strong class="ok">فعال</strong></div>
   <div class="row"><span>کانال</span><strong>@bikhabaar</strong></div>
   <div class="row"><span>آخرین انتشار ثبت‌شده</span><strong>{{ last_publication or '—' }}</strong></div>
 </section>
+
+<section class="card">
+  <h2>ورودی زنده</h2>
+  {% if live %}
+    {% for item in live[:10] %}
+      <div class="row">
+        <span>
+          <strong>{{ item.title }}</strong><br>
+          <small>{{ item.source }} · {{ item.panel_status }}{% if item.decision_reason %} · {{ item.decision_reason }}{% endif %}</small>
+        </span>
+        {% if item.source_url %}<a class="button" href="{{ item.source_url }}" target="_blank" rel="noopener">منبع</a>{% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>هنوز ورودی زنده‌ای ثبت نشده.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>در انتظار</h2>
+  {% if pending %}
+    {% for item in pending[:5] %}
+      <div class="row">
+        <span><strong>{{ item.persian_title or item.original_title }}</strong><br><small>{{ item.source }}</small></span>
+        <a class="button" href="{{ url_for('review_edit', item_id=item.id) }}">بررسی</a>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>خبر در انتظار بررسی نیست.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>منتشرشده</h2>
+  {% if published %}
+    {% for item in published[:5] %}
+      <div class="row">
+        <span><strong>{{ item.final_persian_title or item.persian_title or item.original_title }}</strong><br><small>{{ item.source }}</small></span>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>هنوز سابقه انتشار ثبت نشده.</p>
+  {% endif %}
+</section>
+
 <section class="actions">
-  <a class="primary button" href="{{ url_for('review_queue') }}">بررسی خبرهای ردشده</a>
+  <a class="primary button" href="{{ url_for('review_queue') }}">بررسی خبرهای در انتظار</a>
   <a class="button" href="{{ url_for('sources') }}">مدیریت منابع</a>
 </section>
 {% endblock %}

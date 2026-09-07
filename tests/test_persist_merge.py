@@ -61,3 +61,57 @@ def test_merge_snapshot_preserves_remote_and_local_editorial_records(tmp_path):
     state = json.loads((repo / "state.json").read_text(encoding="utf-8"))
     assert {x["id"] for x in queue} == {"r", "l"}
     assert state["news_seen"] == ["local", "remote"]
+
+
+def test_merge_snapshot_preserves_newer_event_ledger_records(tmp_path):
+    repo = tmp_path / "repo"
+    snap = tmp_path / "snap"
+    (repo / "data").mkdir(parents=True)
+    (snap / "data").mkdir(parents=True)
+    (repo / "state.json").write_text("{}", encoding="utf-8")
+    (snap / "state.json").write_text("{}", encoding="utf-8")
+    for name in ("editorial_queue.json", "editorial_history.json"):
+        (repo / "data" / name).write_text("[]", encoding="utf-8")
+        (snap / "data" / name).write_text("[]", encoding="utf-8")
+    (repo / "data/event_ledger.json").write_text(json.dumps([
+        {"event_id": "shared", "last_updated": "2026-09-07T12:00:00Z", "status": "new"},
+        {"event_id": "remote", "last_updated": "2026-09-07T12:01:00Z"},
+    ]), encoding="utf-8")
+    (snap / "data/event_ledger.json").write_text(json.dumps([
+        {"event_id": "shared", "last_updated": "2026-09-07T12:05:00Z", "status": "published"},
+        {"event_id": "local", "last_updated": "2026-09-07T12:02:00Z"},
+    ]), encoding="utf-8")
+    (repo / "data/panel_live_feed.json").write_text("[]", encoding="utf-8")
+    (snap / "data/panel_live_feed.json").write_text("[]", encoding="utf-8")
+
+    merge_snapshot(snap, repo)
+    records = json.loads((repo / "data/event_ledger.json").read_text(encoding="utf-8"))
+    by_id = {row["event_id"]: row for row in records}
+    assert set(by_id) == {"shared", "remote", "local"}
+    assert by_id["shared"]["status"] == "published"
+
+
+def test_merge_snapshot_preserves_live_feed_by_item_id_and_newest_update(tmp_path):
+    repo = tmp_path / "repo"
+    snap = tmp_path / "snap"
+    (repo / "data").mkdir(parents=True)
+    (snap / "data").mkdir(parents=True)
+    (repo / "state.json").write_text("{}", encoding="utf-8")
+    (snap / "state.json").write_text("{}", encoding="utf-8")
+    for name in ("editorial_queue.json", "editorial_history.json", "event_ledger.json"):
+        (repo / "data" / name).write_text("[]", encoding="utf-8")
+        (snap / "data" / name).write_text("[]", encoding="utf-8")
+    (repo / "data/panel_live_feed.json").write_text(json.dumps([
+        {"item_id": "same", "updated_at": "2026-09-07T12:00:00Z", "panel_status": "new"},
+        {"item_id": "remote", "updated_at": "2026-09-07T12:01:00Z"},
+    ]), encoding="utf-8")
+    (snap / "data/panel_live_feed.json").write_text(json.dumps([
+        {"item_id": "same", "updated_at": "2026-09-07T12:05:00Z", "panel_status": "auto_published"},
+        {"item_id": "local", "updated_at": "2026-09-07T12:02:00Z"},
+    ]), encoding="utf-8")
+
+    merge_snapshot(snap, repo)
+    records = json.loads((repo / "data/panel_live_feed.json").read_text(encoding="utf-8"))
+    by_id = {row["item_id"]: row for row in records}
+    assert set(by_id) == {"same", "remote", "local"}
+    assert by_id["same"]["panel_status"] == "auto_published"

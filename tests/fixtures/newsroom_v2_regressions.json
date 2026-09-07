@@ -1,0 +1,56 @@
+[
+  {
+    "name": "white_house_hormuz_control_vs_iran_restriction",
+    "current": {"source": "White House", "priority": "protected", "url": "https://whitehouse.gov/hormuz-control", "id": "wh-1", "title": "White House says United States has total control of Strait of Hormuz"},
+    "prior": {"source": "Reuters", "url": "https://reuters.com/iran-restricted-zone", "id": "r-1", "title": "Iran announces new restricted zone outside Strait of Hormuz"},
+    "expected": "new_event"
+  },
+  {
+    "name": "centcom_counts_vs_hormuz_restriction",
+    "current": {"source": "CENTCOM", "priority": "protected", "url": "https://centcom.mil/update-92", "id": "centcom-92", "title": "CENTCOM redirected 92 commercial vessels, disabled 3 and boarded 2 in Strait of Hormuz"},
+    "prior": {"source": "Reuters", "url": "https://reuters.com/iran-restricted-zone", "id": "r-1", "title": "Iran announces new restricted zone outside Strait of Hormuz"},
+    "expected": "new_event"
+  },
+  {
+    "name": "spain_close_vs_iran_reopen",
+    "current": {"source": "Reuters", "url": "https://reuters.com/spain-close", "id": "spain-1", "title": "Spain closes airspace to US warplanes involved in Iran war"},
+    "prior": {"source": "Reuters", "url": "https://reuters.com/iran-reopen", "id": "iran-open", "title": "Iran partially reopens airspace to international flights"},
+    "expected": "new_event"
+  },
+  {
+    "name": "jordan_intercept_vs_spain_close",
+    "current": {"source": "Reuters", "url": "https://reuters.com/jordan-intercept", "id": "jordan-1", "title": "Jordan intercepts Iranian missiles over its airspace"},
+    "prior": {"source": "Reuters", "url": "https://reuters.com/spain-close", "id": "spain-1", "title": "Spain closes airspace to US warplanes involved in Iran war"},
+    "expected": "new_event"
+  },
+  {
+    "name": "unsc_referral_vs_nuclear_diplomacy",
+    "current": {"source": "Reuters", "url": "https://reuters.com/unsc-referral", "id": "unsc-1", "title": "IAEA board refers Iran nuclear case to United Nations Security Council"},
+    "prior": {"source": "Reuters", "url": "https://reuters.com/nuclear-talks", "id": "talks-1", "title": "Iran and European powers discuss nuclear diplomacy"},
+    "expected": "new_event"
+  },
+  {
+    "name": "airline_restore_is_operational_update",
+    "current": {"source": "Reuters", "url": "https://reuters.com/airlines-restore", "id": "airline-1", "title": "Airlines gradually restore Middle East services after Iran conflict"},
+    "prior": {"source": "Reuters", "url": "https://reuters.com/airlines-suspend", "id": "airline-0", "title": "Airlines suspend Middle East services during Iran conflict"},
+    "expected": "new_event"
+  },
+  {
+    "name": "three_tanker_multi_outlet_duplicate",
+    "current": {"source": "AP", "url": "https://apnews.com/three-tankers", "id": "ap-tankers", "title": "US forces strike 3 Iranian crude oil tankers after Iran targets Navy ships"},
+    "prior": {"source": "Reuters", "url": "https://reuters.com/three-tankers", "id": "reuters-tankers", "title": "U.S. military struck three Iranian oil tankers after attacks on Navy warships"},
+    "expected": "duplicate_same_claim"
+  },
+  {
+    "name": "centcom_changed_counts_material_update",
+    "current": {"source": "CENTCOM", "priority": "protected", "url": "https://centcom.mil/update-92", "id": "centcom-92", "title": "CENTCOM redirected 92 commercial vessels, disabled 3 and boarded 2 in Strait of Hormuz"},
+    "prior": {"source": "CENTCOM", "url": "https://centcom.mil/update-80", "id": "centcom-80", "title": "CENTCOM redirected 80 commercial vessels, disabled 3 and boarded 2 in Strait of Hormuz"},
+    "expected": "material_update"
+  },
+  {
+    "name": "two_truth_posts_are_independent",
+    "current": {"source": "Truth Social", "priority": "protected", "url": "https://truthsocial.com/@realDonaldTrump/117230287806050615", "id": "117230287806050615", "title": "Iran's Navy"},
+    "prior": {"source": "Truth Social", "url": "https://truthsocial.com/@realDonaldTrump/117230287192828119", "id": "117230287192828119", "title": "Iran's Navy"},
+    "expected": "new_event"
+  }
+]
