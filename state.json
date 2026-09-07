@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41619",
   "news_seen": [
+    "afb47f80fda3233bc33f2f0a3a5dae5d26ae4e22",
+    "e792829fab8dc2d1c1dbb9e9db54867a5a9fe5db",
     "x:statedeptspox:2095568528007127326",
     "3f1a9f7bef42ca31ee3aeb987f55ecbfdada4384",
     "fc6c65417ebaf201b330f7ade2b342992f7e9f75",
@@ -498,9 +500,7 @@
     "x:JasonMBrodsky:2095824486431858777",
     "x:JasonMBrodsky:2095825250701267327",
     "x:JasonMBrodsky:2095873000092373105",
-    "x:JasonMBrodsky:2095887071613190529",
-    "x:JasonMBrodsky:2095889532616900608",
-    "x:JasonMBrodsky:2095897761962959227"
+    "x:JasonMBrodsky:2095887071613190529"
   ],
   "market_last_sent_at": "2026-09-07T18:20:33.841773+00:00",
   "next_news_color": "red",
@@ -623,6 +623,24 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "afb47f80fda3233bc33f2f0a3a5dae5d26ae4e22",
+      "source": "NOTAM / Airspace",
+      "title": "Flydubai returns to Iranian airspace for first time since start of war - Arabian Gulf Business Insight - AGBI",
+      "reason": "not_today_tehran",
+      "published": "Mon, 17 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQTG9kN3lPQ1p4Rlh6M0VxMzBIb3d1UzdJbFBUZU1QZG9QeEZ6dmNSd20xeVhNS2FTTlJDRkpadk16ZjQtb2EwZGNSLTVwVldFWlc3bHZrek5iZ0Zia1Z1elA3MnhlMFJNWlVsRWliSlcyc281Qld1VDUwSDZPdlBNOHc0QnFwTEtIb3hKcTNGQ3ZWcDJlMkpXVVdERkREY29tcWNXV1kxVzNWX0hkbHc?oc=5",
+      "checked_at": "2026-09-07T18:28:18.112310+00:00"
+    },
+    {
+      "key": "e792829fab8dc2d1c1dbb9e9db54867a5a9fe5db",
+      "source": "Reuters",
+      "title": "Airlines gradually restore Middle East services after Iran conflict",
+      "reason": "not_today_tehran",
+      "published": "Tue, 25 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOQVBTWVJmQzQ0amNDbXRwTnRpMXZOc19tNndrYlRWNHFWWllULVVkZGxEVkNic2lGdkhKdFE1N0NzQUt6d3BVcEhvME11eUVWSjlZNXlDcUJ5ZFBMSF9KMDNXMnVMaksyT1p5UUhOVUV1b3pYeVZzeEVCa285VGRtYUN3UFZOalRsS3Bzb0dNV3UzMGZrOWdsdC1FWjdvYW9qUkNVOENCUERpTGdjbl9yM0VLYmxMdw?oc=5",
+      "checked_at": "2026-09-07T18:28:18.112310+00:00"
+    },
     {
       "key": "x:statedeptspox:2095568528007127326",
       "source": "State Department Spokesperson / X",
@@ -2404,24 +2422,6 @@
       "published": "Sun, 07 Jun 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQYmxjLXpJVEozZ3FsRG82RjBpZ0JZMHN6WHZMQ2lNTGVtaDFXWFlsUXBDSjRER1hCMTNZd1BIMzNfTTBZNzR5MnlIWC1CZ29MVGVrT3lQS0prX3dQN2RZb242M04ybXQ3OUFNMjVZWWVZTE5hWjdSbGpsaWVsTDh4SXlxdjVKLWxpNDQwTnN4SzVoWGRvSzVGQUhZcEwzeTljQ1pOZEd4SHdfQ1NxOEl2dG1fRQ?oc=5",
       "checked_at": "2026-09-05T12:21:13.511581+00:00"
-    },
-    {
-      "key": "5bfc3dbb8ac497013982211bec2b98c0ba7debc4",
-      "source": "NOTAM / Airspace",
-      "title": "Iran Integrates Artificial Intelligence into Air Defense Systems - - WANA News Agency",
-      "reason": "not_today_tehran",
-      "published": "Tue, 01 Sep 2026 18:12:18 GMT",
-      "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNa2VrcXdGX2pHdmhYNlZab1c2Qmc1V0VPb0RnSWVyZ0NiM1ZuN3JPaW5oZWhJN0syRDNMUXFMQTZJV2xxbW1UNDdYWFBYaEV3UUtDZlRQVGlnbXkzakE0TzhzWXQzZXNVcFJRRGdCMXkwWTBtSTBTQ0dvUzJFQ0dTSFd4U05SUk9FcnZUdQ?oc=5",
-      "checked_at": "2026-09-05T12:21:13.511581+00:00"
-    },
-    {
-      "key": "1a69134c1b01198dfd26df1bb21f313e57fbdaa6",
-      "source": "NOTAM / Airspace",
-      "title": "Iran Shuts Western and Central Airspace to International Flights - The Media Line",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Jul 2025 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPZ2I0ODJyXzRrWi1yR1FPbHl3TEFJcy0zNU1MWlAxOTBuRFBoZEFDYUtlTTJfeGNxUG9lRTB4eUlXMEhmNWdOZFU4VDBKbjdyVWlPNHRqUkpwT1hKZ2FXaGNIVzl0YTZka3lQcjFVbnpXV0p2VUN5d3hfZHBaTno4TXN5NTcyV1IyaG5aeVZLeG1xNzlfRXlvUWZYZGo1eXlDcmc?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-06",
