@@ -50,6 +50,30 @@ def test_load_command_args_preserves_persian_and_newlines(tmp_path):
     assert args["body"] == "خط اول\nخط دوم"
 
 
+def test_refresh_command_does_not_require_item_and_runs_scanner(tmp_path):
+    command = _command(tmp_path, action="refresh", item_id="", command_id="refresh-1")
+    calls = []
+
+    args = load_command_args(command)
+    assert args["action"] == "refresh"
+    assert args["item_id"] == ""
+
+    result = process_command_file(
+        str(command),
+        store=LocalEditorialStore(tmp_path / "queue.json", tmp_path / "history.json"),
+        token="bot",
+        chat_id="@bikhabaar",
+        state_path=str(tmp_path / "state.json"),
+        result_dir=str(tmp_path / "results"),
+        refresh_runner=lambda: calls.append("ran") or 0,
+    )
+
+    assert calls == ["ran"]
+    assert result["status"] == "succeeded"
+    assert result["action"] == "refresh"
+    assert not Path(command).exists()
+
+
 def test_reject_command_is_idempotent(tmp_path):
     store, item = _store(tmp_path)
     command = _command(tmp_path, action="reject", item_id=item.id)
