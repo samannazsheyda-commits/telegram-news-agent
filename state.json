@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41592",
   "news_seen": [
+    "x:haaretzcom:2096814492155859096",
+    "x:washingtonpost:2096810723099738314",
     "x:AJEnglish:2096798514747736309",
     "x:Jerusalem_Post:2096776291127091272",
     "7befc53bc0c09657fa1f2003f8aee94bf53b21f6",
@@ -498,9 +500,7 @@
     "04b1c249f606defcd6ca6b1c550f8970823a5b94",
     "c71e4d2c6a1dd74a1e643c61af27b8c9b960d9f8",
     "d475db1b1438f5a406f420e38d2594881260fa0d",
-    "330e5f6284ec19ef4908a4b0fe5ff4c9e882fb81",
-    "92b3bc46b950ce0dd663a241dcf2bb697d711ca6",
-    "93bd552fc45835b95544a5cc616ee96fd5174d8d"
+    "330e5f6284ec19ef4908a4b0fe5ff4c9e882fb81"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
   "next_news_color": "white",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:haaretzcom:2096814492155859096",
+      "source": "Haaretz / X",
+      "title": "Analysis • Iran, backed into a corner, may strike at Israel | Amos Harel",
+      "summary": "",
+      "link": "https://x.com/haaretzcom/status/2096814492155859096",
+      "published": "Mon, 07 Sep 2026 04:15:06 +0000",
+      "sent_at": "2026-09-07T04:15:22.315260+00:00",
+      "fingerprint": "analysis iran backed into a corner may strike at israel amos harel"
+    },
+    {
+      "key": "x:washingtonpost:2096810723099738314",
+      "source": "Washington Post / X",
+      "title": "The U.S. is not the only country grappling with soaring government debt. The rising yields reflect multiple factors, including expectations that long-term inflation will persist, caused in part by higher energy costs from President Trump’s war in Iran.",
+      "summary": "",
+      "link": "https://x.com/washingtonpost/status/2096810723099738314",
+      "published": "Mon, 07 Sep 2026 04:00:07 +0000",
+      "sent_at": "2026-09-07T04:13:05.289163+00:00",
+      "fingerprint": "the u s is not the only country grappling with soaring government debt the rising yields reflect multiple factors including expectations that long term inflation will persist caused in part by higher energy costs from president trump s war in iran"
+    },
     {
       "key": "x:AJEnglish:2096798514747736309",
       "source": "Al Jazeera English / X",
