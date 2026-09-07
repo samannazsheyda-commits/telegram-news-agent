@@ -130,3 +130,70 @@ def test_shadow_mode_never_publishes_but_records_decisions(tmp_path):
     assert summary.new_events == 1
     assert len(live.records()) == 1
     assert live.records()[0].panel_status == "new"
+
+
+def test_http_success_with_telegram_ok_false_stays_retryable(tmp_path):
+    ledger, live, editorial = stores(tmp_path)
+    item = raw("Reuters", "tg-fail", "Iran partially reopens airspace to international flights")
+    summary = run_cycle(
+        fetcher=lambda: [item],
+        ledger=ledger,
+        live_feed=live,
+        editorial_store=editorial,
+        publisher=lambda item: {"ok": False, "result": {"message_id": 999}},
+        settings={"auto_publish": True},
+        now=NOW,
+    )
+    assert summary.published == 0
+    assert summary.publish_failed == 1
+    assert live.records()[0].panel_status == "failed"
+    event = ledger.records()[0]
+    assert event.published_message_ids == []
+    assert event.status != "published"
+    assert len(editorial.queue()) == 1
+
+
+def test_verified_telegram_message_id_is_persisted(tmp_path):
+    ledger, live, editorial = stores(tmp_path)
+    item = raw("Reuters", "tg-ok", "Jordan intercepts Iranian missiles over its airspace")
+    summary = run_cycle(
+        fetcher=lambda: [item],
+        ledger=ledger,
+        live_feed=live,
+        editorial_store=editorial,
+        publisher=lambda item: {"ok": True, "result": {"message_id": 777}},
+        settings={"auto_publish": True},
+        now=NOW,
+    )
+    assert summary.published == 1
+    assert ledger.records()[0].published_message_ids == [777]
+    assert live.records()[0].telegram_message_id == 777
+
+
+def test_restart_does_not_republish_same_source_event(tmp_path):
+    ledger, live, editorial = stores(tmp_path)
+    item = raw("Reuters", "restart", "Iran announces new restricted zone outside Strait of Hormuz")
+    sent = []
+
+    first = run_cycle(
+        fetcher=lambda: [item],
+        ledger=ledger,
+        live_feed=live,
+        editorial_store=editorial,
+        publisher=lambda item: sent.append(item.raw.source_item_id) or {"ok": True, "message_id": 501},
+        settings={"auto_publish": True},
+        now=NOW,
+    )
+    second = run_cycle(
+        fetcher=lambda: [item],
+        ledger=EventLedger(tmp_path / "ledger.json"),
+        live_feed=LiveFeedStore(tmp_path / "live.json"),
+        editorial_store=LocalEditorialStore(tmp_path / "queue.json", tmp_path / "history.json"),
+        publisher=lambda item: sent.append("DUPLICATE") or {"ok": True, "message_id": 502},
+        settings={"auto_publish": True},
+        now=NOW,
+    )
+
+    assert first.published == 1
+    assert second.exact_duplicates == 1
+    assert sent == ["restart"]
