@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "emergency_lock": false,
+  "auto_publish": true,
+  "quiet_mode": false,
+  "quiet_start": "00:00",
+  "quiet_end": "07:00",
+  "freshness_hours": 3,
+  "dedup_mode": "strict",
+  "earthquake_min": 2.0,
+  "earthquake_breaking": 4.0,
+  "notam_sensitivity": "high",
+  "market": {
+    "btc": true,
+    "usdt": true,
+    "oil": true,
+    "gold": true,
+    "cars": true,
+    "phones": true
+  },
+  "alerts": {
+    "breaking_sound": false,
+    "source_failure": true
+  },
+  "ui": {
+    "density": "comfortable",
+    "show_original": false
+  },
+  "sources": {}
+}
