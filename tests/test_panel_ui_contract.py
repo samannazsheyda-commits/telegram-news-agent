@@ -26,9 +26,17 @@ def test_panel_has_newsroom_controls_and_no_blocking_dialogs():
     assert 'prompt(' not in combined
 
 
-def test_panel_uses_session_token_and_local_drafts():
+def test_panel_persists_connection_and_validates_write_access_before_actions():
     js = JS.read_text(encoding="utf-8")
-    assert "sessionStorage" in js
+    assert "localStorage.getItem('bikhabar_contents_token')" in js
+    assert "localStorage.setItem('bikhabar_contents_token'" in js
+    assert "validateConnection" in js
+    assert "permissions" in js or "contents" in js
+    assert "GitHub" in js
+
+
+def test_panel_keeps_local_drafts():
+    js = JS.read_text(encoding="utf-8")
     assert "localStorage" in js
     assert "saveDraft" in js
     assert "restoreDraft" in js
