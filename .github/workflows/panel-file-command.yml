@@ -71,8 +71,9 @@ jobs:
             cp /tmp/panel-snapshot/data/newsroom_settings.json data/newsroom_settings.json
           fi
 
-          # Terminal history is authoritative for queue cleanup. For history-list clear,
-          # apply the explicit ids after merge so remote rows do not resurrect.
+          # Terminal history is authoritative for queue cleanup. Bulk-clear results carry
+          # the exact ids removed by the command; reapply those tombstones after merge so
+          # records from the remote snapshot cannot be resurrected.
           python - <<'PY'
           import json
           from pathlib import Path
@@ -89,7 +90,9 @@ jobs:
           if result.get('action') == 'clear' and result.get('status') == 'succeeded':
               scope = result.get('scope')
               ids = {str(x) for x in (result.get('ids') or [])}
-              if scope == 'published':
+              if scope == 'pending':
+                  queue = [row for row in queue if str(row.get('id')) not in ids]
+              elif scope == 'published':
                   statuses = {'published_manual','published_auto'}
                   history = [row for row in history if not (str(row.get('id')) in ids and row.get('status') in statuses)]
               elif scope == 'rejected':
