@@ -1,6 +1,9 @@
 {
-  "action": "clear",
+  "command_id": "78f25af7-3237-4d9c-86ef-adae4bc625d5",
   "item_id": "",
+  "action": "clear",
+  "status": "succeeded",
+  "message": "30 خبر از صف انتظار پاک شد",
   "scope": "pending",
   "ids": [
     "7dc83fde3c7b7fe59a733a9144205dbcbe755a4d",
@@ -34,8 +37,5 @@
     "025e1526b338fe33f31cf6a554e0f99b829dddeb",
     "3e1eb3096277e7592bf2847463797fbd58854c03"
   ],
-  "title": "",
-  "body": "",
-  "command_id": "78f25af7-3237-4d9c-86ef-adae4bc625d5",
-  "created_at": "2026-09-07T12:08:08.940Z"
+  "updated_at": "2026-09-07T12:08:22.748218+00:00"
 }
