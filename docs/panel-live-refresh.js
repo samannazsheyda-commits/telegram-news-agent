@@ -10,6 +10,17 @@ async function readRepoJson(path){
   return JSON.parse(new TextDecoder().decode(bytes));
 }
 
+// Pending news is a live queue, not an archive. Keep only items from today that
+// are no older than two hours; editorial relevance/dedup remains handled separately.
+todayQueueItem=function(r){
+  const stamp=r.published_at_source||r.discovered_at||r.updated_at||'';
+  if(!stamp)return false;
+  const d=new Date(stamp);
+  if(Number.isNaN(d.getTime()))return false;
+  if(day(stamp)!==day(new Date().toISOString()))return false;
+  return (Date.now()-d.getTime())<=2*60*60*1000;
+};
+
 pollCommandResult=async function(id,timeoutMs=90000){
   const started=Date.now();
   while(Date.now()-started<timeoutMs){
