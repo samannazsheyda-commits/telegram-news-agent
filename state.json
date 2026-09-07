@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
+    "fc079879fb9468f3528150d9354ee354ca89a8fa",
     "x:AJEnglish:2096907441271140414",
     "8c1f8822c70d38585ac8a402d4bc9acbe0c19c39",
     "x:AJEnglish:2096899453345054957",
@@ -499,8 +500,7 @@
     "f94b9415c4741c2e56b90615a26a226ba1f9a9b7",
     "7f2c40a9c99f1a977e97ff4044340c5e24af1e66",
     "69235737464999dbc94d4d14a27d68bb7d9b5cd2",
-    "6f17e16872244d66d3ef2f3ac15156015ece9e8f",
-    "509321aef79537936c2dc1538897ee4ed9fbe0fa"
+    "6f17e16872244d66d3ef2f3ac15156015ece9e8f"
   ],
   "market_last_sent_at": "2026-09-07T09:44:07.520870+00:00",
   "next_news_color": "white",
