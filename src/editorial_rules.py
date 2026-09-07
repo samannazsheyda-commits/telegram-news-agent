@@ -72,7 +72,10 @@ OPERATIONAL_SECURITY_TERMS = (
     "suspend flights", "suspends flights", "suspended flights", "cancelled flights", "canceled flights",
     "cancel international flights", "flight cancellation", "airspace closure", "airspace closed", "closes airspace", "closed airspace",
     "resume flight", "resumes flight", "resume flights", "resumes flights", "flights resume", "rebuild services",
+    "restore service", "restore services", "restores service", "restores services", "services restored",
     "resume overflight", "resumes overflight", "resume overflights", "resumes overflights", "overflights resume",
+    "return to iranian airspace", "returns to iranian airspace", "returned to iranian airspace",
+    "return to iran airspace", "returns to iran airspace", "returned to iran airspace",
     "reopen airspace", "reopens airspace", "airspace reopens", "airspace reopening",
     "avoid airspace", "avoid iranian airspace", "avoid iran airspace", "aviation warning", "security risk", "security risks",
     "military aircraft", "supersonic aircraft", "fighter", "warplane", "aircraft carrier", "warship", "hostile fire",
@@ -151,11 +154,15 @@ def _event_markers(item: NewsItem) -> set[str]:
     groups = {
         "hormuz_restriction": ("restricted zone", "exclusion zone", "sanctions list", "منطقه محدود", "منطقه ممنوع", "فهرست تحریم"),
         "hormuz_corridor": ("shipping route", "shipping corridor", "maritime corridor", "new route for the strait", "مسیر کشتیرانی", "کریدور کشتیرانی"),
+        "hormuz_us_control": ("fully open and under us navy control", "total control of the strait of hormuz", "تحت کنترل نیروی دریایی آمریکا"),
         "airspace_close": ("closes airspace", "closed airspace", "shuts airspace", "airspace closure", "بستن حریم هوایی", "حریم هوایی بسته"),
         "airspace_reopen": ("reopens airspace", "reopen airspace", "partially reopens airspace", "airspace reopened", "بازگشایی حریم هوایی", "حریم هوایی باز"),
         "missile_intercept": ("intercepts iranian missiles", "intercepted iranian missiles", "missile interception", "رهگیری موشک"),
         "missile_test": ("tested an iranian anti-ship missile", "tested a domestically produced", "آزمایش موشک ضد کشتی", "آزمایش موشک ضدکشتی"),
         "tanker_strike": ("strike three iranian oil tankers", "strike three iranian crude oil carriers", "three iranian oil tankers", "سه نفتکش ایرانی"),
+        "nuclear_unsc_referral": ("referred to the united nations security council", "refer iran to the united nations security council", "referred to the un security council", "ارجاع پرونده ایران به شورای امنیت"),
+        "named_bank_sanction": ("golden global bank",),
+        "oil_worker_protest": ("oil industry held protests", "oil workers protest", "workers at offshore platforms", "اعتراض کارکنان صنعت نفت"),
     }
     return {name for name, aliases in groups.items() if any(alias in text for alias in aliases)}
 
@@ -188,7 +195,7 @@ def is_duplicate_story(left: NewsItem, right: NewsItem) -> bool:
         return False
 
     left_markers, right_markers = _event_markers(left), _event_markers(right)
-    if left_markers and right_markers and left_markers.isdisjoint(right_markers):
+    if left_markers != right_markers and (left_markers or right_markers):
         return False
 
     left_facts, right_facts = _specific_facts(left), _specific_facts(right)
@@ -198,16 +205,7 @@ def is_duplicate_story(left: NewsItem, right: NewsItem) -> bool:
 
     common = a & b
     overlap = len(common) / max(1, min(len(a), len(b)))
-    if len(common) >= 5 and overlap >= 0.42:
-        return True
-
-    ca, cb = _concepts(left), _concepts(right)
-    concept_common = ca & cb
-    if len(concept_common) >= 4:
-        return len(common) >= 3 and overlap >= 0.30
-    if len(concept_common) >= 3:
-        return len(common) >= 4 and overlap >= 0.34
-    return False
+    return len(common) >= 5 and overlap >= 0.42
 
 
 def is_priority_security_news(item: NewsItem) -> bool:
@@ -235,7 +233,7 @@ def is_low_value_company_news(item: NewsItem) -> bool:
     if any(term in text for term in OPERATIONAL_SECURITY_TERMS):
         return False
     if any(term in text for term in ("flight", "flights", "airspace", "پرواز", "حریم هوایی")) and any(
-        action in text for action in ("cancel", "suspend", "resume", "reopen", "rebuild", "reroute", "avoid", "close", "لغو", "تعلیق", "ازسرگیری", "بازگشایی", "بسته")
+        action in text for action in ("cancel", "suspend", "resume", "reopen", "rebuild", "restore", "return", "reroute", "avoid", "close", "لغو", "تعلیق", "ازسرگیری", "بازگشایی", "بسته")
     ):
         return False
     if is_priority_security_news(item):
