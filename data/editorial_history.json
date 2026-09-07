@@ -1,5 +1,23 @@
 [
   {
+    "id": "ab9c672fa32d43138225a3fdc926e3dd626aa97e",
+    "news_key": "9ef0dabde57c080cb9239955bd4c6b11535c28af",
+    "source": "کلش ریپورت / Telegram",
+    "source_url": "https://t.me/ClashReport/95302",
+    "original_title": "Iran's Ghalibaf mocks Bessent.",
+    "original_summary": "Iran's Ghalibaf mocks Bessent.",
+    "persian_title": "قالیباف ایران بسنت را مسخره می کند.",
+    "persian_body": "",
+    "published_at_source": "Sun, 06 Sep 2026 15:19:22 +0000",
+    "discovered_at": "2026-09-06T15:18:52.831758+00:00",
+    "rejection_reason": "low_signal_or_unapproved_source",
+    "status": "rejected_manual",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "2026-09-07T10:11:32.411090+00:00",
+    "updated_at": "2026-09-07T10:11:32.411090+00:00"
+  },
+  {
     "id": "ee4a7025b0ba1c2f4f78ea8dbda1d6e65e2defb3",
     "news_key": "1ee1e1b2634c2fe538df7dbc052e70104e1cb943",
     "source": "Bloomberg",
