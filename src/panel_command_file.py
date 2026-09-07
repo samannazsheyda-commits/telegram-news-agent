@@ -30,9 +30,9 @@ def load_command_args(path: str | Path) -> dict[str, str]:
     action = str(payload.get("action") or "").strip()
     item_id = str(payload.get("item_id") or "").strip()
     command_id = str(payload.get("command_id") or Path(path).stem).strip()
-    if action not in {"publish", "reject"}:
+    if action not in {"publish", "reject", "refresh"}:
         raise ValueError("invalid_action")
-    if not item_id:
+    if action != "refresh" and not item_id:
         raise ValueError("missing_item_id")
     if not command_id:
         raise ValueError("missing_command_id")
@@ -115,6 +115,13 @@ def _consume(path: Path) -> None:
         pass
 
 
+def _run_refresh_cycle() -> int:
+    # Import lazily so ordinary publish/reject commands stay fast and isolated.
+    from . import runtime_v13
+
+    return int(runtime_v13.run() or 0)
+
+
 def process_command_file(
     path: str | Path,
     *,
@@ -125,6 +132,7 @@ def process_command_file(
     result_dir: str | Path = "panel_results",
     sender=send_telegram,
     channel_checker: Callable[[str], bool] | None = None,
+    refresh_runner: Callable[[], int] | None = None,
 ) -> dict:
     command_path = Path(path)
 
@@ -144,6 +152,15 @@ def process_command_file(
     _write_result(result_dir, _result(args, "processing", "در حال پردازش"))
 
     try:
+        if args["action"] == "refresh":
+            runner = refresh_runner or _run_refresh_cycle
+            rc = int(runner() or 0)
+            if rc != 0:
+                raise RuntimeError(f"refresh_failed_rc_{rc}")
+            terminal = _write_result(result_dir, _result(args, "succeeded", "اسکن تازه ایجنت انجام شد"))
+            _consume(command_path)
+            return terminal
+
         if args["action"] == "reject":
             if store.get_pending(args["item_id"]) is None:
                 terminal = _write_result(result_dir, _result(args, "reconciled", "خبر قبلاً از صف خارج شده بود"))
