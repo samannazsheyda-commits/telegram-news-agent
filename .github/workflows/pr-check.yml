@@ -23,3 +23,20 @@ jobs:
         run: node --check docs/newsroom-v1.js
       - name: Run tests
         run: python -m pytest -q
+      - name: Run live V2 shadow cycle
+        if: github.head_ref == 'design/newsroom-v2-2026-09-07'
+        env:
+          NEWSROOM_V2_FRESHNESS_HOURS: "6"
+          NEWSROOM_V2_PANEL_MAX_RECORDS: "500"
+        run: python -m src.newsroom_v2_runtime
+      - name: Verify V2 shadow made no Telegram writes
+        if: github.head_ref == 'design/newsroom-v2-2026-09-07'
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rows = json.loads(Path('data/panel_live_feed.json').read_text(encoding='utf-8'))
+          assert isinstance(rows, list)
+          assert all(row.get('telegram_message_id') in (None, '') for row in rows)
+          print('SHADOW_FEED_RECORDS', len(rows))
+          PY
