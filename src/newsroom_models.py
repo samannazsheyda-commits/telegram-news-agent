@@ -89,6 +89,11 @@ class EventRecord(_Serializable):
     key_facts: list[str]
     published_message_ids: list[int]
     status: str
+    fingerprint_data: dict[str, Any] | None = None
+
+    def __post_init__(self) -> None:
+        if self.fingerprint_data is None:
+            object.__setattr__(self, "fingerprint_data", {})
 
 
 @dataclass(frozen=True)
