@@ -1,6 +1,14 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
+    "x:FT:2096885297652904363",
+    "05b519493e12bc70566a2252982875d2cac99d9d",
+    "44a7936014d36349cd9a196288e355dd226cd616",
+    "b0b4eb9246ea46545b988b91ee491bd4c833303f",
+    "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
+    "x:business:2096882437485699218",
+    "x:ABC:2096882270460146000",
+    "x:AJEnglish:2096878669306515478",
     "x:TimesofIsrael:2096875774816960579",
     "x:Jerusalem_Post:2096868877489541445",
     "x:Jerusalem_Post:2096865938003972243",
@@ -492,15 +500,7 @@
     "509321aef79537936c2dc1538897ee4ed9fbe0fa",
     "156833b2eab003115561894db9931bdf5861050e",
     "ee8e4a21c3d17ea3799c9f7f4482599b88dd879a",
-    "503683e132e918f8e109418361cebaa5b64aa40c",
-    "cccd09dd6f579e570119f227daf91dce87be9974",
-    "6a7da106a52fb3a20a7f69648503fa981e6bc1d6",
-    "cf314cb2369de9fe3f0b85f78fe267b74c8f6ddf",
-    "f7c58011aa25ca020705143fc973173f46b101c1",
-    "05b519493e12bc70566a2252982875d2cac99d9d",
-    "44a7936014d36349cd9a196288e355dd226cd616",
-    "b0b4eb9246ea46545b988b91ee491bd4c833303f",
-    "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac"
+    "503683e132e918f8e109418361cebaa5b64aa40c"
   ],
   "market_last_sent_at": "2026-09-07T07:27:23.777746+00:00",
   "next_news_color": "red",
@@ -608,7 +608,7 @@
     "لوکانو L7": 7700000000,
     "لوکانو L8": 10500000000
   },
-  "car_last_sent_date": "2026-09-06",
+  "car_last_sent_date": "2026-09-07",
   "weather_noon_last_sent_date": "2026-09-06",
   "weather_night_last_sent_date": "2026-09-05",
   "market_day_prices": {
@@ -630,7 +630,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 11:57:12 +0000",
       "link": "https://t.me/thecradlemedia/67480",
-      "checked_at": "2026-09-07T08:19:02.269393+00:00"
+      "checked_at": "2026-09-07T08:56:25.607067+00:00"
     },
     {
       "key": "44a7936014d36349cd9a196288e355dd226cd616",
@@ -639,7 +639,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 19:03:07 +0000",
       "link": "https://t.me/ClashReport/95362",
-      "checked_at": "2026-09-07T08:19:02.269393+00:00"
+      "checked_at": "2026-09-07T08:56:25.607067+00:00"
     },
     {
       "key": "b0b4eb9246ea46545b988b91ee491bd4c833303f",
@@ -648,7 +648,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 18:50:05 +0000",
       "link": "https://t.me/ClashReport/95357",
-      "checked_at": "2026-09-07T08:19:02.269393+00:00"
+      "checked_at": "2026-09-07T08:56:25.607067+00:00"
     },
     {
       "key": "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
@@ -657,7 +657,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 18:54:37 +0000",
       "link": "https://t.me/ClashReport/95359",
-      "checked_at": "2026-09-07T08:19:02.269393+00:00"
+      "checked_at": "2026-09-07T08:56:25.607067+00:00"
     },
     {
       "key": "d47a95b28be84feca29331cb9bc4198a2423a75c",
@@ -2426,6 +2426,46 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:FT:2096885297652904363",
+      "source": "Financial Times / X",
+      "title": "Iran to raise petrol prices as US war triggers shortages",
+      "summary": "",
+      "link": "https://x.com/FT/status/2096885297652904363",
+      "published": "Mon, 07 Sep 2026 08:56:27 +0000",
+      "sent_at": "2026-09-07T08:56:25.607067+00:00",
+      "fingerprint": "iran to raise petrol prices as us war triggers shortages"
+    },
+    {
+      "key": "x:AJEnglish:2096878669306515478",
+      "source": "Al Jazeera English / X",
+      "title": "Iranian Foreign Ministry spokesperson Esmaeil Baghaei has warned South Korea against becoming “complicit” by yielding to US pressure and threats in a post published on X. He added that Iran places “great importance” on its friendly relations with South Korea.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096878669306515478",
+      "published": "Mon, 07 Sep 2026 08:30:07 +0000",
+      "sent_at": "2026-09-07T08:53:09.637337+00:00",
+      "fingerprint": "iranian foreign ministry spokesperson esmaeil baghaei has warned south korea against becoming complicit by yielding to us pressure and threats in a post published on x he added that iran places great importance on its friendly relations with south korea"
+    },
+    {
+      "key": "x:ABC:2096882270460146000",
+      "source": "ABC News / X",
+      "title": "The secretary of Iran's Supreme National Security Council said on Sunday that a restricted zone will be announced in the coming days \"outside\" the Strait of Hormuz, in comments carried by Iranian state media. Follow",
+      "summary": "",
+      "link": "https://x.com/ABC/status/2096882270460146000",
+      "published": "Mon, 07 Sep 2026 08:44:26 +0000",
+      "sent_at": "2026-09-07T08:53:09.637337+00:00",
+      "fingerprint": "the secretary of iran s supreme national security council said on sunday that a restricted zone will be announced in the coming days outside the strait of hormuz in comments carried by iranian state media follow"
+    },
+    {
+      "key": "x:business:2096882437485699218",
+      "source": "Bloomberg / X",
+      "title": "The US is increasing diplomatic pressure on Iran by proposing that Tehran be referred to the U Security Council over its stonewalling of nuclear inspectors",
+      "summary": "",
+      "link": "https://x.com/business/status/2096882437485699218",
+      "published": "Mon, 07 Sep 2026 08:45:05 +0000",
+      "sent_at": "2026-09-07T08:53:09.637337+00:00",
+      "fingerprint": "the us is increasing diplomatic pressure on iran by proposing that tehran be referred to the u security council over its stonewalling of nuclear inspectors"
+    },
     {
       "key": "x:TimesofIsrael:2096875774816960579",
       "source": "Times of Israel / X",
