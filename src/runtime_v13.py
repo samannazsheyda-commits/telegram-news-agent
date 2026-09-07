@@ -8,6 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from . import runtime_v12 as v12
+from .editorial_store import LocalEditorialStore
 from .sources import USER_AGENT
 
 base = v12.base
@@ -105,6 +106,31 @@ def _publish_phone_once_per_day(now: datetime) -> None:
     v12.v11.v10._publish_daily_flagships(now)
 
 
+def expire_previous_day_queue(now: datetime, *, store: LocalEditorialStore | None = None) -> int:
+    store = store or LocalEditorialStore()
+    today_tehran = now.astimezone(base.agent.TEHRAN).date()
+    moved = 0
+    for record in list(store.queue()):
+        if str(record.get("status") or "pending") != "pending":
+            continue
+        published = base.agent._published_dt(str(record.get("published_at_source") or ""))
+        if published is None:
+            continue
+        if published.astimezone(base.agent.TEHRAN).date() >= today_tehran:
+            continue
+        item_id = str(record.get("id") or "")
+        if not item_id:
+            continue
+        try:
+            store.move_to_history(item_id, status="superseded")
+            moved += 1
+        except KeyError:
+            continue
+    if moved:
+        print(f"EDITORIAL_EXPIRED previous_day={moved} date={today_tehran.isoformat()}")
+    return moved
+
+
 def install_production_policies() -> None:
     v12.install_production_policies()
     v12.v11.v10.v9.install_persian_only_output()
@@ -114,6 +140,7 @@ def install_production_policies() -> None:
 def run(now=None) -> int:
     install_production_policies()
     resolved_now = now or datetime.now(timezone.utc)
+    expire_previous_day_queue(resolved_now)
     v12.v11.v10._retry_todays_false_bundles(resolved_now)
     _publish_phone_once_per_day(resolved_now)
     return v12.v11.v10.v9.v8.run(resolved_now)
