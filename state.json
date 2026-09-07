@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41603",
   "news_seen": [
+    "6dad6bc25103b20ea38ee4c726ba50d224faacda",
     "x:CBSNews:2096964202837455043",
     "x:nytimesworld:2028456205417349268",
     "x:nytimesworld:2031397471746744386",
@@ -499,8 +500,7 @@
     "x:IsraelHayomEng:2095183478719480056",
     "x:IsraelHayomEng:2095225700592554276",
     "x:IsraelHayomEng:2095457432407343246",
-    "x:IsraelHayomEng:2095579893438329190",
-    "x:axios:2095808390815441005"
+    "x:IsraelHayomEng:2095579893438329190"
   ],
   "market_last_sent_at": "2026-09-07T14:01:28.930413+00:00",
   "next_news_color": "red",
@@ -623,6 +623,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "6dad6bc25103b20ea38ee4c726ba50d224faacda",
+      "source": "NOTAM / Airspace",
+      "title": "Kuwait closed its airspace following Iranian attacks on US bases in the region - Українські Національні Новини (УНН)",
+      "reason": "not_today_tehran",
+      "published": "Thu, 11 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOMjA0Nk9QQnZxeDRKUDNKa1NVTk5JVWJFNWVPQnBkNXU0WHlmRXF4c0RkNmt2cGNLWHd4NzNva3JDNnRsVVNFQkdhRWxwMEo5UWotWHc5SG45b3VMdjVUSk9ZbDUyQ2FXcko4aFo5UEtEb1BLZDlBbm1kYXRqQUdneFJ3U1FvOFZYMkdDUzVyMUZSMzdtS2wwTWV1QWVfc3QwVU9F0gGiAUFVX3lxTE1kUXFkOUI4NmVPS3d5QWFzdTlHNXMtTExCaEVZNXFEQ1JYTEdzNmtUZHF5Q1I1VzQ4WkItOTMyazlKUzdldmJnRU9MXzFPdGxicmVzRzRjd3BBY0J1NEdjUDdEUmlnRVdrVzEwdzl5WUE2NWdKVWhHTHFMczk0THNmQkllcEQ5dVVISUZCTHd0MlRCVWpmc3l4MzFZQ3RpeDRnUQ?oc=5",
+      "checked_at": "2026-09-07T15:01:39.890858+00:00"
+    },
     {
       "key": "x:nytimesworld:2028456205417349268",
       "source": "NYT World / X",
@@ -2412,15 +2421,6 @@
       "reason": "translation_failed_retry_later",
       "published": "Sat, 05 Sep 2026 09:54:56 +0000",
       "link": "https://x.com/AlArabiya_Eng/status/2096175236408344804",
-      "checked_at": "2026-09-05T10:23:58.744213+00:00"
-    },
-    {
-      "key": "x:TankerTrackers:2096031376487133584",
-      "source": "TankerTrackers / X",
-      "title": "We’ve now tagged 17 crude oil and gas (LNG & LPG) ship-to-ship transfers which took place yesterday (2026-09-04) in the Gulf of Oman. At least 24 million barrels were being exchanged. We also identified many more oil-laden tankers waiting for a dance partner in those waters. It appears that the dance floor itself is the limitation. It's getting quite crowded and port services are kept busy around the clock to ensure smooth and safe transfers. In addition, we spotted at least 7.25 million barrels, along with two more LNG tankers, assembling to transit the SoH into the GoO under the protection of US CENTCOM. Busy day. #OOTT #IranWar #Tankers",
-      "reason": "translation_failed_retry_later",
-      "published": "Sat, 05 Sep 2026 00:23:17 +0000",
-      "link": "https://x.com/TankerTrackers/status/2096031376487133584",
       "checked_at": "2026-09-05T10:23:58.744213+00:00"
     }
   ],

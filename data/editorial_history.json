@@ -1,5 +1,23 @@
 [
   {
+    "id": "9c1b94d11b4bd0c7a097fa1a8307bb0735b563f0",
+    "news_key": "6dad6bc25103b20ea38ee4c726ba50d224faacda",
+    "source": "NOTAM / Airspace",
+    "source_url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOMjA0Nk9QQnZxeDRKUDNKa1NVTk5JVWJFNWVPQnBkNXU0WHlmRXF4c0RkNmt2cGNLWHd4NzNva3JDNnRsVVNFQkdhRWxwMEo5UWotWHc5SG45b3VMdjVUSk9ZbDUyQ2FXcko4aFo5UEtEb1BLZDlBbm1kYXRqQUdneFJ3U1FvOFZYMkdDUzVyMUZSMzdtS2wwTWV1QWVfc3QwVU9F0gGiAUFVX3lxTE1kUXFkOUI4NmVPS3d5QWFzdTlHNXMtTExCaEVZNXFEQ1JYTEdzNmtUZHF5Q1I1VzQ4WkItOTMyazlKUzdldmJnRU9MXzFPdGxicmVzRzRjd3BBY0J1NEdjUDdEUmlnRVdrVzEwdzl5WUE2NWdKVWhHTHFMczk0THNmQkllcEQ5dVVISUZCTHd0MlRCVWpmc3l4MzFZQ3RpeDRnUQ?oc=5",
+    "original_title": "Kuwait closed its airspace following Iranian attacks on US bases in the region - Українські Національні Новини (УНН)",
+    "original_summary": "Kuwait closed its airspace following Iranian attacks on US bases in the region Українські Національні Новини (УНН)",
+    "persian_title": "",
+    "persian_body": "",
+    "published_at_source": "Thu, 11 Jun 2026 07:00:00 GMT",
+    "discovered_at": "2026-09-07T15:01:39.890858+00:00",
+    "rejection_reason": "not_today_tehran",
+    "status": "superseded",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-07T15:03:01.201784+00:00"
+  },
+  {
     "id": "2ef08a79ac5c7a675305efb2ec4edcbc9eaed8d3",
     "news_key": "x:nytimesworld:2028456205417349268",
     "source": "NYT World / X",
