@@ -10,14 +10,14 @@ permissions:
   contents: write
 
 concurrency:
-  group: telegram-news-agent
+  group: browser-panel-command-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   command:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,35 +28,49 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - name: Install dependencies
+      - name: Install runtime dependencies
         run: pip install -r requirements.txt
 
-      - name: Process browser commands
+      - name: Resolve command file
+        id: command
+        shell: bash
+        run: |
+          file=$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep '^panel_commands/.*\.json$' | head -n1 || true)
+          if [ -z "$file" ]; then
+            echo "No panel command in triggering commit"
+            exit 1
+          fi
+          echo "path=$file" >> "$GITHUB_OUTPUT"
+
+      - name: Process command
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: "@bikhabaar"
+        run: python -m src.panel_command_file "${{ steps.command.outputs.path }}"
+
+      - name: Persist runtime state and result safely
+        if: always()
+        shell: bash
         run: |
           set -e
-          shopt -s nullglob
-          files=(panel_commands/*.json)
-          if [ ${#files[@]} -eq 0 ]; then
-            echo "No commands"
-            exit 0
-          fi
-          for file in "${files[@]}"; do
-            python -m src.panel_command_file "$file"
-            rm -f "$file"
-          done
+          cmd="${{ steps.command.outputs.path }}"
+          cmd_id="$(basename "$cmd" .json)"
+          mkdir -p /tmp/panel-snapshot/data /tmp/panel-snapshot/panel_results
+          cp state.json /tmp/panel-snapshot/state.json
+          cp data/editorial_queue.json /tmp/panel-snapshot/data/editorial_queue.json
+          cp data/editorial_history.json /tmp/panel-snapshot/data/editorial_history.json
+          if [ -f "panel_results/$cmd_id.json" ]; then cp "panel_results/$cmd_id.json" /tmp/panel-snapshot/panel_results/; fi
 
-      - name: Persist result
-        run: |
+          git fetch origin main
+          git reset --hard origin/main
+          python -m src.persist_merge /tmp/panel-snapshot
+          mkdir -p panel_results
+          if [ -f "/tmp/panel-snapshot/panel_results/$cmd_id.json" ]; then cp "/tmp/panel-snapshot/panel_results/$cmd_id.json" panel_results/; fi
+          rm -f "$cmd"
+
           git config user.name "telegram-news-agent[bot]"
           git config user.email "telegram-news-agent[bot]@users.noreply.github.com"
-          git add state.json data/editorial_queue.json data/editorial_history.json panel_commands || true
-          if git diff --cached --quiet; then
-            echo "No changes"
-            exit 0
-          fi
-          git commit -m "chore: consume panel command"
-          git pull --rebase origin main
-          git push
+          git add state.json data/editorial_queue.json data/editorial_history.json panel_results panel_commands || true
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "chore: apply browser panel command"
+          git push origin main
