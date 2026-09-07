@@ -1,4 +1,4 @@
-from src import runtime_v10
+from src import runtime_v11
 from src.sources import NewsItem
 
 
@@ -17,7 +17,7 @@ def test_manual_published_history_is_a_dedup_reference(monkeypatch):
         "Netanyahu says Iran is not attacking Israel because it knows it would be hit with a blow it cannot imagine",
     )
     monkeypatch.setattr(
-        runtime_v10.base._store,
+        runtime_v11.base._store,
         "history",
         lambda: [
             {
@@ -32,7 +32,7 @@ def test_manual_published_history_is_a_dedup_reference(monkeypatch):
         ],
     )
 
-    selected, skipped = runtime_v10._select_top_stories_with_published_history([candidate], [])
+    selected, skipped = runtime_v11._select_top_stories_with_published_history([candidate], [])
 
     assert selected == []
     assert skipped == [candidate]
@@ -41,7 +41,7 @@ def test_manual_published_history_is_a_dedup_reference(monkeypatch):
 def test_rejected_history_is_not_a_dedup_reference(monkeypatch):
     candidate = _news("new-key", "Another Source", "Netanyahu says Iran will be hit with a blow it cannot imagine")
     monkeypatch.setattr(
-        runtime_v10.base._store,
+        runtime_v11.base._store,
         "history",
         lambda: [
             {
@@ -56,7 +56,7 @@ def test_rejected_history_is_not_a_dedup_reference(monkeypatch):
         ],
     )
 
-    selected, skipped = runtime_v10._select_top_stories_with_published_history([candidate], [])
+    selected, skipped = runtime_v11._select_top_stories_with_published_history([candidate], [])
 
     assert selected == [candidate]
     assert skipped == []
