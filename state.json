@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
+    "x:AJEnglish:2096899453345054957",
+    "x:business:2096898791206977543",
     "x:IsraelHayomEng:2096898351790715091",
     "x:Reuters:2096895020225663094",
     "x:AlArabiya_Eng:2096894196334358925",
@@ -498,9 +500,7 @@
     "69235737464999dbc94d4d14a27d68bb7d9b5cd2",
     "6f17e16872244d66d3ef2f3ac15156015ece9e8f",
     "509321aef79537936c2dc1538897ee4ed9fbe0fa",
-    "156833b2eab003115561894db9931bdf5861050e",
-    "ee8e4a21c3d17ea3799c9f7f4482599b88dd879a",
-    "05b519493e12bc70566a2252982875d2cac99d9d"
+    "156833b2eab003115561894db9931bdf5861050e"
   ],
   "market_last_sent_at": "2026-09-07T09:44:07.520870+00:00",
   "next_news_color": "red",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:business:2096898791206977543",
+      "source": "Bloomberg / X",
+      "title": "As the US puts the squeeze on countries around the world, whether through imported inflation from the Iran war or tariff pressures, Malaysia is considering making a stand: Here is your Evening Briefing.",
+      "summary": "",
+      "link": "https://x.com/business/status/2096898791206977543",
+      "published": "Mon, 07 Sep 2026 09:50:04 +0000",
+      "sent_at": "2026-09-07T09:56:03.387015+00:00",
+      "fingerprint": "as the us puts the squeeze on countries around the world whether through imported inflation from the iran war or tariff pressures malaysia is considering making a stand here is your evening briefing"
+    },
+    {
+      "key": "x:AJEnglish:2096899453345054957",
+      "source": "Al Jazeera English / X",
+      "title": "The average US household has spent $763 extra on fuel in six months, as the war on Iran pushes up fuel costs. Here’s how the Iran war drove up US fuel costs by $100bn, and how higher oil prices are pushing up food prices ➡️",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096899453345054957",
+      "published": "Mon, 07 Sep 2026 09:52:42 +0000",
+      "sent_at": "2026-09-07T09:56:03.387015+00:00",
+      "fingerprint": "the average us household has spent 763 extra on fuel in six months as the war on iran pushes up fuel costs here s how the iran war drove up us fuel costs by 100bn and how higher oil prices are pushing up food prices"
+    },
     {
       "key": "x:IsraelHayomEng:2096898351790715091",
       "source": "Israel Hayom / X",
