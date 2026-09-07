@@ -5,14 +5,40 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .editorial_store import LocalEditorialStore, ReviewItem
-from .formatters import format_news
+from .formatters import CHANNEL_URL, _published_fa, _safe, _story_marker
 from .services import load_state, save_state, send_telegram
 from .sources import NewsItem
 
 
 _SOURCE_OVERRIDES = {
     "Tabz Live": "تبز لایو",
+    "Reuters": "رویترز",
 }
+
+_COUNTRY_FLAGS = (
+    (("ایران", "iran", "iranian"), "🇮🇷"),
+    (("امارات", "uae", "united arab emirates", "emirati"), "🇦🇪"),
+    (("آمریکا", "ایالات متحده", "united states", "u.s.", " us ", "american"), "🇺🇸"),
+    (("اسرائیل", "israel", "israeli"), "🇮🇱"),
+    (("عربستان", "saudi", "saudi arabia"), "🇸🇦"),
+    (("قطر", "qatar"), "🇶🇦"),
+    (("عمان", "oman"), "🇴🇲"),
+    (("بحرین", "bahrain"), "🇧🇭"),
+    (("عراق", "iraq", "iraqi"), "🇮🇶"),
+    (("سوریه", "syria", "syrian"), "🇸🇾"),
+    (("لبنان", "lebanon", "lebanese"), "🇱🇧"),
+    (("یمن", "yemen", "yemeni"), "🇾🇪"),
+    (("ترکیه", "turkey", "türkiye", "turkish"), "🇹🇷"),
+    (("پاکستان", "pakistan", "pakistani"), "🇵🇰"),
+    (("افغانستان", "afghanistan", "afghan"), "🇦🇫"),
+    (("روسیه", "russia", "russian"), "🇷🇺"),
+    (("چین", "china", "chinese"), "🇨🇳"),
+)
+
+_IMPACT_WORDS = (
+    "حمله", "حملات", "موشک", "پهپاد", "انفجار", "بمباران", "درگیری", "شلیک",
+    "attack", "attacks", "strike", "missile", "drone", "explosion", "blast", "bombing", "fired",
+)
 
 
 def _now() -> str:
@@ -24,18 +50,44 @@ def _has_persian(value: str) -> bool:
 
 
 def _clean_source(source: str) -> str:
-    value = re.sub(r"\s*/\s*(?:Telegram|X)\s*$", "", (source or "").strip(), flags=re.IGNORECASE)
-    return _SOURCE_OVERRIDES.get(value, value)
+    value = (source or "").strip()
+    value = re.sub(r"\s*/\s*Telegram\s*$", "", value, flags=re.IGNORECASE).strip()
+    is_x = bool(re.search(r"\s*/\s*X\s*$", value, flags=re.IGNORECASE))
+    if is_x:
+        value = re.sub(r"\s*/\s*X\s*$", "", value, flags=re.IGNORECASE).strip()
+    value = _SOURCE_OVERRIDES.get(value, value)
+    return f"{value} / ایکس" if is_x else value
 
 
 def _clean_manual_body(body_fa: str) -> str:
     text = (body_fa or "").strip()
-    if not text:
-        return ""
-    # Never let a raw English fallback from the panel become a second Telegram paragraph.
-    if not _has_persian(text):
+    if not text or not _has_persian(text):
         return ""
     return text
+
+
+def _ensure_period(text: str) -> str:
+    value = (text or "").strip()
+    if not value or value[-1] in ".!؟?…؛:":
+        return value
+    return value + "."
+
+
+def _country_flags(text: str) -> list[str]:
+    lowered = f" {(text or '').lower()} "
+    flags: list[str] = []
+    for keywords, flag in _COUNTRY_FLAGS:
+        if any(keyword.lower() in lowered for keyword in keywords):
+            flags.append(flag)
+    return flags
+
+
+def _status_line(news: NewsItem, title_fa: str) -> str:
+    context = f"{title_fa} {news.title} {news.summary}"
+    marker = _story_marker(news)
+    flags = _country_flags(context)
+    impact = "💥" if any(word in context.lower() for word in _IMPACT_WORDS) else ""
+    return " ".join(part for part in (marker, *flags, impact) if part)
 
 
 def _message_for(item: ReviewItem, title_fa: str, body_fa: str) -> str:
@@ -47,7 +99,15 @@ def _message_for(item: ReviewItem, title_fa: str, body_fa: str) -> str:
         link=item.source_url,
         published=item.published_at_source,
     )
-    return format_news(news, title_fa, _clean_manual_body(body_fa), marker_override="⚪️")
+    title = _ensure_period(title_fa)
+    parts = [f"<b>{_safe(news.source)}: {_safe(title)}</b>"]
+    published = _published_fa(news.published)
+    if published:
+        parts += ["", f"⏰ {_safe(published)}"]
+    if news.link:
+        parts += [f'📌 <a href="{_safe(news.link)}">لینک منبع خبر</a>']
+    parts += ["", f'📡 <a href="{CHANNEL_URL}">بی‌خبر</a> ←', "مانیتور تحولات ایران", "", _status_line(news, title)]
+    return "\n".join(parts).strip()
 
 
 def _mark_seen(news_key: str, state_path: str | Path | None) -> None:
