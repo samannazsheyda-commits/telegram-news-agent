@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41579",
   "news_seen": [
+    "8386754439e1a69c8d20aa6fe52c3c20cfac23e2",
+    "x:AlArabiya_Eng:2096765394237190159",
     "x:AJEnglish:2096762349072142573",
     "x:washingtonpost:2096757850135540078",
     "x:WSJ:2096747244506521615",
@@ -498,12 +500,10 @@
     "93bd552fc45835b95544a5cc616ee96fd5174d8d",
     "28b1a9ca7e0d10fb31cd2d4d7e290fe59f99ac1a",
     "b770e9911a6c1db8095e99bd22979756869b11f0",
-    "c63247d8b373c5ecfc0ef3f2c40818ec994c115a",
-    "672d7629cee4ccbdf45c4ccb7a67511738e9e8bb",
-    "3c5bf0c12d2f2a54d3887184de15722e91048866"
+    "c63247d8b373c5ecfc0ef3f2c40818ec994c115a"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -623,6 +623,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "8386754439e1a69c8d20aa6fe52c3c20cfac23e2",
+      "source": "The New York Times",
+      "title": "U.S. Officials Believed Israel Was Plotting to Kill Iranian Negotiators",
+      "reason": "not_today_tehran",
+      "published": "Thu, 02 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxOV0pLSW1aQWZ3RklIM3hzMW9qTHlRNXhvWWwxWEtUZkI2MVVCOVY1N0pnMzBIMW1SLU1VMTdJTXlxbVhvUHNFOTZSZkJKNWpXNkh0andpbzFma2FPcFdWTENidFhyLUQyWmlCa1RSMjJINk1vNGliUlNiUWtIT2lXMjl3SDZrdVU?oc=5",
+      "checked_at": "2026-09-07T01:09:08.542258+00:00"
+    },
     {
       "key": "7c3f407103c7bfeca9be49cc116f2ee817855cc2",
       "source": "NOTAM / Airspace",
@@ -2413,19 +2422,20 @@
       "published": "Wed, 22 Apr 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNLTlPTm15NFlmb0ZINzB3UkphRVBtc2JrUUtFZDZnekU1LWRZaDZMM1E0NWdTQ3ZLTVV0WU0yYjJoeS1MWGhGU096WXJEZ2tFeWljYXN3UDUycEFJdUlzcS1aWnZtQ1ZGVU9uODBtTVFpN0RNNG5SNF8xazh2OFFNT05JZUpBNTVEd2ZFREota2dOWXU5bGRuUWQ4U3F4X3BqelFEeVVUclgzQTE2ZnlVbVlUd3U1U0JuZkE?oc=5",
       "checked_at": "2026-09-05T09:14:03.313364+00:00"
-    },
-    {
-      "key": "x:haaretzcom:2096044433254797421",
-      "source": "Haaretz / X",
-      "title": "Analysis • Trump wants to stop the fighting. Iran has trouble knowing when to quit | Zvi Bar'el https://www.haaretz.com/middle-east-news/iran/2026-09-04/ty-article/.premium/trump-wants-to-stop-the-fighting-iran-has-trouble-knowing-when-to-quit/000001a0-6bd2-d60b-a1f2-efdee54c0000?taid=6a9b6d1eae1ff00001c207e8&utm_campaign=trueanthem&utm_medium=social&utm_source=twitter",
-      "reason": "duplicate_or_redundant",
-      "published": "Sat, 05 Sep 2026 01:15:10 +0000",
-      "link": "https://x.com/haaretzcom/status/2096044433254797421",
-      "checked_at": "2026-09-05T09:05:26.566141+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2096765394237190159",
+      "source": "Al Arabiya English / X",
+      "title": "Iran expects an agreement establishing a new shipping corridor through the Strait of Hormuz to be signed in the coming days, but will not commit to fully reopening the strategic waterway unless the United States halts attacks and other hostile actions, the country’s top security official says.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096765394237190159",
+      "published": "Mon, 07 Sep 2026 01:00:00 +0000",
+      "sent_at": "2026-09-07T01:06:32.604992+00:00",
+      "fingerprint": "iran expects an agreement establishing a new shipping corridor through the strait of hormuz to be signed in the coming days but will not commit to fully reopening the strategic waterway unless the united states halts attacks and other hostile actions the country s top security official says"
+    },
     {
       "key": "x:AJEnglish:2096762349072142573",
       "source": "Al Jazeera English / X",
