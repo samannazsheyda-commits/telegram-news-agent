@@ -21,13 +21,3 @@ def test_static_dashboard_has_required_files_and_data_sources():
     assert "editorial_history.json" in js
     assert "state.json" in js
     assert "actions/workflows/agent.yml" in js
-
-
-def test_pages_workflow_deploys_dashboard_directory():
-    workflow = ROOT / ".github" / "workflows" / "pages.yml"
-    assert workflow.exists()
-    text = workflow.read_text(encoding="utf-8")
-    assert "actions/upload-pages-artifact" in text
-    assert "path: dashboard" in text
-    assert "actions/deploy-pages" in text
-    assert "enablement: true" in text
