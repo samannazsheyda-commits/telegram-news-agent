@@ -160,6 +160,53 @@ def test_overflight_and_airspace_reopening_updates_are_kept():
     assert not is_low_value_company_news(reopening)
 
 
+def test_live_hormuz_control_claim_is_not_duplicate_of_iran_exclusion_zone_plan():
+    iran_plan = _item(
+        "iran-zone",
+        "CBS News / X",
+        'Iran is planning to announce a maritime exclusion zone outside the Strait of Hormuz where it intends to stop vessels without Iranian permission.',
+    )
+    us_control = _item(
+        "us-control",
+        "Al Jazeera English / X",
+        "A senior US official says the Strait of Hormuz is fully open and under US Navy control while responding to Iranian threats to establish a restricted zone.",
+    )
+    assert not is_duplicate_story(iran_plan, us_control)
+
+
+def test_nuclear_unsc_referral_is_not_duplicate_of_generic_iran_nuclear_update():
+    generic = _item(
+        "generic-nuclear",
+        "Reuters",
+        "US officials discuss Iran nuclear program and uranium stockpile",
+        "Officials said inspectors still need access to nuclear material.",
+    )
+    referral = _item(
+        "unsc-referral",
+        "Jason Brodsky / X",
+        "The US is proposing that Tehran be referred to the United Nations Security Council over stonewalling nuclear inspectors unable to verify near-weapons-grade uranium.",
+    )
+    assert not is_duplicate_story(generic, referral)
+
+
+def test_airline_restore_services_after_iran_conflict_is_operational_news():
+    item = _item(
+        "restore-services",
+        "Reuters",
+        "Airlines gradually restore Middle East services after Iran conflict",
+    )
+    assert not is_low_value_company_news(item)
+
+
+def test_carrier_returns_to_iranian_airspace_is_operational_news():
+    item = _item(
+        "returns-airspace",
+        "NOTAM / Airspace",
+        "Flydubai returns to Iranian airspace for first time since start of war",
+    )
+    assert not is_low_value_company_news(item)
+
+
 def test_editorial_detail_is_not_forced_to_two_sentences():
     detail = "نکته اول خبر. نکته دوم خبر. نکته سوم که برای فهم ماجرا لازم است. نکته چهارم تکمیلی."
     rendered = editorial_detail(detail)
