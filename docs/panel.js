@@ -7,7 +7,7 @@ const TERMINAL_EDITORIAL=new Set(['published_manual','published_auto','rejected_
 const TERMINAL_COMMAND=new Set(['succeeded','failed','reconciled']);
 const activeCommands=new Map();
 const hiddenItems=new Set();
-let queue=[],history=[],filtered=[],renderLimit=60,toastTimer=null,connectionValidated=false,pendingAuthAction=null;
+let queue=[],history=[],filtered=[],renderLimit=60,toastTimer=null,connectionValidated=false,pendingAuthAction=null,refreshRunning=false;
 
 function esc(v=''){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function fmt(v){if(!v)return'—';const d=new Date(v);if(Number.isNaN(d.getTime()))return esc(v);return new Intl.DateTimeFormat('fa-IR',{dateStyle:'short',timeStyle:'short',timeZone:'Asia/Tehran'}).format(d)}
@@ -68,7 +68,8 @@ async function createCommand(payload,attempt=0){
   const id=payload.command_id||commandId();
   const command={...payload,command_id:id,created_at:new Date().toISOString()};
   const path=`panel_commands/${id}.json`;
-  const body={message:`panel: ${command.action} ${command.item_id.slice(0,10)}`,content:b64Unicode(JSON.stringify(command,null,2)),branch:BRANCH};
+  const target=String(command.item_id||'system').slice(0,10);
+  const body={message:`panel: ${command.action} ${target}`,content:b64Unicode(JSON.stringify(command,null,2)),branch:BRANCH};
   const r=await fetch(`${API}/contents/${path}`,{method:'PUT',headers:ghHeaders(),body:JSON.stringify(body)});
   if((r.status===409||r.status===422)&&attempt===0)return createCommand({...payload,command_id:commandId()},1);
   if(!r.ok){const message=await githubError(r);if(r.status===401||r.status===403){connectionValidated=false;setConnection('مجوز GitHub مشکل دارد','bad');$('connectSheet').classList.add('open')}throw Error(message)}
@@ -142,6 +143,22 @@ function reconcileHiddenWithServer(){const done=terminalIds(),pending=rawPending
 async function load(showLoading=true){try{if(showLoading&&queue.length===0)$('queueList').innerHTML='<div class="skeleton"></div><div class="skeleton"></div>';const[q,h]=await Promise.all([getJson(`${RAW}/data/editorial_queue.json`),getJson(`${RAW}/data/editorial_history.json`)]);queue=Array.isArray(q)?q:[];history=Array.isArray(h)?h:[];reconcileHiddenWithServer();populateFilters();applyFilters();renderHistoryViews();$('staleBadge').hidden=true;$('lastRefresh').textContent='بروزرسانی '+new Intl.DateTimeFormat('fa-IR',{timeStyle:'medium'}).format(new Date())}catch(e){toast('داده تازه دریافت نشد؛ نمایش قبلی حفظ شد');$('staleBadge').hidden=false}}
 async function loadSystem(){try{const[runs,state]=await Promise.all([getJson(`${API}/actions/workflows/agent.yml/runs?per_page=1`),getJson(`${RAW}/state.json`)]);const r=runs.workflow_runs?.[0];$('systemWorkflow').textContent=r?`${r.status}${r.conclusion?' / '+r.conclusion:''}`:'—';$('systemRun').textContent=r?.run_number??'—';$('systemRuntime').textContent='runtime_v13';$('systemState').textContent=`news_seen: ${(state.news_seen||[]).length} | car: ${state.car_last_sent_date||'—'} | phone: ${state.phone_flagships_last_sent_date||'—'}`}catch{$('systemWorkflow').textContent='خطا در دریافت'}}
 
+async function forceRefresh(){
+  if(refreshRunning)return;
+  if(!token()||!connectionValidated){$('connectSheet').classList.add('open');setConnection('اتصال لازم است','bad');toast('برای بروزرسانی واقعی، اتصال به ایجنت بی‌خبر باید برقرار باشد.','',null,10000);return}
+  refreshRunning=true;
+  const btn=$('refreshBtn'),oldText=btn.textContent;
+  btn.disabled=true;btn.textContent='در حال بروزرسانی…';$('lastRefresh').textContent='در حال اسکن تازه ایجنت…';
+  try{
+    const id=await createCommand({action:'refresh',item_id:'',title:'',body:''});
+    const result=await pollCommandResult(id,180000);
+    if(result.status==='failed')throw Error(result.message||'اسکن ایجنت ناموفق بود');
+    if(result.status==='timeout'){toast('اسکن ایجنت هنوز در حال اجراست؛ پنل خودکار داده تازه را می‌گیرد.','',null,12000);return}
+    await load(false);await loadSystem();toast('بروزرسانی واقعی انجام شد؛ آخرین داده‌های ایجنت دریافت شد.');
+  }catch(e){toast('بروزرسانی انجام نشد: '+e.message,'',null,15000)}
+  finally{refreshRunning=false;btn.disabled=false;btn.textContent=oldText}
+}
+
 async function connect(){
   const t=$('tokenInput').value.trim();if(!t){toast('توکن GitHub را وارد کن');return}
   localStorage.setItem(TOKEN_KEY,t);
@@ -156,5 +173,5 @@ document.addEventListener('click',e=>{const tab=e.target.closest('[data-view]');
 document.addEventListener('input',e=>{const card=e.target.closest('.card[data-id]');if(!card||!['title','body'].includes(e.target.dataset.role))return;clearTimeout(card._draftTimer);card._draftTimer=setTimeout(()=>{saveDraft(card.dataset.id,card.querySelector('[data-role="title"]').value,card.querySelector('[data-role="body"]').value);card.querySelector('.edited').hidden=false;card.querySelector('[data-action="reset"]').hidden=false},250)});
 ['queueSearch','sourceFilter','sortOrder','reasonFilter'].forEach(id=>$(id).addEventListener(id==='queueSearch'?'input':'change',()=>{renderLimit=60;applyFilters()}));
 $('clearFilters').onclick=()=>{$('queueSearch').value='';$('sourceFilter').value='';$('reasonFilter').value='';$('sortOrder').value='newest';renderLimit=60;applyFilters()};
-$('refreshBtn').onclick=()=>load(false);$('connectBtn').onclick=()=>$('connectSheet').classList.toggle('open');$('saveTokenBtn').onclick=connect;$('disconnectBtn').onclick=disconnect;$('tokenInput').addEventListener('keydown',e=>{if(e.key==='Enter')connect()});
+$('refreshBtn').onclick=forceRefresh;$('connectBtn').onclick=()=>$('connectSheet').classList.toggle('open');$('saveTokenBtn').onclick=connect;$('disconnectBtn').onclick=disconnect;$('tokenInput').addEventListener('keydown',e=>{if(e.key==='Enter')connect()});
 restoreConnection();load();setInterval(()=>{if(document.visibilityState==='visible')load(false)},15000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){load(false);if(token()&&!connectionValidated)restoreConnection()}});
