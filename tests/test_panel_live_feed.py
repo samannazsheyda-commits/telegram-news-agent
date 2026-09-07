@@ -40,14 +40,14 @@ def test_upsert_replaces_same_item_id(tmp_path):
     assert rows[0].telegram_message_id == 777
 
 
-def test_upsert_newer_record_replaces_same_event_source_variant(tmp_path):
+def test_same_event_from_different_sources_remains_visible_as_two_items(tmp_path):
     store = LiveFeedStore(tmp_path / "feed.json")
-    store.upsert(record("a", status="new", event_id="event-x", updated_at="2026-09-07T12:00:00+00:00"))
-    store.upsert(record("b", status="auto_published", event_id="event-x", updated_at="2026-09-07T12:05:00+00:00"))
+    store.upsert(record("a", status="auto_published", event_id="event-x", updated_at="2026-09-07T12:00:00+00:00"))
+    store.upsert(record("b", status="duplicate", event_id="event-x", updated_at="2026-09-07T12:05:00+00:00"))
     rows = store.records()
-    assert len(rows) == 1
-    assert rows[0].item_id == "b"
-    assert rows[0].panel_status == "auto_published"
+    assert len(rows) == 2
+    assert {row.item_id for row in rows} == {"a", "b"}
+    assert {row.panel_status for row in rows} == {"auto_published", "duplicate"}
 
 
 def test_prune_removes_stale_records_and_enforces_cap(tmp_path):
