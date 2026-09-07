@@ -13,6 +13,41 @@ from .sources import NewsItem
 _SOURCE_OVERRIDES = {
     "Tabz Live": "تبز لایو",
     "Reuters": "رویترز",
+    "Bloomberg": "بلومبرگ",
+    "Times of Israel": "تایمز اسرائیل",
+    "The Times of Israel": "تایمز اسرائیل",
+    "Associated Press": "آسوشیتدپرس",
+    "AP": "آسوشیتدپرس",
+    "AFP": "خبرگزاری فرانسه",
+    "BBC": "بی‌بی‌سی",
+    "BBC World": "بی‌بی‌سی ورلد",
+    "CNN": "سی‌ان‌ان",
+    "France 24": "فرانس ۲۴",
+    "Al Jazeera English": "الجزیره انگلیسی",
+    "Al Arabiya English": "العربیه انگلیسی",
+    "The New York Times": "نیویورک تایمز",
+    "New York Times": "نیویورک تایمز",
+    "Financial Times": "فایننشال تایمز",
+    "Sky News": "اسکای نیوز",
+    "NBC News": "ان‌بی‌سی نیوز",
+    "CBS News": "سی‌بی‌اس نیوز",
+    "ABC News": "ای‌بی‌سی نیوز",
+    "Fox News": "فاکس نیوز",
+    "DW News": "دویچه‌وله",
+    "The Guardian": "گاردین",
+    "Washington Post": "واشنگتن پست",
+    "Wall Street Journal": "وال‌استریت ژورنال",
+    "Haaretz": "هاآرتص",
+    "Axios": "اکسیوس",
+    "Jerusalem Post": "جروزالم پست",
+    "Israel Hayom": "اسرائیل هیوم",
+    "CENTCOM": "سنتکام",
+    "White House": "کاخ سفید",
+    "US Treasury": "وزارت خزانه‌داری آمریکا",
+    "US State Department": "وزارت خارجه آمریکا",
+    "State Department": "وزارت خارجه آمریکا",
+    "TankerTrackers": "تنکر ترکرز",
+    "NOTAM": "نوتام",
 }
 
 _COUNTRY_FLAGS = (
@@ -33,6 +68,7 @@ _COUNTRY_FLAGS = (
     (("افغانستان", "afghanistan", "afghan"), "🇦🇫"),
     (("روسیه", "russia", "russian"), "🇷🇺"),
     (("چین", "china", "chinese"), "🇨🇳"),
+    (("کره جنوبی", "south korea", "korean"), "🇰🇷"),
 )
 
 _IMPACT_WORDS = (
@@ -49,6 +85,10 @@ def _has_persian(value: str) -> bool:
     return bool(re.search(r"[\u0600-\u06ff]", value or ""))
 
 
+def _has_latin(value: str) -> bool:
+    return bool(re.search(r"[A-Za-z]", value or ""))
+
+
 def _clean_source(source: str) -> str:
     value = (source or "").strip()
     value = re.sub(r"\s*/\s*Telegram\s*$", "", value, flags=re.IGNORECASE).strip()
@@ -56,6 +96,8 @@ def _clean_source(source: str) -> str:
     if is_x:
         value = re.sub(r"\s*/\s*X\s*$", "", value, flags=re.IGNORECASE).strip()
     value = _SOURCE_OVERRIDES.get(value, value)
+    if _has_latin(value):
+        value = "منبع خبری"
     return f"{value} / ایکس" if is_x else value
 
 
@@ -147,7 +189,6 @@ def publish_review_item(
     if not message:
         raise ValueError("invalid_message")
 
-    # Telegram confirmation comes first. Never mutate editorial state before it succeeds.
     sender(message, token, chat_id)
     _mark_seen(item.news_key, state_path)
     return store.move_to_history(
