@@ -19,6 +19,8 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements-dev.txt
+      - name: Check panel JavaScript syntax
+        run: node --check docs/panel.js
       - name: Focused panel tests
         run: python -m pytest -q tests/test_panel_ui_contract.py tests/test_panel_workflow.py tests/test_panel_command_file.py tests/test_manual_publish.py
       - name: Full suite
