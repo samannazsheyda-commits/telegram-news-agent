@@ -1,6 +1,7 @@
 {
-  "truth_last_id": "41570",
+  "truth_last_id": "41579",
   "news_seen": [
+    "x:washingtonpost:2096757850135540078",
     "x:WSJ:2096747244506521615",
     "x:WSJ:2096730087953416243",
     "7c3f407103c7bfeca9be49cc116f2ee817855cc2",
@@ -499,11 +500,10 @@
     "c63247d8b373c5ecfc0ef3f2c40818ec994c115a",
     "672d7629cee4ccbdf45c4ccb7a67511738e9e8bb",
     "3c5bf0c12d2f2a54d3887184de15722e91048866",
-    "17c5391202f45155a1299353db8300f51a3b9e8c",
-    "ab0b557beb6d3ef996cf8876365a6afe1b0d250d"
+    "17c5391202f45155a1299353db8300f51a3b9e8c"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:washingtonpost:2096757850135540078",
+      "source": "Washington Post / X",
+      "title": "U.S. Energy Secretary Chris Wright said that a nuclear agreement with Iran might not be achievable anytime soon and that U.S. military action was still needed. A deal “may await a next administration in Iran,” Wright said.",
+      "summary": "",
+      "link": "https://x.com/washingtonpost/status/2096757850135540078",
+      "published": "Mon, 07 Sep 2026 00:30:02 +0000",
+      "sent_at": "2026-09-07T00:31:33.363739+00:00",
+      "fingerprint": "u s energy secretary chris wright said that a nuclear agreement with iran might not be achievable anytime soon and that u s military action was still needed a deal may await a next administration in iran wright said"
+    },
     {
       "key": "x:WSJ:2096747244506521615",
       "source": "Wall Street Journal / X",
