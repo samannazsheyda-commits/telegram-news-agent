@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
+    "x:TimesofIsrael:2096833149820903674",
     "x:AlArabiya_Eng:2096825791866716281",
     "x:Reuters:2096823300575973676",
     "a1c22171b4bfc7149bff8d422a1121386df617eb",
@@ -499,11 +500,10 @@
     "41a211f240afb403e8ff15843808424fc33f5f01",
     "a4b48f2fe754eb81937cd06d50079c4d49eea667",
     "eb64de6519867074f45447cff99880dd65c048d3",
-    "d584ee4d4393eb9f1cee6df01fe0efc7a7227788",
-    "4f360726be22a8dd7d9c2135764a3eec2c1508aa"
+    "d584ee4d4393eb9f1cee6df01fe0efc7a7227788"
   ],
   "market_last_sent_at": "2026-09-07T04:31:09.215986+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:TimesofIsrael:2096833149820903674",
+      "source": "Times of Israel / X",
+      "title": "Top US official says there may not be a nuclear deal with Iran, but ability to build bomb may be destroyed",
+      "summary": "",
+      "link": "https://x.com/TimesofIsrael/status/2096833149820903674",
+      "published": "Mon, 07 Sep 2026 05:29:14 +0000",
+      "sent_at": "2026-09-07T05:33:43.563354+00:00",
+      "fingerprint": "top us official says there may not be a nuclear deal with iran but ability to build bomb may be destroyed"
+    },
     {
       "key": "x:AlArabiya_Eng:2096825791866716281",
       "source": "Al Arabiya English / X",
