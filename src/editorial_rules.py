@@ -62,24 +62,27 @@ IRAN_CONTEXT = (
     "lebanon", "لبنان",
 )
 
+# Only strong corporate signals belong here. Generic words such as aircraft,
+# carrier, fleet and routes also occur constantly in military/airspace news.
 COMPANY_TERMS = (
-    "company", "corporate", "ceo", "chief executive", "airline", "carrier", "earnings", "profit", "profits",
-    "revenue", "sales", "shares", "stock", "growth", "expansion", "fleet", "routes", "aircraft", "acquisition",
-    "merger", "quarterly", "business", "شرکت", "مدیرعامل", "سود", "درآمد", "سهام", "ناوگان", "مسیر پروازی",
+    "company", "corporate", "ceo", "chief executive", "airline", "earnings", "profit", "profits",
+    "revenue", "sales", "shares", "growth", "expansion", "acquisition", "merger", "quarterly", "business",
+    "شرکت", "مدیرعامل", "سود", "درآمد", "سهام",
 )
 
 OPERATIONAL_SECURITY_TERMS = (
     "suspend flights", "suspends flights", "suspended flights", "cancelled flights", "canceled flights",
-    "flight cancellation", "airspace closure", "airspace closed", "closes airspace", "closed airspace",
-    "resume flight", "resumes flight", "resume flights", "resumes flights", "flights resume",
+    "cancel international flights", "flight cancellation", "airspace closure", "airspace closed", "closes airspace", "closed airspace",
+    "resume flight", "resumes flight", "resume flights", "resumes flights", "flights resume", "restore services", "restores services",
     "resume overflight", "resumes overflight", "resume overflights", "resumes overflights", "overflights resume",
     "reopen airspace", "reopens airspace", "airspace reopens", "airspace reopening",
     "avoid airspace", "avoid iranian airspace", "avoid iran airspace", "aviation warning", "security risk", "security risks",
-    "notam", "evacuation", "attack", "attacked", "strike", "struck", "missile", "drone", "explosion",
+    "military aircraft", "supersonic aircraft", "fighter", "warplane", "aircraft carrier", "warship", "hostile fire",
+    "shot down", "downing", "militia", "notam", "evacuation", "attack", "attacked", "strike", "struck", "missile", "drone", "explosion",
     "sanction", "sanctions", "seized", "shutdown", "shut down", "facility hit", "infrastructure hit",
     "تعلیق پرواز", "لغو پرواز", "ازسرگیری پرواز", "از سرگیری پرواز", "بازگشایی حریم", "بازگشایی حریم هوایی",
     "بسته شدن حریم", "حریم هوایی بسته", "اجتناب از حریم هوایی", "هشدار هوانوردی",
-    "نوتام", "تخلیه", "حمله", "موشک", "پهپاد", "انفجار", "تحریم", "توقیف",
+    "هواپیمای نظامی", "جنگنده", "ناو هواپیمابر", "ناو جنگی", "سرنگونی", "نوتام", "تخلیه", "حمله", "موشک", "پهپاد", "انفجار", "تحریم", "توقیف",
 )
 
 BOILERPLATE_TERMS = (
@@ -220,8 +223,6 @@ def is_duplicate_story(left: NewsItem, right: NewsItem) -> bool:
 
     ca, cb = _concepts(left), _concepts(right)
     concept_common = ca & cb
-    # Concepts are supporting evidence only. Iran/USA/strike/Hormuz are too broad
-    # to declare two stories duplicates by themselves.
     if len(concept_common) >= 4:
         return len(common) >= 3 and overlap >= 0.30
     if len(concept_common) >= 3:
