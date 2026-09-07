@@ -1,6 +1,8 @@
 {
-  "truth_last_id": "41592",
+  "truth_last_id": "41594",
   "news_seen": [
+    "x:business:2096815750962950242",
+    "x:TheEconomist:2096815749096435821",
     "x:haaretzcom:2096814492155859096",
     "x:washingtonpost:2096810723099738314",
     "x:AJEnglish:2096798514747736309",
@@ -498,11 +500,9 @@
     "f89f450b30144d920217662a1ceb651a8bd2ff93",
     "633ea45b465afff9ba6875cfae44b46d5afdd13f",
     "04b1c249f606defcd6ca6b1c550f8970823a5b94",
-    "c71e4d2c6a1dd74a1e643c61af27b8c9b960d9f8",
-    "d475db1b1438f5a406f420e38d2594881260fa0d",
-    "330e5f6284ec19ef4908a4b0fe5ff4c9e882fb81"
+    "c71e4d2c6a1dd74a1e643c61af27b8c9b960d9f8"
   ],
-  "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
+  "market_last_sent_at": "2026-09-07T04:31:09.215986+00:00",
   "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
@@ -612,10 +612,10 @@
   "weather_noon_last_sent_date": "2026-09-06",
   "weather_night_last_sent_date": "2026-09-05",
   "market_day_prices": {
-    "date": "2026-09-06",
-    "first_usd": 227205,
+    "date": "2026-09-07",
+    "first_usd": 223000,
     "last_usd": 223000,
-    "first_gold": 23674400,
+    "first_gold": 23353600,
     "last_gold": 23353600,
     "first_brent": 96.28,
     "last_brent": 96.28,
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:TheEconomist:2096815749096435821",
+      "source": "The Economist / X",
+      "title": "The Iran war has shown that, in practice, China can singlehandedly stabilise the global oil market over a period of many months. The leaders of OPEC can only dream of doing the same",
+      "summary": "",
+      "link": "https://x.com/TheEconomist/status/2096815749096435821",
+      "published": "Mon, 07 Sep 2026 04:20:06 +0000",
+      "sent_at": "2026-09-07T04:31:09.215986+00:00",
+      "fingerprint": "the iran war has shown that in practice china can singlehandedly stabilise the global oil market over a period of many months the leaders of opec can only dream of doing the same"
+    },
+    {
+      "key": "x:business:2096815750962950242",
+      "source": "Bloomberg / X",
+      "title": "Several Qatari liquefied natural gas tankers are heading back toward the Persian Gulf, a sign the supplier may be positioning vessels for a resumption of exports through the Strait of Hormuz",
+      "summary": "",
+      "link": "https://x.com/business/status/2096815750962950242",
+      "published": "Mon, 07 Sep 2026 04:20:06 +0000",
+      "sent_at": "2026-09-07T04:31:09.215986+00:00",
+      "fingerprint": "several qatari liquefied natural gas tankers are heading back toward the persian gulf a sign the supplier may be positioning vessels for a resumption of exports through the strait of hormuz"
+    },
     {
       "key": "x:haaretzcom:2096814492155859096",
       "source": "Haaretz / X",
