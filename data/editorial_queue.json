@@ -1,5 +1,23 @@
 [
   {
+    "id": "696fbcd6a79a9a5d9cf2e0d4a7fd5ac2dc5471aa",
+    "news_key": "d1abc6e2b7f37d86712bed586e73724834d6e847",
+    "source": "The New York Times",
+    "source_url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE1tdXhlb3hCRjN0TWt4Vkl1THhuUklqUGJTbzgybGZ4WFB2Q2oxUVd1Mk5Zd09MS3FuZ0pMd29lMk9WSmMzMktxZkpVaTQxczI3UEJnSkxlMkl4dEE1ODcyX2xPZmQweDJSeVpuamRyS1dBdGJZVDVzT2trSWY?oc=5",
+    "original_title": "Oil Prices Churn After U.S. and Iran Trade Strikes",
+    "original_summary": "Oil Prices Churn After U.S. and Iran Trade Strikes The New York Times",
+    "persian_title": "قیمت نفت پس از حملات تجاری آمریکا و ایران به شدت کاهش یافت",
+    "persian_body": "قیمت نفت پس از حملات تجاری آمریکا و ایران به شدت افزایش یافت (نیویورک تایمز)",
+    "published_at_source": "Mon, 07 Sep 2026 10:40:00 GMT",
+    "discovered_at": "2026-09-07T11:20:55.803380+00:00",
+    "rejection_reason": "panel_refresh",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-07T11:21:13.380461+00:00"
+  },
+  {
     "id": "f4ca5fb9b7501eb8610630664252696848f18192",
     "news_key": "5c0b2b10769d054f04c4c52d5660f302ef7a757d",
     "source": "CNN",
