@@ -5,6 +5,13 @@
     "44a7936014d36349cd9a196288e355dd226cd616",
     "b0b4eb9246ea46545b988b91ee491bd4c833303f",
     "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
+    "x:AlArabiya_Eng:2096861964169281778",
+    "x:Jerusalem_Post:2096856759721697457",
+    "x:TheEconomist:2096850977491964279",
+    "x:AlArabiya_Eng:2096839431030178164",
+    "c85897e3613736f59237ec0357b5fd2ff2079d5b",
+    "d47a95b28be84feca29331cb9bc4198a2423a75c",
+    "ec74cfc50880f578ce7f934fd372d6c88ab0af3e",
     "69244f879cd6b0b9643bf2a8ff2ab6d7312d0eb2",
     "eb73bd0f7cc81fe173c2e3e237d05544f232a248",
     "0dc696908e85e62615bbd9a63a7522001ff1c502",
@@ -493,17 +500,10 @@
     "f7c58011aa25ca020705143fc973173f46b101c1",
     "9ccf59d2faf2f5b01757aa101a1e8d5cf36d6b18",
     "569d485f2421936cfa4438fcb36dba26ca09e542",
-    "0a69014c200b91532ba709d4559a0c95ea05c0db",
-    "7339324ab78ed6524779a957e88676fd14e5c64f",
-    "f1ed9f42d4b6e2591d5188a7402c9b76c4a1d104",
-    "e28107bd1323418e4e4ea987271a053d3e4e62a6",
-    "650f5f150b6d3c877cae78b9b50e1464781b097c",
-    "273d08b5d3dc1708dd398f84ceface276d8de637",
-    "8e4eb776d4cf93d479cc8e4ff1480a6a00268a78",
-    "e416b3b5aeaaaa446584ad7be0900fd5b70c322b"
+    "0a69014c200b91532ba709d4559a0c95ea05c0db"
   ],
-  "market_last_sent_at": "2026-09-07T04:31:09.215986+00:00",
-  "next_news_color": "red",
+  "market_last_sent_at": "2026-09-07T07:27:23.777746+00:00",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -630,7 +630,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 11:57:12 +0000",
       "link": "https://t.me/thecradlemedia/67480",
-      "checked_at": "2026-09-07T05:52:31.116323+00:00"
+      "checked_at": "2026-09-07T07:30:09.011974+00:00"
     },
     {
       "key": "44a7936014d36349cd9a196288e355dd226cd616",
@@ -639,7 +639,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 19:03:07 +0000",
       "link": "https://t.me/ClashReport/95362",
-      "checked_at": "2026-09-07T05:52:31.116323+00:00"
+      "checked_at": "2026-09-07T07:30:09.011974+00:00"
     },
     {
       "key": "b0b4eb9246ea46545b988b91ee491bd4c833303f",
@@ -648,7 +648,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 18:50:05 +0000",
       "link": "https://t.me/ClashReport/95357",
-      "checked_at": "2026-09-07T05:52:31.116323+00:00"
+      "checked_at": "2026-09-07T07:30:09.011974+00:00"
     },
     {
       "key": "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
@@ -657,7 +657,25 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 18:54:37 +0000",
       "link": "https://t.me/ClashReport/95359",
-      "checked_at": "2026-09-07T05:52:31.116323+00:00"
+      "checked_at": "2026-09-07T07:30:09.011974+00:00"
+    },
+    {
+      "key": "d47a95b28be84feca29331cb9bc4198a2423a75c",
+      "source": "NOTAM / Airspace",
+      "title": "$7,500 Per Hour: The Massive Cost For Gulf Airlines Avoiding Iranian Airspace - Simple Flying",
+      "reason": "not_today_tehran",
+      "published": "Sun, 22 Feb 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxOVlZvUi1hMkxMc3Z1RGVRdUxsR3Bzb2FnSXYwWlhtYzQ0eU5yN20zTl83X3djYTRiTmJHVzlPMUdxbXhaSlJXOHhueHF3T2lJR2JsX2hqYl9Uai0tNE1uU1RZQ3BQbUFiUmRQVFhielRVeWN6ZVVBSUVaNHp2bjE2TGRPVGJFSVVMbE80?oc=5",
+      "checked_at": "2026-09-07T07:27:23.777746+00:00"
+    },
+    {
+      "key": "ec74cfc50880f578ce7f934fd372d6c88ab0af3e",
+      "source": "NOTAM / Airspace",
+      "title": "Partial Reopening of Iranian Airspace... - jordannews.jo",
+      "reason": "not_today_tehran",
+      "published": "Sat, 18 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOZVc5R0ZrLWkxb2VoVnFtVE9abGJVdnQxRm9XclNZZlFZSk51RjZmVXZwM2VjbF9mSWlFMS1CeXVzeFZVN3pVblhPTlZHMXJBZXNWODVZdXlSVExKYjZoOUxIbW5wQWRydklFa1BEZ0U5OGxDenY3S3hkMVJLcmdkSmpNdngxRkxObjhqaHZNZkNuNkNDTnNz?oc=5",
+      "checked_at": "2026-09-07T07:27:23.777746+00:00"
     },
     {
       "key": "69244f879cd6b0b9643bf2a8ff2ab6d7312d0eb2",
@@ -2404,28 +2422,60 @@
       "published": "Thu, 03 Oct 2024 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNYjNFUVNtMXE5Sk5YVWVoMUlWb211aXNmTlFIcFVWOURlaTQ5YVFtVGdGUkE3bU1jV3NlNW1HM1pTTEpUS0FORXNQcUtTLXFlcnd6TG5lNjlmeVR2eGtWODE3ZGZDNDhydXNfQ3gtTDRZQXdpVnQ5aHZfTVlIZExVS1ZQTG90aFduLVcwWEdYSGhJM0JsWHNXcjNTaXZrenBoRUI5cmlYV1llSEtDY3hz?oc=5",
       "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "3c61c224d6307e3e4242a9fba4ed2188a215d140",
-      "source": "NOTAM / Airspace",
-      "title": "Qantas’ close call with Iranian airspace closure - The Australian",
-      "reason": "not_today_tehran",
-      "published": "Thu, 15 Jan 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiggJBVV95cUxNZDQtQmFlY0dhdXUxSkozUFpoVGpzRHo4dm04amhlTGRfSDZqZWFnQTJJOVZ4d2owRkVHWGxWQndNdDZOUU9PYmx5MnhhMUpCaXJqLUZqRXNDOFZxN2dzb0w4V3NoRTRIb1BJblQzUUdOdTZEWXZMelVOMHc3bmRKUDhlZHFXLU9nUHFfcE9ZRmp5YnVFcnNJUjlUdy1vc1dUTHZSUFhNbXAzRUZzaTdrY2l6ekhnZEQ4YXkzVEdsZ0FxZFE0RnRrU1dLZmttM2k4M1RJOHBYcDdUZG9pTnB6NUI3bmlnRjBMSTFORmdObVZIOEZIVjZ2U18yUFM3bWtCUkHSAYcCQVVfeXFMTnNlM1U0MXg4d0dHUDJsdmdpcHk4YXY5cUNCRy10SERXTjRNRkxZOFV2cHFPbF9VcG9NaV9UVWRPWURGMmhQT01nNjhsVk9Ld1RQcVBMNnNHbFpxdk4za3M5NmdZTWFXcUl4WTJXYkhucWNpLWYwd05XelZEQTlWN2Nid01yNENyTTNqemFDZ25aYUk5VDBXakdrcGxSRmlBVUYxNVpCblAwbU96LUZvUm5OdWtlMEpUUlM5MERfQzNYSGN1b1BTYnA0cElKS01oTEdHWnpDM2NGbVdlZnpCeWw2ZE9xWEZuRTc5czlVUjhFMjFtWWFFUWViaFdHdDVIQzA2eGdCaGs?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "658e0035cca9bebeb54106d42a6422fa349cdd33",
-      "source": "ABC News",
-      "title": "Travellers stranded as US-Iran conflict throws international flights into disarray - ABC News & Headlines - Australian Broadcasting Corporation",
-      "reason": "not_today_tehran",
-      "published": "Sat, 28 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNVEF1cURxX21scjBERTQxd1VGWHgtT2NuREtGbHlZU0VfNHVaWWtqWHEwd01haWlXVm81QnRPc29vWTVUYWhlU19zYmFkU0lRN3VIRWFaVF9VN1ZUN1BsRmpQNG5LN2hCQUZQbHJLc1VQV05ZdVduUHVZVE1kWDExb3daVk81UFJBQ0F4b2hUTWd4bk9lQ0d6c1JsOVpuS044N01jQm54NA?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "c85897e3613736f59237ec0357b5fd2ff2079d5b",
+      "source": "NOTAM / Airspace",
+      "title": "Iran Lifts Flight Limits at Konarak Airport After Wartime Disruption",
+      "summary": "Iran Lifts Flight Limits at Konarak Airport After Wartime Disruption thetraveler.org",
+      "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxOVGRDbGQ4a3B6OEw1dTk5MGt4TGFMZUEwNWlZS1daZGZFdGdZcE1UZktCc3RvQmpoUEFCSXVCckI3QklYLXRHd0ZEWTNjbWdweWRGN2ZfN0w5emdYUndCWnhvSDc0MllDN211cGlfbHlQeVVaWml1d1dXOHlTZTB6UXZSaWNESWhTRmEtWFlHc2lCQ25RRVQ5ZVBMYkFLdw?oc=5",
+      "published": "Mon, 07 Sep 2026 07:08:19 GMT",
+      "sent_at": "2026-09-07T07:27:23.777746+00:00",
+      "fingerprint": "iran lifts flight limits at konarak airport after wartime disruption iran lifts flight limits at konarak airport after wartime disruption thetraveler org"
+    },
+    {
+      "key": "x:AlArabiya_Eng:2096839431030178164",
+      "source": "Al Arabiya English / X",
+      "title": "An average of 10 commodity ships transited the Strait of Hormuz per day over the past 10 days, the lowest since May, according to shipping data, after US and Iranian strikes on tankers.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096839431030178164",
+      "published": "Mon, 07 Sep 2026 05:54:12 +0000",
+      "sent_at": "2026-09-07T07:27:23.777746+00:00",
+      "fingerprint": "an average of 10 commodity ships transited the strait of hormuz per day over the past 10 days the lowest since may according to shipping data after us and iranian strikes on tankers"
+    },
+    {
+      "key": "x:TheEconomist:2096850977491964279",
+      "source": "The Economist / X",
+      "title": "When Iran has been attacked in the past 15 months, each of its regional allies has made a decision about whether to join the fray. The axis of resistance may no longer be an axis",
+      "summary": "",
+      "link": "https://x.com/TheEconomist/status/2096850977491964279",
+      "published": "Mon, 07 Sep 2026 06:40:05 +0000",
+      "sent_at": "2026-09-07T07:27:23.777746+00:00",
+      "fingerprint": "when iran has been attacked in the past 15 months each of its regional allies has made a decision about whether to join the fray the axis of resistance may no longer be an axis"
+    },
+    {
+      "key": "x:Jerusalem_Post:2096856759721697457",
+      "source": "Jerusalem Post / X",
+      "title": "The Iran war showed that Gulf Arab countries should not only depend on their strategic partnership with the United States for their security, Qatar's foreign ministry spokesperson Majed al-Ansari told a panel on Monday at the Hili forum in Abu Dhabi.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096856759721697457",
+      "published": "Mon, 07 Sep 2026 07:03:03 +0000",
+      "sent_at": "2026-09-07T07:27:23.777746+00:00",
+      "fingerprint": "the iran war showed that gulf arab countries should not only depend on their strategic partnership with the united states for their security qatar s foreign ministry spokesperson majed al ansari told a panel on monday at the hili forum in abu dhabi"
+    },
+    {
+      "key": "x:AlArabiya_Eng:2096861964169281778",
+      "source": "Al Arabiya English / X",
+      "title": "BREAKING: Iran’s Foreign Ministry spokesperson says ⁠in a post on X ⁠that South Korea's military ⁠participation or presence in operations in the Strait of Hormuz would be regarded as ⁠support for US “aggression” and would have serious consequences.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096861964169281778",
+      "published": "Mon, 07 Sep 2026 07:23:44 +0000",
+      "sent_at": "2026-09-07T07:27:23.777746+00:00",
+      "fingerprint": "breaking iran s foreign ministry spokesperson says in a post on x that south korea s military participation or presence in operations in the strait of hormuz would be regarded as support for us aggression and would have serious consequences"
+    },
     {
       "key": "x:TimesofIsrael:2096833149820903674",
       "source": "Times of Israel / X",
