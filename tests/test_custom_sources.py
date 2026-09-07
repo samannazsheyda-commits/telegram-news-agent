@@ -5,13 +5,13 @@ import json
 from src.custom_sources import (
     XSource,
     discover_feed_url,
-    extract_public_telegram_source_links,
     fetch_custom_news_items,
     normalize_x_handle,
     parse_public_feed,
     parse_public_telegram_channel,
     validate_website_source,
 )
+from src.runtime_v12 import extract_public_telegram_source_links
 
 
 class FakeResponse:
