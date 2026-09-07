@@ -34,6 +34,7 @@ jobs:
           tests/test_newsroom_eligibility.py
           tests/test_panel_live_feed.py
           tests/test_newsroom_v2_integration.py
+          tests/test_newsroom_v2_eligibility_integration.py
           tests/test_truth_social.py
       - name: Run live V2 shadow cycle
         if: github.head_ref == 'design/newsroom-v2-2026-09-07'
