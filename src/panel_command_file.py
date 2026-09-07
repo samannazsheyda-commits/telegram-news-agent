@@ -128,7 +128,6 @@ def process_command_file(
 ) -> dict:
     command_path = Path(path)
 
-    # If the command was already consumed, its filename is the command identity.
     if not command_path.exists():
         existing = _terminal_result(result_dir, command_path.stem)
         if existing:
@@ -184,7 +183,6 @@ def process_command_file(
         _consume(command_path)
         return terminal
     except Exception as exc:
-        # Keep failed publish pending and preserve a terminal result for the UI.
         terminal = _write_result(result_dir, _result(args, "failed", str(exc)))
         _consume(command_path)
         return terminal
@@ -193,13 +191,16 @@ def process_command_file(
 def apply_command(path: str | Path) -> dict:
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
     chat_id = os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar").strip()
-    return process_command_file(
+    result = process_command_file(
         path,
         token=token,
         chat_id=chat_id,
         state_path="state.json",
         result_dir="panel_results",
     )
+    if result.get("status") == "failed":
+        raise RuntimeError(str(result.get("message") or "panel_command_failed"))
+    return result
 
 
 def main() -> None:
@@ -207,8 +208,6 @@ def main() -> None:
         raise SystemExit("usage: python -m src.panel_command_file <command.json>")
     result = apply_command(sys.argv[1])
     print(json.dumps(result, ensure_ascii=False))
-    if result.get("status") == "failed":
-        raise SystemExit(1)
 
 
 if __name__ == "__main__":
