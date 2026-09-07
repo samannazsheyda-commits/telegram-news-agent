@@ -64,6 +64,22 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
           python -m src.persist_merge /tmp/panel-snapshot
+
+          # A terminal history record is authoritative. Do not resurrect it in queue
+          # when merging against a newer monitor snapshot.
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          q = Path('data/editorial_queue.json')
+          h = Path('data/editorial_history.json')
+          queue = json.loads(q.read_text(encoding='utf-8')) if q.exists() else []
+          history = json.loads(h.read_text(encoding='utf-8')) if h.exists() else []
+          terminal = {'published_manual','published_auto','rejected_manual','superseded'}
+          done = {str(r.get('id')) for r in history if r.get('status') in terminal and r.get('id')}
+          queue = [r for r in queue if str(r.get('id')) not in done]
+          q.write_text(json.dumps(queue, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+
           mkdir -p panel_results
           if [ -f "/tmp/panel-snapshot/panel_results/$cmd_id.json" ]; then cp "/tmp/panel-snapshot/panel_results/$cmd_id.json" panel_results/; fi
           rm -f "$cmd"
