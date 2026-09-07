@@ -1,6 +1,11 @@
 {
   "truth_last_id": "41620",
   "news_seen": [
+    "x:sfrantzman:2096949816542499083",
+    "x:mdubowitz:2096851049986265196",
+    "x:mdubowitz:2097002947179581516",
+    "x:JasonMBrodsky:2096729329514263038",
+    "x:CNN:2096923986282033345",
     "x:JasonMBrodsky:2097043613016301905",
     "x:AJEnglish:2097043355364389337",
     "x:Jerusalem_Post:2097040972936888350",
@@ -495,12 +500,7 @@
     "x:jconricus:2095279034800157082",
     "x:jconricus:2095280355750076499",
     "x:manniefabian:2095450221069181168",
-    "x:manniefabian:2095567922823397527",
-    "x:manniefabian:2095568526715109731",
-    "x:mdubowitz:2095636047400992995",
-    "x:mdubowitz:2095885258457481261",
-    "x:mdubowitz:2095886488856564035",
-    "x:mdubowitz:2095889790990184936"
+    "x:manniefabian:2095567922823397527"
   ],
   "market_last_sent_at": "2026-09-07T18:20:33.841773+00:00",
   "next_news_color": "red",
@@ -623,6 +623,51 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "x:sfrantzman:2096949816542499083",
+      "source": "Seth Frantzman / X",
+      "title": "Recent headlines in Israel on regional affairs/conflicts Jpost: Katz threatens 'all-out war' on PA over West Bank 'October 7-style attack' terror threat to Israel- Sept. 7. i24: Iran plans regional escalation but is wary of attacking Israel during election campaign, i24NEWS told, Sept. 5. Jpost: An Iranian attack on Israel would release the IDF “from any restrictions,” Defense Minister Israel Katz said on Thursday during a speech to Defense Ministry employees ahead of the Rosh Hashanah holiday, Walla reported. “We will destroy all national, military, and civilian infrastructure in Iran, including energy infrastructure,” Katz threatened. “We will return Iran to the Stone Age.”- Sept. 3 TOI: Katz: Israel will facilitate emigration from Gaza ‘by any means’ as soon as Trump allows- Sept. 2",
+      "reason": "not_today_tehran",
+      "published": "Mon, 07 Sep 2026 13:12:50 +0000",
+      "link": "https://x.com/sfrantzman/status/2096949816542499083",
+      "checked_at": "2026-09-07T20:38:47.184757+00:00"
+    },
+    {
+      "key": "x:mdubowitz:2096851049986265196",
+      "source": "Mark Dubowitz / X",
+      "title": "“Shadow banking networks are extremely difficult to detect, but by no means is it impossible to track Iran’s financial flows,” said @ElaineDezenski, a former senior Department of Homeland Security official now at @FDD, a Washington think tank. “U.S. and correspondent banks are squarely on the hook, and that pressure is only increasing.”",
+      "reason": "not_today_tehran",
+      "published": "Mon, 07 Sep 2026 06:40:22 +0000",
+      "link": "https://x.com/mdubowitz/status/2096851049986265196",
+      "checked_at": "2026-09-07T20:38:47.184757+00:00"
+    },
+    {
+      "key": "x:mdubowitz:2097002947179581516",
+      "source": "Mark Dubowitz / X",
+      "title": "Great answer from @jaredkushner—humble, thoughtful, and admirable from someone with an enviable record of taking on the hardest challenges and delivering results. Russia, Iran, and Gaza are problems from hell. He and @SEPeaceMissions deserve enormous credit for having the courage and determination to try to solve them.",
+      "reason": "not_today_tehran",
+      "published": "Mon, 07 Sep 2026 16:43:57 +0000",
+      "link": "https://x.com/mdubowitz/status/2097002947179581516",
+      "checked_at": "2026-09-07T20:38:47.184757+00:00"
+    },
+    {
+      "key": "x:JasonMBrodsky:2096729329514263038",
+      "source": "Jason Brodsky / X",
+      "title": "History repeats itself. #Iran's regime once ranted about the lack of guarantees with the JCPOA all while it was defying the NPT. It's now ranting about the lack of guarantees with the MoU, which it violated. It's comical.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 22:36:42 +0000",
+      "link": "https://x.com/JasonMBrodsky/status/2096729329514263038",
+      "checked_at": "2026-09-07T20:38:47.184757+00:00"
+    },
+    {
+      "key": "x:CNN:2096923986282033345",
+      "source": "CNN / X",
+      "title": "A little more than six months after the US-Iran conflict began, gas prices remain far higher than they were in late February — when a gallon of regular gas cost $2.98, on average, nationwide, according to AAA. On Sunday, drivers paid an average of $4.15 a gallon.",
+      "reason": "not_today_tehran",
+      "published": "Mon, 07 Sep 2026 11:30:11 +0000",
+      "link": "https://x.com/CNN/status/2096923986282033345",
+      "checked_at": "2026-09-07T20:38:47.184757+00:00"
+    },
     {
       "key": "afb47f80fda3233bc33f2f0a3a5dae5d26ae4e22",
       "source": "NOTAM / Airspace",
@@ -2377,51 +2422,6 @@
       "published": "Thu, 03 Sep 2026 23:08:37 +0000",
       "link": "https://x.com/CENTCOMFarsi/status/2095650197766304188",
       "checked_at": "2026-09-05T14:13:21.999002+00:00"
-    },
-    {
-      "key": "x:RapidResponse47:2095948372632834364",
-      "source": "White House Rapid Response / X",
-      "title": ".@POTUS schools a very rude Fake News hack on Iran: \"Iran will not have a nuclear weapon — because if they did, you probably wouldn't be standing here very long.\"",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 18:53:27 +0000",
-      "link": "https://x.com/RapidResponse47/status/2095948372632834364",
-      "checked_at": "2026-09-05T14:13:21.999002+00:00"
-    },
-    {
-      "key": "583b9814f26fe38fcbcbb405aa5fd98207294721",
-      "source": "NOTAM / Airspace",
-      "title": "Iran closes western airspace until Monday as Trump administration mulls strikes",
-      "reason": "not_today_tehran",
-      "published": "Fri, 22 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQamZXLVdEMmlQVnlvNUZqdHc1X0lhTldqd3JDY2lKT1lhUmJLREJQOGROUlI1YmEydEpBd2d1YlRGVWtIVm84elg4WlFtaUpZU3RMaTJUdUhZOTM1RVJHTkJLOG0ya2tGdEY5T0p2TmZXaE9DZHo1Qk9xcDhua1BoTFhEODNhcVltLTdwR2hpZkFTU3JUS3d4Z3luMGw?oc=5",
-      "checked_at": "2026-09-05T13:09:10.497322+00:00"
-    },
-    {
-      "key": "636ce9e89fc0a11b01afffc822502f7717791e46",
-      "source": "NOTAM / Airspace",
-      "title": "Flights To UAE, Kuwait Affected, Bahrain Closes Airspace After Iran Launches Attack - NDTV Profit",
-      "reason": "not_today_tehran",
-      "published": "Wed, 03 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNZUhBLVNrZnVQVTRVMmxZdTYwQzVVZ3dVbHkzamhFdHpmdEZiM1RTNWY5LVQ5dElfTGJkM0ZqNU9KdVl4a2YwOG1RM3JRak9hSUNtN1NHUEVtNEUyVWpudzNjQWpKb0lqZ05mbUJNb3JVeVRWM054dFI4Unh5YUd6a2diMXRHalhUR2ZmMW9JZEF4ZE5YX2FCNnpOM1d0MllqOXJ6MUFXNzFaTkJ1YWU3ck16dzlRMUtXMFBnQXo0QkEzYlh3SEhMMNIB0AFBVV95cUxQeHUyT3I3MTE0ejYzTi1DV3pJV2hZUHZKYkRWZWc5S2hLblpvNkhsajJNWnZDZG1wM1p3VUJQVGZDZFRmUksyUmJUYWNNaVJXMnd6YTI5V2ZSZ1hjTFc0YldvNzhqRFFsa0RseUc5bnBRWnU3VnYxOURYblJXTTNkYmtLSXlEUUJqTjEyUTh5c0tBMFgwQjVSVWVjN1FxdWN6Z3NWNzAycDdOQkY1VXF5Ull0TUMtTkZtMkZ4alFuSF9WNnVtZEthSEdTek45Q2Q3?oc=5",
-      "checked_at": "2026-09-05T12:22:27.240046+00:00"
-    },
-    {
-      "key": "3d860604179b0326d7b01590113e0a522c10b3b1",
-      "source": "NOTAM / Airspace",
-      "title": "Egypt condemns Iranian attacks violating Jordanian airspace - Egypt Today",
-      "reason": "not_today_tehran",
-      "published": "Thu, 09 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNRDNqSnd0cUw3bUhrUXNTbjBhVEJ6XzcxY1pCS0FhT3dyanhtOFQwb1ExOEdmSTRMbUVyZm9pbVhIMzRaRzNfdFMzTmc2SmVkOThQWXA0b3lFSk9EaXlwekpmeHF1Zkx4ZGFQdm8xXzJWcUlrYkxnSk9LdUNsNTY3dU93TGJQWWJHZVg2UjVRRWstRHRodThtc2ZEdWdNTmVzM2h3Ry1n?oc=5",
-      "checked_at": "2026-09-05T12:21:13.511581+00:00"
-    },
-    {
-      "key": "64a4e630975cfd13bd1e5f114fd16779c29c3f0b",
-      "source": "NOTAM / Airspace",
-      "title": "Iran partially closes western airspace amid missile fire - Middle East Eye",
-      "reason": "not_today_tehran",
-      "published": "Sun, 07 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQYmxjLXpJVEozZ3FsRG82RjBpZ0JZMHN6WHZMQ2lNTGVtaDFXWFlsUXBDSjRER1hCMTNZd1BIMzNfTTBZNzR5MnlIWC1CZ29MVGVrT3lQS0prX3dQN2RZb242M04ybXQ3OUFNMjVZWWVZTE5hWjdSbGpsaWVsTDh4SXlxdjVKLWxpNDQwTnN4SzVoWGRvSzVGQUhZcEwzeTljQ1pOZEd4SHdfQ1NxOEl2dG1fRQ?oc=5",
-      "checked_at": "2026-09-05T12:21:13.511581+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-07",
