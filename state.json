@@ -1,6 +1,17 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
+    "05b519493e12bc70566a2252982875d2cac99d9d",
+    "44a7936014d36349cd9a196288e355dd226cd616",
+    "b0b4eb9246ea46545b988b91ee491bd4c833303f",
+    "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
+    "69244f879cd6b0b9643bf2a8ff2ab6d7312d0eb2",
+    "eb73bd0f7cc81fe173c2e3e237d05544f232a248",
+    "0dc696908e85e62615bbd9a63a7522001ff1c502",
+    "9fbe566cfc9c31bf73a5e1ec2da4d4fcd4ec9b7f",
+    "5ff05b639c34fb752cd35566fca6e352d4a7db8d",
+    "05cd10b9a00bc993350b8fe7c69071f486ce14f6",
+    "83956cd7573d9ed3f537475e41e215708617de27",
     "x:TimesofIsrael:2096833149820903674",
     "x:AlArabiya_Eng:2096825791866716281",
     "x:Reuters:2096823300575973676",
@@ -489,18 +500,7 @@
     "650f5f150b6d3c877cae78b9b50e1464781b097c",
     "273d08b5d3dc1708dd398f84ceface276d8de637",
     "8e4eb776d4cf93d479cc8e4ff1480a6a00268a78",
-    "e416b3b5aeaaaa446584ad7be0900fd5b70c322b",
-    "4ea65c00fe2b9a1254a2d843218774b2f0a35b44",
-    "23ea9c9f80b976225f7940b77a2f5f4f549528e0",
-    "3733d9f23c8f0bc5d28c55309fd91de4a4fb33fc",
-    "41a211f240afb403e8ff15843808424fc33f5f01",
-    "a4b48f2fe754eb81937cd06d50079c4d49eea667",
-    "eb64de6519867074f45447cff99880dd65c048d3",
-    "d584ee4d4393eb9f1cee6df01fe0efc7a7227788",
-    "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
-    "b0b4eb9246ea46545b988b91ee491bd4c833303f",
-    "44a7936014d36349cd9a196288e355dd226cd616",
-    "05b519493e12bc70566a2252982875d2cac99d9d"
+    "e416b3b5aeaaaa446584ad7be0900fd5b70c322b"
   ],
   "market_last_sent_at": "2026-09-07T04:31:09.215986+00:00",
   "next_news_color": "red",
@@ -623,6 +623,105 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "05b519493e12bc70566a2252982875d2cac99d9d",
+      "source": "دِ کریدل / Telegram",
+      "title": "Tehran vows ‘faster, harder, more painful’ strikes after IRGC responds to US attacks Parliament Speaker Mohammad Bagher Ghalibaf said the ‘rules have changed’ while stressing that the ‘era of proportionate responses’ has ended",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 11:57:12 +0000",
+      "link": "https://t.me/thecradlemedia/67480",
+      "checked_at": "2026-09-07T05:52:31.116323+00:00"
+    },
+    {
+      "key": "44a7936014d36349cd9a196288e355dd226cd616",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Iran's Security Council Secretary Rezaei: We have every right to distrust America. We engage in diplomacy and negotiations, but we have a right [to be skeptical]. Now they claim that Iran cannot be trusted. First of all, they are lying.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 19:03:07 +0000",
+      "link": "https://t.me/ClashReport/95362",
+      "checked_at": "2026-09-07T05:52:31.116323+00:00"
+    },
+    {
+      "key": "b0b4eb9246ea46545b988b91ee491bd4c833303f",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Iran's Security Council Secretary Rezaei: 48 hours ago, for the first time, we tested an Iranian anti-ship missile above an American warship. This special missile created a \"hell\" for the Americans, and they fled.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 18:50:05 +0000",
+      "link": "https://t.me/ClashReport/95357",
+      "checked_at": "2026-09-07T05:52:31.116323+00:00"
+    },
+    {
+      "key": "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
+      "source": "کلش ریپورت / Telegram",
+      "title": "Iran's Security Council Secretary Rezaei: The Americans are trying to smuggle 5 to 6 vessels, spending a lot of money, but these ships are usually targeted. We have not yet decided to sink them, because they are carrying petroleum products.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 18:54:37 +0000",
+      "link": "https://t.me/ClashReport/95359",
+      "checked_at": "2026-09-07T05:52:31.116323+00:00"
+    },
+    {
+      "key": "69244f879cd6b0b9643bf2a8ff2ab6d7312d0eb2",
+      "source": "NOTAM / Airspace",
+      "title": "Iran-backed Iraqi militias claim downing of US aircraft, US says not due to ‘hostile fire’ - Foundation for Defense of Democracies",
+      "reason": "not_today_tehran",
+      "published": "Fri, 13 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxNaUU5SUdqRU1GVWphei1pdXF5RksxbGdFdjdtMll3dHY2Tm9SOXlRbU42V3E4VmlSeHlueHdjeDB4bFY1eG9lY0l1QnFYU3VuYm5OX0hDUS1xalppeDJfZFRwMGRRRFptTTVwQTc4Z0VMR2NkeVV4QU5IdlNLNDZsTm9ZamVuWVdYTDIxUUtxeFZzSnBiZW9tR2h6SXpNN1gwVW9pa2dkV2pXR3dnTmZyVTZtRHYzRGJjcXdXUkthdlgwemg3Tkdz?oc=5",
+      "checked_at": "2026-09-07T05:49:07.453272+00:00"
+    },
+    {
+      "key": "eb73bd0f7cc81fe173c2e3e237d05544f232a248",
+      "source": "NOTAM / Airspace",
+      "title": "EASA instructs airlines to avoid Gulf airspace as US-Iran fighting reignites - aerotime.aero",
+      "reason": "not_today_tehran",
+      "published": "Tue, 14 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQdDJuZVE4Rk5lTS1JXzBiUDVVakp3eWYxNjl5WGMzVmZKbTR0dHY4d3cwdU5xZlRNd214dDlEZTJYLThFZ1d3VkFTcVFjRk9YX3pGM2FpQk5Ramp3TG5sbFlkazBzQ25ya09VMWhaUDJWLVZ2bGVVZ0FLVjZVQWtDYksxdGpyeGV1bEhwR3M2MEpuTnBXZUlHZm1tTjdocWYxYnBzRU9QMzd1UHdPM0FzTNIBtgFBVV95cUxNb0JfWHpPeVNudHhoRjJiVTJTQmgwdVhuTmdnYS1HS0xyRkd3UDRfZzc0YUxfQVd2QXRTdkJTYm5KM0FUbTVDd3IteUJCdjhuZGNCc2JBR1Q0RGJSVVlLYzhsenNBalFUc3pHalBSbTRTRzA5Q2d6WVhXZzgzSi1GSUlmb3U0NjBDWDgwUUlYNEpSc1hFVGhGZFljYWpQeUxfNmtmVFBNS3NqVWRzNHdSbTd4NkNJZw?oc=5",
+      "checked_at": "2026-09-07T05:49:07.453272+00:00"
+    },
+    {
+      "key": "0dc696908e85e62615bbd9a63a7522001ff1c502",
+      "source": "NOTAM / Airspace",
+      "title": "Central Asia’s Airspace Is Growing in Value as the Iran Conflict Reshapes Routes - The Times Of Central Asia",
+      "reason": "not_today_tehran",
+      "published": "Mon, 13 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNTklpQVFBMExENDBDdk16ek9jbXByNzlGY0c4VXRPNU5jeXB0blZ6LVA4V0d5WndwdDJXRHc3UGZ3dHRpWnVQSUZxdHBkSlFMcVF5OTJZZFhXNHFmTHFzSmxKZjVfS3lCNTU1V1ZxVTZLQnhMZUJWMExxdWlrRGUwQmFuV3ZPMDZSNl85Y0dJOVFHZ29mRGIxYTZyX2puYzMySnc?oc=5",
+      "checked_at": "2026-09-07T05:49:07.453272+00:00"
+    },
+    {
+      "key": "9fbe566cfc9c31bf73a5e1ec2da4d4fcd4ec9b7f",
+      "source": "CNBC",
+      "title": "Iran war fallout forces Singapore Airlines-backed Air India to cancel 27% of international flights",
+      "reason": "not_today_tehran",
+      "published": "Thu, 14 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxOTWFSNXVGT2JsSnVpdHhKalFCWTY5c0diSWlSVk5hbUlQLUtVVE04alI2WUE5U1J2cVFwLXJzcmlGMnpNbWNzMWs5Y0wyQlM0cHRVS2ZYZzJtWkR5Y0RpMlJHRnFlOFhEOWJ3NnZLTDl3dDJhTUpwT3R6ODZhbW1LUDJqUmtONXVUMWFFaWhmUEpHNmltcUpYd3pxNm1tRU5zdkhud3p5dXRnZTREdlIzTWxRaE43QTVpOW5aaGNtZjdISVJSN0VKQ2wwWDhUMnlEZDJiX182YmLSAd4BQVVfeXFMUGtCOTQySkVHaEVpQlhhV29HOThnMURVNi1PbEU5a3NacDNaMTZrWEVOSDVSejhEUmxlSERVTUFrR3FfWDhURTdKa0RnWmpYRGhTcDJPUzI2azh3djhFUGRudHBNMWZ1M2Rsc3dyZy1LMWZsdWNvMTE3cUxpaGJCN1IxTlpDRzBJOTdCakVpVXdkWnVZZVkxZ3d4OFJpTjVGLUpsak1ZdHVySWVha0FWa19PV3Bqa3JSVndPSEtabkFUTDc5V1hSQldsT1NCS0V0RTFLVjV0SUFVT3J6MXRB?oc=5",
+      "checked_at": "2026-09-07T05:49:07.453272+00:00"
+    },
+    {
+      "key": "5ff05b639c34fb752cd35566fca6e352d4a7db8d",
+      "source": "NOTAM / Airspace",
+      "title": "DW News. . The Iran war has shut large parts of Middle East airspace and grounded Gulf flights. With Russia already closed to Western carriers, Europe‑Asia routes are forced into a narrow South Caucasus corridor, raising risks and costs. #dwbusiness",
+      "reason": "not_today_tehran",
+      "published": "Sat, 21 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxPNE9XV3JHLTdDQUR4cHJGcmJ6SzU1Yk9kMzlDWWZSTEVXMzQzcjBINW5nWklNM3ZJU3NJdmxSWmV0dE1TSVoyaTNVeWhhZ1pzMWJkT2hScnBaWXRGc0tmRF94UnNvd3ZjS3VrMFVIOHNkcTVwa2k0R2xkSGhIR2hQZmJ0eDdGR2dickw4N2tNZERfeExlc2tXU1lIRXgyVTVtdTZXazNZTGRRdFY2THFxZXV5UHJENmlFUU1LUFJQVzJlOU5paWZveHhZbUUtaVk0R0s4TkRhWTJQWlZiTjFKNg?oc=5",
+      "checked_at": "2026-09-07T05:49:07.453272+00:00"
+    },
+    {
+      "key": "05cd10b9a00bc993350b8fe7c69071f486ce14f6",
+      "source": "Reuters",
+      "title": "Iran war hands Syria windfall as airlines reroute over its airspace",
+      "reason": "not_today_tehran",
+      "published": "Tue, 02 Jun 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNczFBdUJtallacmpMc054RnJwTXFUcUtscWwwb0NmYm1RQVAwT1ZHVEJ5cDU3LVBBajh2QlJRcDJ2VmdfMW5pVmRKZ3RDMUM3aHU0dTU2SGVOdEZDZUUwRXk4Y3JvQUE5b1BqMTBzTU5KM1ZmcnoyMklCWDA4Uzd5dTNRVl9iS1haMHRQVHNCam12QlRLcU5TTE81b2RpU2dYc1M1WXhXb1BldkJ6aWkzR0VOQWlfUkVXSXc?oc=5",
+      "checked_at": "2026-09-07T05:49:07.453272+00:00"
+    },
+    {
+      "key": "83956cd7573d9ed3f537475e41e215708617de27",
+      "source": "NOTAM / Airspace",
+      "title": "US supersonic aircraft circles over Gulf of Oman near Iranian airspace - Caliber.Az",
+      "reason": "not_today_tehran",
+      "published": "Fri, 04 Sep 2026 04:56:49 GMT",
+      "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxOZ2R3Tm9GUHF5Xzc4SW9DUW1jaHdwdGNNdWRCZzdralVZc29yQ1BtRjZvMVZrVGRFMHk4MXVxa01lbmN3dndNLXJaa0dNVFd2S2VmYnloTkhiQ2NpQWdRNl9GdHV0dW9PTEtDU3FYQ3JKVHh6bkJvSVBEaDBLaXN3akQxWENXYUxRLUVSYnBkNzdRQmRzbFBxUWN1MXpwQQ?oc=5",
+      "checked_at": "2026-09-07T05:49:07.453272+00:00"
+    },
     {
       "key": "a1c22171b4bfc7149bff8d422a1121386df617eb",
       "source": "France 24",
@@ -2322,105 +2421,6 @@
       "reason": "not_today_tehran",
       "published": "Sat, 28 Feb 2026 08:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNVEF1cURxX21scjBERTQxd1VGWHgtT2NuREtGbHlZU0VfNHVaWWtqWHEwd01haWlXVm81QnRPc29vWTVUYWhlU19zYmFkU0lRN3VIRWFaVF9VN1ZUN1BsRmpQNG5LN2hCQUZQbHJLc1VQV05ZdVduUHVZVE1kWDExb3daVk81UFJBQ0F4b2hUTWd4bk9lQ0d6c1JsOVpuS044N01jQm54NA?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "5641260675cff4496937709ed70e2faaea337921",
-      "source": "NOTAM / Airspace",
-      "title": "Indian Airlines Issue Travel Advisories After Iran Announces Sudden Airspace Closure - Travel and Leisure Asia",
-      "reason": "not_today_tehran",
-      "published": "Thu, 15 Jan 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxQUkpDUzRHUnNncmZWTzRVeXY0VDhwdGMwc2pTel8tRl8wNUdQdjBUMjA1dG9PYW1EeGQ1OFk5eUtLcGNlRkZ5RkxmWEF1OGZVTDhKblVaaTVpdzV2TEVaT2h4QTJ5VWFQQ0QwemkyT0dVR21fUEZZWjlNV21zYTRGMlZMVGI2T000dkJPRkdwWEZHaVlxVWoxLVQzR3BLTFJSbkVyRUtBT3BQYWgwb1p6ZFpneUl0bllHbzRhMFdkU2dpNlV2S2lvcjhR0gHPAUFVX3lxTE1raHU5SUlpTEx6ZVM0OGU3WjZSNUFvTHJZbU03Si1DZV9SZjlaa1dxMXEtVDFUc25XaDRtOWMzSEZzWjZBMjlwaUtESzJlVkNhSUJfOE80RnR2YjhjdmpmRzAzTGZGMDRNa3huUHFVQlE4WXIxMEdkX1hld0FNNlJzeUlfa3NGcWs4dThPdHpWQV9QN0xiZGJSV2FHaF9rcXlndXozaEZYM29DR2R2QUxjQU9CQkIwQjhpSXo3S0ozS2R4MFdvS0U3X2puVnBpbw?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "fef6e943ba1553dfd161d8befb0b53455d5766c1",
-      "source": "NOTAM / Airspace",
-      "title": "11 Hours Late and Two Diversions: Eurowings Flight Derailed By Iranian Airspace Closure - Simple Flying",
-      "reason": "not_today_tehran",
-      "published": "Sun, 01 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPWUpWd1lCTC1rWEhpT1ZocjBVY2w5VHdtOV84LXdvREFPNGV1MTRUcGJRSTJVODVyYmpBbU53R3RHcl9DYkphSENNMGdkNTNQMkxmZFU4UGhGZ0xJSFI4R25qSVZxNlhxaGNycTJtY1o3NU41NFNjVC0yQzFodFoxdVNNMVd5RFNo?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "559b5805fe2931340064966615e3e8f644ce60f6",
-      "source": "NOTAM / Airspace",
-      "title": "Iran closes airspace to most flights as U.S. withdraws some personnel from bases - japantimes.co.jp",
-      "reason": "not_today_tehran",
-      "published": "Thu, 15 Jan 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOV2VWVDhnQnlaSHpjWlIxclRvaUJNdWtkanlZQ2pIMGk1SUtpLUU3Wjh3NDFqWW13UVRNQ3VsVHpJdG54UDR4YS11WEx5YWFmb1lOQnIwcTdxNDROX0d6Zl9CN2I1UGpmSjRYNkpoN3phQjRwdks2MGZRUDJpUHpUT25YZGVXM2IzVThRWDFBLXJSOWVfSTJHUGtXMGhNMXc?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "f2caf86472fe22b733cc27c76c5317cabf5082c4",
-      "source": "NOTAM / Airspace",
-      "title": "Lufthansa reroutes flights as Notam closes Iranian airspace - Aerospace Global News",
-      "reason": "not_today_tehran",
-      "published": "Thu, 15 Jan 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOR0s3RW1MSXZ0LWNNdjdWb2tDdFk2WXl1UFgyUUpkZWdBUXNfa1lid0JkY3dEeVFraE1iTTFXUjdrbE00NDZzSnNRMWpvZmVHbHd6Skp2b3ZOUmlPYWFrVG9KMUhJUzZqNkhMMWVPejdzYkluU2VHZmQxZkRVYzRvam9lWHphQ1V0WlE?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "a3ab5ada96fc549ca941b88052a2b5fd7372bc94",
-      "source": "NOTAM / Airspace",
-      "title": "Lufthansa Cancels All Flights to Iran, Avoids Iranian Airspace - IranWire",
-      "reason": "not_today_tehran",
-      "published": "Tue, 20 Jan 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQNXZLc1RvR1luSmRMeS1tR0xPOHFxZXp1OVVwM0tYdkphMEVuYVJMVzJKempQeTc3bV9CNFhrdnVWSFZVMDBJMTJfUEtVaHNacmdiekNVSjVpeVc5SVFSaTRpR0FFd2FPQXZWajVDSGZsbDNZbE9VTUJlUS16cGhLVWNyU1ZZeUZMVEFtTkVRTFhhUHhOOVBGVTUtb1ZSX1k?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "a75d63b937e059016f74d42e449cbec01a607bd2",
-      "source": "Reuters",
-      "title": "Saudi won't allow airspace to be used for military action against Iran, crown prince says",
-      "reason": "not_today_tehran",
-      "published": "Tue, 27 Jan 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxOQUtPUlBsb3ZrWTJ1ZmoxVG9EcGY0RVgyck5uLTVHMTRXTTVLa0oyYTBBcXA4MkVSVDN1VGR5bHYwSHNyQkVSREtsbVhHNnV1UW9icVdaUkdUQ2ZySE1lZXdjMXRPRmk2ZVdXdm5uS3lNQUl1aG9teGFOZjd2MDdKOE9iVjRlTFVYUHZyZGdnUlE4WnpIVUJOX2ZaOTNzVVpuRGNUM2RRTVRWd2hPSnRYeUJTTmlhMERkY3VMOUVobndPRm54bUxXT0N0a0c?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "ed8ef7e06b237e1e93f1dc0dd1428dd3f434be7c",
-      "source": "Al Jazeera",
-      "title": "Qatar partially reopens airspace as Iranian strikes continue to hit Gulf",
-      "reason": "not_today_tehran",
-      "published": "Fri, 06 Mar 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxPdjd4ZlR0azR4UXFXY1pkckxyQ29CX0tGUXpKWjlwYkUyekRyLVQ4LWVtQzVyTTVRZTk2T2U1UXBGcXN0SDZ3UVlQSzJnYnF1N0RaOEZsXzF6elZTcjRVRlhvN1VzRy0ycEdqQWxhMW5HZlVOMGNwWDJDWkJFSFRGNjdFZTltX2tlRWZ1NV9BVndMYnFCNUFLUEJja3dIVGZ4Yi1vRXdtdG9rQlJfLUJOMmtR0gG3AUFVX3lxTFBMMWRjQjFxbmxkZ1d1dWYtQVVpSklsVkdLY0h1MUtNWEJDUHhhV0pXbWF3czRidWdIRFNBSExMVTdSaHZESG53STFCWmNsdjNoMGdCVXVYdzd4WG4zenRxWU1rRTd3QmJsU0diNWdSeXRDT1pDWEFNZWhqejZfQTZNbWRVblVuaDBIcVBjai1XNlpEOVREaXdTZDVBQU04Rk5UMkpsclotU1FfVDFvcTI0ekFXUjdQcw?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "f06acfa3150de5eef2fb82a2ea9abc9782f59ffe",
-      "source": "NOTAM / Airspace",
-      "title": "Iran's airspace closed for six hours, official says - Iran International",
-      "reason": "not_today_tehran",
-      "published": "Sat, 28 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE81YjBaVjM3OXh0cVh5cDJZT0JCQUdhblFyNzc3VmFfWHZlTDg2LVJsQ1Zabm56czd6ay13MUFYREctOG5WRXp4dU9lOUhEUVJIMnc?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "f30ca6a2fdc377365cb5606e95f3ad46015c99f9",
-      "source": "NOTAM / Airspace",
-      "title": "Airspace closures across Middle East cause flight cancellations after strikes on Iran - The Points Guy",
-      "reason": "not_today_tehran",
-      "published": "Sat, 28 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOcjdpSVJnVmJRcTNhWkluYkI2TW9lRFpkT1JZZlJ0TzB5Wng1dUotOHVpZmFMaUhjMmk4ZXplaWlXdmNrLVM2SkJiTU9YalktVjdrLUxPLURXTEtDN3F5b1pVYkRXWkcydTRaRk5PekRfOUVxcTRnbS13YktPWWxScGNB?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "044eff1b265ccae47f290854842c576054a807a0",
-      "source": "NOTAM / Airspace",
-      "title": "Iran’s skies empty after strikes as regional states close airspace - Iran International",
-      "reason": "not_today_tehran",
-      "published": "Sat, 28 Feb 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE5INkdQUE85VlJDTWtSTDZDZzlVN2ViZGtFMTdTUlBCRFJVV1VJZU91dThTOGJlY3FYMFNFNnNfSC1CNlRiWVdiSzBERVVNSEtFVVE?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "9c9375e4fab33f334cde2f6e5bb72c3e13cf7163",
-      "source": "BBC News",
-      "title": "Flight paths squeezed as Iran conflict closes more airspace",
-      "reason": "not_today_tehran",
-      "published": "Fri, 06 Mar 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE45aUtBVU9IRUF1REpqaVp0RWRCaDJkM2lScHJTdWp2ejZ1UjVSTzloZDlqVjREQXhlOFJlZTVqXy1tMm9UanlBcDdIUmhhcnlvcWJDdlhvRVFFQQ?oc=5",
       "checked_at": "2026-09-05T10:08:41.489715+00:00"
     }
   ],
