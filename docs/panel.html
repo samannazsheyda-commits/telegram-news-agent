@@ -3,15 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b0d10">
+<meta name="theme-color" content="#07090c">
 <title>بی‌خبر | اتاق خبر</title>
 <link rel="stylesheet" href="panel.css">
+<link rel="stylesheet" href="newsroom-v1.css">
 </head>
 <body>
 <main class="app">
 <header class="top">
   <div><div class="brand"><span class="dot"></span><h1>بی‌خبر</h1></div><div class="subtitle">مانیتور تحولات ایران — اتاق خبر</div></div>
-  <div class="top-actions"><span id="connectionBadge" class="badge">بررسی اتصال…</span><span id="staleBadge" class="badge bad" hidden>داده تازه نیست</span><button id="connectBtn" class="btn ghost">اتصال به ایجنت بی‌خبر</button><button id="refreshBtn" class="btn">بروزرسانی</button></div>
+  <div class="top-actions"><span id="connectionBadge" class="badge">بررسی اتصال…</span><span id="staleBadge" class="badge bad" hidden>داده تازه نیست</span><button id="connectBtn" class="btn ghost">اتصال به ایجنت بی‌خبر</button><button id="refreshBtn" class="btn">اسکن فوری</button></div>
 </header>
 
 <section id="connectSheet" class="sheet" aria-label="اتصال به ایجنت بی‌خبر">
@@ -31,6 +32,8 @@
   <button class="tab" data-view="processing">در حال انجام</button>
   <button class="tab" data-view="published">منتشرشده</button>
   <button class="tab" data-view="rejected">ردشده</button>
+  <button class="tab" data-view="analytics">تحلیل</button>
+  <button class="tab" data-view="settings">تنظیمات</button>
   <button class="tab" data-view="system">سیستم</button>
 </nav>
 
@@ -48,6 +51,8 @@
 <section id="view-processing" class="view"><div id="processingList" class="queue"><div class="empty">فرمان فعالی نیست.</div></div></section>
 <section id="view-published" class="view"><div id="publishedList" class="queue"></div></section>
 <section id="view-rejected" class="view"><div id="rejectedList" class="queue"></div></section>
+<section id="view-analytics" class="view"><div id="nrAnalytics"></div></section>
+<section id="view-settings" class="view"><div id="nrSettings"></div></section>
 <section id="view-system" class="view">
   <div class="system-grid">
     <article class="system-card"><span>آخرین Workflow</span><strong id="systemWorkflow">—</strong></article>
@@ -61,5 +66,6 @@
 <div id="toast" class="toast" role="status" aria-live="polite"><span id="toastText"></span><button id="toastAction"></button></div>
 <script src="panel.js" defer></script>
 <script src="panel-live-refresh.js" defer></script>
+<script src="newsroom-v1.js" defer></script>
 </body>
 </html>
