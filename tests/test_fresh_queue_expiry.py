@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from src import runtime_v13
+from src.queue_freshness import expire_stale_queue
 
 
 class FakeStore:
@@ -26,7 +26,7 @@ def test_expire_stale_queue_removes_news_older_than_freshness_window():
         {"id": "new", "status": "pending", "published_at_source": fresh},
     ])
 
-    moved = runtime_v13.expire_stale_queue(now, settings={"freshness_hours": 2}, store=store)
+    moved = expire_stale_queue(now, settings={"freshness_hours": 2}, store=store)
 
     assert moved == 1
     assert store.moved == [("old", "superseded")]
