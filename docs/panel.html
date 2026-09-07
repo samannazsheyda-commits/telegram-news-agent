@@ -11,12 +11,12 @@
 <main class="app">
 <header class="top">
   <div><div class="brand"><span class="dot"></span><h1>بی‌خبر</h1></div><div class="subtitle">مانیتور تحولات ایران — اتاق خبر</div></div>
-  <div class="top-actions"><span id="connectionBadge" class="badge">بررسی اتصال…</span><span id="staleBadge" class="badge bad" hidden>داده تازه نیست</span><button id="connectBtn" class="btn ghost">اتصال</button><button id="refreshBtn" class="btn">بروزرسانی</button></div>
+  <div class="top-actions"><span id="connectionBadge" class="badge">بررسی اتصال…</span><span id="staleBadge" class="badge bad" hidden>داده تازه نیست</span><button id="connectBtn" class="btn ghost">اتصال به ایجنت بی‌خبر</button><button id="refreshBtn" class="btn">بروزرسانی</button></div>
 </header>
 
-<section id="connectSheet" class="sheet" aria-label="اتصال GitHub">
-  <div class="sheet-row"><input id="tokenInput" class="field" type="password" autocomplete="off" placeholder="Fine-grained GitHub token با Contents: Read and write"><button id="saveTokenBtn" class="btn green">وصل شو</button></div>
-  <div class="meta"><span>اتصال روی همین مرورگر ذخیره می‌شود؛ توکن باید فقط به همین مخزن و Contents: Read and write محدود باشد.</span><button id="disconnectBtn" class="btn ghost">قطع اتصال</button></div>
+<section id="connectSheet" class="sheet" aria-label="اتصال به ایجنت بی‌خبر">
+  <div class="sheet-row"><input id="tokenInput" class="field" type="password" autocomplete="off" placeholder="توکن دسترسی ایجنت بی‌خبر"><button id="saveTokenBtn" class="btn green">اتصال به ایجنت بی‌خبر</button></div>
+  <div class="meta"><span>این اتصال فقط برای مخزن ایجنت بی‌خبر ذخیره می‌شود. توکن باید دسترسی Contents: Read and write به telegram-news-agent داشته باشد.</span><button id="disconnectBtn" class="btn ghost">قطع اتصال</button></div>
 </section>
 
 <section class="stats">
