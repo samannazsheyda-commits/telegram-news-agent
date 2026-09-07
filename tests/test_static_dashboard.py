@@ -30,3 +30,4 @@ def test_pages_workflow_deploys_dashboard_directory():
     assert "actions/upload-pages-artifact" in text
     assert "path: dashboard" in text
     assert "actions/deploy-pages" in text
+    assert "enablement: true" in text
