@@ -62,8 +62,6 @@ IRAN_CONTEXT = (
     "lebanon", "لبنان",
 )
 
-# Only strong corporate signals belong here. Generic words such as aircraft,
-# carrier, fleet and routes also occur constantly in military/airspace news.
 COMPANY_TERMS = (
     "company", "corporate", "ceo", "chief executive", "airline", "earnings", "profit", "profits",
     "revenue", "sales", "shares", "growth", "expansion", "acquisition", "merger", "quarterly", "business",
@@ -73,7 +71,7 @@ COMPANY_TERMS = (
 OPERATIONAL_SECURITY_TERMS = (
     "suspend flights", "suspends flights", "suspended flights", "cancelled flights", "canceled flights",
     "cancel international flights", "flight cancellation", "airspace closure", "airspace closed", "closes airspace", "closed airspace",
-    "resume flight", "resumes flight", "resume flights", "resumes flights", "flights resume", "restore services", "restores services",
+    "resume flight", "resumes flight", "resume flights", "resumes flights", "flights resume", "rebuild services",
     "resume overflight", "resumes overflight", "resume overflights", "resumes overflights", "overflights resume",
     "reopen airspace", "reopens airspace", "airspace reopens", "airspace reopening",
     "avoid airspace", "avoid iranian airspace", "avoid iran airspace", "aviation warning", "security risk", "security risks",
@@ -139,7 +137,6 @@ def _concepts(item: NewsItem) -> set[str]:
 
 
 def _specific_facts(item: NewsItem) -> set[str]:
-    """Facts whose appearance usually means a materially newer development."""
     text = _normalize(f"{item.title} {item.summary}")
     facts = set(re.findall(r"\b(?:[01]?\d|2[0-3]):[0-5]\d\b", text))
     facts.update(re.findall(r"\b(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b", text))
@@ -150,36 +147,20 @@ def _specific_facts(item: NewsItem) -> set[str]:
 
 
 def _event_markers(item: NewsItem) -> set[str]:
-    """Coarse event/action identity used to prevent broad-topic false duplicates."""
     text = _normalize(f"{item.title} {item.summary}")
     groups = {
-        "hormuz_restriction": (
-            "restricted zone", "exclusion zone", "sanctions list", "منطقه محدود", "منطقه ممنوع", "فهرست تحریم",
-        ),
-        "hormuz_corridor": (
-            "shipping route", "shipping corridor", "maritime corridor", "new route for the strait", "مسیر کشتیرانی", "کریدور کشتیرانی",
-        ),
-        "airspace_close": (
-            "closes airspace", "closed airspace", "shuts airspace", "airspace closure", "بستن حریم هوایی", "حریم هوایی بسته",
-        ),
-        "airspace_reopen": (
-            "reopens airspace", "reopen airspace", "partially reopens airspace", "airspace reopened", "بازگشایی حریم هوایی", "حریم هوایی باز",
-        ),
-        "missile_intercept": (
-            "intercepts iranian missiles", "intercepted iranian missiles", "missile interception", "رهگیری موشک",
-        ),
-        "missile_test": (
-            "tested an iranian anti-ship missile", "tested a domestically produced", "آزمایش موشک ضد کشتی", "آزمایش موشک ضدکشتی",
-        ),
-        "tanker_strike": (
-            "struck three iranian oil tankers", "struck three iranian crude oil carriers", "three iranian oil tankers", "سه نفتکش ایرانی",
-        ),
+        "hormuz_restriction": ("restricted zone", "exclusion zone", "sanctions list", "منطقه محدود", "منطقه ممنوع", "فهرست تحریم"),
+        "hormuz_corridor": ("shipping route", "shipping corridor", "maritime corridor", "new route for the strait", "مسیر کشتیرانی", "کریدور کشتیرانی"),
+        "airspace_close": ("closes airspace", "closed airspace", "shuts airspace", "airspace closure", "بستن حریم هوایی", "حریم هوایی بسته"),
+        "airspace_reopen": ("reopens airspace", "reopen airspace", "partially reopens airspace", "airspace reopened", "بازگشایی حریم هوایی", "حریم هوایی باز"),
+        "missile_intercept": ("intercepts iranian missiles", "intercepted iranian missiles", "missile interception", "رهگیری موشک"),
+        "missile_test": ("tested an iranian anti-ship missile", "tested a domestically produced", "آزمایش موشک ضد کشتی", "آزمایش موشک ضدکشتی"),
+        "tanker_strike": ("strike three iranian oil tankers", "strike three iranian crude oil carriers", "three iranian oil tankers", "سه نفتکش ایرانی"),
     }
     return {name for name, aliases in groups.items() if any(alias in text for alias in aliases)}
 
 
 def _operational_counts(item: NewsItem) -> dict[str, str]:
-    """Extract changing operational counters such as redirected/disabled/boarded vessel totals."""
     text = _normalize(f"{item.title} {item.summary}")
     aliases = {
         "redirected": ("redirected", "rerouted", "تغییر مسیر داده"),
@@ -197,7 +178,6 @@ def _operational_counts(item: NewsItem) -> dict[str, str]:
 
 
 def is_duplicate_story(left: NewsItem, right: NewsItem) -> bool:
-    """Treat the same underlying event/claim as duplicate regardless of outlet wording."""
     a, b = _tokens(left), _tokens(right)
     if not a or not b:
         return False
@@ -253,6 +233,10 @@ def is_low_value_company_news(item: NewsItem) -> bool:
     if not any(term in text for term in COMPANY_TERMS):
         return False
     if any(term in text for term in OPERATIONAL_SECURITY_TERMS):
+        return False
+    if any(term in text for term in ("flight", "flights", "airspace", "پرواز", "حریم هوایی")) and any(
+        action in text for action in ("cancel", "suspend", "resume", "reopen", "rebuild", "reroute", "avoid", "close", "لغو", "تعلیق", "ازسرگیری", "بازگشایی", "بسته")
+    ):
         return False
     if is_priority_security_news(item):
         return False
