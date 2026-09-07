@@ -1,5 +1,23 @@
 [
   {
+    "id": "a44c04190629e2a4794da16622ab4f742406d70e",
+    "news_key": "469dc94e9c5de8384bc391702e590d5ba9ac0741",
+    "source": "NOTAM / Airspace",
+    "source_url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxQM3JEbjlLVWpwM2dNS29qQ1lsUFhwWFVYaTZUWFhHSGlHaHIweElTX3lVdkgzaEhaWmwwNkFzbF91WnJDV2xZR3l5V1Q5SFp4M2lkdDRQOTFvTDFEUFd6OXpvM0pLWDNXQU53SHh2Sk1PM2ZJZDlaeHpRMmJ1NDYtT1M1ejN1d1o1VXRyczIxSUlXQ25yQ3NpQlpGWDlfMDBybWk5b0d5dUN1cHk0dzBxWVhpSFd3VkNId2x4TVFtYU1YeU5sVUZjVDJBeTlfY2U0?oc=5",
+    "original_title": "Middle East airspace closures: the latest updates for travellers amid the extended US-Iran ceasefire",
+    "original_summary": "Middle East airspace closures: the latest updates for travellers amid the extended US-Iran ceasefire cntravellerme.com",
+    "persian_title": "",
+    "persian_body": "",
+    "published_at_source": "Sat, 02 May 2026 07:00:00 GMT",
+    "discovered_at": "2026-09-07T15:48:38.183821+00:00",
+    "rejection_reason": "not_today_tehran",
+    "status": "superseded",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-07T15:50:01.977051+00:00"
+  },
+  {
     "id": "77d2b80f1f482b0c6c728ca024a66c2e2ae17aa9",
     "news_key": "x:IsraelHayomEng:2095457432407343246",
     "source": "Israel Hayom / X",
@@ -17854,24 +17872,6 @@
     "final_persian_body": "",
     "decision_at": "",
     "updated_at": "2026-09-05T04:34:54.838922+00:00"
-  },
-  {
-    "id": "a44c04190629e2a4794da16622ab4f742406d70e",
-    "news_key": "469dc94e9c5de8384bc391702e590d5ba9ac0741",
-    "source": "NOTAM / Airspace",
-    "source_url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxQM3JEbjlLVWpwM2dNS29qQ1lsUFhwWFVYaTZUWFhHSGlHaHIweElTX3lVdkgzaEhaWmwwNkFzbF91WnJDV2xZR3l5V1Q5SFp4M2lkdDRQOTFvTDFEUFd6OXpvM0pLWDNXQU53SHh2Sk1PM2ZJZDlaeHpRMmJ1NDYtT1M1ejN1d1o1VXRyczIxSUlXQ25yQ3NpQlpGWDlfMDBybWk5b0d5dUN1cHk0dzBxWVhpSFd3VkNId2x4TVFtYU1YeU5sVUZjVDJBeTlfY2U0?oc=5",
-    "original_title": "Middle East airspace closures: the latest updates for travellers amid the extended US-Iran ceasefire - Condé Nast Traveller Middle East",
-    "original_summary": "Middle East airspace closures: the latest updates for travellers amid the extended US-Iran ceasefire Condé Nast Traveller Middle East",
-    "persian_title": "",
-    "persian_body": "",
-    "published_at_source": "Sat, 02 May 2026 07:00:00 GMT",
-    "discovered_at": "2026-09-05T04:23:49.024874+00:00",
-    "rejection_reason": "not_today_tehran",
-    "status": "superseded",
-    "final_persian_title": "",
-    "final_persian_body": "",
-    "decision_at": "",
-    "updated_at": "2026-09-05T04:24:06.704880+00:00"
   },
   {
     "id": "6cb2f3199e180b0e97cd5ac4c9ca83498b159ca1",

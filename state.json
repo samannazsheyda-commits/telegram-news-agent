@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41603",
   "news_seen": [
+    "469dc94e9c5de8384bc391702e590d5ba9ac0741",
     "x:IsraelHayomEng:2095457432407343246",
     "x:IsraelHayomEng:2095579893438329190",
     "x:CBSNews:2096984896430284994",
@@ -499,8 +500,7 @@
     "x:CENTCOM:2095595527337623679",
     "x:IDF:2095569785522360508",
     "x:kann_news:2095891154633957403",
-    "x:IsraelHayomEng:2095137917668577474",
-    "x:IsraelHayomEng:2095183478719480056"
+    "x:IsraelHayomEng:2095137917668577474"
   ],
   "market_last_sent_at": "2026-09-07T14:01:28.930413+00:00",
   "next_news_color": "white",
@@ -623,6 +623,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "469dc94e9c5de8384bc391702e590d5ba9ac0741",
+      "source": "NOTAM / Airspace",
+      "title": "Middle East airspace closures: the latest updates for travellers amid the extended US-Iran ceasefire",
+      "reason": "not_today_tehran",
+      "published": "Sat, 02 May 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxQM3JEbjlLVWpwM2dNS29qQ1lsUFhwWFVYaTZUWFhHSGlHaHIweElTX3lVdkgzaEhaWmwwNkFzbF91WnJDV2xZR3l5V1Q5SFp4M2lkdDRQOTFvTDFEUFd6OXpvM0pLWDNXQU53SHh2Sk1PM2ZJZDlaeHpRMmJ1NDYtT1M1ejN1d1o1VXRyczIxSUlXQ25yQ3NpQlpGWDlfMDBybWk5b0d5dUN1cHk0dzBxWVhpSFd3VkNId2x4TVFtYU1YeU5sVUZjVDJBeTlfY2U0?oc=5",
+      "checked_at": "2026-09-07T15:48:38.183821+00:00"
+    },
     {
       "key": "x:IsraelHayomEng:2095457432407343246",
       "source": "Israel Hayom / X",
@@ -2413,15 +2422,6 @@
       "published": "Fri, 01 May 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE8yZmpIRW9qNEgyVV9BLUVBbkRTOW1kdVlrS2lNcU1faThWZ1dkRFl1WldUaUxzeW0xX2ZDazBBTk85aS03RnR2ZnlmOHNJN3ZaYm1Ydkdn?oc=5",
       "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "5c594f8de88ed4301b00018e011b633c729c03d9",
-      "source": "NOTAM / Airspace",
-      "title": "Flydubai returns to Iranian airspace for first time since start of war",
-      "reason": "not_today_tehran",
-      "published": "Mon, 17 Aug 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQTG9kN3lPQ1p4Rlh6M0VxMzBIb3d1UzdJbFBUZU1QZG9QeEZ6dmNSd20xeVhNS2FTTlJDRkpadk16ZjQtb2EwZGNSLTVwVldFWlc3bHZrek5iZ0Zia1Z1elA3MnhlMFJNWlVsRWliSlcyc281Qld1VDUwSDZPdlBNOHc0QnFwTEtIb3hKcTNGQ3ZWcDJlMkpXVVdERkREY29tcWNXV1kxVzNWX0hkbHc?oc=5",
-      "checked_at": "2026-09-05T11:58:36.897111+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-06",
