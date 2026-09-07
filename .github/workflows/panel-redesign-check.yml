@@ -1,0 +1,25 @@
+name: Panel Redesign Check
+
+on:
+  push:
+    branches: [panel-redesign-20260907]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - name: Focused panel tests
+        run: python -m pytest -q tests/test_panel_ui_contract.py tests/test_panel_workflow.py tests/test_panel_command_file.py tests/test_manual_publish.py
+      - name: Full suite
+        run: python -m pytest -q
