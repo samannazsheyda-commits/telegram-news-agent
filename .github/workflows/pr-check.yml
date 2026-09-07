@@ -31,6 +31,7 @@ jobs:
           tests/test_newsroom_fingerprint.py
           tests/test_event_ledger.py
           tests/test_newsroom_decision.py
+          tests/test_newsroom_eligibility.py
           tests/test_panel_live_feed.py
           tests/test_newsroom_v2_integration.py
           tests/test_truth_social.py
