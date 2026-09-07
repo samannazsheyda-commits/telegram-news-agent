@@ -9,7 +9,7 @@ from typing import Callable
 
 import requests
 
-from .editorial_store import LocalEditorialStore
+from .editorial_store import LocalEditorialStore, ReviewItem
 from .manual_publish import publish_review_item, reject_review_item
 from .runtime_v12 import _normalise_url, extract_public_telegram_source_links
 from .services import send_telegram
@@ -115,11 +115,74 @@ def _consume(path: Path) -> None:
         pass
 
 
-def _run_refresh_cycle() -> int:
-    # Import lazily so ordinary publish/reject commands stay fast and isolated.
+def _safe_translate(agent, value: str) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    try:
+        return str(agent.translate_to_fa(text) or "").strip()
+    except Exception:
+        return ""
+
+
+def _scan_fresh_items_into_queue(store: LocalEditorialStore) -> int:
+    """Fetch a fresh snapshot for the browser panel without auto-publishing it.
+
+    Production policies are installed so the same sources/dedup rules are used as
+    the live agent, but we stop at fetch and write today's unseen items to the
+    editorial queue for explicit publish/reject from the panel.
+    """
     from . import runtime_v13
 
-    return int(runtime_v13.run() or 0)
+    runtime_v13.install_production_policies()
+    agent = runtime_v13.base.agent
+    now = datetime.now(timezone.utc)
+    today_tehran = now.astimezone(agent.TEHRAN).date()
+
+    terminal_keys = {
+        str(record.get("news_key") or "")
+        for record in store.history()
+        if record.get("status") in {"published_manual", "published_auto", "rejected_manual", "superseded"}
+    }
+    queued_keys = {
+        str(record.get("news_key") or "")
+        for record in store.queue()
+        if record.get("status", "pending") == "pending"
+    }
+
+    items = list(agent.fetch_news_items() or [])
+    added = 0
+    for item in items:
+        key = str(getattr(item, "key", "") or "").strip()
+        if not key or key in terminal_keys or key in queued_keys:
+            continue
+
+        published = agent._published_dt(getattr(item, "published", ""))
+        if published is None or published.astimezone(agent.TEHRAN).date() != today_tehran:
+            continue
+
+        title = str(getattr(item, "title", "") or "").strip()
+        summary = str(getattr(item, "summary", "") or "").strip()
+        if not title:
+            continue
+
+        record = ReviewItem.for_news(
+            news_key=key,
+            source=str(getattr(item, "source", "") or "").strip(),
+            source_url=str(getattr(item, "link", "") or "").strip(),
+            original_title=title,
+            original_summary=summary,
+            persian_title=_safe_translate(agent, title),
+            persian_body=_safe_translate(agent, summary) if summary and summary != title else "",
+            published_at_source=str(getattr(item, "published", "") or "").strip(),
+            discovered_at=now.isoformat(),
+            rejection_reason="panel_refresh",
+        )
+        store.upsert_queue(record)
+        queued_keys.add(key)
+        added += 1
+
+    return added
 
 
 def process_command_file(
@@ -153,11 +216,15 @@ def process_command_file(
 
     try:
         if args["action"] == "refresh":
-            runner = refresh_runner or _run_refresh_cycle
-            rc = int(runner() or 0)
-            if rc != 0:
-                raise RuntimeError(f"refresh_failed_rc_{rc}")
-            terminal = _write_result(result_dir, _result(args, "succeeded", "اسکن تازه ایجنت انجام شد"))
+            if refresh_runner is not None:
+                rc = int(refresh_runner() or 0)
+                if rc != 0:
+                    raise RuntimeError(f"refresh_failed_rc_{rc}")
+                message = "اسکن تازه ایجنت انجام شد"
+            else:
+                added = _scan_fresh_items_into_queue(store)
+                message = f"اسکن تازه انجام شد؛ {added} خبر جدید وارد پنل شد"
+            terminal = _write_result(result_dir, _result(args, "succeeded", message))
             _consume(command_path)
             return terminal
 
