@@ -46,7 +46,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: "@bikhabaar"
-        run: python -m src.panel_command_file "${{ steps.command.outputs.path }}"
+        run: python -m src.panel_command_router "${{ steps.command.outputs.path }}"
 
       - name: Persist runtime state and result safely
         if: always()
@@ -59,25 +59,44 @@ jobs:
           cp state.json /tmp/panel-snapshot/state.json
           cp data/editorial_queue.json /tmp/panel-snapshot/data/editorial_queue.json
           cp data/editorial_history.json /tmp/panel-snapshot/data/editorial_history.json
+          if [ -f data/newsroom_settings.json ]; then cp data/newsroom_settings.json /tmp/panel-snapshot/data/newsroom_settings.json; fi
           if [ -f "panel_results/$cmd_id.json" ]; then cp "panel_results/$cmd_id.json" /tmp/panel-snapshot/panel_results/; fi
 
           git fetch origin main
           git reset --hard origin/main
           python -m src.persist_merge /tmp/panel-snapshot
 
-          # A terminal history record is authoritative. Do not resurrect it in queue
-          # when merging against a newer monitor snapshot.
+          # Settings are an explicit operator write; latest command snapshot wins.
+          if [ -f /tmp/panel-snapshot/data/newsroom_settings.json ]; then
+            cp /tmp/panel-snapshot/data/newsroom_settings.json data/newsroom_settings.json
+          fi
+
+          # Terminal history is authoritative for queue cleanup. For history-list clear,
+          # apply the explicit ids after merge so remote rows do not resurrect.
           python - <<'PY'
           import json
           from pathlib import Path
           q = Path('data/editorial_queue.json')
           h = Path('data/editorial_history.json')
+          r = Path('/tmp/panel-snapshot/panel_results')
+          result_files = list(r.glob('*.json'))
+          result = json.loads(result_files[0].read_text(encoding='utf-8')) if result_files else {}
           queue = json.loads(q.read_text(encoding='utf-8')) if q.exists() else []
           history = json.loads(h.read_text(encoding='utf-8')) if h.exists() else []
           terminal = {'published_manual','published_auto','rejected_manual','superseded'}
-          done = {str(r.get('id')) for r in history if r.get('status') in terminal and r.get('id')}
-          queue = [r for r in queue if str(r.get('id')) not in done]
+          done = {str(row.get('id')) for row in history if row.get('status') in terminal and row.get('id')}
+          queue = [row for row in queue if str(row.get('id')) not in done]
+          if result.get('action') == 'clear' and result.get('status') == 'succeeded':
+              scope = result.get('scope')
+              ids = {str(x) for x in (result.get('ids') or [])}
+              if scope == 'published':
+                  statuses = {'published_manual','published_auto'}
+                  history = [row for row in history if not (str(row.get('id')) in ids and row.get('status') in statuses)]
+              elif scope == 'rejected':
+                  statuses = {'rejected_manual','superseded'}
+                  history = [row for row in history if not (str(row.get('id')) in ids and row.get('status') in statuses)]
           q.write_text(json.dumps(queue, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          h.write_text(json.dumps(history, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
           PY
 
           mkdir -p panel_results
@@ -86,7 +105,7 @@ jobs:
 
           git config user.name "telegram-news-agent[bot]"
           git config user.email "telegram-news-agent[bot]@users.noreply.github.com"
-          git add state.json data/editorial_queue.json data/editorial_history.json panel_results panel_commands || true
+          git add state.json data/editorial_queue.json data/editorial_history.json data/newsroom_settings.json panel_results panel_commands || true
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "chore: apply browser panel command"
           git push origin main
