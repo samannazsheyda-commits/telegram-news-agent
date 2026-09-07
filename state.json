@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
+    "x:IsraelHayomEng:2096898351790715091",
     "x:Reuters:2096895020225663094",
     "x:AlArabiya_Eng:2096894196334358925",
     "dbcf8921fc2abf507dc0747370b6dc342d712979",
@@ -499,11 +500,10 @@
     "509321aef79537936c2dc1538897ee4ed9fbe0fa",
     "156833b2eab003115561894db9931bdf5861050e",
     "ee8e4a21c3d17ea3799c9f7f4482599b88dd879a",
-    "05b519493e12bc70566a2252982875d2cac99d9d",
-    "44a7936014d36349cd9a196288e355dd226cd616"
+    "05b519493e12bc70566a2252982875d2cac99d9d"
   ],
   "market_last_sent_at": "2026-09-07T09:44:07.520870+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:IsraelHayomEng:2096898351790715091",
+      "source": "Israel Hayom / X",
+      "title": "Israel's Lebanon decision could reshape Hezbollah, send message to Iran",
+      "summary": "",
+      "link": "https://x.com/IsraelHayomEng/status/2096898351790715091",
+      "published": "Mon, 07 Sep 2026 09:48:20 +0000",
+      "sent_at": "2026-09-07T09:48:24.926396+00:00",
+      "fingerprint": "israel s lebanon decision could reshape hezbollah send message to iran"
+    },
     {
       "key": "x:AlArabiya_Eng:2096894196334358925",
       "source": "Al Arabiya English / X",
