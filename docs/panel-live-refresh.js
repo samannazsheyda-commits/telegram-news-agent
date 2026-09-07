@@ -60,9 +60,12 @@ load=async function(showLoading=true){
   }catch(e){$('staleBadge').hidden=false;toast('داده تازه دریافت نشد؛ نمایش قبلی حفظ شد')}
 };
 
+const AUTO_REFRESH_MS=5*60*1000;
+let lastAutoRefreshAt=Date.now();
+
 forceRefresh=async function(){
-  if(refreshRunning)return;
-  if(!requireConnection({type:'refresh'}))return;
+  if(refreshRunning)return false;
+  if(!requireConnection({type:'refresh'}))return false;
   refreshRunning=true;
   const btn=$('refreshBtn'),old=btn.textContent;
   btn.disabled=true;btn.textContent='در حال بروزرسانی…';$('lastRefresh').textContent='در حال اسکن تازه ایجنت…';
@@ -75,14 +78,32 @@ forceRefresh=async function(){
     const message=result.message||'بروزرسانی انجام شد';
     $('lastRefresh').textContent=message;
     toast(message,10000);
+    return true;
   }catch(e){
     const message='بروزرسانی انجام نشد: '+e.message;
     $('lastRefresh').textContent=message;
     toast(message,15000);
+    return false;
   }finally{
+    lastAutoRefreshAt=Date.now();
     refreshRunning=false;btn.disabled=false;btn.textContent=old;
   }
 };
+
+async function autoRefreshIfDue(){
+  if(document.visibilityState!=='visible')return;
+  if(!token())return;
+  if(refreshRunning)return;
+  if(Date.now()-lastAutoRefreshAt<AUTO_REFRESH_MS)return;
+  await forceRefresh();
+}
+
+// Check lightly and only launch a real scan once five minutes have elapsed.
+// This avoids background-tab churn while keeping the visible newsroom current.
+setInterval(autoRefreshIfDue,30000);
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible')autoRefreshIfDue();
+});
 
 // panel.js registered its original listener with addEventListener. An onclick
 // assignment cannot replace that listener, so intercept in capture phase and
