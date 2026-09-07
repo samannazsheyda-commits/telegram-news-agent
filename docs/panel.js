@@ -7,12 +7,12 @@ const TERMINAL_EDITORIAL=new Set(['published_manual','published_auto','rejected_
 const TERMINAL_COMMAND=new Set(['succeeded','failed','reconciled']);
 const activeCommands=new Map();
 const hiddenItems=new Set();
-let queue=[],history=[],filtered=[],renderLimit=60,toastTimer=null,connectionValidated=false;
+let queue=[],history=[],filtered=[],renderLimit=60,toastTimer=null,connectionValidated=false,pendingAuthAction=null;
 
 function esc(v=''){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function fmt(v){if(!v)return'—';const d=new Date(v);if(Number.isNaN(d.getTime()))return esc(v);return new Intl.DateTimeFormat('fa-IR',{dateStyle:'short',timeStyle:'short',timeZone:'Asia/Tehran'}).format(d)}
 function day(v){if(!v)return'';const d=new Date(v);if(Number.isNaN(d.getTime()))return'';return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tehran',year:'numeric',month:'2-digit',day:'2-digit'}).format(d)}
-function token(){return localStorage.getItem('bikhabar_contents_token')||''}
+function token(){return localStorage.getItem(TOKEN_KEY)||''}
 function authHeaders(value=token()){return{'Accept':'application/vnd.github+json','Authorization':'Bearer '+value,'X-GitHub-Api-Version':'2022-11-28'}}
 function ghHeaders(value=token()){return{...authHeaders(value),'Content-Type':'application/json'}}
 function b64Unicode(text){const bytes=new TextEncoder().encode(text);let bin='';bytes.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
@@ -36,8 +36,34 @@ async function validateConnection(candidate=token()){
   return true;
 }
 
+function queueAuthAction(action,item,card=null){
+  if(action==='publish'){
+    const title=card.querySelector('[data-role="title"]').value.trim();
+    const body=card.querySelector('[data-role="body"]').value.trim();
+    if(!title){card.querySelector('[data-role="title"]').focus();toast('تیتر نمی‌تواند خالی باشد');return false}
+    if(!item.source_url){toast('لینک منبع برای انتشار لازم است');return false}
+    pendingAuthAction={action,itemId:item.id,title,body};
+  }else{
+    pendingAuthAction={action,itemId:item.id};
+  }
+  $('connectSheet').classList.add('open');
+  setConnection(token()?'اتصال نیاز به تأیید دارد':'اتصال لازم است','bad');
+  toast('برای ادامه، اتصال GitHub را برقرار کن. بعد از اتصال همین فرمان خودکار ادامه پیدا می‌کند.','',null,10000);
+  return true;
+}
+
+async function resumePendingAuthAction(){
+  const pending=pendingAuthAction;
+  pendingAuthAction=null;
+  if(!pending)return;
+  const item=queue.find(x=>x.id===pending.itemId);
+  if(!item){toast('این خبر دیگر در صف نیست.');return}
+  if(pending.action==='publish')await executePublish(item,pending.title,pending.body);
+  else await executeReject(item);
+}
+
 async function createCommand(payload,attempt=0){
-  if(!token()){$('connectSheet').classList.add('open');setConnection('مشاهده فقط','bad');throw Error('اتصال GitHub برقرار نیست')}
+  if(!token()){$('connectSheet').classList.add('open');setConnection('اتصال لازم است','bad');throw Error('توکن GitHub در این مرورگر ذخیره نشده است')}
   if(!connectionValidated)await validateConnection();
   const id=payload.command_id||commandId();
   const command={...payload,command_id:id,created_at:new Date().toISOString()};
@@ -45,7 +71,7 @@ async function createCommand(payload,attempt=0){
   const body={message:`panel: ${command.action} ${command.item_id.slice(0,10)}`,content:b64Unicode(JSON.stringify(command,null,2)),branch:BRANCH};
   const r=await fetch(`${API}/contents/${path}`,{method:'PUT',headers:ghHeaders(),body:JSON.stringify(body)});
   if((r.status===409||r.status===422)&&attempt===0)return createCommand({...payload,command_id:commandId()},1);
-  if(!r.ok){const message=await githubError(r);if(r.status===401||r.status===403){connectionValidated=false;setConnection('مجوز Contents مشکل دارد','bad');$('connectSheet').classList.add('open')}throw Error(message)}
+  if(!r.ok){const message=await githubError(r);if(r.status===401||r.status===403){connectionValidated=false;setConnection('مجوز GitHub مشکل دارد','bad');$('connectSheet').classList.add('open')}throw Error(message)}
   return id;
 }
 
@@ -86,18 +112,28 @@ function rekeyActiveCommand(oldId,newId){if(oldId===newId)return;const value=act
 async function continueWatching(cmd){const result=await pollCommandResult(cmd,300000);if(result.status==='timeout'){const pending=activeCommands.get(cmd);if(pending){pending.message='هنوز در حال بررسی؛ وضعیت را دوباره چک کن';renderProcessing()}return}await reconcileCommandResult(cmd,result)}
 async function reconcileCommandResult(cmd,result){const pending=activeCommands.get(cmd);if(!pending)return;if(result.status==='timeout'){pending.message='زمان‌بر شده؛ پردازش ادامه دارد';renderProcessing();toast('پردازش طول کشیده؛ خبر دوباره وارد صف نشده است');void continueWatching(cmd);return}activeCommands.delete(cmd);if(result.status==='failed'){if(pending.action==='publish')restorePublishCard(pending);else restoreRejectedCard(pending.item);toast((pending.action==='publish'?'انتشار':'رد')+' ناموفق بود: '+(result.message||'خطای نامشخص'))}else{clearDraft(pending.item.id);toast(result.status==='reconciled'?'وضعیت خبر با کانال هماهنگ شد':(pending.action==='publish'?'انتشار در تلگرام تأیید شد':'خبر رد شد'));await load(false)}renderProcessing();updateStats()}
 
-async function rejectItem(item){
+async function executeReject(item){
   optimisticReject(item);
   const provisional=commandId();activeCommands.set(provisional,{action:'reject',item,title:originalTitle(item),body:'',message:'ثبت فوری فرمان رد…',startedAt:new Date().toISOString()});renderProcessing();updateStats();
   try{const actual=await createCommand({command_id:provisional,action:'reject',item_id:item.id,title:'',body:''});rekeyActiveCommand(provisional,actual);const pending=activeCommands.get(actual);if(pending){pending.message='در حال نهایی‌کردن رد';renderProcessing()}await reconcileCommandResult(actual,await pollCommandResult(actual))}
-  catch(e){activeCommands.delete(provisional);restoreRejectedCard(item);renderProcessing();updateStats();toast('رد ثبت نشد: '+e.message,'',null,10000)}
+  catch(e){activeCommands.delete(provisional);restoreRejectedCard(item);renderProcessing();updateStats();toast('رد ثبت نشد: '+e.message,'',null,12000)}
+}
+
+async function rejectItem(item){
+  if(!token()||!connectionValidated){queueAuthAction('reject',item);return}
+  await executeReject(item);
+}
+
+async function executePublish(item,title,body){
+  const provisional=commandId();optimisticPublish(item,title,body,provisional);
+  try{const actual=await createCommand({command_id:provisional,action:'publish',item_id:item.id,title,body});rekeyActiveCommand(provisional,actual);const pending=activeCommands.get(actual);if(pending){pending.message='در انتظار تأیید تلگرام';renderProcessing()}await reconcileCommandResult(actual,await pollCommandResult(actual))}
+  catch(e){const pending=activeCommands.get(provisional);activeCommands.delete(provisional);if(pending)restorePublishCard(pending);renderProcessing();updateStats();toast('انتشار ثبت نشد: '+e.message,'',null,12000)}
 }
 
 async function publishItem(item,card){
   const title=card.querySelector('[data-role="title"]').value.trim(),body=card.querySelector('[data-role="body"]').value.trim();if(!title){card.querySelector('[data-role="title"]').focus();toast('تیتر نمی‌تواند خالی باشد');return}if(!item.source_url){toast('لینک منبع برای انتشار لازم است');return}
-  const provisional=commandId();optimisticPublish(item,title,body,provisional);
-  try{const actual=await createCommand({command_id:provisional,action:'publish',item_id:item.id,title,body});rekeyActiveCommand(provisional,actual);const pending=activeCommands.get(actual);if(pending){pending.message='در انتظار تأیید تلگرام';renderProcessing()}await reconcileCommandResult(actual,await pollCommandResult(actual))}
-  catch(e){const pending=activeCommands.get(provisional);activeCommands.delete(provisional);if(pending)restorePublishCard(pending);renderProcessing();updateStats();toast('انتشار ثبت نشد: '+e.message,'',null,10000)}
+  if(!token()||!connectionValidated){queueAuthAction('publish',item,card);return}
+  await executePublish(item,title,body);
 }
 
 function resetDraft(item,card){clearDraft(item.id);card.querySelector('[data-role="title"]').value=originalTitle(item);card.querySelector('[data-role="body"]').value=originalBody(item);card.querySelector('.edited').hidden=true;card.querySelector('[data-action="reset"]').hidden=true}
@@ -107,13 +143,14 @@ async function load(showLoading=true){try{if(showLoading&&queue.length===0)$('qu
 async function loadSystem(){try{const[runs,state]=await Promise.all([getJson(`${API}/actions/workflows/agent.yml/runs?per_page=1`),getJson(`${RAW}/state.json`)]);const r=runs.workflow_runs?.[0];$('systemWorkflow').textContent=r?`${r.status}${r.conclusion?' / '+r.conclusion:''}`:'—';$('systemRun').textContent=r?.run_number??'—';$('systemRuntime').textContent='runtime_v13';$('systemState').textContent=`news_seen: ${(state.news_seen||[]).length} | car: ${state.car_last_sent_date||'—'} | phone: ${state.phone_flagships_last_sent_date||'—'}`}catch{$('systemWorkflow').textContent='خطا در دریافت'}}
 
 async function connect(){
-  const t=$('tokenInput').value.trim();if(!t)return;
+  const t=$('tokenInput').value.trim();if(!t){toast('توکن GitHub را وارد کن');return}
+  localStorage.setItem(TOKEN_KEY,t);
   setConnection('در حال بررسی…','');
-  try{await validateConnection(t);localStorage.setItem('bikhabar_contents_token',t);$('tokenInput').value='';$('connectSheet').classList.remove('open');setConnection('GitHub متصل','good');toast('اتصال برقرار شد. برای کارکرد دکمه‌ها، توکن باید Contents: Read and write داشته باشد.')}
-  catch(e){connectionValidated=false;localStorage.removeItem('bikhabar_contents_token');setConnection('اتصال ناموفق','bad');toast(e.message,'',null,12000)}
+  try{await validateConnection(t);$('tokenInput').value='';$('connectSheet').classList.remove('open');setConnection('GitHub متصل','good');toast('اتصال برقرار شد.');await resumePendingAuthAction()}
+  catch(e){connectionValidated=false;setConnection('اتصال ناموفق','bad');toast('اتصال برقرار نشد: '+e.message,'',null,15000)}
 }
-function disconnect(){connectionValidated=false;localStorage.removeItem('bikhabar_contents_token');setConnection('مشاهده فقط','bad');$('connectSheet').classList.add('open')}
-async function restoreConnection(){if(!token()){$('connectSheet').classList.add('open');setConnection('مشاهده فقط','bad');return}setConnection('بررسی اتصال…','');try{await validateConnection();setConnection('GitHub متصل','good');$('connectSheet').classList.remove('open')}catch(e){connectionValidated=false;setConnection('اتصال نیاز به اصلاح دارد','bad');$('connectSheet').classList.add('open');toast(e.message,'',null,12000)}}
+function disconnect(){connectionValidated=false;pendingAuthAction=null;localStorage.removeItem(TOKEN_KEY);setConnection('مشاهده فقط','bad');$('connectSheet').classList.add('open')}
+async function restoreConnection(){if(!token()){$('connectSheet').classList.add('open');setConnection('مشاهده فقط','bad');return}setConnection('بررسی اتصال…','');try{await validateConnection();setConnection('GitHub متصل','good');$('connectSheet').classList.remove('open')}catch(e){connectionValidated=false;setConnection('اتصال نیاز به اصلاح دارد','bad');$('connectSheet').classList.add('open');toast('اتصال GitHub: '+e.message,'',null,15000)}}
 
 document.addEventListener('click',e=>{const tab=e.target.closest('[data-view]');if(tab){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===tab));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===`view-${tab.dataset.view}`));if(tab.dataset.view==='system')loadSystem();return}const more=e.target.closest('[data-global-action="more"]');if(more){renderLimit+=40;renderQueue();return}const action=e.target.closest('[data-action]');if(!action)return;const card=action.closest('.card[data-id]'),item=queue.find(x=>x.id===card?.dataset.id);if(!item)return;if(action.dataset.action==='publish')publishItem(item,card);if(action.dataset.action==='reject')rejectItem(item);if(action.dataset.action==='reset')resetDraft(item,card)});
 document.addEventListener('input',e=>{const card=e.target.closest('.card[data-id]');if(!card||!['title','body'].includes(e.target.dataset.role))return;clearTimeout(card._draftTimer);card._draftTimer=setTimeout(()=>{saveDraft(card.dataset.id,card.querySelector('[data-role="title"]').value,card.querySelector('[data-role="body"]').value);card.querySelector('.edited').hidden=false;card.querySelector('[data-action="reset"]').hidden=false},250)});
