@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from . import fresh_x
 from . import runtime as base
@@ -23,6 +23,7 @@ _installed = False
 _original_parse_x = fresh_x.parse_fxtwitter_timeline
 _original_looks_bundled = base.agent._looks_bundled
 _original_is_statement = base.agent._is_statement
+_FALSE_BUNDLE_RECOVERY_LOOKBACK = timedelta(hours=24)
 _PHONE_40_REPUBLISH_DATE = "2026-09-06"
 _PHONE_40_REPUBLISH_STATE_KEY = "phone_flagships_republish_40_date"
 _PHONE_FRESH_REPUBLISH_STATE_KEY = "phone_flagships_fresh_republish_2_date"
@@ -67,19 +68,24 @@ def _is_statement_with_priority_escape(item) -> bool:
 
 
 def _retry_todays_false_bundles(now: datetime) -> None:
-    """Remove today's false bundled rejections from seen so the normal pipeline retries them once."""
+    """Retry recent false bundled rejections even if Tehran midnight has passed."""
     state = base.agent.load_state(base.agent.STATE_PATH)
     seen = list(state.get("news_seen") or [])
     if not seen:
         return
     retry_keys: set[str] = set()
+    now_utc = now.astimezone(timezone.utc)
     for record in base._store.queue():
         if record.get("status", "pending") != "pending":
             continue
         if record.get("rejection_reason") != "bundled_or_multi_headline":
             continue
         published = str(record.get("published_at_source") or "")
-        if not base.agent._published_today(published, now):
+        published_dt = base.agent._published_dt(published)
+        if published_dt is None:
+            continue
+        age = now_utc - published_dt
+        if age < timedelta(0) or age > _FALSE_BUNDLE_RECOVERY_LOOKBACK:
             continue
         item = base.NewsItem(
             str(record.get("news_key") or ""),
