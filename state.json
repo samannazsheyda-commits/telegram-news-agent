@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41620",
   "news_seen": [
+    "x:AlArabiya_Eng:2097063902525702629",
     "x:sfrantzman:2096949816542499083",
     "x:mdubowitz:2096851049986265196",
     "x:mdubowitz:2097002947179581516",
@@ -499,11 +500,10 @@
     "x:jconricus:2090765007042535454",
     "x:jconricus:2095279034800157082",
     "x:jconricus:2095280355750076499",
-    "x:manniefabian:2095450221069181168",
-    "x:manniefabian:2095567922823397527"
+    "x:manniefabian:2095450221069181168"
   ],
   "market_last_sent_at": "2026-09-07T18:20:33.841773+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2097063902525702629",
+      "source": "Al Arabiya English / X",
+      "title": "Italian Prime Minister Giorgia Meloni welcomes her Belgian counterpart Bart De Wever to Rome, where the two leaders discussed Iran and the war in Ukraine.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097063902525702629",
+      "published": "Mon, 07 Sep 2026 20:46:10 +0000",
+      "sent_at": "2026-09-07T20:51:36.918832+00:00",
+      "fingerprint": "italian prime minister giorgia meloni welcomes her belgian counterpart bart de wever to rome where the two leaders discussed iran and the war in ukraine"
+    },
     {
       "key": "x:JasonMBrodsky:2097043613016301905",
       "source": "Jason Brodsky / X",
