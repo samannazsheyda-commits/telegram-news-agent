@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
+    "x:Reuters:2096895020225663094",
+    "x:AlArabiya_Eng:2096894196334358925",
     "dbcf8921fc2abf507dc0747370b6dc342d712979",
     "b76b7a98e481cd8c82d262fd469f1f519c77dcef",
     "x:Reuters:2096886228285014259",
@@ -498,11 +500,9 @@
     "156833b2eab003115561894db9931bdf5861050e",
     "ee8e4a21c3d17ea3799c9f7f4482599b88dd879a",
     "05b519493e12bc70566a2252982875d2cac99d9d",
-    "44a7936014d36349cd9a196288e355dd226cd616",
-    "b0b4eb9246ea46545b988b91ee491bd4c833303f",
-    "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac"
+    "44a7936014d36349cd9a196288e355dd226cd616"
   ],
-  "market_last_sent_at": "2026-09-07T07:27:23.777746+00:00",
+  "market_last_sent_at": "2026-09-07T09:41:51.614021+00:00",
   "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
@@ -614,9 +614,9 @@
   "market_day_prices": {
     "date": "2026-09-07",
     "first_usd": 223000,
-    "last_usd": 223000,
+    "last_usd": 222870,
     "first_gold": 23353600,
-    "last_gold": 23353600,
+    "last_gold": 23063200,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2096894196334358925",
+      "source": "Al Arabiya English / X",
+      "title": "Iran’s Foreign Ministry spokesperson Esmail Baghaei has responded to US Vice President JD Vance after the latter said that he wouldn’t call the Iran conflict a “war” 🔴 Baghaei says that the conflict was not a war but an “overt aggression”",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096894196334358925",
+      "published": "Mon, 07 Sep 2026 09:31:49 +0000",
+      "sent_at": "2026-09-07T09:41:51.614021+00:00",
+      "fingerprint": "iran s foreign ministry spokesperson esmail baghaei has responded to us vice president jd vance after the latter said that he wouldn t call the iran conflict a war baghaei says that the conflict was not a war but an overt aggression"
+    },
+    {
+      "key": "x:Reuters:2096895020225663094",
+      "source": "Reuters / X",
+      "title": "UAE builds alternative trade, energy routes after Iran attacks, official says",
+      "summary": "",
+      "link": "https://x.com/Reuters/status/2096895020225663094",
+      "published": "Mon, 07 Sep 2026 09:35:05 +0000",
+      "sent_at": "2026-09-07T09:41:51.614021+00:00",
+      "fingerprint": "uae builds alternative trade energy routes after iran attacks official says"
+    },
     {
       "key": "x:Reuters:2096886228285014259",
       "source": "Reuters / X",
