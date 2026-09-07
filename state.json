@@ -1,6 +1,10 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
+    "x:nytimesworld:2031397471746744386",
+    "x:nytimesworld:2043145585872581092",
+    "x:business:2096961764025909733",
+    "x:FT:2096961762511769932",
     "6dc4e4ac919938f5432288a08b35dc5472ee5b68",
     "05ec2d7916142a54f8980f299d82bef09a7dae46",
     "18d79aec8ec90a0dcaefd368063929c4a3238ff9",
@@ -496,13 +500,9 @@
     "x:IsraelHayomEng:2095579893438329190",
     "x:axios:2095808390815441005",
     "x:axios:2095932703149301894",
-    "x:TimesofIsrael:2095859572124647823",
-    "x:FoxNews:2095947630664732751",
-    "x:nytimesworld:2028456205417349268",
-    "x:nytimesworld:2031397471746744386",
-    "x:nytimesworld:2043145585872581092"
+    "x:TimesofIsrael:2095859572124647823"
   ],
-  "market_last_sent_at": "2026-09-07T11:57:41.209563+00:00",
+  "market_last_sent_at": "2026-09-07T14:01:28.930413+00:00",
   "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
@@ -614,15 +614,33 @@
   "market_day_prices": {
     "date": "2026-09-07",
     "first_usd": 223000,
-    "last_usd": 223100,
+    "last_usd": 223665,
     "first_gold": 23353600,
-    "last_gold": 23101000,
+    "last_gold": 23177200,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "x:nytimesworld:2031397471746744386",
+      "source": "NYT World / X",
+      "title": "Since the U.S.-Israeli attack on Iran began, at least 12 civilians have been killed in Gulf countries. All but one of them were foreign nationals.",
+      "reason": "not_today_tehran",
+      "published": "Tue, 10 Mar 2026 15:51:13 +0000",
+      "link": "https://x.com/nytimesworld/status/2031397471746744386",
+      "checked_at": "2026-09-07T14:03:26.316877+00:00"
+    },
+    {
+      "key": "x:nytimesworld:2043145585872581092",
+      "source": "NYT World / X",
+      "title": "Breaking News: The U.S. and Iran have failed to reach an agreement to end the war, Vice President JD Vance said after marathon peace talks.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 12 Apr 2026 01:54:02 +0000",
+      "link": "https://x.com/nytimesworld/status/2043145585872581092",
+      "checked_at": "2026-09-07T14:03:26.316877+00:00"
+    },
     {
       "key": "6dc4e4ac919938f5432288a08b35dc5472ee5b68",
       "source": "NOTAM / Airspace",
@@ -2404,28 +2422,30 @@
       "published": "Thu, 11 Jun 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9scE5oUmpFWHo5NkZfaFA5NmFMWXBZNWpyWUJ0QVVlUk90VW1RZXlEeEk5T1VCdzlYUmNnZk9sT2ZkOVJ2S0FucDZ6bUhxWmtTa1FONmFTTGw3T0pLTFdoZ1FJYkhVOEZub2ZZSVZxX2xWRi1OTmZfRERR0gF_QVVfeXFMUE9jQXlqc1lVc3Jfb2RDOWRITFdfcVB2XzhNaXEwcV9qWTk3LUNJUWNZUWdQd1FEckdWUzZYYnA2RGlrREcxZnA3UHdYQTFXNXNtQy1DRjlldWZmMzhfeDBkb0RGRDdpaHZrSlhMQ2lwbmNTNHd3WjNYQjNXcmhlOA?oc=5",
       "checked_at": "2026-09-05T10:20:58.743746+00:00"
-    },
-    {
-      "key": "097c69b1737517a9d22f8fe5bc729e74b9156fb0",
-      "source": "NOTAM / Airspace",
-      "title": "Finnair diverts Dubai flights to avoid Iranian airspace - Yle",
-      "reason": "not_today_tehran",
-      "published": "Wed, 08 Jan 2020 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiQEFVX3lxTE9XbnpMbE14bDFZODhuQnlWRlFXWk9WV0RYc1h4NnRZMmdqMlh6N0t2SjFfdkg0blg2UGpPUnF1OUg?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "39a9bd9ee9da921059c843538b5d62565caf831d",
-      "source": "NBC News",
-      "title": "Iran Sees Opening in Saudi-Qatar Feud, Offers Food, Airspace to Qatar",
-      "reason": "not_today_tehran",
-      "published": "Tue, 06 Jun 2017 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxPdHVJQkFJOWRWYlc3NXNKQWJnVWFLZmwycFlPNl93eTBFbUFXZlA3aEZsUDZJRWZTY0pPM0R3ZERmZnBsTkwtWjQ0eEU2YUc3VXV5Q3pUSUo4MUZfSklJTXVxcVR6MkZwMnJVcG9SM3FFdWN1Mng4WGZHSzd5VjVCS1VXTEtRYzJ3VGpSY0N5ZlV5MUE2SHpnNGVaNURKUnVsODc3Z0ZOOA?oc=5",
-      "checked_at": "2026-09-05T10:08:41.489715+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:FT:2096961762511769932",
+      "source": "Financial Times / X",
+      "title": "Top Republicans are worried that Donald Trump is undermining their prospects in the midterm elections, as he brushes off voter concerns over the Iran war, inflation and AI data centres while promoting himself on the campaign trail.",
+      "summary": "",
+      "link": "https://x.com/FT/status/2096961762511769932",
+      "published": "Mon, 07 Sep 2026 14:00:18 +0000",
+      "sent_at": "2026-09-07T14:01:28.930413+00:00",
+      "fingerprint": "top republicans are worried that donald trump is undermining their prospects in the midterm elections as he brushes off voter concerns over the iran war inflation and ai data centres while promoting himself on the campaign trail"
+    },
+    {
+      "key": "x:business:2096961764025909733",
+      "source": "Bloomberg / X",
+      "title": "Two leading commodity trading houses have seen their profits soar, according to company financials seen by Bloomberg News, highlighting how the war in Iran has created a bonanza for the traders and their top executives",
+      "summary": "",
+      "link": "https://x.com/business/status/2096961764025909733",
+      "published": "Mon, 07 Sep 2026 14:00:18 +0000",
+      "sent_at": "2026-09-07T14:01:28.930413+00:00",
+      "fingerprint": "two leading commodity trading houses have seen their profits soar according to company financials seen by bloomberg news highlighting how the war in iran has created a bonanza for the traders and their top executives"
+    },
     {
       "key": "x:AJEnglish:2096939017551941743",
       "source": "Al Jazeera English / X",
