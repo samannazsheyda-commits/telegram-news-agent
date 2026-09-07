@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "id": "0f557343e2f169419c840bd3cd6ae85cb80088c1",
+    "news_key": "89340b781eb371c4e9eca2ec2f4a571e41fe2701",
+    "source": "ABC News",
+    "source_url": "https://news.google.com/rss/articles/CBMiTEFVX3lxTE5tTUl3aG96NVllWkdoMXZHeEUxZlZwYlVlNXA1V28tUjVoTnZCSDRHa2lQSUMxTTRzbnd3Q3FtMlVzZURaQm82d0FJb1g?oc=5",
+    "original_title": "Video Trump's latest on Iran-US war, mail-in ballots",
+    "original_summary": "Video Trump's latest on Iran-US war, mail-in ballots ABC News - Breaking News, Latest News and Videos",
+    "persian_title": "ویدئو: آخرین اظهارات ترامپ درباره جنگ ایران و آمریکا و رأی‌گیری پستی",
+    "persian_body": "ویدیو آخرین اظهارات ترامپ در مورد جنگ ایران و آمریکا و رأی‌گیری پستی اخبار ABC - اخبار فوری، آخرین اخبار و ویدیوها",
+    "published_at_source": "Mon, 07 Sep 2026 12:32:14 GMT",
+    "discovered_at": "2026-09-07T12:35:44.297272+00:00",
+    "rejection_reason": "panel_refresh",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-07T12:36:06.271357+00:00"
+  },
+  {
+    "id": "03af47233436fbe07bed102a4d37c84dbe344769",
+    "news_key": "6b456a515b0711b8331fab51685648ffd0a046e2",
+    "source": "ABC News",
+    "source_url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNTkpwRjZfMnc0dWVKRFp2ekJ5SVBDcW5fOFh3by05eWxNMWdxaWwxMl9uY1ZWMlM5bjB0SWYySXlrREdGQl9rVjVZWkRaNDdSSnVsT1FOMWREUk9hS2JhdkxtdDdZUlNHdnIzSkYyRnR5bUtGa1NPWmZ2Wm4tZjQ2NTFsd1pRNnJXTENkWtIBkgFBVV95cUxQZG13b0dTVkw5UVZ6U0lKNFB5VS0tcjFidUtGWVo1UGNkakVabVJKWHB5TkFkaU1mZkx6QnlDMXV4WFNmaVVsdlIwQUJMc0lITU50NlNBLV9mdVRCaGZ0d29ES2VDY1J4V2x1YWg2dW1PcHY2WUJFWnNfaGExME93RWNYLTByMF92M2RJSEV0LUVuQQ?oc=5",
+    "original_title": "Fuel prices at record Labor Day high in US thanks to Iran War and refinery issues",
+    "original_summary": "Fuel prices at record Labor Day high in US thanks to Iran War and refinery issues ABC News - Breaking News, Latest News and Videos",
+    "persian_title": "قیمت سوخت در روز کارگر در آمریکا به دلیل جنگ ایران و مشکلات پالایشگاه‌ها به بالاترین حد خود رسید",
+    "persian_body": "قیمت سوخت در روز کارگر در آمریکا به لطف جنگ ایران و مسائل مربوط به پالایشگاه‌ها به بالاترین حد خود رسید. اخبار ABC - اخبار فوری، آخرین اخبار و ویدیوها",
+    "published_at_source": "Mon, 07 Sep 2026 11:00:46 GMT",
+    "discovered_at": "2026-09-07T12:35:44.297272+00:00",
+    "rejection_reason": "panel_refresh",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-07T12:36:02.122064+00:00"
+  }
+]
