@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41579",
   "news_seen": [
+    "7befc53bc0c09657fa1f2003f8aee94bf53b21f6",
     "8386754439e1a69c8d20aa6fe52c3c20cfac23e2",
     "x:AlArabiya_Eng:2096765394237190159",
     "x:AJEnglish:2096762349072142573",
@@ -499,8 +500,7 @@
     "92b3bc46b950ce0dd663a241dcf2bb697d711ca6",
     "93bd552fc45835b95544a5cc616ee96fd5174d8d",
     "28b1a9ca7e0d10fb31cd2d4d7e290fe59f99ac1a",
-    "b770e9911a6c1db8095e99bd22979756869b11f0",
-    "c63247d8b373c5ecfc0ef3f2c40818ec994c115a"
+    "b770e9911a6c1db8095e99bd22979756869b11f0"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
   "next_news_color": "white",
@@ -623,6 +623,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "7befc53bc0c09657fa1f2003f8aee94bf53b21f6",
+      "source": "Al Jazeera",
+      "title": "US-Israel war on Iran upends Europe’s summer holiday travel patterns",
+      "reason": "not_today_tehran",
+      "published": "Thu, 06 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPQWU1cDFUclhEX3M5dmJWRVNxYTVSRDdfeUJ5Q3FUQWhxdmsyTDdXZVdUd2pIaTR1Z2JYaThzYW9tejdZcldsR2JyeGZIMFkxM3FmMzlaREFYcUkxX0o1SGlpbDVucjR4M0ZGLUdMX0QyV2xrbUhnYy02MmE4N0tObXJmNTFWU1BQLXo1OE9wZjRIU255YTY1V04wZlXSAaIBQVVfeXFMT0xsNUJWYXM1UnNfUHpjUXJaMjZmWGFaMld6U1VHd2NnWGRJdUVDMUE4TElvTk01UFgyYlN6OE1JQ2F0MDhMdDV5TVF0bmozMHhRMXhDWVY4RUUtOEpFWklRRWZRNW5RT2FhTzdjN1ctb2w4NHdmenZacUNCNGNmcWZHcnpaZVBsSndhc0dVeVZwTjA0UVNVRVVSV0RRQU51aVln?oc=5",
+      "checked_at": "2026-09-07T01:24:24.744312+00:00"
+    },
     {
       "key": "8386754439e1a69c8d20aa6fe52c3c20cfac23e2",
       "source": "The New York Times",
@@ -2413,15 +2422,6 @@
       "published": "Thu, 03 Sep 2026 08:14:14 GMT",
       "link": "https://news.google.com/rss/articles/CBMi9AFBVV95cUxOLU5LUXhCekM1RnlXM3RfMllreXFyVG5adHJQMlhPZDVTVXdvSk02YWVVVC1nRTZhRFE0RGtvZEhSRGhpNFpTTW11Nm9salRJTWZaNWh1R2NUSnptOFhCcDRrZTJJc0FGeTdVbElyR3ItYWdpb1B0TmJvNzVTYnZzcHUzQ0w1Z1BsaGpRSmNtTjZEcldkVkNVb0JDeHdtY3RtaHdBQWNESXlzS2g3d3lCUlhrODNOS2hQVlhFVlhhcmhxRjVReVdkQVpIMGdXdmhGRmpSM1ZkZzgzMzJxVlVscmg1Z2hWbkRHcjN6dU0zYmtXR29u?oc=5",
       "checked_at": "2026-09-05T10:08:41.489715+00:00"
-    },
-    {
-      "key": "ff92b318d33c59099f68d1774fa070027b4851c8",
-      "source": "NOTAM / Airspace",
-      "title": "US urges citizens to leave Iran immediately as airspace partially reopens - aa.com.tr",
-      "reason": "not_today_tehran",
-      "published": "Wed, 22 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNLTlPTm15NFlmb0ZINzB3UkphRVBtc2JrUUtFZDZnekU1LWRZaDZMM1E0NWdTQ3ZLTVV0WU0yYjJoeS1MWGhGU096WXJEZ2tFeWljYXN3UDUycEFJdUlzcS1aWnZtQ1ZGVU9uODBtTVFpN0RNNG5SNF8xazh2OFFNT05JZUpBNTVEd2ZFREota2dOWXU5bGRuUWQ4U3F4X3BqelFEeVVUclgzQTE2ZnlVbVlUd3U1U0JuZkE?oc=5",
-      "checked_at": "2026-09-05T09:14:03.313364+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-06",
