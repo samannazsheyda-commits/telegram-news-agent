@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41603",
   "news_seen": [
+    "x:business:2096991949844533611",
     "469dc94e9c5de8384bc391702e590d5ba9ac0741",
     "x:IsraelHayomEng:2095457432407343246",
     "x:IsraelHayomEng:2095579893438329190",
@@ -499,11 +500,10 @@
     "x:CENTCOM:2095232852107346069",
     "x:CENTCOM:2095595527337623679",
     "x:IDF:2095569785522360508",
-    "x:kann_news:2095891154633957403",
-    "x:IsraelHayomEng:2095137917668577474"
+    "x:kann_news:2095891154633957403"
   ],
-  "market_last_sent_at": "2026-09-07T14:01:28.930413+00:00",
-  "next_news_color": "white",
+  "market_last_sent_at": "2026-09-07T16:01:34.128941+00:00",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -614,9 +614,9 @@
   "market_day_prices": {
     "date": "2026-09-07",
     "first_usd": 223000,
-    "last_usd": 223665,
+    "last_usd": 222360,
     "first_gold": 23353600,
-    "last_gold": 23177200,
+    "last_gold": 23055300,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:business:2096991949844533611",
+      "source": "Bloomberg / X",
+      "title": "A liquefied natural gas tanker, which loaded in Qatar early last month, is heading toward the Strait of Hormuz in what could be the first visible attempt to exit the crucial waterway since July",
+      "summary": "",
+      "link": "https://x.com/business/status/2096991949844533611",
+      "published": "Mon, 07 Sep 2026 16:00:15 +0000",
+      "sent_at": "2026-09-07T16:01:34.128941+00:00",
+      "fingerprint": "a liquefied natural gas tanker which loaded in qatar early last month is heading toward the strait of hormuz in what could be the first visible attempt to exit the crucial waterway since july"
+    },
     {
       "key": "x:CBSNews:2096984896430284994",
       "source": "CBS News / X",
