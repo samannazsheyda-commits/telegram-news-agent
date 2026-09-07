@@ -23,6 +23,7 @@ _installed = False
 _original_parse_x = fresh_x.parse_fxtwitter_timeline
 _original_looks_bundled = base.agent._looks_bundled
 _original_is_statement = base.agent._is_statement
+_original_combined_fetch = base._combined_fetch_news_items
 _FALSE_BUNDLE_RECOVERY_LOOKBACK = timedelta(hours=24)
 _PHONE_40_REPUBLISH_DATE = "2026-09-06"
 _PHONE_40_REPUBLISH_STATE_KEY = "phone_flagships_republish_40_date"
@@ -67,14 +68,10 @@ def _is_statement_with_priority_escape(item) -> bool:
     return _original_is_statement(item)
 
 
-def _retry_todays_false_bundles(now: datetime) -> None:
-    """Retry recent false bundled rejections even if Tehran midnight has passed."""
-    state = base.agent.load_state(base.agent.STATE_PATH)
-    seen = list(state.get("news_seen") or [])
-    if not seen:
-        return
-    retry_keys: set[str] = set()
-    now_utc = now.astimezone(timezone.utc)
+def _queue_recovery_items(now: datetime | None = None) -> list[base.NewsItem]:
+    """Rebuild recent false-bundle queue records as live items even after source feeds roll over."""
+    now_utc = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    recovered: list[base.NewsItem] = []
     for record in base._store.queue():
         if record.get("status", "pending") != "pending":
             continue
@@ -95,8 +92,33 @@ def _retry_todays_false_bundles(now: datetime) -> None:
             str(record.get("source_url") or ""),
             published,
         )
-        if base.agent._speaker_key(item) is not None:
-            retry_keys.add(item.key)
+        if item.key and base.agent._speaker_key(item) is not None:
+            recovered.append(item)
+    return recovered
+
+
+def _combined_fetch_with_queue_recovery(now: datetime | None = None):
+    live = list(_original_combined_fetch())
+    known = {item.key for item in live}
+    injected = []
+    for item in _queue_recovery_items(now):
+        if item.key in known:
+            continue
+        live.append(item)
+        known.add(item.key)
+        injected.append(item)
+    if injected:
+        print(f"NEWS_RECOVERY injected_queue_items={len(injected)}")
+    return live
+
+
+def _retry_todays_false_bundles(now: datetime) -> None:
+    """Remove recent false bundles from seen so the injected/source item can be processed again."""
+    state = base.agent.load_state(base.agent.STATE_PATH)
+    seen = list(state.get("news_seen") or [])
+    if not seen:
+        return
+    retry_keys = {item.key for item in _queue_recovery_items(now)}
     if not retry_keys:
         return
     cleaned = [key for key in seen if key not in retry_keys]
@@ -202,6 +224,7 @@ def install_production_policies() -> None:
         return
 
     fresh_x.parse_fxtwitter_timeline = _quality_parse_x
+    base._combined_fetch_news_items = _combined_fetch_with_queue_recovery
     base._send_with_tracking = _send_with_photo_tracking
     v2._brand_footer_with_arrow = _clean_brand_footer
     base.news_formatters._brand_footer = _clean_brand_footer
