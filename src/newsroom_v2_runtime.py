@@ -15,29 +15,43 @@ def _never_publish(_item):
     raise RuntimeError("shadow_mode_publish_blocked")
 
 
-def run_shadow_cycle() -> dict:
-    ledger = EventLedger("data/event_ledger.json")
-    feed = LiveFeedStore("data/panel_live_feed.json")
-    editorial = LocalEditorialStore("data/editorial_queue.json", "data/editorial_history.json")
-    settings = {
+def _settings() -> dict:
+    return {
         "auto_publish": True,
         "freshness_hours": int(os.environ.get("NEWSROOM_V2_FRESHNESS_HOURS", "6")),
         "panel_max_records": int(os.environ.get("NEWSROOM_V2_PANEL_MAX_RECORDS", "500")),
     }
+
+
+def _run_one(ledger, feed, editorial) -> dict:
     summary = run_cycle(
         build_raw_fetchers(),
         ledger,
         feed,
         editorial,
         _never_publish,
-        settings,
+        _settings(),
         datetime.now(timezone.utc),
         shadow=True,
     )
     payload = summary.__dict__.copy()
-    payload["mode"] = "shadow"
     payload["telegram_writes"] = 0
     return payload
+
+
+def run_shadow_cycle() -> dict:
+    ledger = EventLedger("data/event_ledger.json")
+    feed = LiveFeedStore("data/panel_live_feed.json")
+    editorial = LocalEditorialStore("data/editorial_queue.json", "data/editorial_history.json")
+    first = _run_one(ledger, feed, editorial)
+    second = _run_one(ledger, feed, editorial)
+    return {
+        "mode": "shadow_double_cycle",
+        "first": first,
+        "second": second,
+        "panel_feed_count": len(feed.records()),
+        "telegram_writes": 0,
+    }
 
 
 def main() -> None:
