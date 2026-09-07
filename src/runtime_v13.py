@@ -1,0 +1,116 @@
+from __future__ import annotations
+
+import sys
+import time
+from datetime import datetime, timezone
+
+import requests
+from bs4 import BeautifulSoup
+
+from . import runtime_v12 as v12
+from .sources import USER_AGENT
+
+base = v12.base
+_OWN_CHANNEL = "bikhabaar"
+
+
+def channel_has_car_post_today(html_text: str, now: datetime) -> bool:
+    target_date = now.astimezone(base.agent.TEHRAN).date()
+    soup = BeautifulSoup(html_text or "", "html.parser")
+    for message in soup.select(".tgme_widget_message[data-post]"):
+        text_node = message.select_one(".tgme_widget_message_text")
+        if text_node is None:
+            continue
+        text = " ".join(text_node.stripped_strings)
+        if "قیمت روز خودرو" not in text:
+            continue
+        time_node = message.select_one("time[datetime]")
+        if time_node is None:
+            continue
+        raw = str(time_node.get("datetime") or "").strip()
+        if not raw:
+            continue
+        try:
+            published = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+            if published.tzinfo is None:
+                published = published.replace(tzinfo=timezone.utc)
+        except ValueError:
+            continue
+        if published.astimezone(base.agent.TEHRAN).date() == target_date:
+            return True
+    return False
+
+
+def _car_due_once_per_day(state: dict, now: datetime, session=requests) -> bool:
+    """Allow at most one car-price post per Tehran calendar day.
+
+    State remains the fast path. If persisted state is stale, the public channel is
+    authoritative. On a channel hit we repair state immediately. Channel lookup
+    failures fail closed: skipping one car post is safer than spamming duplicates.
+    """
+    if not v12.v11.v10.v9._original_car_due(state, now):
+        return False
+
+    local_date = now.astimezone(base.agent.TEHRAN).date().isoformat()
+    try:
+        response = session.get(
+            f"https://t.me/s/{_OWN_CHANNEL}",
+            headers={"User-Agent": USER_AGENT},
+            timeout=15,
+        )
+        response.raise_for_status()
+        if channel_has_car_post_today(response.text, now):
+            state["car_last_sent_date"] = local_date
+            base.agent.save_state(state, base.agent.STATE_PATH)
+            print(f"CAR_SUPPRESSED already_published_today date={local_date}")
+            return False
+    except Exception as exc:
+        print(f"CAR_SUPPRESSED channel_guard_error={exc}", file=sys.stderr)
+        return False
+
+    return True
+
+
+def install_production_policies() -> None:
+    v12.install_production_policies()
+    # v9 owns the car formatter/due hook, so ensure its installation happened first.
+    v12.v11.v10.v9.install_persian_only_output()
+    base.agent._car_due = _car_due_once_per_day
+
+
+def run(now=None) -> int:
+    install_production_policies()
+    resolved_now = now or datetime.now(timezone.utc)
+    v12.v11.v10._retry_todays_false_bundles(resolved_now)
+    v12.v11.v10._publish_daily_flagships(resolved_now)
+    return v12.v11.v10.v9.v8.run(resolved_now)
+
+
+def monitor_loop(poll_seconds: int = 60, session_seconds: int = 240) -> int:
+    poll_seconds = max(1, int(poll_seconds))
+    session_seconds = max(poll_seconds, int(session_seconds))
+    started = time.monotonic()
+    while True:
+        cycle_started = time.monotonic()
+        if cycle_started - started >= session_seconds:
+            return 0
+        rc = run()
+        if rc != 0:
+            return rc
+        cycle_finished = time.monotonic()
+        if cycle_finished - started + poll_seconds > session_seconds:
+            return 0
+        time.sleep(max(0.0, poll_seconds - (cycle_finished - cycle_started)))
+
+
+def _cli() -> int:
+    if "--monitor" in sys.argv[1:]:
+        return monitor_loop(
+            poll_seconds=int(v12.v11.v10.os.environ.get("POLL_SECONDS", "60")),
+            session_seconds=int(v12.v11.v10.os.environ.get("SESSION_SECONDS", "240")),
+        )
+    return run()
+
+
+if __name__ == "__main__":
+    raise SystemExit(_cli())
