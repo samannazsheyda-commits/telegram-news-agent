@@ -47,21 +47,15 @@ class LiveFeedStore:
     def upsert(self, record: LiveFeedRecord) -> LiveFeedRecord:
         rows = self._read()
         result: list[LiveFeedRecord] = []
-        replaced = False
+        newer_existing = False
         for current in rows:
-            same_item = current.item_id == record.item_id
-            same_event = bool(record.event_id and current.event_id == record.event_id)
-            if same_item or same_event:
-                replaced = True
+            if current.item_id == record.item_id:
                 if current.updated_at > record.updated_at:
                     result.append(current)
+                    newer_existing = True
                 continue
             result.append(current)
-        if not replaced or not any(
-            (row.item_id == record.item_id or (record.event_id and row.event_id == record.event_id))
-            and row.updated_at > record.updated_at
-            for row in result
-        ):
+        if not newer_existing:
             result.append(record)
         self._write(result)
         return record
@@ -70,8 +64,9 @@ class LiveFeedStore:
         if now.tzinfo is None:
             now = now.replace(tzinfo=timezone.utc)
         cutoff = now - timedelta(hours=max(1, int(freshness_hours)))
+        original = self._read()
         kept: list[LiveFeedRecord] = []
-        for row in self._read():
+        for row in original:
             try:
                 updated = datetime.fromisoformat(row.updated_at.replace("Z", "+00:00"))
                 if updated.tzinfo is None:
@@ -81,6 +76,6 @@ class LiveFeedStore:
             if updated >= cutoff:
                 kept.append(row)
         kept = sorted(kept, key=lambda row: row.updated_at, reverse=True)[: max(1, int(max_records))]
-        removed = max(0, len(self._read()) - len(kept))
+        removed = max(0, len(original) - len(kept))
         self._write(kept)
         return removed
