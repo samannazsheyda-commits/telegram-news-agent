@@ -7,6 +7,7 @@ import tempfile
 from dataclasses import replace
 from pathlib import Path
 
+from .newsroom_fingerprint import fingerprint_similarity
 from .newsroom_models import EventFingerprint, EventRecord
 
 
@@ -63,8 +64,32 @@ class EventLedger:
         self._write(output)
         return updated
 
-    def find_candidates(self, fingerprint: EventFingerprint) -> list[EventRecord]:
-        return [record for record in self._read() if record.fingerprint == fingerprint.key]
+    @staticmethod
+    def _record_fingerprint(record: EventRecord) -> EventFingerprint | None:
+        data = record.fingerprint_data or {}
+        required = {"actors", "actions", "objects", "locations", "key_facts", "time_bucket"}
+        if not required.issubset(data):
+            return None
+        return EventFingerprint(
+            key=record.fingerprint,
+            actors=list(data.get("actors") or []),
+            actions=list(data.get("actions") or []),
+            objects=list(data.get("objects") or []),
+            locations=list(data.get("locations") or []),
+            key_facts=list(data.get("key_facts") or []),
+            time_bucket=str(data.get("time_bucket") or ""),
+        )
+
+    def find_candidates(self, fingerprint: EventFingerprint, min_similarity: float = 0.70) -> list[EventRecord]:
+        matches: list[EventRecord] = []
+        for record in self._read():
+            if record.fingerprint == fingerprint.key:
+                matches.append(record)
+                continue
+            stored = self._record_fingerprint(record)
+            if stored is not None and fingerprint_similarity(stored, fingerprint) >= min_similarity:
+                matches.append(record)
+        return matches
 
     def create_event(
         self,
@@ -92,6 +117,14 @@ class EventLedger:
             key_facts=list(dict.fromkeys(key_facts or fingerprint.key_facts)),
             published_message_ids=[],
             status="new",
+            fingerprint_data={
+                "actors": list(fingerprint.actors),
+                "actions": list(fingerprint.actions),
+                "objects": list(fingerprint.objects),
+                "locations": list(fingerprint.locations),
+                "key_facts": list(fingerprint.key_facts),
+                "time_bucket": fingerprint.time_bucket,
+            },
         )
         records = self._read()
         records.append(event)
