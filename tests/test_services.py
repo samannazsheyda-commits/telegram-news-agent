@@ -32,7 +32,7 @@ class TelegramSession:
         self.payloads = []
 
     def post(self, url, **kwargs):
-        self.payloads.append(kwargs["json"])
+        self.payloads.append(kwargs.get("json") or kwargs.get("data"))
         return FakeResponse(payload={"ok": True})
 
 
