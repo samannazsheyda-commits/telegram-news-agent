@@ -1,5 +1,23 @@
 [
   {
+    "id": "2ef08a79ac5c7a675305efb2ec4edcbc9eaed8d3",
+    "news_key": "x:nytimesworld:2028456205417349268",
+    "source": "NYT World / X",
+    "source_url": "https://x.com/nytimesworld/status/2028456205417349268",
+    "original_title": "The U.S. and Israeli militaries pounded Iran and its allies for a third day on Monday as the widening attacks across the Middle East drew in more players and risked spiraling into a full-blown regional war. Follow live updates.",
+    "original_summary": "",
+    "persian_title": "",
+    "persian_body": "",
+    "published_at_source": "Mon, 02 Mar 2026 13:03:40 +0000",
+    "discovered_at": "2026-09-07T14:09:46.404914+00:00",
+    "rejection_reason": "not_today_tehran",
+    "status": "superseded",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-07T14:11:10.053472+00:00"
+  },
+  {
     "id": "b0ee03525b4a389706d52b71145cf11c7bb0cd56",
     "news_key": "x:nytimesworld:2031397471746744386",
     "source": "NYT World / X",
@@ -6838,24 +6856,6 @@
     "final_persian_body": "",
     "decision_at": "",
     "updated_at": "2026-09-05T09:04:05.554891+00:00"
-  },
-  {
-    "id": "2ef08a79ac5c7a675305efb2ec4edcbc9eaed8d3",
-    "news_key": "x:nytimesworld:2028456205417349268",
-    "source": "NYT World / X",
-    "source_url": "https://x.com/nytimesworld/status/2028456205417349268",
-    "original_title": "The U.S. and Israeli militaries pounded Iran and its allies for a third day on Monday as the widening attacks across the Middle East drew in more players and risked spiraling into a full-blown regional war. Follow live updates. https://nyti.ms/4cnxft8",
-    "original_summary": "",
-    "persian_title": "",
-    "persian_body": "",
-    "published_at_source": "Mon, 02 Mar 2026 13:03:40 +0000",
-    "discovered_at": "2026-09-05T09:03:17.310539+00:00",
-    "rejection_reason": "not_today_tehran",
-    "status": "superseded",
-    "final_persian_title": "",
-    "final_persian_body": "",
-    "decision_at": "",
-    "updated_at": "2026-09-05T09:04:05.513908+00:00"
   },
   {
     "id": "3a40233c1d64af895a0885652b7bcc13b78e4600",

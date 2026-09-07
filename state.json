@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
+    "x:CBSNews:2096964202837455043",
+    "x:nytimesworld:2028456205417349268",
     "x:nytimesworld:2031397471746744386",
     "x:nytimesworld:2043145585872581092",
     "x:business:2096961764025909733",
@@ -498,12 +500,10 @@
     "x:IsraelHayomEng:2095225700592554276",
     "x:IsraelHayomEng:2095457432407343246",
     "x:IsraelHayomEng:2095579893438329190",
-    "x:axios:2095808390815441005",
-    "x:axios:2095932703149301894",
-    "x:TimesofIsrael:2095859572124647823"
+    "x:axios:2095808390815441005"
   ],
   "market_last_sent_at": "2026-09-07T14:01:28.930413+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -623,6 +623,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "x:nytimesworld:2028456205417349268",
+      "source": "NYT World / X",
+      "title": "The U.S. and Israeli militaries pounded Iran and its allies for a third day on Monday as the widening attacks across the Middle East drew in more players and risked spiraling into a full-blown regional war. Follow live updates.",
+      "reason": "not_today_tehran",
+      "published": "Mon, 02 Mar 2026 13:03:40 +0000",
+      "link": "https://x.com/nytimesworld/status/2028456205417349268",
+      "checked_at": "2026-09-07T14:09:46.404914+00:00"
+    },
     {
       "key": "x:nytimesworld:2031397471746744386",
       "source": "NYT World / X",
@@ -2413,19 +2422,20 @@
       "published": "Sat, 05 Sep 2026 00:23:17 +0000",
       "link": "https://x.com/TankerTrackers/status/2096031376487133584",
       "checked_at": "2026-09-05T10:23:58.744213+00:00"
-    },
-    {
-      "key": "38eb433999b0dfc7d81388041a9d1019f9cbfdc9",
-      "source": "NOTAM / Airspace",
-      "title": "Kuwait Temporarily Closes Airspace After Iranian Attacks - The Defense Post",
-      "reason": "not_today_tehran",
-      "published": "Thu, 11 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9scE5oUmpFWHo5NkZfaFA5NmFMWXBZNWpyWUJ0QVVlUk90VW1RZXlEeEk5T1VCdzlYUmNnZk9sT2ZkOVJ2S0FucDZ6bUhxWmtTa1FONmFTTGw3T0pLTFdoZ1FJYkhVOEZub2ZZSVZxX2xWRi1OTmZfRERR0gF_QVVfeXFMUE9jQXlqc1lVc3Jfb2RDOWRITFdfcVB2XzhNaXEwcV9qWTk3LUNJUWNZUWdQd1FEckdWUzZYYnA2RGlrREcxZnA3UHdYQTFXNXNtQy1DRjlldWZmMzhfeDBkb0RGRDdpaHZrSlhMQ2lwbmNTNHd3WjNYQjNXcmhlOA?oc=5",
-      "checked_at": "2026-09-05T10:20:58.743746+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:CBSNews:2096964202837455043",
+      "source": "CBS News / X",
+      "title": "Live Updates: Iran says it will expand control in Strait of Hormuz as oil and gas prices continue to climb.",
+      "summary": "",
+      "link": "https://x.com/CBSNews/status/2096964202837455043",
+      "published": "Mon, 07 Sep 2026 14:10:00 +0000",
+      "sent_at": "2026-09-07T14:11:29.990148+00:00",
+      "fingerprint": "live updates iran says it will expand control in strait of hormuz as oil and gas prices continue to climb"
+    },
     {
       "key": "x:FT:2096961762511769932",
       "source": "Financial Times / X",
