@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
+    "x:AlArabiya_Eng:2096825791866716281",
+    "x:Reuters:2096823300575973676",
     "a1c22171b4bfc7149bff8d422a1121386df617eb",
     "e7aedd6630b20a3ff4b82881b47694eef38cd94a",
     "971f335ad44d25860243a29871eb938b49748a63",
@@ -498,9 +500,7 @@
     "a4b48f2fe754eb81937cd06d50079c4d49eea667",
     "eb64de6519867074f45447cff99880dd65c048d3",
     "d584ee4d4393eb9f1cee6df01fe0efc7a7227788",
-    "4f360726be22a8dd7d9c2135764a3eec2c1508aa",
-    "9339ac47087117cca3ec216ea50da1524b77a7fb",
-    "e8ff4905b8eb4b3de16de4d610ad94d636a4f76e"
+    "4f360726be22a8dd7d9c2135764a3eec2c1508aa"
   ],
   "market_last_sent_at": "2026-09-07T04:31:09.215986+00:00",
   "next_news_color": "white",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2096825791866716281",
+      "source": "Al Arabiya English / X",
+      "title": "Iranian authorities announce that they are raising the price of petrol for heavier consumers, as the United States steps up sanctions seeking to isolate the country’s economy.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096825791866716281",
+      "published": "Mon, 07 Sep 2026 05:00:00 +0000",
+      "sent_at": "2026-09-07T05:00:12.084710+00:00",
+      "fingerprint": "iranian authorities announce that they are raising the price of petrol for heavier consumers as the united states steps up sanctions seeking to isolate the country s economy"
+    },
+    {
+      "key": "x:Reuters:2096823300575973676",
+      "source": "Reuters / X",
+      "title": "Oil extends gains after US and Iran strike ships",
+      "summary": "",
+      "link": "https://x.com/Reuters/status/2096823300575973676",
+      "published": "Mon, 07 Sep 2026 04:50:06 +0000",
+      "sent_at": "2026-09-07T04:58:51.917902+00:00",
+      "fingerprint": "oil extends gains after us and iran strike ships"
+    },
     {
       "key": "x:TheEconomist:2096815749096435821",
       "source": "The Economist / X",
