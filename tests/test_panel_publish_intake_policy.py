@@ -7,9 +7,9 @@ def test_panel_loads_publish_visibility_guard():
     assert 'panel-publish-visibility.js?v=' in html
 
 
-def test_relaxed_newsroom_intake_defaults():
+def test_newsroom_keeps_freshness_strict_but_dedup_balanced():
     settings = json.loads(Path('data/newsroom_settings.json').read_text(encoding='utf-8'))
-    assert settings['freshness_hours'] >= 12
+    assert settings['freshness_hours'] == 2
     assert settings['dedup_mode'] == 'balanced'
 
 
