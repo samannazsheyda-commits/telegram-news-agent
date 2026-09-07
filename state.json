@@ -1,10 +1,6 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
-    "05b519493e12bc70566a2252982875d2cac99d9d",
-    "44a7936014d36349cd9a196288e355dd226cd616",
-    "b0b4eb9246ea46545b988b91ee491bd4c833303f",
-    "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
     "x:Reuters:2096886228285014259",
     "x:FT:2096885297652904363",
     "x:business:2096882437485699218",
@@ -500,7 +496,11 @@
     "6f17e16872244d66d3ef2f3ac15156015ece9e8f",
     "509321aef79537936c2dc1538897ee4ed9fbe0fa",
     "156833b2eab003115561894db9931bdf5861050e",
-    "ee8e4a21c3d17ea3799c9f7f4482599b88dd879a"
+    "ee8e4a21c3d17ea3799c9f7f4482599b88dd879a",
+    "05b519493e12bc70566a2252982875d2cac99d9d",
+    "44a7936014d36349cd9a196288e355dd226cd616",
+    "b0b4eb9246ea46545b988b91ee491bd4c833303f",
+    "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac"
   ],
   "market_last_sent_at": "2026-09-07T07:27:23.777746+00:00",
   "next_news_color": "white",
@@ -630,7 +630,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 11:57:12 +0000",
       "link": "https://t.me/thecradlemedia/67480",
-      "checked_at": "2026-09-07T09:22:47.698531+00:00"
+      "checked_at": "2026-09-07T09:24:33.716599+00:00"
     },
     {
       "key": "44a7936014d36349cd9a196288e355dd226cd616",
@@ -639,7 +639,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 19:03:07 +0000",
       "link": "https://t.me/ClashReport/95362",
-      "checked_at": "2026-09-07T09:22:47.698531+00:00"
+      "checked_at": "2026-09-07T09:24:33.716599+00:00"
     },
     {
       "key": "b0b4eb9246ea46545b988b91ee491bd4c833303f",
@@ -648,7 +648,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 18:50:05 +0000",
       "link": "https://t.me/ClashReport/95357",
-      "checked_at": "2026-09-07T09:22:47.698531+00:00"
+      "checked_at": "2026-09-07T09:24:33.716599+00:00"
     },
     {
       "key": "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
@@ -657,7 +657,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 18:54:37 +0000",
       "link": "https://t.me/ClashReport/95359",
-      "checked_at": "2026-09-07T09:22:47.698531+00:00"
+      "checked_at": "2026-09-07T09:24:33.716599+00:00"
     },
     {
       "key": "d47a95b28be84feca29331cb9bc4198a2423a75c",
