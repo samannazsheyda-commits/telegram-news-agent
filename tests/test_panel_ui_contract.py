@@ -26,6 +26,11 @@ def test_panel_has_newsroom_controls_and_no_blocking_dialogs():
     assert 'prompt(' not in combined
 
 
+def test_panel_uses_bikhabar_agent_connection_wording():
+    html = PANEL.read_text(encoding="utf-8")
+    assert "اتصال به ایجنت بی‌خبر" in html
+
+
 def test_panel_persists_token_and_can_resume_pending_action_after_connect():
     js = JS.read_text(encoding="utf-8")
     assert "localStorage" in js
