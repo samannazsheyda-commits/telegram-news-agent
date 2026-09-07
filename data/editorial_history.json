@@ -1,5 +1,23 @@
 [
   {
+    "id": "4b91563f86326d7114ec89462c5c16836f9982d0",
+    "news_key": "x:IDF:2095569785522360508",
+    "source": "IDF / X",
+    "source_url": "https://x.com/IDF/status/2095569785522360508",
+    "original_title": "The IDF completed the clearing of Hezbollah’s underground infrastructure in the Ali al-Taher Ridge area & is operating to neutralize it. The terrorists who were present inside the infrastructure carried out terror attacks against Israel & IDF soldiers and were eliminated or fled the area. The infrastructure is a strategic underground network that was built over 2 decades and funded & planned by the Iranian terror regime, containing command centers, weapons, living quarters and more. The operation to neutralize the underground infrastructure sites is still ongoing—upon completion, the IDF will adjust its defensive posture in accordance with the situational assessment.",
+    "original_summary": "",
+    "persian_title": "",
+    "persian_body": "",
+    "published_at_source": "Thu, 03 Sep 2026 17:49:05 +0000",
+    "discovered_at": "2026-09-07T16:22:56.195727+00:00",
+    "rejection_reason": "not_today_tehran",
+    "status": "superseded",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-07T16:24:15.189271+00:00"
+  },
+  {
     "id": "a44c04190629e2a4794da16622ab4f742406d70e",
     "news_key": "469dc94e9c5de8384bc391702e590d5ba9ac0741",
     "source": "NOTAM / Airspace",
@@ -6730,24 +6748,6 @@
     "final_persian_body": "",
     "decision_at": "",
     "updated_at": "2026-09-05T09:04:05.978386+00:00"
-  },
-  {
-    "id": "4b91563f86326d7114ec89462c5c16836f9982d0",
-    "news_key": "x:IDF:2095569785522360508",
-    "source": "IDF / X",
-    "source_url": "https://x.com/IDF/status/2095569785522360508",
-    "original_title": "⭕️‼️The IDF completed the clearing of Hezbollah’s underground infrastructure in the Ali al-Taher Ridge area & is operating to neutralize it. The terrorists who were present inside the infrastructure carried out terror attacks against Israel & IDF soldiers and were eliminated or fled the area. The infrastructure is a strategic underground network that was built over 2 decades and funded & planned by the Iranian terror regime, containing command centers, weapons, living quarters and more. The operation to neutralize the underground infrastructure sites is still ongoing—upon completion, the IDF will adjust its defensive posture in accordance with the situational assessment.",
-    "original_summary": "",
-    "persian_title": "",
-    "persian_body": "",
-    "published_at_source": "Thu, 03 Sep 2026 17:49:05 +0000",
-    "discovered_at": "2026-09-05T09:03:17.310539+00:00",
-    "rejection_reason": "not_today_tehran",
-    "status": "superseded",
-    "final_persian_title": "",
-    "final_persian_body": "",
-    "decision_at": "",
-    "updated_at": "2026-09-05T09:04:05.936297+00:00"
   },
   {
     "id": "1a351bb419b9c5c05525699f48803afad40b189d",

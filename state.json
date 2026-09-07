@@ -1,6 +1,9 @@
 {
-  "truth_last_id": "41603",
+  "truth_last_id": "41618",
   "news_seen": [
+    "x:IDF:2095569785522360508",
+    "x:NBCNews:2096996943230566888",
+    "x:AlArabiya_Eng:2096995630656712981",
     "x:business:2096991949844533611",
     "469dc94e9c5de8384bc391702e590d5ba9ac0741",
     "x:IsraelHayomEng:2095457432407343246",
@@ -497,10 +500,7 @@
     "x:CENTCOM:2094411076729262413",
     "x:CENTCOM:2094795462578467050",
     "x:CENTCOM:2094826294466810366",
-    "x:CENTCOM:2095232852107346069",
-    "x:CENTCOM:2095595527337623679",
-    "x:IDF:2095569785522360508",
-    "x:kann_news:2095891154633957403"
+    "x:CENTCOM:2095232852107346069"
   ],
   "market_last_sent_at": "2026-09-07T16:01:34.128941+00:00",
   "next_news_color": "red",
@@ -623,6 +623,15 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "x:IDF:2095569785522360508",
+      "source": "IDF / X",
+      "title": "The IDF completed the clearing of Hezbollah’s underground infrastructure in the Ali al-Taher Ridge area & is operating to neutralize it. The terrorists who were present inside the infrastructure carried out terror attacks against Israel & IDF soldiers and were eliminated or fled the area. The infrastructure is a strategic underground network that was built over 2 decades and funded & planned by the Iranian terror regime, containing command centers, weapons, living quarters and more. The operation to neutralize the underground infrastructure sites is still ongoing—upon completion, the IDF will adjust its defensive posture in accordance with the situational assessment.",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 17:49:05 +0000",
+      "link": "https://x.com/IDF/status/2095569785522360508",
+      "checked_at": "2026-09-07T16:22:56.195727+00:00"
+    },
     {
       "key": "469dc94e9c5de8384bc391702e590d5ba9ac0741",
       "source": "NOTAM / Airspace",
@@ -2413,19 +2422,30 @@
       "published": "Mon, 20 Apr 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQMGhrV3pRbzZoR0txT1c4ZktPN3JTZ3RHOTJkU3FEaGdWMURGcWIyUE5zdFFMbzlvUnhaTGRReDlvY3Y2UnhDU2J5UFd3RzdYTGZ1U04zb3hVaGc4VUV3VUxRSDhaS3lxdkdwbm9NeUltekM5aHo5RTUybHJ0cUg1VDFWNVBrU3Z1SGxDSzNxSjQ3VEFsY0Y3MlRsRktieW42c3c4bjdPVlBMWk9KOExkTm9sZDg?oc=5",
       "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "c723105b64d21a4751d29894ddfd8023aa43a6fa",
-      "source": "Fox News",
-      "title": "Trump can deny Iran airspace: Ret vice admiral",
-      "reason": "not_today_tehran",
-      "published": "Fri, 01 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE8yZmpIRW9qNEgyVV9BLUVBbkRTOW1kdVlrS2lNcU1faThWZ1dkRFl1WldUaUxzeW0xX2ZDazBBTk85aS03RnR2ZnlmOHNJN3ZaYm1Ydkdn?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:NBCNews:2096996943230566888",
+      "source": "NBC News / X",
+      "title": "President Trump’s pool of most ardent supporters is shrinking, according to a new poll, as Americans give him low marks on his overall job performance and his handling of the Iran war.",
+      "summary": "",
+      "link": "https://x.com/NBCNews/status/2096996943230566888",
+      "published": "Mon, 07 Sep 2026 16:20:06 +0000",
+      "sent_at": "2026-09-07T16:21:15.170770+00:00",
+      "fingerprint": "president trump s pool of most ardent supporters is shrinking according to a new poll as americans give him low marks on his overall job performance and his handling of the iran war"
+    },
+    {
+      "key": "x:AlArabiya_Eng:2096995630656712981",
+      "source": "Al Arabiya English / X",
+      "title": "LIVE: US to Turn Diplomatic Screws on Iran Over Nuclear Non-Compliance | Al Arabiya English 09/07/2026",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096995630656712981",
+      "published": "Mon, 07 Sep 2026 16:14:53 +0000",
+      "sent_at": "2026-09-07T16:19:39.510132+00:00",
+      "fingerprint": "live us to turn diplomatic screws on iran over nuclear non compliance al arabiya english 09 07 2026"
+    },
     {
       "key": "x:business:2096991949844533611",
       "source": "Bloomberg / X",
