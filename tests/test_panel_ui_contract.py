@@ -3,6 +3,7 @@ from pathlib import Path
 PANEL = Path("docs/panel.html")
 JS = Path("docs/panel.js")
 CSS = Path("docs/panel.css")
+NEWSROOM_CSS = Path("docs/newsroom-v1.css")
 
 
 def test_panel_has_newsroom_controls_and_no_blocking_dialogs():
@@ -77,9 +78,11 @@ def test_panel_persian_headline_is_multiline_and_autogrows():
 
 def test_panel_assets_and_accessibility_contract():
     html = PANEL.read_text(encoding="utf-8")
-    css = CSS.read_text(encoding="utf-8")
+    css = CSS.read_text(encoding="utf-8") + "\n" + NEWSROOM_CSS.read_text(encoding="utf-8")
     assert 'href="panel.css"' in html
+    assert 'href="newsroom-v1.css"' in html
     assert 'src="panel.js"' in html
-    assert "Vazirmatn" in css
+    assert 'src="newsroom-v1.js"' in html
+    assert "Doran NoEn ExtraBold" in css
     assert ":focus-visible" in css
     assert "position:sticky" in css or "position: sticky" in css

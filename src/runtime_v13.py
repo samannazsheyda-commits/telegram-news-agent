@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+import json
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, time as clock_time, timedelta, timezone
+from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
 
 from . import runtime_v12 as v12
 from .editorial_store import LocalEditorialStore
+from .manual_publish import _clean_source
 from .sources import USER_AGENT
 
 base = v12.base
@@ -17,6 +20,79 @@ _PRICE_MARKERS = {
     "car": "قیمت روز خودرو",
     "phone": "قیمت روز موبایل",
 }
+_NEWSROOM_SETTINGS_PATH = Path("data/newsroom_settings.json")
+_upstream_fetch_news_items = None
+
+
+def load_newsroom_settings(path: str | Path = _NEWSROOM_SETTINGS_PATH) -> dict:
+    try:
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _parse_hhmm(value: object, fallback: clock_time) -> clock_time:
+    raw = str(value or "").strip()
+    try:
+        hour, minute = raw.split(":", 1)
+        return clock_time(hour=max(0, min(23, int(hour))), minute=max(0, min(59, int(minute))))
+    except (ValueError, TypeError):
+        return fallback
+
+
+def quiet_mode_active(settings: dict, now: datetime) -> bool:
+    if not settings.get("quiet_mode"):
+        return False
+    local = now.astimezone(base.agent.TEHRAN).time().replace(tzinfo=None)
+    start = _parse_hhmm(settings.get("quiet_start"), clock_time(0, 0))
+    end = _parse_hhmm(settings.get("quiet_end"), clock_time(7, 0))
+    if start == end:
+        return True
+    if start < end:
+        return start <= local < end
+    return local >= start or local < end
+
+
+def newsroom_publish_paused(settings: dict, now: datetime) -> bool:
+    return bool(settings.get("emergency_lock")) or settings.get("auto_publish") is False or quiet_mode_active(settings, now)
+
+
+def _source_allowed(item, settings: dict) -> bool:
+    prefs = settings.get("sources") if isinstance(settings.get("sources"), dict) else {}
+    raw_source = str(getattr(item, "source", "") or "").strip()
+    localized = _clean_source(raw_source)
+    pref = prefs.get(raw_source) or prefs.get(localized) or {}
+    return not isinstance(pref, dict) or pref.get("enabled") is not False
+
+
+def _fresh_enough(item, settings: dict, now: datetime) -> bool:
+    try:
+        hours = max(1, min(48, int(settings.get("freshness_hours") or 3)))
+    except (TypeError, ValueError):
+        hours = 3
+    published = base.agent._published_dt(str(getattr(item, "published", "") or ""))
+    if published is None:
+        return True
+    return published >= now - timedelta(hours=hours)
+
+
+def _newsroom_fetch_news_items():
+    upstream = _upstream_fetch_news_items
+    if upstream is None:
+        return []
+    items = list(upstream() or [])
+    settings = load_newsroom_settings()
+    now = datetime.now(timezone.utc)
+    return [item for item in items if _source_allowed(item, settings) and _fresh_enough(item, settings, now)]
+
+
+def _install_newsroom_fetch_policy() -> None:
+    global _upstream_fetch_news_items
+    current = base.agent.fetch_news_items
+    if current is not _newsroom_fetch_news_items:
+        _upstream_fetch_news_items = current
+    base.agent.fetch_news_items = _newsroom_fetch_news_items
 
 
 def channel_has_daily_price_post(html_text: str, now: datetime, kind: str) -> bool:
@@ -135,12 +211,25 @@ def install_production_policies() -> None:
     v12.install_production_policies()
     v12.v11.v10.v9.install_persian_only_output()
     base.agent._car_due = _car_due_once_per_day
+    _install_newsroom_fetch_policy()
+
+
+def _collect_only_for_panel() -> int:
+    from .panel_command_file import _scan_fresh_items_into_queue
+
+    return _scan_fresh_items_into_queue(LocalEditorialStore())
 
 
 def run(now=None) -> int:
     install_production_policies()
     resolved_now = now or datetime.now(timezone.utc)
     expire_previous_day_queue(resolved_now)
+    settings = load_newsroom_settings()
+    if newsroom_publish_paused(settings, resolved_now):
+        added = _collect_only_for_panel()
+        reason = "emergency_lock" if settings.get("emergency_lock") else "auto_publish_off" if settings.get("auto_publish") is False else "quiet_mode"
+        print(f"NEWSROOM_PUBLISH_PAUSED reason={reason} queued={added}")
+        return 0
     v12.v11.v10._retry_todays_false_bundles(resolved_now)
     _publish_phone_once_per_day(resolved_now)
     return v12.v11.v10.v9.v8.run(resolved_now)
