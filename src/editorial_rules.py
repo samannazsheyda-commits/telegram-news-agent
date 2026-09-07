@@ -146,10 +146,66 @@ def _specific_facts(item: NewsItem) -> set[str]:
     return facts
 
 
+def _event_markers(item: NewsItem) -> set[str]:
+    """Coarse event/action identity used to prevent broad-topic false duplicates."""
+    text = _normalize(f"{item.title} {item.summary}")
+    groups = {
+        "hormuz_restriction": (
+            "restricted zone", "exclusion zone", "sanctions list", "منطقه محدود", "منطقه ممنوع", "فهرست تحریم",
+        ),
+        "hormuz_corridor": (
+            "shipping route", "shipping corridor", "maritime corridor", "new route for the strait", "مسیر کشتیرانی", "کریدور کشتیرانی",
+        ),
+        "airspace_close": (
+            "closes airspace", "closed airspace", "shuts airspace", "airspace closure", "بستن حریم هوایی", "حریم هوایی بسته",
+        ),
+        "airspace_reopen": (
+            "reopens airspace", "reopen airspace", "partially reopens airspace", "airspace reopened", "بازگشایی حریم هوایی", "حریم هوایی باز",
+        ),
+        "missile_intercept": (
+            "intercepts iranian missiles", "intercepted iranian missiles", "missile interception", "رهگیری موشک",
+        ),
+        "missile_test": (
+            "tested an iranian anti-ship missile", "tested a domestically produced", "آزمایش موشک ضد کشتی", "آزمایش موشک ضدکشتی",
+        ),
+        "tanker_strike": (
+            "struck three iranian oil tankers", "struck three iranian crude oil carriers", "three iranian oil tankers", "سه نفتکش ایرانی",
+        ),
+    }
+    return {name for name, aliases in groups.items() if any(alias in text for alias in aliases)}
+
+
+def _operational_counts(item: NewsItem) -> dict[str, str]:
+    """Extract changing operational counters such as redirected/disabled/boarded vessel totals."""
+    text = _normalize(f"{item.title} {item.summary}")
+    aliases = {
+        "redirected": ("redirected", "rerouted", "تغییر مسیر داده"),
+        "disabled": ("disabled", "غیرفعال", "از کار انداخته"),
+        "boarded": ("boarded", "توقیف", "بازرسی"),
+    }
+    result: dict[str, str] = {}
+    for name, verbs in aliases.items():
+        for verb in verbs:
+            match = re.search(rf"{re.escape(verb)}\D{{0,18}}([0-9۰-۹]+)", text)
+            if match:
+                result[name] = match.group(1)
+                break
+    return result
+
+
 def is_duplicate_story(left: NewsItem, right: NewsItem) -> bool:
     """Treat the same underlying event/claim as duplicate regardless of outlet wording."""
     a, b = _tokens(left), _tokens(right)
     if not a or not b:
+        return False
+
+    left_counts, right_counts = _operational_counts(left), _operational_counts(right)
+    shared_count_types = left_counts.keys() & right_counts.keys()
+    if any(left_counts[key] != right_counts[key] for key in shared_count_types):
+        return False
+
+    left_markers, right_markers = _event_markers(left), _event_markers(right)
+    if left_markers and right_markers and left_markers.isdisjoint(right_markers):
         return False
 
     left_facts, right_facts = _specific_facts(left), _specific_facts(right)
@@ -164,10 +220,12 @@ def is_duplicate_story(left: NewsItem, right: NewsItem) -> bool:
 
     ca, cb = _concepts(left), _concepts(right)
     concept_common = ca & cb
+    # Concepts are supporting evidence only. Iran/USA/strike/Hormuz are too broad
+    # to declare two stories duplicates by themselves.
     if len(concept_common) >= 4:
-        return True
+        return len(common) >= 3 and overlap >= 0.30
     if len(concept_common) >= 3:
-        return len(common) >= 2 or overlap >= 0.24
+        return len(common) >= 4 and overlap >= 0.34
     return False
 
 
