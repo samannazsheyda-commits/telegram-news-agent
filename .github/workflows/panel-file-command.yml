@@ -48,6 +48,10 @@ jobs:
           TELEGRAM_CHAT_ID: "@bikhabaar"
         run: python -m src.panel_command_router "${{ steps.command.outputs.path }}"
 
+      - name: Expire stale pending news
+        if: always()
+        run: python -m src.queue_freshness
+
       - name: Persist runtime state and result safely
         if: always()
         shell: bash
