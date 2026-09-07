@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
+    "6b456a515b0711b8331fab51685648ffd0a046e2",
     "x:AJEnglish:2096930970754593010",
     "x:AlArabiya_Eng:2096923191784439907",
     "x:Jerusalem_Post:2096920552883568757",
@@ -499,8 +500,7 @@
     "ccd197fa437ba5b6476c182e9c66a68da192504b",
     "11793538e614e35d40c505011db03cdca00c5744",
     "3dab26bc356e575606b6b0e0e34804c9ee255666",
-    "04c9e689cefa832263ff2b66498f7183a7ae6bbd",
-    "875b8701be5bf56895ab970caaf781248e650f93"
+    "04c9e689cefa832263ff2b66498f7183a7ae6bbd"
   ],
   "market_last_sent_at": "2026-09-07T11:57:41.209563+00:00",
   "next_news_color": "red",
