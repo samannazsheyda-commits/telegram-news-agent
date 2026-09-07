@@ -1,0 +1,56 @@
+name: Newsroom V2 Shadow
+
+on:
+  push:
+    branches:
+      - design/newsroom-v2-2026-09-07
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "data/**"
+      - ".github/workflows/newsroom-v2-shadow.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Run focused V2 tests
+        run: >-
+          python -m pytest -q
+          tests/test_newsroom_raw_intake.py
+          tests/test_newsroom_models.py
+          tests/test_newsroom_normalize.py
+          tests/test_newsroom_fingerprint.py
+          tests/test_event_ledger.py
+          tests/test_newsroom_decision.py
+          tests/test_panel_live_feed.py
+          tests/test_newsroom_v2_integration.py
+          tests/test_truth_social.py
+      - name: Run live shadow cycle
+        env:
+          NEWSROOM_V2_FRESHNESS_HOURS: "6"
+          NEWSROOM_V2_PANEL_MAX_RECORDS: "500"
+        run: python -m src.newsroom_v2_runtime
+      - name: Assert shadow never publishes
+        run: |
+          test -f data/panel_live_feed.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rows=json.loads(Path('data/panel_live_feed.json').read_text(encoding='utf-8'))
+          assert isinstance(rows, list)
+          assert all(row.get('telegram_message_id') in (None, '') for row in rows)
+          print('SHADOW_FEED_RECORDS', len(rows))
+          PY
