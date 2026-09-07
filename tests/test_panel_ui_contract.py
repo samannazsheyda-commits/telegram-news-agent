@@ -31,13 +31,17 @@ def test_panel_uses_bikhabar_agent_connection_wording():
     assert "اتصال به ایجنت بی‌خبر" in html
 
 
-def test_panel_persists_token_and_can_resume_pending_action_after_connect():
+def test_panel_persists_token_and_resumes_pending_action_after_connect():
     js = JS.read_text(encoding="utf-8")
     assert "localStorage" in js
     assert "pendingAuthAction" in js
-    assert "resumePendingAuthAction" in js
-    assert "queueAuthAction" in js
-    assert "removeItem('bikhabar_contents_token')" not in js.split("async function connect", 1)[1].split("function disconnect", 1)[0]
+    assert "requireConnection" in js
+    connect_block = js.split("async function connect", 1)[1].split("function disconnect", 1)[0]
+    assert "pendingAuthAction=null" in connect_block
+    assert "pending?.type==='refresh'" in connect_block
+    assert "pending?.type==='reject'" in connect_block
+    assert "pending?.type==='publish'" in connect_block
+    assert "removeItem('bikhabar_contents_token')" not in connect_block
 
 
 def test_panel_keeps_local_drafts():
@@ -47,17 +51,28 @@ def test_panel_keeps_local_drafts():
     assert "clearDraft" in js
 
 
-def test_panel_has_optimistic_and_result_polling_hooks():
+def test_panel_has_optimistic_publish_reject_and_result_polling_behavior():
     js = JS.read_text(encoding="utf-8")
-    for hook in (
-        "optimisticReject",
-        "optimisticPublish",
-        "restoreRejectedCard",
-        "restorePublishCard",
-        "pollCommandResult",
-        "reconcileCommandResult",
-    ):
-        assert hook in js
+    assert "hiddenItems.add(item.id)" in js
+    assert "hiddenItems.delete(item.id)" in js
+    assert "pollCommandResult" in js
+    assert "executeReject" in js
+    assert "executePublish" in js
+
+
+def test_panel_refresh_runs_real_scan_and_only_shows_today_queue():
+    js = JS.read_text(encoding="utf-8")
+    assert "forceRefresh" in js
+    assert "action:'refresh'" in js
+    assert "todayQueueItem" in js
+    assert "day(stamp)===day(new Date().toISOString())" in js
+
+
+def test_panel_persian_headline_is_multiline_and_autogrows():
+    js = JS.read_text(encoding="utf-8")
+    assert '<textarea class="title-input"' in js
+    assert "autoGrow" in js
+    assert "growAllTitles" in js
 
 
 def test_panel_assets_and_accessibility_contract():
