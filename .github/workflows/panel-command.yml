@@ -1,0 +1,69 @@
+name: Browser Panel Command
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: publish or reject
+        required: true
+        type: choice
+        options: [publish, reject]
+      item_id:
+        description: Editorial item id
+        required: true
+        type: string
+      title:
+        description: Final Persian title
+        required: false
+        type: string
+      body:
+        description: Final Persian body
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: telegram-news-agent
+  cancel-in-progress: false
+
+jobs:
+  command:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Apply editorial command
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: "@bikhabaar"
+        run: |
+          python -m src.panel_command \
+            "${{ inputs.action }}" \
+            "${{ inputs.item_id }}" \
+            --title "${{ inputs.title }}" \
+            --body "${{ inputs.body }}"
+
+      - name: Persist editorial state
+        run: |
+          git config user.name "telegram-news-agent[bot]"
+          git config user.email "telegram-news-agent[bot]@users.noreply.github.com"
+          git add state.json data/editorial_queue.json data/editorial_history.json
+          if git diff --cached --quiet; then
+            echo "No editorial data changes"
+            exit 0
+          fi
+          git commit -m "chore: apply browser panel command"
+          git push
