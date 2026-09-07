@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41619",
   "news_seen": [
+    "x:AlArabiya_Eng:2097039332167094387",
     "afb47f80fda3233bc33f2f0a3a5dae5d26ae4e22",
     "e792829fab8dc2d1c1dbb9e9db54867a5a9fe5db",
     "x:statedeptspox:2095568528007127326",
@@ -499,11 +500,10 @@
     "x:mdubowitz:2095889790990184936",
     "x:JasonMBrodsky:2095824486431858777",
     "x:JasonMBrodsky:2095825250701267327",
-    "x:JasonMBrodsky:2095873000092373105",
-    "x:JasonMBrodsky:2095887071613190529"
+    "x:JasonMBrodsky:2095873000092373105"
   ],
   "market_last_sent_at": "2026-09-07T18:20:33.841773+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2097039332167094387",
+      "source": "Al Arabiya English / X",
+      "title": "Two children were killed in a Houthi ballistic missile attack on a displacement center in Yemen’s central Marib province, an Al Arabiya correspondent reports 🔴 Separately, the Iran-backed Houthi militia fired a ballistic missile at the vicinity of a hospital in the Red Sea port city of Mokha, according to the correspondent",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097039332167094387",
+      "published": "Mon, 07 Sep 2026 19:08:32 +0000",
+      "sent_at": "2026-09-07T19:08:57.984831+00:00",
+      "fingerprint": "two children were killed in a houthi ballistic missile attack on a displacement center in yemen s central marib province an al arabiya correspondent reports separately the iran backed houthi militia fired a ballistic missile at the vicinity of a hospital in the red sea port city of mokha according to the correspondent"
+    },
     {
       "key": "x:JasonMBrodsky:2097009134327541823",
       "source": "Jason Brodsky / X",
