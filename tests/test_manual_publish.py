@@ -49,6 +49,41 @@ def test_manual_publish_saves_exact_edited_copy_after_telegram_success(tmp_path)
     assert json.loads(state.read_text(encoding="utf-8"))["news_seen"][0] == "manual-1"
 
 
+def test_manual_publish_exact_newsroom_layout_and_x_source_label(tmp_path):
+    store = LocalEditorialStore(tmp_path / "q.json", tmp_path / "h.json")
+    item = ReviewItem.for_news(
+        news_key="reuters-x-uae",
+        source="Reuters / X",
+        source_url="https://x.com/Reuters/status/2096895020225663094",
+        original_title="UAE creates alternative trade and energy routes after Iranian attacks",
+        original_summary="A UAE official says alternative routes are being created after Iranian attacks.",
+        persian_title="یک مقام رسمی می‌گوید امارات متحده عربی پس از حملات ایران، مسیرهای تجاری و انرژی جایگزین ایجاد می‌کند",
+        persian_body="",
+        published_at_source="Sun, 06 Sep 2026 09:35:00 GMT",
+    )
+    store.upsert_queue(item)
+    sent = []
+
+    publish_review_item(
+        store,
+        item.id,
+        item.persian_title,
+        "",
+        "token",
+        "chat",
+        sender=lambda text, token, chat: sent.append(text),
+    )
+
+    msg = sent[0]
+    assert msg.startswith("<b>رویترز / ایکس: یک مقام رسمی می‌گوید امارات متحده عربی پس از حملات ایران، مسیرهای تجاری و انرژی جایگزین ایجاد می‌کند.</b>")
+    assert "🇮🇷 🇦🇪" not in msg.splitlines()[0]
+    assert "Reuters / X" not in msg
+    assert "A UAE official" not in msg
+    assert "📌 <a href=\"https://x.com/Reuters/status/2096895020225663094\">لینک منبع خبر</a>" in msg
+    assert "📡 <a href=\"https://t.me/bikhabaar\">بی‌خبر</a> ←\nمانیتور تحولات ایران" in msg
+    assert msg.endswith("🛑 🇮🇷 🇦🇪 💥")
+
+
 def test_telegram_failure_leaves_item_pending(tmp_path):
     store = LocalEditorialStore(tmp_path / "q.json", tmp_path / "h.json")
     item = _pending(store)
