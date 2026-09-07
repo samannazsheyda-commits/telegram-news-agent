@@ -232,6 +232,10 @@ def is_low_value_company_news(item: NewsItem) -> bool:
         return False
     if any(term in text for term in OPERATIONAL_SECURITY_TERMS):
         return False
+    if "airline" in text and any(action in text for action in ("resume", "reopen", "rebuild", "return", "reroute", "cancel", "suspend")) and any(
+        scope in text for scope in ("service", "services", "route", "routes", "flight", "flights", "airspace")
+    ):
+        return False
     if any(term in text for term in ("flight", "flights", "airspace", "پرواز", "حریم هوایی")) and any(
         action in text for action in ("cancel", "suspend", "resume", "reopen", "rebuild", "restore", "return", "reroute", "avoid", "close", "لغو", "تعلیق", "ازسرگیری", "بازگشایی", "بسته")
     ):
