@@ -1,6 +1,10 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
+    "05b519493e12bc70566a2252982875d2cac99d9d",
+    "44a7936014d36349cd9a196288e355dd226cd616",
+    "b0b4eb9246ea46545b988b91ee491bd4c833303f",
+    "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
     "x:Jerusalem_Post:2096868877489541445",
     "x:Jerusalem_Post:2096865938003972243",
     "x:AlArabiya_Eng:2096861964169281778",
@@ -496,11 +500,7 @@
     "6a7da106a52fb3a20a7f69648503fa981e6bc1d6",
     "cf314cb2369de9fe3f0b85f78fe267b74c8f6ddf",
     "f7c58011aa25ca020705143fc973173f46b101c1",
-    "9ccf59d2faf2f5b01757aa101a1e8d5cf36d6b18",
-    "05b519493e12bc70566a2252982875d2cac99d9d",
-    "44a7936014d36349cd9a196288e355dd226cd616",
-    "b0b4eb9246ea46545b988b91ee491bd4c833303f",
-    "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac"
+    "9ccf59d2faf2f5b01757aa101a1e8d5cf36d6b18"
   ],
   "market_last_sent_at": "2026-09-07T07:27:23.777746+00:00",
   "next_news_color": "white",
@@ -630,7 +630,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 11:57:12 +0000",
       "link": "https://t.me/thecradlemedia/67480",
-      "checked_at": "2026-09-07T07:52:00.292298+00:00"
+      "checked_at": "2026-09-07T07:56:57.097812+00:00"
     },
     {
       "key": "44a7936014d36349cd9a196288e355dd226cd616",
@@ -639,7 +639,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 19:03:07 +0000",
       "link": "https://t.me/ClashReport/95362",
-      "checked_at": "2026-09-07T07:52:00.292298+00:00"
+      "checked_at": "2026-09-07T07:56:57.097812+00:00"
     },
     {
       "key": "b0b4eb9246ea46545b988b91ee491bd4c833303f",
@@ -648,7 +648,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 18:50:05 +0000",
       "link": "https://t.me/ClashReport/95357",
-      "checked_at": "2026-09-07T07:52:00.292298+00:00"
+      "checked_at": "2026-09-07T07:56:57.097812+00:00"
     },
     {
       "key": "c6eed13ce444f12f4259aa2e1661bc7ee2e71fac",
@@ -657,7 +657,7 @@
       "reason": "not_today_tehran",
       "published": "Sun, 06 Sep 2026 18:54:37 +0000",
       "link": "https://t.me/ClashReport/95359",
-      "checked_at": "2026-09-07T07:52:00.292298+00:00"
+      "checked_at": "2026-09-07T07:56:57.097812+00:00"
     },
     {
       "key": "d47a95b28be84feca29331cb9bc4198a2423a75c",
