@@ -1,5 +1,5 @@
 {
-  "truth_last_id": "41618",
+  "truth_last_id": "41619",
   "news_seen": [
     "x:statedeptspox:2095568528007127326",
     "3f1a9f7bef42ca31ee3aeb987f55ecbfdada4384",
@@ -502,7 +502,7 @@
     "x:JasonMBrodsky:2095889532616900608",
     "x:JasonMBrodsky:2095897761962959227"
   ],
-  "market_last_sent_at": "2026-09-07T16:01:34.128941+00:00",
+  "market_last_sent_at": "2026-09-07T18:20:33.841773+00:00",
   "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
@@ -614,9 +614,9 @@
   "market_day_prices": {
     "date": "2026-09-07",
     "first_usd": 223000,
-    "last_usd": 222360,
+    "last_usd": 222100,
     "first_gold": 23353600,
-    "last_gold": 23055300,
+    "last_gold": 23062200,
     "first_brent": 96.28,
     "last_brent": 96.28,
     "first_wti": 91.48,
