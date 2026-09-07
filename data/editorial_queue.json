@@ -1,1 +1,56 @@
-[]
+[
+  {
+    "id": "0f80f0f2aec0726a9e33db4f24e4c461a361a80e",
+    "news_key": "ce33db222f288da8b960078d9088e722f1321a0f",
+    "source": "Times of Israel",
+    "source_url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxQeGtPWkFwTnJoN2pVQU5jeWxlYkdaZlZNWWZuaHp3SVVFclpFbnJ5RXVyMktNVDZRM1EzUVVmNUtWbEFzYVFhUjlZbmdnNTNSNkZXUUxQdVQtdUlxZk82MzM3UEVodmJTUUlmNGtBLV85QUdwV25TVDhrVDRqRXZmaXZUakkwOTFMZ3RaSkNiQXR1UmlOTERQbXR3XzBHZjJCUS1HTXk1WDhGU1ZFamRRSlRnU3F3MGY1S0RxcDNxcTI3OFB3TE5pX1A3S0VPS3hKUVhOTGtvakxjUQ?oc=5",
+    "original_title": "IAEA chief Grossi calls on Iran to reengage on nuclear issues as western powers seek UN referral",
+    "original_summary": "IAEA chief Grossi calls on Iran to reengage on nuclear issues as western powers seek UN referral The Times of Israel",
+    "persian_title": "گروسی، مدیرکل آژانس بین‌المللی انرژی اتمی، در حالی که قدرت‌های غربی به دنبال ارجاع پرونده هسته‌ای ایران به سازمان ملل هستند، از ایران می‌خواهد که دوباره در مسائل هسته‌ای مشارکت کند.",
+    "persian_body": "گروسی، رئیس آژانس بین‌المللی انرژی اتمی، در حالی که قدرت‌های غربی به دنبال ارجاع پرونده هسته‌ای ایران به سازمان ملل هستند، از ایران خواست تا دوباره در مسائل هسته‌ای مشارکت کند. تایمز اسرائیل",
+    "published_at_source": "Mon, 07 Sep 2026 13:27:41 GMT",
+    "discovered_at": "2026-09-07T13:33:24.105714+00:00",
+    "rejection_reason": "panel_refresh",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-07T13:33:56.513595+00:00"
+  },
+  {
+    "id": "cdecc07ebaba1657a2dcd4fabc791dbad8abcf7f",
+    "news_key": "6e0a275787ce86441f3127527ed6b549b6d8d633",
+    "source": "Reuters",
+    "source_url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQM292TDh2Uk9IeUlEeFNFY1UyeFM3OFZzd2w1S013bEtmVnhXYmdfT0ptV1ZfTlRTRXBLVzFZdmZ6T0d2cVdkZHAtbmhFTjlHUmJRQkRVZDhwMGJZZUM2MEpBS041SmhGcEhWZTlQemFBcjRaNkwyWkhhUlNFc1dNZEVyQ1R0YzFnRm5ZNHd3VU5NV01EeWZVZjJrUW5VWGF2X2R1U0xzSFEwbE9iY1E?oc=5",
+    "original_title": "Iran vows to respond to US strikes, says US energy companies' facilities are 'exposed'",
+    "original_summary": "Iran vows to respond to US strikes, says US energy companies' facilities are 'exposed' Reuters",
+    "persian_title": "ایران قول داد که به حملات آمریکا پاسخ دهد و می‌گوید تأسیسات شرکت‌های انرژی آمریکایی «در معرض خطر» قرار گرفته‌اند",
+    "persian_body": "ایران قول داد به حملات آمریکا پاسخ دهد و می‌گوید تأسیسات شرکت‌های انرژی آمریکایی «در معرض خطر» قرار گرفته‌اند. رویترز",
+    "published_at_source": "Mon, 07 Sep 2026 06:57:00 GMT",
+    "discovered_at": "2026-09-07T13:33:24.105714+00:00",
+    "rejection_reason": "panel_refresh",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-07T13:33:53.177301+00:00"
+  },
+  {
+    "id": "e930cc5c4c6bb70b65e164ba7226b98ca3c221f0",
+    "news_key": "c94c78126234839b88f6653b9236afd4bc4a5ec0",
+    "source": "CBS News",
+    "source_url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE05aGFRUldRc25BT3ZCbDhTVDE3VEEtSlQtbVZSVUtnMVZEekZzZDFaNnBiRmg2MDBzcDJCWEh1WWxBcmtBZV9mcF8wX1BuTlpycE1mUkVuMXZxcHRTSUNrbGhpc05rYURpbzYxYnA3VC1pTzJ0a05QaWpvOA?oc=5",
+    "original_title": "Trump calls Iran conflict \"small potatoes\"",
+    "original_summary": "Trump calls Iran conflict \"small potatoes\" CBS News",
+    "persian_title": "ترامپ درگیری با ایران را «مسئله‌ای کم‌اهمیت» می‌خواند",
+    "persian_body": "",
+    "published_at_source": "Mon, 07 Sep 2026 11:10:00 GMT",
+    "discovered_at": "2026-09-07T13:21:35.272236+00:00",
+    "rejection_reason": "panel_refresh",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-07T13:21:59.175751+00:00"
+  }
+]
