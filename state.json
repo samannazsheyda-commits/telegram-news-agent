@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41592",
   "news_seen": [
+    "x:AJEnglish:2096798514747736309",
     "x:Jerusalem_Post:2096776291127091272",
     "7befc53bc0c09657fa1f2003f8aee94bf53b21f6",
     "8386754439e1a69c8d20aa6fe52c3c20cfac23e2",
@@ -499,11 +500,10 @@
     "d475db1b1438f5a406f420e38d2594881260fa0d",
     "330e5f6284ec19ef4908a4b0fe5ff4c9e882fb81",
     "92b3bc46b950ce0dd663a241dcf2bb697d711ca6",
-    "93bd552fc45835b95544a5cc616ee96fd5174d8d",
-    "28b1a9ca7e0d10fb31cd2d4d7e290fe59f99ac1a"
+    "93bd552fc45835b95544a5cc616ee96fd5174d8d"
   ],
   "market_last_sent_at": "2026-09-06T19:11:03.103896+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2096798514747736309",
+      "source": "Al Jazeera English / X",
+      "title": "Iran's top security official, Mohsen Rezaei, has said Tehran will announce a new shipping route for the Strait of Hormuz, agreed in talks with Oman, in the coming days. Here's what we know so far:",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096798514747736309",
+      "published": "Mon, 07 Sep 2026 03:11:37 +0000",
+      "sent_at": "2026-09-07T03:24:45.204359+00:00",
+      "fingerprint": "iran s top security official mohsen rezaei has said tehran will announce a new shipping route for the strait of hormuz agreed in talks with oman in the coming days here s what we know so far"
+    },
     {
       "key": "x:Jerusalem_Post:2096776291127091272",
       "source": "Jerusalem Post / X",
