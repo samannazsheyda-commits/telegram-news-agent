@@ -1,5 +1,23 @@
 [
   {
+    "id": "ab9c672fa32d43138225a3fdc926e3dd626aa97e",
+    "news_key": "9ef0dabde57c080cb9239955bd4c6b11535c28af",
+    "source": "کلش ریپورت / Telegram",
+    "source_url": "https://t.me/ClashReport/95302",
+    "original_title": "Iran's Ghalibaf mocks Bessent.",
+    "original_summary": "Iran's Ghalibaf mocks Bessent.",
+    "persian_title": "قالیباف ایران بسنت را مسخره می کند.",
+    "persian_body": "",
+    "published_at_source": "Sun, 06 Sep 2026 15:19:22 +0000",
+    "discovered_at": "2026-09-06T15:18:52.831758+00:00",
+    "rejection_reason": "low_signal_or_unapproved_source",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-06T15:20:11.179787+00:00"
+  },
+  {
     "id": "b91064904c4c927b2d123a370ee7eec8d4f488fc",
     "news_key": "aa765ef65d00fc9b7cbb78bb8f52157cade2d12c",
     "source": "کلش ریپورت / Telegram",
@@ -54,6 +72,24 @@
     "updated_at": "2026-09-05T19:33:11.512240+00:00"
   },
   {
+    "id": "25e05f2fa0f845610168e5ab821f2261c602c8ca",
+    "news_key": "c4cf6792498b24673362334ce9122e04bb978cbc",
+    "source": "تبز لایو / Telegram",
+    "source_url": "https://t.me/tabzlive/101890",
+    "original_title": "🇮🇷 ❌ 🇺🇸 — Iran’s Khatam al-Anbiya Central HQ warns that Iranian strikes on U.S. Navy vessels in the region will intensify and could expand if Washington continues its \"hostile actions, harassment of Iranian ships, and its naval blockade...",
+    "original_summary": "🇮🇷 ❌ 🇺🇸 — Iran’s Khatam al-Anbiya Central HQ warns that Iranian strikes on U.S. Navy vessels in the region will intensify and could expand if Washington continues its \"hostile actions, harassment of Iranian ships, and its naval blockade of Iran.\"",
+    "persian_title": "🇮🇷 ❌ 🇺🇸 — قرارگاه مرکزی خاتم الانبیا ایران هشدار می‌دهد که اگر واشنگتن به «اقدامات خصمانه، آزار و اذیت کشتی‌های ایرانی و محاصره دریایی خود ادامه دهد...» حملات ایران به کشتی‌های نیروی دریایی آمریکا در منطقه تشدید شده و می‌تواند گسترش یابد.",
+    "persian_body": "",
+    "published_at_source": "Sat, 05 Sep 2026 17:38:36 +0000",
+    "discovered_at": "2026-09-05T17:42:21.211529+00:00",
+    "rejection_reason": "bundled_or_multi_headline",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-05T17:43:28.036450+00:00"
+  },
+  {
     "id": "70eaa69b155d97198685b72e7ee31ac65652c79b",
     "news_key": "2e1d3eb72a24cbc70f83b9de149100c3879cba68",
     "source": "ژئوپی واچ / Telegram",
@@ -70,6 +106,24 @@
     "final_persian_body": "",
     "decision_at": "",
     "updated_at": "2026-09-05T16:46:04.628953+00:00"
+  },
+  {
+    "id": "9b7edbdb6514b1e6348068b52dbda33a3673836f",
+    "news_key": "e1de45950983c6a520b18f42df3db5686deb4d32",
+    "source": "کلش ریپورت / Telegram",
+    "source_url": "https://t.me/ClashReport/95170",
+    "original_title": "Netanyahu: The central question in these elections is: Who will finish what has to be finished? Who will finally finish off this regime in Iran? Who will finally finish off Hezbollah? Who will finally finish off Hamas? My political oppon...",
+    "original_summary": "Netanyahu: The central question in these elections is: Who will finish what has to be finished? Who will finally finish off this regime in Iran? Who will finally finish off Hezbollah? Who will finally finish off Hamas? My political opponents give in to every pressure. America tells them \"no,\" and they immediately tremble. Will they do it? No. They won’t do it. We do it.",
+    "persian_title": "نتانیاهو: سوال اصلی در این انتخابات این است: چه کسی کاری را که باید تمام شود، تمام خواهد کرد؟ چه کسی بالاخره کار این رژیم در ایران را تمام خواهد کرد؟ چه کسی بالاخره کار حزب‌الله را تمام خواهد کرد؟ چه کسی بالاخره کار حماس را تمام خواهد کرد؟ رقیب سیاسی من...",
+    "persian_body": "",
+    "published_at_source": "Sat, 05 Sep 2026 11:05:55 +0000",
+    "discovered_at": "2026-09-05T14:44:17.936752+00:00",
+    "rejection_reason": "question_or_explainer",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-05T14:45:34.603176+00:00"
   },
   {
     "id": "ab72c3faedc89735112ff987c2c3b20f7227248e",
@@ -376,6 +430,24 @@
     "final_persian_body": "",
     "decision_at": "",
     "updated_at": "2026-09-05T01:20:17.403418+00:00"
+  },
+  {
+    "id": "ee4a7025b0ba1c2f4f78ea8dbda1d6e65e2defb3",
+    "news_key": "1ee1e1b2634c2fe538df7dbc052e70104e1cb943",
+    "source": "Bloomberg",
+    "source_url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQNXNTR25rSTRsaDlLeUozbGtnTlduWHNJVXhmUW9sS3ZkYmpNODBOTFVoYlUycENMNTV5WXg5Vmk4TkNFTmI2aXZBTlloQ1AtSG1SYjRDVGdJT3A3WkRnYy1mZVBoY0JycjFoLTAzNkVhZFN2Nl9RUUxNSXdWbnNGYmpET0tUcWYwN2F1UnN2d2JVTG9lYkxaSUp0WQ?oc=5",
+    "original_title": "Watch Trump Calls Iran Conflict 'Small Potatoes'",
+    "original_summary": "Watch Trump Calls Iran Conflict 'Small Potatoes' bloomberg.com",
+    "persian_title": "تماشا کنید: ترامپ درگیری با ایران را «مسئله‌ای کم‌اهمیت» می‌نامد",
+    "persian_body": "",
+    "published_at_source": "Fri, 04 Sep 2026 21:27:27 GMT",
+    "discovered_at": "2026-09-05T01:20:02.256126+00:00",
+    "rejection_reason": "duplicate_or_redundant",
+    "status": "pending",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-05T01:20:14.701478+00:00"
   },
   {
     "id": "ee2c08dafcca9b7a8ecf8003767b2df37413bed2",
