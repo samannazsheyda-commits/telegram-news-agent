@@ -1,7 +1,10 @@
 {
   "truth_last_id": "41594",
   "news_seen": [
-    "fc079879fb9468f3528150d9354ee354ca89a8fa",
+    "x:ABC:2096913377268207679",
+    "x:JasonMBrodsky:2096912087784083964",
+    "x:Reuters:2096911386353803336",
+    "x:AlArabiya_Eng:2096911245278433313",
     "x:AJEnglish:2096907441271140414",
     "8c1f8822c70d38585ac8a402d4bc9acbe0c19c39",
     "x:AJEnglish:2096899453345054957",
@@ -497,10 +500,7 @@
     "d899869f6006cffac7f6229fa5bb191c47197cee",
     "163d9fbe1e76be4fef64c72ffee52226b6855107",
     "1ed50fa81bcca6084e4da0afbb3bd02bf1d31224",
-    "f94b9415c4741c2e56b90615a26a226ba1f9a9b7",
-    "7f2c40a9c99f1a977e97ff4044340c5e24af1e66",
-    "69235737464999dbc94d4d14a27d68bb7d9b5cd2",
-    "6f17e16872244d66d3ef2f3ac15156015ece9e8f"
+    "f94b9415c4741c2e56b90615a26a226ba1f9a9b7"
   ],
   "market_last_sent_at": "2026-09-07T09:44:07.520870+00:00",
   "next_news_color": "white",
@@ -2426,6 +2426,46 @@
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:ABC:2096913377268207679",
+      "source": "ABC News / X",
+      "title": "Iranian Foreign Ministry spokesperson Esmaeil Baqaei told reporters at his weekly press conference on Monday that a Qatari delegation was in Iran on Sunday \"to help reduce tensions,\" and that an Iranian technical delegation had visited Qatar recently.",
+      "summary": "",
+      "link": "https://x.com/ABC/status/2096913377268207679",
+      "published": "Mon, 07 Sep 2026 10:48:02 +0000",
+      "sent_at": "2026-09-07T10:48:17.169268+00:00",
+      "fingerprint": "iranian foreign ministry spokesperson esmaeil baqaei told reporters at his weekly press conference on monday that a qatari delegation was in iran on sunday to help reduce tensions and that an iranian technical delegation had visited qatar recently"
+    },
+    {
+      "key": "x:AlArabiya_Eng:2096911245278433313",
+      "source": "Al Arabiya English / X",
+      "title": "The adviser to Iraq’s prime minister says the government is considering alternative sources for oil and its marketing 🔴 He says Iraq has entered the stage of “coexistance” with the Strait of Hormuz crisis",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2096911245278433313",
+      "published": "Mon, 07 Sep 2026 10:39:34 +0000",
+      "sent_at": "2026-09-07T10:46:42.959012+00:00",
+      "fingerprint": "the adviser to iraq s prime minister says the government is considering alternative sources for oil and its marketing he says iraq has entered the stage of coexistance with the strait of hormuz crisis"
+    },
+    {
+      "key": "x:Reuters:2096911386353803336",
+      "source": "Reuters / X",
+      "title": "Major Gulf bourses edge higher despite U.S.-Iran maritime flare-up",
+      "summary": "",
+      "link": "https://x.com/Reuters/status/2096911386353803336",
+      "published": "Mon, 07 Sep 2026 10:40:07 +0000",
+      "sent_at": "2026-09-07T10:46:42.959012+00:00",
+      "fingerprint": "major gulf bourses edge higher despite u s iran maritime flare up"
+    },
+    {
+      "key": "x:JasonMBrodsky:2096912087784083964",
+      "source": "Jason Brodsky / X",
+      "title": "\"Gargash ​added that while relations with #Iran could be restored, rebuilding ​trust with its neighbours after the attacks may take decades.\"",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2096912087784083964",
+      "published": "Mon, 07 Sep 2026 10:42:55 +0000",
+      "sent_at": "2026-09-07T10:46:42.959012+00:00",
+      "fingerprint": "gargash added that while relations with iran could be restored rebuilding trust with its neighbours after the attacks may take decades"
+    },
     {
       "key": "x:AJEnglish:2096907441271140414",
       "source": "Al Jazeera English / X",
