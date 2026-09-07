@@ -1,6 +1,12 @@
 {
   "truth_last_id": "41618",
   "news_seen": [
+    "x:CENTCOM:2094411076729262413",
+    "x:CENTCOM:2094795462578467050",
+    "x:CENTCOM:2094826294466810366",
+    "x:CENTCOM:2095232852107346069",
+    "x:business:2096999470390993243",
+    "x:CENTCOM:2095595527337623679",
     "x:IDF:2095569785522360508",
     "x:NBCNews:2096996943230566888",
     "x:AlArabiya_Eng:2096995630656712981",
@@ -494,16 +500,10 @@
     "x:SecScottBessent:2095907853877874926",
     "x:USTreasury:2095888927215214639",
     "x:USTreasury:2095888925646553249",
-    "x:CENTCOM:2093487410340307396",
-    "x:CENTCOM:2094172416750567778",
-    "x:CENTCOM:2094228119079067852",
-    "x:CENTCOM:2094411076729262413",
-    "x:CENTCOM:2094795462578467050",
-    "x:CENTCOM:2094826294466810366",
-    "x:CENTCOM:2095232852107346069"
+    "x:CENTCOM:2093487410340307396"
   ],
   "market_last_sent_at": "2026-09-07T16:01:34.128941+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -623,6 +623,51 @@
     "last_wti": 91.48
   },
   "news_rejections": [
+    {
+      "key": "x:CENTCOM:2094411076729262413",
+      "source": "CENTCOM / X",
+      "title": "🚫 CLAIM: Iran’s Islamic Revolutionary Guard Corps (IRGC) claims that a supertanker passing through the southern route of the Strait of Hormuz struck two mines and was brought to a complete stop. This is FALSE. ✅ FACT: No ships have hit mines in the Strait of Hormuz. This is yet another IRGC attempt to intimidate regional commercial shipping through disinformation.",
+      "reason": "not_today_tehran",
+      "published": "Mon, 31 Aug 2026 13:04:47 +0000",
+      "link": "https://x.com/CENTCOM/status/2094411076729262413",
+      "checked_at": "2026-09-07T16:38:54.921886+00:00"
+    },
+    {
+      "key": "x:CENTCOM:2094795462578467050",
+      "source": "CENTCOM / X",
+      "title": "A U.S. Sailor directs the takeoff of a UH-1Y Venom utility helicopter from the flight deck of USS Boxer (LHD 4) as the amphibious assault ship sails in the Arabian Sea enforcing the U.S. blockade against Iran. As of Sept. 1, U.S. forces have redirected 84 commercial vessels, disabled 3 and boarded 2 to ensure compliance.",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 14:32:12 +0000",
+      "link": "https://x.com/CENTCOM/status/2094795462578467050",
+      "checked_at": "2026-09-07T16:38:54.921886+00:00"
+    },
+    {
+      "key": "x:CENTCOM:2094826294466810366",
+      "source": "CENTCOM / X",
+      "title": "Today at 12 p.m. ET, U.S. forces began striking Islamic Revolutionary Guard Corps (IRGC) targets in Iran. The strikes follow recent attempted attacks by the IRGC against commercial shipping in the Strait of Hormuz and against American service members deployed to the region.",
+      "reason": "not_today_tehran",
+      "published": "Tue, 01 Sep 2026 16:34:43 +0000",
+      "link": "https://x.com/CENTCOM/status/2094826294466810366",
+      "checked_at": "2026-09-07T16:37:19.556172+00:00"
+    },
+    {
+      "key": "x:CENTCOM:2095232852107346069",
+      "source": "CENTCOM / X",
+      "title": "The U.S. Navy continues to strictly enforce the U.S. blockade against Iran. As of Sept. 2, U.S. forces have redirected 86 commercial vessels, disabled 3 and boarded 2 to ensure compliance.",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 19:30:14 +0000",
+      "link": "https://x.com/CENTCOM/status/2095232852107346069",
+      "checked_at": "2026-09-07T16:37:19.556172+00:00"
+    },
+    {
+      "key": "x:CENTCOM:2095595527337623679",
+      "source": "CENTCOM / X",
+      "title": "A U.S. Sailor stands watch aboard USS John Paul Jones (DDG 53) as the guided-missile destroyer continues to support the U.S. blockade against Iran in regional waters. As of Sept. 3, CENTCOM forces have redirected 87 commercial vessels, disabled 3 and boarded 2 to ensure total compliance.",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 19:31:22 +0000",
+      "link": "https://x.com/CENTCOM/status/2095595527337623679",
+      "checked_at": "2026-09-07T16:35:33.718047+00:00"
+    },
     {
       "key": "x:IDF:2095569785522360508",
       "source": "IDF / X",
@@ -2377,55 +2422,20 @@
       "published": "Sat, 28 Feb 2026 08:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxOeldGb0hEcm1oZVIyMHV6OHpTcG1paXloY0t6cm9TQm4xN0VQY1g5QzJUdTFKTW1SU3h1SkdYSTFyT3NQRVA5cWwxblMzZTdlNXVoY2dwWHZGV25nellIem82VjA3YUE3cThRZnlVVTZabW1XRW10dGF2WnRSamxXc3h1RjBtNmtCczJZaG1Wb0E1M2puWHRzTWZtLTZmN0FBaVZnTklJb00?oc=5",
       "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "f3be34501e2e3541aeb82e1663fc7790e15171a5",
-      "source": "NOTAM / Airspace",
-      "title": "Air travel has been thrown into chaos with cancellations, diversions, and airspace closures after strikes on Iran - Business Insider",
-      "reason": "not_today_tehran",
-      "published": "Mon, 02 Mar 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxONlBCQUlWaTZPVmNhTXNGbUZhVVNCZDNNQktZdFVURzdMWmVCVVlDVTVvamRmeFpuTkdTS1RFNG1jaWJpbDBfMWNqSEk5M3ljT3BCXy1sSlgxbS1CZE0wOXdUU0t1dXFpbDJkdTNkT25yUEpReHRPUHdXZnB3Z0VOZmhvekZLWGpRV1pyZk04Tmc4NVJjNmZHVTZnWWVOQQ?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "b2d50900e99fa71b6b9f2c5c04283b61be75c679",
-      "source": "NOTAM / Airspace",
-      "title": "Iran closes airspace to commercial aircraft for hours amid tensions with US - Politico",
-      "reason": "not_today_tehran",
-      "published": "Wed, 14 Jan 2026 08:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxQZnlTRDVfMENkUHgzLV9qVHMxdWNJR1dONnZLb0V1VUZGdnZRcmZWYlVRTDB1dWlUbUxKMHY0bkR5b0hicjhWRk5Nclo0T0Z2QlQtUEZ1Smw1eENya3UzY2pXbVV4QkV1MlczQWhyeDEtVklfYm5IUTBrdGdHVE0wZHVR?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "82c64bd63c492719092ededd69abb3ad0a534558",
-      "source": "NOTAM / Airspace",
-      "title": "Iran-Israel conflict: Airspace updates as Middle East tensions ease - Gulf News",
-      "reason": "not_today_tehran",
-      "published": "Mon, 08 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPUC13UTJ5V29DUmJTaXVYOWZXQlB4dUpBQnhXY3loNGxxV3lrbDYtODluZTZmbC1uRUx2dmNpNkw3dUVSdzVueW5VX3U2UzIwZ2hGY1BQS1I2QkQ2d01EQkQ2MTd2OER0Q21ldEdOd21wVG5CNElTeHZRZW9VLWV1WnZnVEpwcnRaejR5NlJZbHNZODRqWkFsSzFYWFU3Zjh0ZFFmSG1MSm5rWDY3VWs40gHCAUFVX3lxTE93UVBmMEE3OHdVY0JILVVXNEVYUkZSd0dhdW55MGZCbnVzd2lmM29FY3U2U2tPbno2LVJralBEa3lpWVRKcHlyaHdkdE1icV9SdXFObDJtd0FqN1EwNmpFSlNSU25DakFXUl93TllVVzRvN2lrOWp3N1VaZHBQMlN2dUxfOHd0RjZkVEhNcXE5VnU3UGxxQWN3UlpoV0FEQnRVZ2tZaGNkMzVRQXdWTG1PWGVQSU9KRHBsV3M5eFVpSWR3?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "c2d62d3460ef9587aceed390a745059a345420c9",
-      "source": "NOTAM / Airspace",
-      "title": "Iran’s airspace is reopening, but it’s still risky to fly via the Middle East - SMH.com.au",
-      "reason": "not_today_tehran",
-      "published": "Sat, 25 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxNMUFfMEN6WWVkSUJVNTlWTzE2bmZjeEJ1RUZCellyV0Y0bUU5T21jQ3ZwMC13bXBfaGNtbWduQVFsV0NjLVFFODUtYXFfcjNXVFB6elJwXy1mczR5aXR0YXBLbzdSMkJXRkxKbDJXNnZxSkR1aER6M2ZBckJ2cUswaEZhRkFzd0xlR1RyeGE4MG9RekFIejVhbTJkcDVpNjhmN3JDNm1GRUxEYl9WbTZfdW0wMmdCLXhoWGN4MzFWM2JPaWRsUElyenNYNlRQV0dOYUNNbkxFdw?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
-    },
-    {
-      "key": "d1f2475014a9536cbaaa72264b7eea8ee03d23ed",
-      "source": "NOTAM / Airspace",
-      "title": "Russia lifts flight restrictions in Iranian airspace, resuming UAE flights - Anadolu Ajansı",
-      "reason": "not_today_tehran",
-      "published": "Mon, 20 Apr 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQMGhrV3pRbzZoR0txT1c4ZktPN3JTZ3RHOTJkU3FEaGdWMURGcWIyUE5zdFFMbzlvUnhaTGRReDlvY3Y2UnhDU2J5UFd3RzdYTGZ1U04zb3hVaGc4VUV3VUxRSDhaS3lxdkdwbm9NeUltekM5aHo5RTUybHJ0cUg1VDFWNVBrU3Z1SGxDSzNxSjQ3VEFsY0Y3MlRsRktieW42c3c4bjdPVlBMWk9KOExkTm9sZDg?oc=5",
-      "checked_at": "2026-09-05T12:01:36.897469+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-06",
   "recent_published_news": [
+    {
+      "key": "x:business:2096999470390993243",
+      "source": "Bloomberg / X",
+      "title": "Iran said a deal with Oman to manage shipping through the Strait of Hormuz is imminent, a move that could tighten Tehran’s control over the waterway and raise questions over how the US would respond - Here’s your Evening Briefing",
+      "summary": "",
+      "link": "https://x.com/business/status/2096999470390993243",
+      "published": "Mon, 07 Sep 2026 16:30:08 +0000",
+      "sent_at": "2026-09-07T16:35:33.718047+00:00",
+      "fingerprint": "iran said a deal with oman to manage shipping through the strait of hormuz is imminent a move that could tighten tehran s control over the waterway and raise questions over how the us would respond here s your evening briefing"
+    },
     {
       "key": "x:NBCNews:2096996943230566888",
       "source": "NBC News / X",
