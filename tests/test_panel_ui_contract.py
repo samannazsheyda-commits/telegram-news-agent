@@ -26,10 +26,17 @@ def test_panel_has_newsroom_controls_and_no_blocking_dialogs():
     assert 'prompt(' not in combined
 
 
-def test_panel_uses_session_token_and_local_drafts():
+def test_panel_persists_token_and_can_resume_pending_action_after_connect():
     js = JS.read_text(encoding="utf-8")
-    assert "sessionStorage" in js
     assert "localStorage" in js
+    assert "pendingAuthAction" in js
+    assert "resumePendingAuthAction" in js
+    assert "queueAuthAction" in js
+    assert "removeItem('bikhabar_contents_token')" not in js.split("async function connect", 1)[1].split("function disconnect", 1)[0]
+
+
+def test_panel_keeps_local_drafts():
+    js = JS.read_text(encoding="utf-8")
     assert "saveDraft" in js
     assert "restoreDraft" in js
     assert "clearDraft" in js
