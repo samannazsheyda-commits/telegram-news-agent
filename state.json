@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:Jerusalem_Post:2097355141401682032",
+    "e6223e45bc33bc14f66b4a062f368f8d7ca9aa94",
     "x:business:2097349265097990482",
     "x:StateDept:2097348884984938820",
     "x:AJEnglish:2097347171561418969",
@@ -498,9 +500,7 @@
     "c723105b64d21a4751d29894ddfd8023aa43a6fa",
     "5c594f8de88ed4301b00018e011b633c729c03d9",
     "x:JasonMBrodsky:2096198565404025262",
-    "x:JasonMBrodsky:2096190282983247876",
-    "x:business:2096191671138451479",
-    "b7f38256245730b44d39bd30364b452854d7ac99"
+    "x:JasonMBrodsky:2096190282983247876"
   ],
   "market_last_sent_at": "2026-09-08T15:40:37.043002+00:00",
   "next_news_color": "red",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "e6223e45bc33bc14f66b4a062f368f8d7ca9aa94",
+      "source": "NOTAM / Airspace",
+      "title": "Israel Airspace Closure Odds Hit 96% on Polymarket as Iran War Reignites",
+      "summary": "Israel Airspace Closure Odds Hit 96% on Polymarket as Iran War Reignites tech-insider.org",
+      "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxQQ3dyck9UNGhrbHVuV1hZX3JMMDJLcmszNVlmT0NzaVdyZHM2VWJiNVduZFJiN25Lc3pOdV9oRTFvTnM0a085MElmdUhfZUJqdGtlemJuaDc0QWhITXdETWNJQ1BXbFpJSlVxTWhDWmpsRDhrbllFMENUeG9jOWxUbGwtekUwQVU?oc=5",
+      "published": "Tue, 08 Sep 2026 16:11:21 GMT",
+      "sent_at": "2026-09-08T16:20:26.425547+00:00",
+      "fingerprint": "israel airspace closure odds hit 96 on polymarket as iran war reignites israel airspace closure odds hit 96 on polymarket as iran war reignites tech insider org"
+    },
+    {
+      "key": "x:Jerusalem_Post:2097355141401682032",
+      "source": "Jerusalem Post / X",
+      "title": "The British government said the measures would restrict Iran's access to the British financial system and expand trade bans to additional goods, technology, and services.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2097355141401682032",
+      "published": "Tue, 08 Sep 2026 16:03:27 +0000",
+      "sent_at": "2026-09-08T16:20:26.425547+00:00",
+      "fingerprint": "the british government said the measures would restrict iran s access to the british financial system and expand trade bans to additional goods technology and services"
+    },
     {
       "key": "x:AJEnglish:2097347171561418969",
       "source": "Al Jazeera English / X",
@@ -4407,6 +4427,36 @@
       "fingerprint": "us defense secretary pete hegseth called iran s oil tanker fleet defenseless and promised that if iran shoots towards us ships the us navy will destroy and sink the regime s ships in a post on x twitter"
     },
     {
+      "key": "x:AlArabiya_Eng:2097344884529111069",
+      "source": "Al Arabiya English / X",
+      "title": "Saudi Foreign Minister Prince Faisal bin Farhan says that the Iran-backed Houthi militia has embarked on a course of action whose consequences it will not be able to handle, adding that it is attempting to export its internal problems in Yemen to Saudi Arabia.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097344884529111069",
+      "published": "Tue, 08 Sep 2026 15:22:41 +0000",
+      "sent_at": "2026-09-08T15:26:20.887109+00:00",
+      "fingerprint": "saudi foreign minister prince faisal bin farhan says that the iran backed houthi militia has embarked on a course of action whose consequences it will not be able to handle adding that it is attempting to export its internal problems in yemen to saudi arabia"
+    },
+    {
+      "key": "x:SecScottBessent:2097352174292390363",
+      "source": "Scott Bessent / X",
+      "title": "Under Operation Economic Outcast, we promised severe consequences for those providing financial lifelines to the Iranian regime. Today, we followed through on that promise with sanctions on companies that continue to support Mahan Air. Let this be a warning to anyone doing business with Iran’s remaining airlines, all of which we sanctioned today: You are at risk of being cut off from the global financial system.",
+      "summary": "",
+      "link": "https://x.com/SecScottBessent/status/2097352174292390363",
+      "published": "Tue, 08 Sep 2026 15:51:39 +0000",
+      "sent_at": "2026-09-08T15:58:30.720930+00:00",
+      "fingerprint": "under operation economic outcast we promised severe consequences for those providing financial lifelines to the iranian regime today we followed through on that promise with sanctions on companies that continue to support mahan air let this be a warning to anyone doing business with iran s remaining airlines all of which we sanctioned today you are at risk of being cut off from the global financial system"
+    },
+    {
+      "key": "x:CBSNews:2097352465284726875",
+      "source": "CBS News / X",
+      "title": "Higher gas and diesel prices have cost Americans an additional $100 billion since the Iran war began, according to a Brown University tracker.",
+      "summary": "",
+      "link": "https://x.com/CBSNews/status/2097352465284726875",
+      "published": "Tue, 08 Sep 2026 15:52:49 +0000",
+      "sent_at": "2026-09-08T15:58:30.720930+00:00",
+      "fingerprint": "higher gas and diesel prices have cost americans an additional 100 billion since the iran war began according to a brown university tracker"
+    },
+    {
       "key": "x:AlArabiya_Eng:2096269172426609005",
       "source": "Al Arabiya English / X",
       "title": "BREAKING: Ten people were killed when a fuel tanker exploded on a highway in western Iran as a result of a traffic accident, according to state media.",
@@ -4425,16 +4475,6 @@
       "published": "Sat, 05 Sep 2026 15:51:00 +0000",
       "sent_at": "2026-09-05T15:55:01.052081+00:00",
       "fingerprint": "the enemies seek to create division amid rising public discontent iran accuses adversaries of encouraging unrest president masoud pezeshkian says iranians will stand united against us economic pressure"
-    },
-    {
-      "key": "x:AlArabiya_Eng:2097344884529111069",
-      "source": "Al Arabiya English / X",
-      "title": "Saudi Foreign Minister Prince Faisal bin Farhan says that the Iran-backed Houthi militia has embarked on a course of action whose consequences it will not be able to handle, adding that it is attempting to export its internal problems in Yemen to Saudi Arabia.",
-      "summary": "",
-      "link": "https://x.com/AlArabiya_Eng/status/2097344884529111069",
-      "published": "Tue, 08 Sep 2026 15:22:41 +0000",
-      "sent_at": "2026-09-08T15:26:20.887109+00:00",
-      "fingerprint": "saudi foreign minister prince faisal bin farhan says that the iran backed houthi militia has embarked on a course of action whose consequences it will not be able to handle adding that it is attempting to export its internal problems in yemen to saudi arabia"
     },
     {
       "key": "x:CENTCOMFarsi:2096255895445373362",
@@ -5205,26 +5245,6 @@
       "published": "Fri, 04 Sep 2026 19:57:37 +0000",
       "sent_at": "2026-09-04T22:07:27.041621+00:00",
       "fingerprint": "five anti ship cruise missile launches from sirik towards the strait of hormuz five anti ship cruise missile launches from sirik towards the strait of hormuz"
-    },
-    {
-      "key": "x:SecScottBessent:2097352174292390363",
-      "source": "Scott Bessent / X",
-      "title": "Under Operation Economic Outcast, we promised severe consequences for those providing financial lifelines to the Iranian regime. Today, we followed through on that promise with sanctions on companies that continue to support Mahan Air. Let this be a warning to anyone doing business with Iran’s remaining airlines, all of which we sanctioned today: You are at risk of being cut off from the global financial system.",
-      "summary": "",
-      "link": "https://x.com/SecScottBessent/status/2097352174292390363",
-      "published": "Tue, 08 Sep 2026 15:51:39 +0000",
-      "sent_at": "2026-09-08T15:58:30.720930+00:00",
-      "fingerprint": "under operation economic outcast we promised severe consequences for those providing financial lifelines to the iranian regime today we followed through on that promise with sanctions on companies that continue to support mahan air let this be a warning to anyone doing business with iran s remaining airlines all of which we sanctioned today you are at risk of being cut off from the global financial system"
-    },
-    {
-      "key": "x:CBSNews:2097352465284726875",
-      "source": "CBS News / X",
-      "title": "Higher gas and diesel prices have cost Americans an additional $100 billion since the Iran war began, according to a Brown University tracker.",
-      "summary": "",
-      "link": "https://x.com/CBSNews/status/2097352465284726875",
-      "published": "Tue, 08 Sep 2026 15:52:49 +0000",
-      "sent_at": "2026-09-08T15:58:30.720930+00:00",
-      "fingerprint": "higher gas and diesel prices have cost americans an additional 100 billion since the iran war began according to a brown university tracker"
     }
   ],
   "hormuz_last_sent_date": "2026-09-05",
