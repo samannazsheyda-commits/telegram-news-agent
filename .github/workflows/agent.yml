@@ -1,4 +1,4 @@
-name: Telegram News Agent
+name: Telegram News Agent CI
 
 on:
   push:
@@ -8,33 +8,36 @@ on:
       - "src/**"
       - "panel/**"
       - "tests/**"
+      - "deploy/**"
       - "requirements*.txt"
       - ".github/workflows/agent.yml"
-  schedule:
-    - cron: "*/5 * * * *"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "panel/**"
+      - "tests/**"
+      - "deploy/**"
+      - "requirements*.txt"
+      - ".github/workflows/agent.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: telegram-news-agent
-  cancel-in-progress: ${{ github.event_name == 'push' }}
+  group: telegram-news-agent-ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  run-agent:
+  test:
     runs-on: ubuntu-latest
-    timeout-minutes: 7
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Refresh latest main for scheduled runs
-        if: github.event_name == 'schedule'
-        run: |
-          git fetch origin main
-          git reset --hard origin/main
 
       - uses: actions/setup-python@v5
         with:
@@ -44,43 +47,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
 
-      - name: Run tests
-        continue-on-error: true
+      - name: Run test suite
         run: python -m pytest -q
 
-      - name: Restore production runtime state after tests
-        run: git restore --source=HEAD -- state.json data/editorial_queue.json data/editorial_history.json data/event_ledger.json data/panel_live_feed.json
-
-      - name: Run near-realtime monitor
-        id: monitor
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: "@bikhabaar"
-          POLL_SECONDS: "60"
-          SESSION_SECONDS: "270"
-        run: python -m src.newsroom_hybrid_runtime --monitor
-
-      - name: Persist runtime data
-        if: ${{ always() && steps.monitor.outcome != 'skipped' }}
+      - name: Validate deployment scripts
         run: |
-          mkdir -p /tmp/runtime-snapshot/data
-          cp state.json /tmp/runtime-snapshot/state.json
-          cp data/editorial_queue.json /tmp/runtime-snapshot/data/editorial_queue.json
-          cp data/editorial_history.json /tmp/runtime-snapshot/data/editorial_history.json
-          cp data/event_ledger.json /tmp/runtime-snapshot/data/event_ledger.json
-          cp data/panel_live_feed.json /tmp/runtime-snapshot/data/panel_live_feed.json
+          bash -n deploy/install-vps.sh
+          bash -n deploy/update-vps.sh
 
-          git fetch origin main
-          git reset --hard origin/main
-          python -m src.persist_merge /tmp/runtime-snapshot
-
-          if git diff --quiet -- state.json data/editorial_queue.json data/editorial_history.json data/event_ledger.json data/panel_live_feed.json; then
-            echo "No runtime data changes"
-            exit 0
-          fi
-
-          git config user.name "telegram-news-agent[bot]"
-          git config user.email "telegram-news-agent[bot]@users.noreply.github.com"
-          git add state.json data/editorial_queue.json data/editorial_history.json data/event_ledger.json data/panel_live_feed.json
-          git commit -m "chore: update agent runtime data"
-          git push
+      - name: Promote tested main to production
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: git push origin HEAD:refs/heads/production --force
