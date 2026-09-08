@@ -31,10 +31,14 @@ def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
     ancillary_rc = run_ancillary_cycle(resolved_now)
     if ancillary_rc != 0:
         return {"rc": ancillary_rc, "mode": "shadow" if shadow else "production", "published": 0, "telegram_writes": 0}
+    # Command Center settings are persisted by the panel. Production must read
+    # them on every scan so pause/auto-publish changes take effect immediately.
+    newsroom_settings = v13.load_newsroom_settings()
     result = run_v2_once(
         shadow=shadow,
         now=resolved_now,
         data_dir=os.environ.get("DATA_DIR", "data"),
+        settings=newsroom_settings,
     )
     return {"rc": 0, **result}
 
@@ -77,8 +81,8 @@ def main() -> int:
     if args.monitor:
         return monitor(
             shadow=args.shadow,
-            poll_seconds=int(os.environ.get("POLL_SECONDS", "60")),
-            session_seconds=int(os.environ.get("SESSION_SECONDS", "270")),
+            poll_seconds=int(os.environ.get("POLL_SECONDS", "5")),
+            session_seconds=int(os.environ.get("SESSION_SECONDS", "0")),
         )
     print(json.dumps(run_cycle(shadow=args.shadow), ensure_ascii=False, sort_keys=True))
     return 0
