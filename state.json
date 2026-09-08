@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:mdubowitz:2097232570354204937",
+    "x:business:2097230978934567359",
     "x:business:2097210850192904306",
     "x:FoxNews:2097097478155698177",
     "x:Reuters:2097220915981402156",
@@ -498,9 +500,7 @@
     "x:haaretzcom:2096082180216676858",
     "x:haaretzcom:2096089726721704066",
     "x:Jerusalem_Post:2096129575667310642",
-    "x:AJEnglish:2096140818335535225",
-    "5fc26d05852e9c264a578ce806086009b7997318",
-    "e0cf08d952598dca107733f85068fc40b3718e2c"
+    "x:AJEnglish:2096140818335535225"
   ],
   "market_last_sent_at": "2026-09-08T06:50:13.875935+00:00",
   "next_news_color": "red",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:mdubowitz:2097232570354204937",
+      "source": "Mark Dubowitz / X",
+      "title": "Iran’s Oil Dollars Are Drying Up—and Plunging It Deeper Into Crisis",
+      "summary": "",
+      "link": "https://x.com/mdubowitz/status/2097232570354204937",
+      "published": "Tue, 08 Sep 2026 07:56:24 +0000",
+      "sent_at": "2026-09-08T07:56:10.485083+00:00",
+      "fingerprint": "iran s oil dollars are drying up and plunging it deeper into crisis"
+    },
+    {
+      "key": "x:business:2097230978934567359",
+      "source": "Bloomberg / X",
+      "title": "Suez Canal revenue rose 42% in July from the year earlier, as the Iran war’s effective closure of the Strait of Hormuz and Houthi threats in the southern Red Sea led more ships to use the Egyptian waterway",
+      "summary": "",
+      "link": "https://x.com/business/status/2097230978934567359",
+      "published": "Tue, 08 Sep 2026 07:50:04 +0000",
+      "sent_at": "2026-09-08T07:53:09.969752+00:00",
+      "fingerprint": "suez canal revenue rose 42 in july from the year earlier as the iran war s effective closure of the strait of hormuz and houthi threats in the southern red sea led more ships to use the egyptian waterway"
+    },
     {
       "key": "x:FoxNews:2097097478155698177",
       "source": "Fox News / X",
