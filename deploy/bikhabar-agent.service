@@ -1,0 +1,21 @@
+[Unit]
+Description=Bikhabar Telegram News Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=bikhabar
+Group=bikhabar
+WorkingDirectory=/opt/bikhabar/app
+EnvironmentFile=/etc/bikhabar/agent.env
+ExecStart=/opt/bikhabar/venv/bin/python -m src.newsroom_hybrid_runtime --monitor
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+KillSignal=SIGTERM
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
