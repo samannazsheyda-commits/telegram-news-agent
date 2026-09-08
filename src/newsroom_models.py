@@ -24,7 +24,7 @@ class RawNewsItem(_Serializable):
     fetched_at: str
     title: str
     summary: str = ""
-    media: list[str] | None = None
+    media: list[dict[str, Any]] | None = None
     source_priority: str = "normal"
 
     def __post_init__(self) -> None:
