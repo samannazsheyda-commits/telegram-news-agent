@@ -33,7 +33,7 @@ jobs:
           import subprocess
           import tempfile
           import time
-          from datetime import datetime, timezone
+          from datetime import datetime
           from pathlib import Path
           from zoneinfo import ZoneInfo
 
@@ -54,6 +54,7 @@ jobs:
           weekdays = ['دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه','یکشنبه']
           months = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند']
           digit_map = str.maketrans('0123456789', '۰۱۲۳۴۵۶۷۸۹')
+          flag_re = re.compile(r'(?:[\U0001F1E6-\U0001F1FF]{2})')
 
           def fa_digits(value):
               return str(value).translate(digit_map)
@@ -89,6 +90,8 @@ jobs:
               msg = soup.select_one('.tgme_widget_message') or soup
               text_node = msg.select_one('.tgme_widget_message_text')
               raw = text_node.get_text('\n', strip=True) if text_node else ''
+              raw = html.unescape(html.unescape(raw))
+              raw = raw.replace('&#10;', '\n').replace('&#xA;', '\n')
               raw = re.sub(r'\n{3,}', '\n\n', raw).strip()
               time_node = msg.select_one('.tgme_widget_message_date time[datetime]')
               source_dt = None
@@ -122,6 +125,22 @@ jobs:
                       errors.append(f'{candidate}: {exc}')
               raise RuntimeError('telegram_video_download_failed: ' + ' | '.join(errors))
 
+          def clean_body(value):
+              text = html.unescape(html.unescape(value or ''))
+              text = text.replace('&#10;', ' ').replace('&#xA;', ' ')
+              text = flag_re.sub('', text)
+              text = text.replace('❌', '').replace('⚡️', '').replace('⚡', '').replace('—', ' ')
+              text = re.sub(r'\s+', ' ', text).strip(' -–—')
+              replacements = {
+                  'موفق سالتی': 'موفق السلطی',
+                  'موفق سلتی': 'موفق السلطی',
+                  'موفق صلتی': 'موفق السلطی',
+                  'Muwaffaq Salti': 'موفق السلطی',
+              }
+              for old, new in replacements.items():
+                  text = text.replace(old, new)
+              return text
+
           def choose_title(body):
               low = body.lower()
               if ('hormuz' in low or 'هرمز' in body) and ('missile' in low or 'موشک' in body):
@@ -152,15 +171,15 @@ jobs:
               body = source_text
               if not re.search(r'[\u0600-\u06ff]', body):
                   body = str(translate_to_fa(body) or '').strip()
+              body = clean_body(body)
               if not body:
                   raise RuntimeError(f'source_translation_failed: {url}')
-              body = re.sub(r'\s+', ' ', body).strip()
               title = str(post.get('title') or '').strip() or choose_title(body)
               hashtags = str(post.get('hashtags') or '').strip() or hashtags_for(body)
-              stamp = source_dt or datetime.now(timezone.utc)
+              time_line = f"⏰ {format_fa_dt(source_dt)}\n" if source_dt else ''
               caption = (
                   f"{title}\n\n{html.escape(body)}\n\n"
-                  f"⏰ {format_fa_dt(stamp)}\n"
+                  f"{time_line}"
                   f"📌 <a href=\"{html.escape(url, quote=True)}\">لینک منبع خبر</a>\n\n"
                   f"📡 <a href=\"https://t.me/bikhabaar\">بی‌خبر</a> ←\nمانیتور تحولات ایران\n"
                   f"🇮🇷 🚀\n{html.escape(hashtags)}"
