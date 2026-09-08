@@ -24,6 +24,8 @@ ACTION_PATTERNS = (
     ("announce_restricted_zone", r"\b(?:announce|announces|announced|establish|establishes|create|creates)\b[^.]{0,80}\b(?:restricted|exclusion) zone\b|منطقه (?:محدود|ممنوع)"),
     ("close_airspace", r"\b(?:close|closes|closed|shut|shuts)\b[^.]{0,40}\bairspace\b|بستن حریم هوایی|حریم هوایی بسته"),
     ("reopen_airspace", r"\b(?:reopen|reopens|reopened)\b[^.]{0,40}\bairspace\b|بازگشایی حریم هوایی|حریم هوایی باز"),
+    ("suspend_service", r"\b(?:suspend|suspends|suspended|cancel|cancels|cancelled|canceled)\b[^.]{0,80}\b(?:service|services|flight|flights)\b|تعلیق (?:پرواز|پروازها|خدمات)|لغو (?:پرواز|پروازها|خدمات)"),
+    ("restore_service", r"\b(?:restore|restores|restored|resume|resumes|resumed|rebuild|rebuilds|rebuilt|return|returns|returned)\b[^.]{0,80}\b(?:service|services|flight|flights)\b|از ?سرگیری (?:پرواز|پروازها|خدمات)|بازگشت (?:پرواز|پروازها|خدمات)"),
     ("intercept", r"\bintercept(?:s|ed|ing)?\b|رهگیر|رهگیری"),
     ("redirect_vessels", r"\bredirect(?:s|ed|ing)?\b[^.]{0,60}\b(?:vessels?|ships?)\b|تغییر مسیر"),
     ("strike", r"\b(?:strike|strikes|struck|attack|attacks|attacked)\b|حمله"),
@@ -67,6 +69,8 @@ def _extract_objects(text: str) -> list[str]:
         objects.append("tankers")
     if "restricted zone" in text or "exclusion zone" in text or "منطقه محدود" in text or "منطقه ممنوع" in text:
         objects.append("restricted zone")
+    if "service" in text or "services" in text or "flight" in text or "flights" in text or "پرواز" in text or "خدمات" in text:
+        objects.append("transport services")
     return objects
 
 
