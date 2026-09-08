@@ -1,35 +1,54 @@
 {% extends 'base.html' %}
 {% block title %}داشبورد | بی‌خبر{% endblock %}
 {% block content %}
-<h1>داشبورد</h1>
+<div class="dashboard-title-row">
+  <div>
+    <h1>اتاق فرمان بی‌خبر</h1>
+    <p class="muted">ورودی خبر بدون رفرش صفحه تازه می‌شود.</p>
+  </div>
+  <div class="live-controls">
+    <span id="newNewsBadge" class="new-news-badge" hidden>خبر جدید</span>
+    <button id="soundToggle" class="sound-toggle" type="button" aria-pressed="true">🔔 صدا روشن</button>
+  </div>
+</div>
+
 <div class="stats">
-  <div class="stat"><b>{{ live_count }}</b><span>ورودی زنده</span></div>
+  <div class="stat"><b id="liveCount">{{ live_count }}</b><span>ورودی زنده</span></div>
   <a class="stat" href="{{ url_for('review_queue') }}"><b>{{ queue_count }}</b><span>نیازمند بررسی</span></a>
   <a class="stat" href="{{ url_for('history') }}"><b>{{ published_today }}</b><span>منتشرشده امروز</span></a>
   <a class="stat" href="{{ url_for('history', status='rejected_manual') }}"><b>{{ rejected_today }}</b><span>ردشده امروز</span></a>
 </div>
 
-<section class="card">
-  <div class="row"><span>وضعیت ربات</span><strong class="ok">فعال</strong></div>
+<section class="card status-card">
+  <div class="row"><span>وضعیت ربات</span><strong class="ok"><span class="status-dot"></span> فعال</strong></div>
   <div class="row"><span>کانال</span><strong>@bikhabaar</strong></div>
   <div class="row"><span>آخرین انتشار ثبت‌شده</span><strong>{{ last_publication or '—' }}</strong></div>
+  <div class="row"><span>وضعیت فید پنل</span><strong id="liveConnection" class="ok">متصل</strong></div>
 </section>
 
-<section class="card">
-  <h2>ورودی زنده</h2>
+<section class="card live-card">
+  <div class="card-heading">
+    <div>
+      <h2>ورودی زنده</h2>
+      <small id="liveUpdatedAt" class="muted">به‌روزرسانی خودکار هر ۳ ثانیه</small>
+    </div>
+    <span class="pulse-label"><span class="live-dot"></span> LIVE</span>
+  </div>
+  <div id="liveFeed" class="live-feed">
   {% if live %}
-    {% for item in live[:10] %}
-      <div class="row">
-        <span>
-          <strong>{{ item.display_title }}</strong><br>
+    {% for item in live[:20] %}
+      <article class="live-news-row" data-news-id="{{ item.id or item.news_key or loop.index }}">
+        <div class="live-news-copy">
+          <strong>{{ item.display_title }}</strong>
           <small>{{ item.source }} · {{ item.panel_status_fa }}{% if item.decision_reason_fa %} · {{ item.decision_reason_fa }}{% endif %}</small>
-        </span>
-        {% if item.source_url %}<a class="button" href="{{ item.source_url }}" target="_blank" rel="noopener">منبع</a>{% endif %}
-      </div>
+        </div>
+        {% if item.source_url %}<a class="button source-button" href="{{ item.source_url }}" target="_blank" rel="noopener">منبع</a>{% endif %}
+      </article>
     {% endfor %}
   {% else %}
-    <p>هنوز ورودی زنده‌ای ثبت نشده.</p>
+    <p class="empty">هنوز ورودی زنده‌ای ثبت نشده.</p>
   {% endif %}
+  </div>
 </section>
 
 <section class="card">
@@ -63,4 +82,5 @@
   {% if pending %}<a class="primary button" href="{{ url_for('review_queue') }}">بررسی خبرهای نیازمند تصمیم</a>{% endif %}
   <a class="button" href="{{ url_for('sources') }}">مدیریت منابع</a>
 </section>
+<script src="{{ url_for('static', filename='live.js') }}" defer></script>
 {% endblock %}
