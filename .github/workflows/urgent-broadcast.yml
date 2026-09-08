@@ -1,0 +1,50 @@
+name: Bikhabar Urgent Broadcast
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/urgent_broadcast.json"
+
+permissions:
+  contents: read
+
+jobs:
+  broadcast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Send urgent Telegram posts
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: "@bikhabaar"
+        run: |
+          python - <<'PY'
+          import json, os, time, urllib.request
+          from pathlib import Path
+
+          payload = json.loads(Path('data/urgent_broadcast.json').read_text(encoding='utf-8'))
+          messages = payload.get('messages') or []
+          token = os.environ.get('TELEGRAM_BOT_TOKEN','').strip()
+          chat_id = os.environ.get('TELEGRAM_CHAT_ID','@bikhabaar').strip()
+          if not token:
+              raise SystemExit('missing TELEGRAM_BOT_TOKEN')
+          url = f'https://api.telegram.org/bot{token}/sendMessage'
+          for text in messages:
+              body = json.dumps({
+                  'chat_id': chat_id,
+                  'text': str(text),
+                  'parse_mode': 'HTML',
+                  'disable_web_page_preview': True,
+              }, ensure_ascii=False).encode('utf-8')
+              req = urllib.request.Request(url, data=body, headers={'Content-Type':'application/json'})
+              with urllib.request.urlopen(req, timeout=20) as resp:
+                  data = json.loads(resp.read().decode('utf-8'))
+                  if not data.get('ok'):
+                      raise SystemExit(str(data))
+              time.sleep(2)
+          PY
