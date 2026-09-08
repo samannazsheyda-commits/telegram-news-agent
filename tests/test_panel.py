@@ -86,7 +86,7 @@ def test_authenticated_dashboard_loads():
     text = response.get_data(as_text=True)
     assert response.status_code == 200
     assert "داشبورد" in text
-    assert "در انتظار" in text
+    assert "نیازمند بررسی" in text
     assert "ورودی زنده" in text
     assert "منتشرشده" in text
 
