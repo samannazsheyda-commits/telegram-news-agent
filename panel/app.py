@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import time
 from collections import defaultdict, deque
 from dataclasses import asdict
@@ -16,7 +17,7 @@ from werkzeug.security import check_password_hash
 from src.custom_sources import XSource, discover_feed_url, validate_website_source
 from src.formatters import format_news
 from src.github_data import GitHubJsonRepository
-from src.services import send_telegram
+from src.services import send_telegram, translate_to_fa
 from src.sources import NewsItem
 
 from .forms import LoginForm, ReviewEditForm, WebsiteSourceForm, XSourceForm
@@ -39,6 +40,18 @@ REASON_FA = {
     "not_today_tehran": "مربوط به امروز تهران نیست",
     "vague_or_speculative": "مبهم یا گمانه‌زنی",
     "question_or_explainer": "پرسشی / توضیحی",
+    "no_matching_event": "رویداد تازه",
+    "same_source_identity_already_seen": "همان خبر قبلاً دیده شده",
+    "auto_publish_off": "انتشار خودکار خاموش است",
+    "publish_failed": "ارسال به تلگرام ناموفق بود",
+}
+PANEL_STATUS_FA = {
+    "new": "تازه",
+    "auto_published": "منتشرشده خودکار",
+    "waiting": "در انتظار بررسی",
+    "duplicate": "تکراری",
+    "rejected": "ردشده",
+    "failed": "خطای انتشار",
 }
 
 
@@ -103,9 +116,31 @@ def _effective_queue(data) -> list[dict]:
     return [r for r in queue if r.get("status", "pending") == "pending" and r.get("id") not in terminal]
 
 
-def _live_feed(data) -> list[dict]:
-    rows = _read_list(data, "data/panel_live_feed.json")
-    return sorted(rows, key=lambda r: str(r.get("updated_at") or r.get("discovered_at") or ""), reverse=True)
+def _has_persian(value: str) -> bool:
+    return bool(re.search(r"[\u0600-\u06ff]", str(value or "")))
+
+
+def _live_feed(data, translator=translate_to_fa) -> list[dict]:
+    rows = sorted(
+        _read_list(data, "data/panel_live_feed.json"),
+        key=lambda r: str(r.get("updated_at") or r.get("discovered_at") or ""),
+        reverse=True,
+    )
+    localized: list[dict] = []
+    for index, row in enumerate(rows):
+        item = dict(row)
+        title = str(item.get("persian_title") or item.get("title") or "").strip()
+        if index < 20 and title and not _has_persian(title):
+            try:
+                translated = str(translator(title) or "").strip()
+            except Exception:
+                translated = ""
+            title = translated if _has_persian(translated) else "عنوان فارسی در حال آماده‌سازی"
+        item["display_title"] = title or "بدون عنوان"
+        item["panel_status_fa"] = PANEL_STATUS_FA.get(str(item.get("panel_status") or ""), "در حال پردازش")
+        item["decision_reason_fa"] = REASON_FA.get(str(item.get("decision_reason") or ""), "")
+        localized.append(item)
+    return localized
 
 
 def _published_history(data) -> list[dict]:
@@ -169,6 +204,7 @@ def create_app(config: dict | None = None):
         GITHUB_DATA_TOKEN=os.environ.get("GITHUB_DATA_TOKEN", ""),
         GITHUB_REPOSITORY=os.environ.get("GITHUB_REPOSITORY", "samannazsheyda-commits/telegram-news-agent"),
         GITHUB_BRANCH=os.environ.get("GITHUB_BRANCH", "main"),
+        LIVE_FEED_TRANSLATOR=translate_to_fa,
         SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SAMESITE="Lax",
         SESSION_COOKIE_SECURE=True,
@@ -227,7 +263,7 @@ def create_app(config: dict | None = None):
     @login_required
     def dashboard():
         queue = _effective_queue(data)
-        live = _live_feed(data)
+        live = _live_feed(data, app.config["LIVE_FEED_TRANSLATOR"])
         published = _published_history(data)
         history = _read_list(data, "data/editorial_history.json")
         published_today = sum(1 for r in published if _same_tehran_day(str(r.get("decision_at") or r.get("updated_at") or "")))
