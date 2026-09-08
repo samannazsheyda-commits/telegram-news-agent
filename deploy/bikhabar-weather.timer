@@ -2,7 +2,7 @@
 Description=Run Bikhabar weather digest nightly
 
 [Timer]
-OnCalendar=*-*-* 19:00:00 UTC
+OnCalendar=*-*-* 19:30:00 UTC
 Persistent=true
 RandomizedDelaySec=30
 Unit=bikhabar-weather.service
