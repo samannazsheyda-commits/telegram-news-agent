@@ -1,0 +1,32 @@
+name: VPS Runtime CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "src/newsroom_hybrid_runtime.py"
+      - "tests/test_newsroom_hybrid_runtime.py"
+      - "deploy/**"
+      - ".github/workflows/vps-runtime-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Run VPS runtime tests
+        run: python -m pytest -q tests/test_newsroom_hybrid_runtime.py
+      - name: Validate deployment shell scripts
+        run: bash -n deploy/install-vps.sh deploy/update-vps.sh
