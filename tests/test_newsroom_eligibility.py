@@ -100,3 +100,35 @@ def test_invalid_publish_time_never_auto_publishes():
     ))
     assert d.eligible is False
     assert d.reason == "invalid_publish_time"
+
+
+def test_question_headline_is_hard_filtered_even_from_protected_source():
+    d = _decision(_raw(
+        source="Reuters",
+        title="Could Iran close the Strait of Hormuz?",
+        published_at="2026-09-07T20:45:00+00:00",
+        priority="protected",
+    ))
+    assert d.eligible is False
+    assert d.reason == "filtered_question_or_article"
+    assert d.review is False
+
+
+def test_analysis_explainer_and_opinion_are_hard_filtered():
+    for title in (
+        "Analysis: What Iran's new missile posture means for the region",
+        "Explainer: How sanctions could affect Iran's oil exports",
+        "Opinion: Why Tehran may change its strategy",
+        "What we know about Iran's latest military moves",
+    ):
+        d = _decision(_raw(title=title, published_at="2026-09-07T20:45:00+00:00"))
+        assert d.eligible is False
+        assert d.reason == "filtered_question_or_article"
+
+
+def test_factual_breaking_headline_is_not_filtered_as_article():
+    d = _decision(_raw(
+        title="Explosion reported near Bandar Abbas port in Iran",
+        published_at="2026-09-07T20:45:00+00:00",
+    ))
+    assert d.eligible is True
