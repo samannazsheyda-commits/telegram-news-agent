@@ -171,3 +171,37 @@ def test_aggregator_link_is_not_accepted_as_direct_source():
     ))
     assert d.eligible is False
     assert d.reason == "filtered_non_direct_source"
+
+
+def test_ceremonial_condemnation_without_new_incident_is_low_value():
+    d = _decision(_raw(
+        source="Al Arabiya English / X",
+        title="Saudi Crown Prince chairs cabinet session in Jeddah",
+        summary="The cabinet condemned Iran-backed Houthi attacks on civilian sites in Abha, Khamis Mushait, Jazan and Najran.",
+        published_at="2026-09-07T20:45:00+00:00",
+    ))
+    assert d.eligible is False
+    assert d.reason == "filtered_low_value_reaction"
+
+
+def test_high_value_war_sanctions_hormuz_and_maritime_events_pass():
+    titles = (
+        "Explosion reported at an Iranian military facility near Bandar Abbas",
+        "US imposes new sanctions on Iran oil shipping network",
+        "Iran closes part of the Strait of Hormuz after tanker incident",
+        "Iranian forces seize tanker in the Persian Gulf",
+        "Missile strike kills senior commander in Iran",
+    )
+    for title in titles:
+        d = _decision(_raw(title=title, published_at="2026-09-07T20:45:00+00:00"))
+        assert d.eligible is True, title
+
+
+def test_generic_diplomatic_reaction_is_not_enough_for_panel_or_publish():
+    d = _decision(_raw(
+        title="Saudi officials condemn Iran-linked regional violence",
+        summary="Officials reiterated concern during a government meeting.",
+        published_at="2026-09-07T20:45:00+00:00",
+    ))
+    assert d.eligible is False
+    assert d.reason == "filtered_low_value_reaction"
