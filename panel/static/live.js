@@ -5,16 +5,32 @@
   const connection = document.getElementById('liveConnection');
   const updatedAt = document.getElementById('liveUpdatedAt');
   const liveCount = document.getElementById('liveCount');
+  const queueCount = document.getElementById('queueCount');
+  const publishingState = document.getElementById('publishingState');
+  const panicToggle = document.getElementById('panicToggle');
+  const commandResult = document.getElementById('commandResult');
+  const pollSeconds = document.getElementById('pollSeconds');
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
   if (!feed || !toggle) return;
 
   let soundOn = localStorage.getItem('bikhabar_sound_alert') !== 'off';
   let firstId = feed.querySelector('[data-news-id]')?.dataset.newsId || '';
   let audioContext = null;
+  let publishingEnabled = true;
 
   function paintToggle() {
     toggle.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
     toggle.textContent = soundOn ? '🔔 صدا روشن' : '🔕 صدا خاموش';
     toggle.classList.toggle('muted-toggle', !soundOn);
+  }
+
+  function paintPublishing() {
+    if (!publishingState || !panicToggle) return;
+    publishingState.textContent = publishingEnabled ? 'فعال' : 'متوقف';
+    publishingState.classList.toggle('ok', publishingEnabled);
+    publishingState.classList.toggle('offline', !publishingEnabled);
+    panicToggle.textContent = publishingEnabled ? '⛔ توقف کامل انتشار' : '▶️ ازسرگیری انتشار';
+    panicToggle.classList.toggle('resume-button', !publishingEnabled);
   }
 
   function beep() {
@@ -36,12 +52,25 @@
   }
 
   function showBadge() {
+    if (!badge) return;
     badge.hidden = false;
     badge.classList.remove('pop');
     void badge.offsetWidth;
     badge.classList.add('pop');
     window.clearTimeout(showBadge.timer);
     showBadge.timer = window.setTimeout(() => { badge.hidden = true; }, 5000);
+  }
+
+  async function refreshStatus() {
+    try {
+      const response = await fetch('/api/command-center/status', { credentials: 'same-origin', cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      publishingEnabled = Boolean(data.publishing);
+      paintPublishing();
+      if (queueCount) queueCount.textContent = String(data.queue_count ?? queueCount.textContent);
+      if (pollSeconds) pollSeconds.textContent = `${Number(data.poll_seconds || 5).toLocaleString('fa-IR')} ثانیه`;
+    } catch (_) {}
   }
 
   async function refreshLiveFeed() {
@@ -84,6 +113,18 @@
     }
   }
 
+  async function postJson(url, payload = {}) {
+    const response = await fetch(url, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.ok === false) throw new Error(data.error || `HTTP ${response.status}`);
+    return data;
+  }
+
   toggle.addEventListener('click', async () => {
     soundOn = !soundOn;
     localStorage.setItem('bikhabar_sound_alert', soundOn ? 'on' : 'off');
@@ -97,10 +138,44 @@
     paintToggle();
   });
 
+  panicToggle?.addEventListener('click', async () => {
+    panicToggle.disabled = true;
+    try {
+      const data = await postJson('/api/command-center/publishing', { enabled: !publishingEnabled });
+      publishingEnabled = Boolean(data.publishing);
+      paintPublishing();
+      if (commandResult) commandResult.textContent = publishingEnabled ? 'انتشار دوباره فعال شد.' : 'انتشار فوراً متوقف شد.';
+    } catch (error) {
+      if (commandResult) commandResult.textContent = `خطا: ${error.message}`;
+    } finally {
+      panicToggle.disabled = false;
+    }
+  });
+
+  document.querySelectorAll('[data-command-module]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const moduleName = button.dataset.commandModule;
+      button.disabled = true;
+      const old = button.textContent;
+      button.textContent = 'در صف…';
+      try {
+        await postJson(`/api/command-center/module/${moduleName}`);
+        if (commandResult) commandResult.textContent = 'فرمان ثبت شد؛ ایجنت حداکثر تا چند ثانیه اجرا می‌کند.';
+      } catch (error) {
+        if (commandResult) commandResult.textContent = `خطا: ${error.message}`;
+      } finally {
+        window.setTimeout(() => { button.disabled = false; button.textContent = old; }, 1500);
+      }
+    });
+  });
+
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) document.title = 'داشبورد | بی‌خبر';
+    if (!document.hidden) document.title = 'اتاق فرمان | بی‌خبر';
   });
 
   paintToggle();
+  paintPublishing();
+  refreshStatus();
   window.setInterval(refreshLiveFeed, 3000);
+  window.setInterval(refreshStatus, 5000);
 })();
