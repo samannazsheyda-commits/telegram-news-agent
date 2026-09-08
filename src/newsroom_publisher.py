@@ -11,6 +11,14 @@ from .services import USER_AGENT, translate_to_fa
 from .sources import NewsItem
 
 
+EXPLOSION_TERMS = ("explosion", "exploded", "blast", "detonation", "انفجار", "منفجر")
+
+
+def _breaking_prefix(item: NormalizedNewsItem) -> str:
+    text = f"{item.raw.title} {item.raw.summary}".lower()
+    return "💥 🔴 <b>خبر فوری</b>\n" if any(term in text for term in EXPLOSION_TERMS) else ""
+
+
 def _published_rfc2822(value: str) -> str:
     raw = str(value or "").strip()
     if not raw:
@@ -70,56 +78,34 @@ class TelegramNewsroomPublisher:
             link=item.raw.source_url,
             published=_published_rfc2822(item.raw.published_at),
         )
-        return format_news(legacy, title_fa, summary_fa)
+        return _breaking_prefix(item) + format_news(legacy, title_fa, summary_fa)
 
     def __call__(self, item: NormalizedNewsItem) -> dict:
         if not self.bot_token or not self.chat_id:
             return {"ok": False, "error": "missing_telegram_credentials"}
-
         message = self._message(item)
         if not message:
             return {"ok": False, "error": "translation_or_format_failed"}
-
         video = _first_video(item)
         photo = _first_image(item)
         if video:
             endpoint = "sendVideo"
-            data = {
-                "chat_id": self.chat_id,
-                "video": video,
-                "caption": message[:1024],
-                "parse_mode": "HTML",
-                "supports_streaming": "true",
-            }
+            data = {"chat_id": self.chat_id, "video": video, "caption": message[:1024], "parse_mode": "HTML", "supports_streaming": "true"}
         elif photo:
             endpoint = "sendPhoto"
-            data = {
-                "chat_id": self.chat_id,
-                "photo": photo,
-                "caption": message[:1024],
-                "parse_mode": "HTML",
-            }
+            data = {"chat_id": self.chat_id, "photo": photo, "caption": message[:1024], "parse_mode": "HTML"}
         else:
             endpoint = "sendMessage"
-            data = {
-                "chat_id": self.chat_id,
-                "text": message,
-                "parse_mode": "HTML",
-                "disable_web_page_preview": True,
-            }
-
+            data = {"chat_id": self.chat_id, "text": message, "parse_mode": "HTML", "disable_web_page_preview": True}
         try:
             response = self.session.post(
                 f"https://api.telegram.org/bot{self.bot_token}/{endpoint}",
-                data=data,
-                headers={"User-Agent": USER_AGENT},
-                timeout=35 if video else 25,
+                data=data, headers={"User-Agent": USER_AGENT}, timeout=35 if video else 25,
             )
             response.raise_for_status()
             payload = response.json()
         except Exception as exc:
             return {"ok": False, "error": f"telegram_request_failed:{type(exc).__name__}"}
-
         result = payload.get("result") if isinstance(payload, dict) else None
         message_id = result.get("message_id") if isinstance(result, dict) else None
         if not isinstance(payload, dict) or payload.get("ok") is not True or not isinstance(message_id, int):
