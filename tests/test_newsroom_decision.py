@@ -24,8 +24,8 @@ def raw(payload, *, published="2026-09-07T12:00:00+00:00"):
     )
 
 
-def event_from(payload, event_id="event-1"):
-    item = normalize_item(raw(payload))
+def event_from(payload, event_id="event-1", *, published="2026-09-07T12:00:00+00:00"):
+    item = normalize_item(raw(payload, published=published))
     fp = build_fingerprint(item)
     return EventRecord(
         event_id=event_id,
@@ -107,3 +107,43 @@ def test_same_truth_post_id_is_exact_duplicate_even_if_refetched():
     prior = event_from(current_payload)
     result = decide_item(current, build_fingerprint(current), [prior])
     assert result.decision == "duplicate_exact"
+
+
+def test_live_houthi_attack_same_event_is_deduped_across_reuters_and_cnn():
+    prior_payload = {
+        "source": "Reuters",
+        "url": "https://reuters.com/houthi-saudi",
+        "id": "r-houthi",
+        "title": "Iran-backed Houthis attack Saudi energy facilities, wounding dozens and sending oil prices higher",
+    }
+    current_payload = {
+        "source": "CNN",
+        "url": "https://cnn.com/houthi-saudi",
+        "id": "cnn-houthi",
+        "title": "Iran-backed Houthis attack Saudi Arabia injuring dozens, Kingdom vows response",
+    }
+    current = normalize_item(raw(current_payload, published="2026-09-08T01:50:00+00:00"))
+    prior = event_from(prior_payload, published="2026-09-08T01:49:00+00:00")
+    result = decide_item(current, build_fingerprint(current), [prior])
+    assert result.decision == "duplicate_same_claim"
+    assert result.duplicate_of == prior.event_id
+
+
+def test_live_improved_ballistic_missile_same_claim_is_deduped_across_ap_and_toi():
+    prior_payload = {
+        "source": "Associated Press",
+        "url": "https://apnews.com/improved-missile",
+        "id": "ap-missile",
+        "title": "Iran says improved ballistic missile shows it will take preemptive action against threats",
+    }
+    current_payload = {
+        "source": "Times of Israel",
+        "url": "https://timesofisrael.com/improved-missile",
+        "id": "toi-missile",
+        "title": "Touting improved ballistic missile, Iran vows preemptive action against threats",
+    }
+    current = normalize_item(raw(current_payload, published="2026-09-08T03:00:00+00:00"))
+    prior = event_from(prior_payload, published="2026-09-08T02:55:00+00:00")
+    result = decide_item(current, build_fingerprint(current), [prior])
+    assert result.decision == "duplicate_same_claim"
+    assert result.duplicate_of == prior.event_id
