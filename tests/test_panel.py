@@ -39,6 +39,13 @@ def _app(data=None):
             "TELEGRAM_BOT_TOKEN": "telegram-secret-value",
             "GITHUB_DATA_TOKEN": "github-secret-value",
             "DATA_BACKEND": data or FakeData(),
+            "LIVE_FEED_TRANSLATOR": lambda text: {
+                "Live story 0": "خبر زنده صفر",
+                "Live story 1": "خبر زنده یک",
+                "Live story 2": "خبر زنده دو",
+                "Live story 3": "خبر زنده سه",
+                "Live story 4": "خبر زنده چهار",
+            }.get(text, text),
         }
     )
 
@@ -84,7 +91,7 @@ def test_authenticated_dashboard_loads():
     assert "منتشرشده" in text
 
 
-def test_dashboard_shows_live_items_when_pending_queue_is_empty():
+def test_dashboard_shows_live_items_in_persian_when_pending_queue_is_empty():
     data = FakeData()
     data.files["data/panel_live_feed.json"] = [
         {
@@ -93,14 +100,14 @@ def test_dashboard_shows_live_items_when_pending_queue_is_empty():
             "source": "Reuters",
             "source_url": f"https://example.com/{index}",
             "title": f"Live story {index}",
-            "published_at_source": "2026-09-07T12:00:00+00:00",
-            "discovered_at": "2026-09-07T12:01:00+00:00",
+            "published_at_source": "2026-09-08T12:00:00+00:00",
+            "discovered_at": "2026-09-08T12:01:00+00:00",
             "decision": "new_event",
             "decision_reason": "no_matching_event",
             "duplicate_of": "",
             "telegram_message_id": None,
             "panel_status": "new",
-            "updated_at": "2026-09-07T12:01:00+00:00",
+            "updated_at": "2026-09-08T12:01:00+00:00",
         }
         for index in range(5)
     ]
@@ -111,8 +118,10 @@ def test_dashboard_shows_live_items_when_pending_queue_is_empty():
     assert response.status_code == 200
     assert "ورودی زنده" in text
     assert ">5<" in text
-    assert "Live story 0" in text
-    assert "در انتظار" in text
+    assert "خبر زنده صفر" in text
+    assert "Live story 0" not in text
+    assert "تازه" in text
+    assert "نیاز به تصمیم دستی نیست" in text
     assert ">0<" in text
 
 
