@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:JasonMBrodsky:2097313311993774152",
+    "x:AlArabiya_Eng:2097310435871486059",
     "x:AlArabiya_Eng:2097309043467419809",
     "x:Reuters:2097305232900235638",
     "x:haaretzcom:2097305222552936757",
@@ -498,11 +500,9 @@
     "ed8ef7e06b237e1e93f1dc0dd1428dd3f434be7c",
     "f06acfa3150de5eef2fb82a2ea9abc9782f59ffe",
     "f30ca6a2fdc377365cb5606e95f3ad46015c99f9",
-    "044eff1b265ccae47f290854842c576054a807a0",
-    "9c9375e4fab33f334cde2f6e5bb72c3e13cf7163",
-    "5c3d1f72d14471500076d18bd5ada9acd6461bd5"
+    "044eff1b265ccae47f290854842c576054a807a0"
   ],
-  "market_last_sent_at": "2026-09-08T11:16:00.342538+00:00",
+  "market_last_sent_at": "2026-09-08T13:22:23.911953+00:00",
   "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
@@ -616,11 +616,11 @@
     "first_usd": 222100,
     "last_usd": 225500,
     "first_gold": 23062200,
-    "last_gold": 23465800,
+    "last_gold": 23697500,
     "first_brent": 98.44,
-    "last_brent": 98.64,
+    "last_brent": 97.43,
     "first_wti": 93.83,
-    "last_wti": 93.97
+    "last_wti": 92.54
   },
   "news_rejections": [
     {
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2097310435871486059",
+      "source": "Al Arabiya English / X",
+      "title": "A local commander in Iran’s paramilitary Basij force has been killed in a “terrorist attack” in the country’s restive southeast, according to state media. Abdolraouf Eshaghi, a commander in the Parud district of Sistan-Baluchistan province, has been “martyred,” Tasnim news agency said, without providing details. It was not immediately clear who was behind the attack.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097310435871486059",
+      "published": "Tue, 08 Sep 2026 13:05:48 +0000",
+      "sent_at": "2026-09-08T13:22:23.911953+00:00",
+      "fingerprint": "a local commander in iran s paramilitary basij force has been killed in a terrorist attack in the country s restive southeast according to state media abdolraouf eshaghi a commander in the parud district of sistan baluchistan province has been martyred tasnim news agency said without providing details it was not immediately clear who was behind the attack"
+    },
+    {
+      "key": "x:JasonMBrodsky:2097313311993774152",
+      "source": "Jason Brodsky / X",
+      "title": "#Iran’s regime’s judiciary has detained Mohammad-Bagher Kharrazi, the brother-in-law of Masoud Khamenei, over his recent remarks. The Special Clerical Court has long tried Khamenei family members, including the late Ali Khamenei’s niece.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2097313311993774152",
+      "published": "Tue, 08 Sep 2026 13:17:14 +0000",
+      "sent_at": "2026-09-08T13:22:23.911953+00:00",
+      "fingerprint": "iran s regime s judiciary has detained mohammad bagher kharrazi the brother in law of masoud khamenei over his recent remarks the special clerical court has long tried khamenei family members including the late ali khamenei s niece"
+    },
     {
       "key": "x:AlArabiya_Eng:2097309043467419809",
       "source": "Al Arabiya English / X",
