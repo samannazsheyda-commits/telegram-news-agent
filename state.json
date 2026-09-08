@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:araghchi:2097389306306330727",
+    "x:AJEnglish:2097387150673346843",
+    "x:Jerusalem_Post:2097386584471392748",
     "x:JasonMBrodsky:2097383089173406051",
     "x:washingtonpost:2097376956824056091",
     "x:USABehFarsi:2097374261375602842",
@@ -497,13 +500,10 @@
     "9e4e8c237f50c15e9bcbd7da5a3bfe51d25abab3",
     "d4440958b0ecf46590959ae1eb100fe0af6bc7d8",
     "84e8e2bee9d4e051260c05b537f38e6ede691896",
-    "f3be34501e2e3541aeb82e1663fc7790e15171a5",
-    "b2d50900e99fa71b6b9f2c5c04283b61be75c679",
-    "82c64bd63c492719092ededd69abb3ad0a534558",
-    "c2d62d3460ef9587aceed390a745059a345420c9"
+    "f3be34501e2e3541aeb82e1663fc7790e15171a5"
   ],
   "market_last_sent_at": "2026-09-08T17:41:22.609002+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2427,6 +2427,36 @@
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
     {
+      "key": "x:Jerusalem_Post:2097386584471392748",
+      "source": "Jerusalem Post / X",
+      "title": "A US military drone malfunctioned in the Middle East while it was surveying regional waters in support of the Iran war, a US official told Reuters on Tuesday. The official, speaking on the condition of anonymity, said the defective drone was an older model and was not carrying any classified sonar or radar equipment. It malfunctioned more than a day ago, the official added.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2097386584471392748",
+      "published": "Tue, 08 Sep 2026 18:08:23 +0000",
+      "sent_at": "2026-09-08T18:25:46.198064+00:00",
+      "fingerprint": "a us military drone malfunctioned in the middle east while it was surveying regional waters in support of the iran war a us official told reuters on tuesday the official speaking on the condition of anonymity said the defective drone was an older model and was not carrying any classified sonar or radar equipment it malfunctioned more than a day ago the official added"
+    },
+    {
+      "key": "x:AJEnglish:2097387150673346843",
+      "source": "Al Jazeera English / X",
+      "title": "Correction: A previous version of this post incorrectly quoted former Pentagon official Wes J Bryant as saying that the US is intentionally targeting civilians in Iran. His comments were referring to US operations in the Caribbean and have since been removed.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097387150673346843",
+      "published": "Tue, 08 Sep 2026 18:10:38 +0000",
+      "sent_at": "2026-09-08T18:25:46.198064+00:00",
+      "fingerprint": "correction a previous version of this post incorrectly quoted former pentagon official wes j bryant as saying that the us is intentionally targeting civilians in iran his comments were referring to us operations in the caribbean and have since been removed"
+    },
+    {
+      "key": "x:araghchi:2097389306306330727",
+      "source": "Abbas Araghchi / X",
+      "title": "After 47 years of sanctions, the US went to war with Iran on behalf of Israel. The fallout has been disastrous for America, including its standing worldwide. After failing to achieve its aims through sanctions or war, Washington’s “novel” solution is…more sanctions. Seriously?",
+      "summary": "",
+      "link": "https://x.com/araghchi/status/2097389306306330727",
+      "published": "Tue, 08 Sep 2026 18:19:12 +0000",
+      "sent_at": "2026-09-08T18:25:46.198064+00:00",
+      "fingerprint": "after 47 years of sanctions the us went to war with iran on behalf of israel the fallout has been disastrous for america including its standing worldwide after failing to achieve its aims through sanctions or war washington s novel solution is more sanctions seriously"
+    },
+    {
       "key": "x:JasonMBrodsky:2097383089173406051",
       "source": "Jason Brodsky / X",
       "title": "This won't include the \"spy pigeons\" that #Iran's regime dubbed Mossad Operatives in 2008. (true story)",
@@ -4347,26 +4377,6 @@
       "fingerprint": "getting close to the most important economic target in iran the mother lode"
     },
     {
-      "key": "x:mdubowitz:2096296663375581225",
-      "source": "Mark Dubowitz / X",
-      "title": "Those of us who argued for months that the trend was turning decisively against Tehran were criticized and dismissed. Now, more and more people are coming to the same conclusion.",
-      "summary": "",
-      "link": "https://x.com/mdubowitz/status/2096296663375581225",
-      "published": "Sat, 05 Sep 2026 17:57:26 +0000",
-      "sent_at": "2026-09-05T17:59:07.119093+00:00",
-      "fingerprint": "those of us who argued for months that the trend was turning decisively against tehran were criticized and dismissed now more and more people are coming to the same conclusion"
-    },
-    {
-      "key": "x:AJEnglish:2096293665690046953",
-      "source": "Al Jazeera English / X",
-      "title": "BREAKING: At least 11 people killed after a fuel tanker caught fire in an accident on the Hamadan–Sanandaj road in Iran’s Kurdistan Province, according to the local Red Crescent.",
-      "summary": "",
-      "link": "https://x.com/AJEnglish/status/2096293665690046953",
-      "published": "Sat, 05 Sep 2026 17:45:31 +0000",
-      "sent_at": "2026-09-05T17:56:21.564250+00:00",
-      "fingerprint": "breaking at least 11 people killed after a fuel tanker caught fire in an accident on the hamadan sanandaj road in iran s kurdistan province according to the local red crescent"
-    },
-    {
       "key": "x:AlArabiya_Eng:2097344884529111069",
       "source": "Al Arabiya English / X",
       "title": "Saudi Foreign Minister Prince Faisal bin Farhan says that the Iran-backed Houthi militia has embarked on a course of action whose consequences it will not be able to handle, adding that it is attempting to export its internal problems in Yemen to Saudi Arabia.",
@@ -4395,6 +4405,26 @@
       "published": "Tue, 08 Sep 2026 15:52:49 +0000",
       "sent_at": "2026-09-08T15:58:30.720930+00:00",
       "fingerprint": "higher gas and diesel prices have cost americans an additional 100 billion since the iran war began according to a brown university tracker"
+    },
+    {
+      "key": "x:mdubowitz:2096296663375581225",
+      "source": "Mark Dubowitz / X",
+      "title": "Those of us who argued for months that the trend was turning decisively against Tehran were criticized and dismissed. Now, more and more people are coming to the same conclusion.",
+      "summary": "",
+      "link": "https://x.com/mdubowitz/status/2096296663375581225",
+      "published": "Sat, 05 Sep 2026 17:57:26 +0000",
+      "sent_at": "2026-09-05T17:59:07.119093+00:00",
+      "fingerprint": "those of us who argued for months that the trend was turning decisively against tehran were criticized and dismissed now more and more people are coming to the same conclusion"
+    },
+    {
+      "key": "x:AJEnglish:2096293665690046953",
+      "source": "Al Jazeera English / X",
+      "title": "BREAKING: At least 11 people killed after a fuel tanker caught fire in an accident on the Hamadan–Sanandaj road in Iran’s Kurdistan Province, according to the local Red Crescent.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096293665690046953",
+      "published": "Sat, 05 Sep 2026 17:45:31 +0000",
+      "sent_at": "2026-09-05T17:56:21.564250+00:00",
+      "fingerprint": "breaking at least 11 people killed after a fuel tanker caught fire in an accident on the hamadan sanandaj road in iran s kurdistan province according to the local red crescent"
     },
     {
       "key": "5390a15f6ca1320c2de73019845487baf4f50813",
