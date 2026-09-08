@@ -9,9 +9,10 @@ PANEL_PASSWORD_FILE="/var/lib/bikhabar/panel_password.txt"
 BRANCH="${BRANCH:-production}"
 
 if [[ -f "${ENV_FILE}" ]]; then
-  # shellcheck disable=SC1090
-  source "${ENV_FILE}"
-  BRANCH="${DEPLOY_BRANCH:-${BRANCH}}"
+  ENV_BRANCH="$(grep -m1 '^DEPLOY_BRANCH=' "${ENV_FILE}" | cut -d= -f2- || true)"
+  if [[ -n "${ENV_BRANCH}" ]]; then
+    BRANCH="${ENV_BRANCH}"
+  fi
 fi
 
 RUNTIME_FILES=(
