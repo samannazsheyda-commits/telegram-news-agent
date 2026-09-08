@@ -32,6 +32,7 @@ def test_weather_digest_is_short_technical_and_has_required_metrics():
             "code": 61,
             "tmax": 27,
             "tmin": 18,
+            "humidity": 41,
             "pop": 55,
             "precip": 1.8,
             "wind": 22,
@@ -40,8 +41,27 @@ def test_weather_digest_is_short_technical_and_has_required_metrics():
     ])
     assert "تهران" in text
     assert "18 تا 27°C" in text
+    assert "رطوبت 41٪" in text
     assert "بارش 55٪ (1.8 mm)" in text
     assert "باد 22 km/h" in text
     assert "تندباد 39 km/h" in text
     assert "Open-Meteo" in text
     assert "محاوره" not in text
+
+
+def test_weather_digest_uses_readable_two_line_city_blocks_with_blank_spacing():
+    text = format_digest([
+        {
+            "name": "تهران", "date": "2026-09-09", "code": 2,
+            "tmax": 32, "tmin": 20, "humidity": 40,
+            "pop": 0, "precip": 0.0, "wind": 11, "gust": 30,
+        },
+        {
+            "name": "کرج", "date": "2026-09-09", "code": 3,
+            "tmax": 30, "tmin": 14, "humidity": 57,
+            "pop": 3, "precip": 0.0, "wind": 18, "gust": 44,
+        },
+    ])
+    assert "⛅ <b>تهران</b> — نیمه‌ابری\n🌡️ 20 تا 32°C" in text
+    assert "☁️ <b>کرج</b> — ابری\n🌡️ 14 تا 30°C" in text
+    assert "تندباد 30 km/h\n\n☁️ <b>کرج</b>" in text
