@@ -5,4 +5,4 @@ Flask-WTF==1.2.2
 gunicorn==23.0.0
 holidays==0.80
 staticmap==0.5.7
-yt-dlp>=2026.8.31
+yt-dlp==2026.8.30
