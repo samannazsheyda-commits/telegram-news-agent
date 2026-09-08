@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:CNN:2097369663713718780",
     "x:business:2097364355394220219",
     "x:Jerusalem_Post:2097355141401682032",
     "e6223e45bc33bc14f66b4a062f368f8d7ca9aa94",
@@ -499,11 +500,10 @@
     "c2d62d3460ef9587aceed390a745059a345420c9",
     "d1f2475014a9536cbaaa72264b7eea8ee03d23ed",
     "c723105b64d21a4751d29894ddfd8023aa43a6fa",
-    "5c594f8de88ed4301b00018e011b633c729c03d9",
-    "x:JasonMBrodsky:2096198565404025262"
+    "5c594f8de88ed4301b00018e011b633c729c03d9"
   ],
   "market_last_sent_at": "2026-09-08T15:40:37.043002+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:CNN:2097369663713718780",
+      "source": "CNN / X",
+      "title": "The Iran war has saddled Americans with a massive energy bill that continues to mount as the conflict drags on.",
+      "summary": "",
+      "link": "https://x.com/CNN/status/2097369663713718780",
+      "published": "Tue, 08 Sep 2026 17:01:09 +0000",
+      "sent_at": "2026-09-08T17:06:10.360959+00:00",
+      "fingerprint": "the iran war has saddled americans with a massive energy bill that continues to mount as the conflict drags on"
+    },
     {
       "key": "x:business:2097364355394220219",
       "source": "Bloomberg / X",
@@ -4367,6 +4377,36 @@
       "fingerprint": "unconfirmed reports of explosions heard from qeshm island and missile launches from iran towards the strait of hormuz unconfirmed reports of explosions heard from qeshm island and missile launches from iran towards the strait of hormuz"
     },
     {
+      "key": "x:AlArabiya_Eng:2097344884529111069",
+      "source": "Al Arabiya English / X",
+      "title": "Saudi Foreign Minister Prince Faisal bin Farhan says that the Iran-backed Houthi militia has embarked on a course of action whose consequences it will not be able to handle, adding that it is attempting to export its internal problems in Yemen to Saudi Arabia.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097344884529111069",
+      "published": "Tue, 08 Sep 2026 15:22:41 +0000",
+      "sent_at": "2026-09-08T15:26:20.887109+00:00",
+      "fingerprint": "saudi foreign minister prince faisal bin farhan says that the iran backed houthi militia has embarked on a course of action whose consequences it will not be able to handle adding that it is attempting to export its internal problems in yemen to saudi arabia"
+    },
+    {
+      "key": "x:SecScottBessent:2097352174292390363",
+      "source": "Scott Bessent / X",
+      "title": "Under Operation Economic Outcast, we promised severe consequences for those providing financial lifelines to the Iranian regime. Today, we followed through on that promise with sanctions on companies that continue to support Mahan Air. Let this be a warning to anyone doing business with Iran’s remaining airlines, all of which we sanctioned today: You are at risk of being cut off from the global financial system.",
+      "summary": "",
+      "link": "https://x.com/SecScottBessent/status/2097352174292390363",
+      "published": "Tue, 08 Sep 2026 15:51:39 +0000",
+      "sent_at": "2026-09-08T15:58:30.720930+00:00",
+      "fingerprint": "under operation economic outcast we promised severe consequences for those providing financial lifelines to the iranian regime today we followed through on that promise with sanctions on companies that continue to support mahan air let this be a warning to anyone doing business with iran s remaining airlines all of which we sanctioned today you are at risk of being cut off from the global financial system"
+    },
+    {
+      "key": "x:CBSNews:2097352465284726875",
+      "source": "CBS News / X",
+      "title": "Higher gas and diesel prices have cost Americans an additional $100 billion since the Iran war began, according to a Brown University tracker.",
+      "summary": "",
+      "link": "https://x.com/CBSNews/status/2097352465284726875",
+      "published": "Tue, 08 Sep 2026 15:52:49 +0000",
+      "sent_at": "2026-09-08T15:58:30.720930+00:00",
+      "fingerprint": "higher gas and diesel prices have cost americans an additional 100 billion since the iran war began according to a brown university tracker"
+    },
+    {
       "key": "x:CENTCOM:2096247889366290840",
       "source": "CENTCOM / X",
       "title": "“Let the message to the IRGC be clear: If you shoot at two of our ships, we will impose an even higher economic cost —taking out three of yours. We will not hesitate to defend American forces, and if necessary, destroy Iran’s limited and exposed oil fleet.” — Adm. Brad Cooper, CENTCOM commander.",
@@ -4415,36 +4455,6 @@
       "published": "Sat, 05 Sep 2026 16:35:00 +0000",
       "sent_at": "2026-09-05T16:46:34.481060+00:00",
       "fingerprint": "the united states said it struck and destroyed three iranian oil tankers on saturday in response to attempted missile attacks on naval vessels in the latest exchange of fire since renewed hostilities flared between the foes"
-    },
-    {
-      "key": "x:AlArabiya_Eng:2097344884529111069",
-      "source": "Al Arabiya English / X",
-      "title": "Saudi Foreign Minister Prince Faisal bin Farhan says that the Iran-backed Houthi militia has embarked on a course of action whose consequences it will not be able to handle, adding that it is attempting to export its internal problems in Yemen to Saudi Arabia.",
-      "summary": "",
-      "link": "https://x.com/AlArabiya_Eng/status/2097344884529111069",
-      "published": "Tue, 08 Sep 2026 15:22:41 +0000",
-      "sent_at": "2026-09-08T15:26:20.887109+00:00",
-      "fingerprint": "saudi foreign minister prince faisal bin farhan says that the iran backed houthi militia has embarked on a course of action whose consequences it will not be able to handle adding that it is attempting to export its internal problems in yemen to saudi arabia"
-    },
-    {
-      "key": "x:SecScottBessent:2097352174292390363",
-      "source": "Scott Bessent / X",
-      "title": "Under Operation Economic Outcast, we promised severe consequences for those providing financial lifelines to the Iranian regime. Today, we followed through on that promise with sanctions on companies that continue to support Mahan Air. Let this be a warning to anyone doing business with Iran’s remaining airlines, all of which we sanctioned today: You are at risk of being cut off from the global financial system.",
-      "summary": "",
-      "link": "https://x.com/SecScottBessent/status/2097352174292390363",
-      "published": "Tue, 08 Sep 2026 15:51:39 +0000",
-      "sent_at": "2026-09-08T15:58:30.720930+00:00",
-      "fingerprint": "under operation economic outcast we promised severe consequences for those providing financial lifelines to the iranian regime today we followed through on that promise with sanctions on companies that continue to support mahan air let this be a warning to anyone doing business with iran s remaining airlines all of which we sanctioned today you are at risk of being cut off from the global financial system"
-    },
-    {
-      "key": "x:CBSNews:2097352465284726875",
-      "source": "CBS News / X",
-      "title": "Higher gas and diesel prices have cost Americans an additional $100 billion since the Iran war began, according to a Brown University tracker.",
-      "summary": "",
-      "link": "https://x.com/CBSNews/status/2097352465284726875",
-      "published": "Tue, 08 Sep 2026 15:52:49 +0000",
-      "sent_at": "2026-09-08T15:58:30.720930+00:00",
-      "fingerprint": "higher gas and diesel prices have cost americans an additional 100 billion since the iran war began according to a brown university tracker"
     },
     {
       "key": "x:Jerusalem_Post:2096270163658068212",
