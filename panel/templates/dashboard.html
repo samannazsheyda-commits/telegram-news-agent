@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-{% block title %}داشبورد | بی‌خبر{% endblock %}
+{% block title %}اتاق فرمان | بی‌خبر{% endblock %}
 {% block content %}
 <div class="dashboard-title-row">
   <div>
     <h1>اتاق فرمان بی‌خبر</h1>
-    <p class="muted">ورودی خبر بدون رفرش صفحه تازه می‌شود.</p>
+    <p class="muted">رصد زنده جنگ، موشک، انفجار و تنگه هرمز — بدون رفرش صفحه</p>
   </div>
   <div class="live-controls">
     <span id="newNewsBadge" class="new-news-badge" hidden>خبر جدید</span>
@@ -12,16 +12,55 @@
   </div>
 </div>
 
+<section class="card command-strip">
+  <div>
+    <small class="muted">انتشار خودکار</small>
+    <strong id="publishingState" class="ok">در حال بررسی…</strong>
+  </div>
+  <button id="panicToggle" class="danger-button" type="button">⛔ توقف کامل انتشار</button>
+  <button class="button command-action" data-command-module="scan" type="button">⚡ اسکن فوری</button>
+  <span class="muted command-result" id="commandResult"></span>
+</section>
+
+<div class="priority-banner">
+  <b>اولویت قرمز ۲۴/۷:</b>
+  <span>موشک از ایران</span><span>موشک به ایران</span><span>انفجار</span><span>تنگه هرمز</span><span>حمله مستقیم</span>
+</div>
+
 <div class="stats">
   <div class="stat"><b id="liveCount">{{ live_count }}</b><span>ورودی زنده</span></div>
-  <a class="stat" href="{{ url_for('review_queue') }}"><b>{{ queue_count }}</b><span>نیازمند بررسی</span></a>
+  <a class="stat" href="{{ url_for('review_queue') }}"><b id="queueCount">{{ queue_count }}</b><span>نیازمند بررسی</span></a>
   <a class="stat" href="{{ url_for('history') }}"><b>{{ published_today }}</b><span>منتشرشده امروز</span></a>
   <a class="stat" href="{{ url_for('history', status='rejected_manual') }}"><b>{{ rejected_today }}</b><span>ردشده امروز</span></a>
 </div>
 
+<section class="module-grid">
+  <article class="card module-card">
+    <div class="module-icon">🌤️</div>
+    <div><h3>هواشناسی فردا</h3><small>هر شب ۲۳:۰۰ تهران · تاریخ شمسی و روز هفته</small></div>
+    <button class="button command-action" data-command-module="weather" type="button">انتشار همین حالا</button>
+  </article>
+  <article class="card module-card">
+    <div class="module-icon">✈️</div>
+    <div><h3>ترافیک هوایی ایران و منطقه</h3><small>روزانه ۱۲:۰۰ و ۰۰:۰۰ تهران · داده زنده</small></div>
+    <button class="button command-action" data-command-module="air-traffic" type="button">انتشار همین حالا</button>
+  </article>
+  <article class="card module-card module-card-muted">
+    <div class="module-icon">🚢</div>
+    <div><h3>نفتکش‌ها و تنگه هرمز</h3><small>گزارش شمارش معتبر؛ بدون عددسازی</small></div>
+    <span class="muted">ماژول در حال تکمیل</span>
+  </article>
+  <article class="card module-card module-card-muted">
+    <div class="module-icon">💵</div>
+    <div><h3>بازار و دلار</h3><small>نمایش و انتشار دستی از اتاق فرمان</small></div>
+    <span class="muted">ماژول در حال تکمیل</span>
+  </article>
+</section>
+
 <section class="card status-card">
   <div class="row"><span>وضعیت ربات</span><strong class="ok"><span class="status-dot"></span> فعال</strong></div>
   <div class="row"><span>کانال</span><strong>@bikhabaar</strong></div>
+  <div class="row"><span>فاصله هدف رصد</span><strong id="pollSeconds">۵ ثانیه</strong></div>
   <div class="row"><span>آخرین انتشار ثبت‌شده</span><strong>{{ last_publication or '—' }}</strong></div>
   <div class="row"><span>وضعیت فید پنل</span><strong id="liveConnection" class="ok">متصل</strong></div>
 </section>
@@ -36,7 +75,7 @@
   </div>
   <div id="liveFeed" class="live-feed">
   {% if live %}
-    {% for item in live[:20] %}
+    {% for item in live[:30] %}
       <article class="live-news-row" data-news-id="{{ item.id or item.news_key or loop.index }}">
         <div class="live-news-copy">
           <strong>{{ item.display_title }}</strong>
