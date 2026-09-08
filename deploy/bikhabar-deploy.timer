@@ -1,0 +1,12 @@
+[Unit]
+Description=Check for tested Bikhabar production updates
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
+RandomizedDelaySec=15s
+Persistent=true
+Unit=bikhabar-deploy.service
+
+[Install]
+WantedBy=timers.target
