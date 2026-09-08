@@ -12,14 +12,14 @@ permissions:
 jobs:
   broadcast:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Install urgent media dependencies
-        run: python -m pip install --quiet requests jdatetime
+        run: python -m pip install --quiet requests jdatetime yt-dlp
       - name: Send urgent Telegram posts
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -29,7 +29,8 @@ jobs:
           import html
           import json
           import os
-          import re
+          import subprocess
+          import tempfile
           import time
           from datetime import datetime
           from pathlib import Path
@@ -53,30 +54,41 @@ jobs:
               jd = jdatetime.date.fromgregorian(date=now.date())
               return f"{weekdays[now.weekday()]} {jd.day} {months[jd.month-1]} {jd.year} — {now:%H:%M}"
 
-          def api(method, **data):
-              r = session.post(f'https://api.telegram.org/bot{token}/{method}', data=data, timeout=60)
-              if not r.ok:
-                  raise RuntimeError(f'{method} HTTP {r.status_code}: {r.text[:500]}')
-              out = r.json()
-              if not out.get('ok'):
-                  raise RuntimeError(f'{method}: {out}')
-              return out
+          def send_text(text):
+              r = session.post(
+                  f'https://api.telegram.org/bot{token}/sendMessage',
+                  json={'chat_id': chat_id, 'text': text, 'parse_mode':'HTML', 'disable_web_page_preview': True},
+                  timeout=30,
+              )
+              r.raise_for_status()
+              if not r.json().get('ok'):
+                  raise RuntimeError(r.text)
 
-          for text in payload.get('messages') or []:
-              api('sendMessage', chat_id=chat_id, text=str(text), parse_mode='HTML', disable_web_page_preview='true')
-              time.sleep(2)
+          def download_telegram_video(url, output_path):
+              clean = url.split('?', 1)[0]
+              candidates = [
+                  clean + '?embed=1&mode=tme',
+                  clean.replace('https://t.me/', 'https://t.me/s/'),
+                  clean,
+              ]
+              errors = []
+              for candidate in candidates:
+                  try:
+                      subprocess.run(
+                          ['python','-m','yt_dlp','--no-playlist','--no-warnings','-f','best','-o',output_path,candidate],
+                          check=True,
+                          timeout=120,
+                      )
+                      if Path(output_path).exists() and Path(output_path).stat().st_size > 0:
+                          return
+                  except Exception as exc:
+                      errors.append(f'{candidate}: {exc}')
+              raise RuntimeError('telegram_video_download_failed: ' + ' | '.join(errors))
 
-          for post in payload.get('telegram_video_posts') or []:
-              if isinstance(post, str):
-                  post = {'url': post}
+          def send_video(post):
               url = str(post.get('url') or '').strip()
-              match = re.search(r'https?://t\.me/(?:s/)?([A-Za-z0-9_]+)/([0-9]+)', url)
-              if not match:
-                  raise RuntimeError(f'invalid_telegram_post_url: {url}')
-              source_chat = '@' + match.group(1)
-              message_id = int(match.group(2))
               title = str(post.get('title') or '🚨🚀 <b>خبر فوری | ویدیوی تازه از تحولات موشکی منطقه</b>').strip()
-              body = str(post.get('body') or 'ویدیوی تازه مرتبط با تحولات موشکی منطقه منتشر شده است.').strip()
+              body = str(post.get('body') or 'ویدیوی تازه مرتبط با موج جاری تحولات موشکی منطقه منتشر شده است.').strip()
               hashtags = str(post.get('hashtags') or '#موشک #ایران').strip()
               caption = (
                   f"{title}\n\n{html.escape(body)}\n\n"
@@ -85,14 +97,28 @@ jobs:
                   f"📡 <a href=\"https://t.me/bikhabaar\">بی‌خبر</a> ←\nمانیتور تحولات ایران\n"
                   f"🇮🇷 🚀\n{html.escape(hashtags)}"
               )
-              api(
-                  'copyMessage',
-                  chat_id=chat_id,
-                  from_chat_id=source_chat,
-                  message_id=message_id,
-                  caption=caption,
-                  parse_mode='HTML',
-                  show_caption_above_media='false',
-              )
+              with tempfile.TemporaryDirectory() as td:
+                  video_path = str(Path(td) / 'video.mp4')
+                  download_telegram_video(url, video_path)
+                  with open(video_path, 'rb') as fh:
+                      r = session.post(
+                          f'https://api.telegram.org/bot{token}/sendVideo',
+                          data={'chat_id': chat_id, 'caption': caption, 'parse_mode':'HTML', 'supports_streaming':'true'},
+                          files={'video': ('video.mp4', fh, 'video/mp4')},
+                          timeout=180,
+                      )
+                  r.raise_for_status()
+                  out = r.json()
+                  if not out.get('ok'):
+                      raise RuntimeError(out)
+
+          for text in payload.get('messages') or []:
+              send_text(str(text))
+              time.sleep(2)
+
+          for post in payload.get('telegram_video_posts') or []:
+              if isinstance(post, str):
+                  post = {'url': post}
+              send_video(post)
               time.sleep(2)
           PY
