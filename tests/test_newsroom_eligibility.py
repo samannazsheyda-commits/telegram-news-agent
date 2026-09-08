@@ -100,3 +100,14 @@ def test_invalid_publish_time_never_auto_publishes():
     ))
     assert d.eligible is False
     assert d.reason == "invalid_publish_time"
+
+
+def test_corporate_video_interview_using_iran_war_as_context_is_filtered_low_value():
+    d = _decision(_raw(
+        source="Bloomberg",
+        title="Watch Sapporo Breweries CSO on Tariffs, Iran War",
+        summary="A corporate strategy executive discusses tariffs, costs and the war's business impact.",
+        published_at="2026-09-07T20:45:00+00:00",
+    ))
+    assert d.eligible is False
+    assert d.reason == "filtered_low_value"
