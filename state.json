@@ -1,6 +1,23 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:Sepah_News:936375644757331969",
+    "x:ir_rezaee:2065018605058552089",
+    "x:ir_rezaee:2067698990376697943",
+    "x:ir_rezaee:2068560743016857667",
+    "x:ir_rezaee:2068806830256423059",
+    "x:ir_rezaee:2070810514846826634",
+    "x:ir_rezaee:2074201040262496491",
+    "x:ir_rezaee:2074918488649400573",
+    "x:ir_rezaee:2078195992382280039",
+    "x:ir_rezaee:2080330255978438917",
+    "x:ir_rezaee:2084372249461575696",
+    "x:ir_rezaee:2087223141630132399",
+    "x:ir_rezaee:2089763608146088296",
+    "x:ir_rezaee:2091601549931827456",
+    "x:ir_rezaee:2095106961394077902",
+    "x:araghchi:2079997466649448760",
+    "x:araghchi:2081406217486778612",
     "x:araghchi:2082177796508459412",
     "x:araghchi:2085791206542320058",
     "x:araghchi:2087731363713564746",
@@ -483,24 +500,7 @@
     "x:TankerTrackers:2094003065112109302",
     "x:TankerTrackers:2094354765169729926",
     "x:TankerTrackers:2094493456236499108",
-    "x:TankerTrackers:2094823610200269240",
-    "x:TankerTrackers:2094849805453320424",
-    "x:TankerTrackers:2095081527163965843",
-    "x:TankerTrackers:2095123832302383539",
-    "x:TankerTrackers:2094966074991149445",
-    "x:TankerTrackers:2095156248136270120",
-    "x:TankerTrackers:2095190772924535135",
-    "x:Sepah_News:936375644757331969",
-    "x:ir_rezaee:2063703451897352255",
-    "x:ir_rezaee:2065018605058552089",
-    "x:ir_rezaee:2067698990376697943",
-    "x:ir_rezaee:2068560743016857667",
-    "x:ir_rezaee:2068806830256423059",
-    "x:ir_rezaee:2070810514846826634",
-    "x:ir_rezaee:2074201040262496491",
-    "x:ir_rezaee:2074918488649400573",
-    "x:ir_rezaee:2078195992382280039",
-    "x:ir_rezaee:2080330255978438917"
+    "x:TankerTrackers:2094823610200269240"
   ],
   "market_last_sent_at": "2026-09-08T06:50:13.875935+00:00",
   "next_news_color": "red",
@@ -623,6 +623,159 @@
     "last_wti": 93.83
   },
   "news_rejections": [
+    {
+      "key": "x:Sepah_News:936375644757331969",
+      "source": "Sepah News / X",
+      "title": "تشکیل بسیج جهانی اسلام سردار محمدعلی جعفری فرمانده کل سپاه پاسداران: اکنون هسته‌‌های مقاومت مسلحانه در کشورهای منطقه شکل گرفته است که نتیجه آن را مردم منطقه دیدند و همینطور در برخی کشورها نیز حلقه‌های کوچک‌تر مقاومت ایجاد شده که تاثیر آنها نیز بزودی مشاهده خواهد شد.",
+      "reason": "not_today_tehran",
+      "published": "Thu, 30 Nov 2017 23:25:25 +0000",
+      "link": "https://x.com/Sepah_News/status/936375644757331969",
+      "checked_at": "2026-09-08T07:02:45.661509+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2065018605058552089",
+      "source": "Mohsen Rezaei / X",
+      "title": "The unhinged U.S. president imagines that bombs can get him out of the quagmire he himself created. But Iranian missiles will sink him even deeper into it. Washington must choose between accepting Iran’s terms and losing the last shred of its credibility in the world.",
+      "reason": "not_today_tehran",
+      "published": "Thu, 11 Jun 2026 10:29:36 +0000",
+      "link": "https://x.com/ir_rezaee/status/2065018605058552089",
+      "checked_at": "2026-09-08T07:02:45.661509+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2067698990376697943",
+      "source": "Mohsen Rezaei / X",
+      "title": "ملت پیروز و سرافراز ایران، شیاطین جهان را به زانو درآورد و هیمنه آنان را در هم شکست؛ این حماسه در تاریخ جاودانه خواهد ماند. بر خون رهبر شهیدمان سوگواریم و جز انتقام، مرهمی برای این زخم نیست. همه یکپارچه پشت سر رهبر معظم انقلاب، منتظر تحقق شروط هستیم.",
+      "reason": "not_today_tehran",
+      "published": "Thu, 18 Jun 2026 20:00:29 +0000",
+      "link": "https://x.com/ir_rezaee/status/2067698990376697943",
+      "checked_at": "2026-09-08T07:02:45.661509+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2068560743016857667",
+      "source": "Mohsen Rezaei / X",
+      "title": "آمریکا قرار بود با راهبرد «صلح از طریق قدرت» ایران را وادار به تسلیم کند؛ حالا که شکست خوردند، از سر استیصال اصرار به مذاکره دارند. اما دشمن نشان داده که عهدشکن است. باید مراقب بود؛ هرگونه خوش‌بینی مورد سوءاستفاده دشمن قرار می‌گیرد.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 21 Jun 2026 05:04:47 +0000",
+      "link": "https://x.com/ir_rezaee/status/2068560743016857667",
+      "checked_at": "2026-09-08T07:01:21.257570+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2068806830256423059",
+      "source": "Mohsen Rezaei / X",
+      "title": "ایالات متحده بر اساس تفاهم با جمهوری اسلامی ایران، مسئول تجاوزات و اقدامات تنش‌زای رژیم صهیونیستی در لبنان است و باید پاسخگو باشد. در صورت تهدید علیه ایران، آمریکایی‌ها را پاسخگو می‌کنیم.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 21 Jun 2026 21:22:39 +0000",
+      "link": "https://x.com/ir_rezaee/status/2068806830256423059",
+      "checked_at": "2026-09-08T07:01:21.257570+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2070810514846826634",
+      "source": "Mohsen Rezaei / X",
+      "title": "آمریکا با حمایت از اقدامات نیروی نیابتی خود در منطقه، بند اول تفاهم‌نامه و با ادامه تنش‌آفرینی در تنگه هرمز، بند پنجم را نقض کرده است. پاسخ نقض هر بند از تفاهم‌نامه، سریع و کوبنده خواهد بود.",
+      "reason": "not_today_tehran",
+      "published": "Sat, 27 Jun 2026 10:04:35 +0000",
+      "link": "https://x.com/ir_rezaee/status/2070810514846826634",
+      "checked_at": "2026-09-08T07:01:21.257570+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2074201040262496491",
+      "source": "Mohsen Rezaei / X",
+      "title": "ملت بزرگ ایران، پس از پنج دهه، امروز نیز با همان صلابت و ایمان روزهای آغازین انقلاب، شعارهای کوبنده‌ی خود را علیه آمریکای جنایتکار و اسرائیل غاصب سر می‌دهند. این شعارها که با خونخواهی رهبر شهید توأم شده، به خشمی مقدس و اتحادی پولادین علیه دشمنان این مرز و بوم تبدیل شده است.",
+      "reason": "not_today_tehran",
+      "published": "Mon, 06 Jul 2026 18:37:19 +0000",
+      "link": "https://x.com/ir_rezaee/status/2074201040262496491",
+      "checked_at": "2026-09-08T07:01:21.257570+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2074918488649400573",
+      "source": "Mohsen Rezaei / X",
+      "title": "هرگاه از مسیر زور راه به جایی نمی‌برند، شتابان به مذاکره و توافق روی می‌آورند و به محض رسیدن به آن، در پی نابودی‌اش برمی‌آیند. در منطق سیاسی آمریکا، مذاکره تنها پلی برای عبور است، نه تعهدی پایدار! پاسخ هر ماجراجویی تازه، ضرباتی بی‌سابقه از سوی ایران خواهد بود.",
+      "reason": "not_today_tehran",
+      "published": "Wed, 08 Jul 2026 18:08:12 +0000",
+      "link": "https://x.com/ir_rezaee/status/2074918488649400573",
+      "checked_at": "2026-09-08T07:01:21.257570+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2078195992382280039",
+      "source": "Mohsen Rezaei / X",
+      "title": "سیاست هم مذاکره هم جنگ تمام شد؛ اگر آمریکا طی ۲-۳ روز آینده جنگ را ادامه دهد، وارد مرحلهٔ «تهاجم و انهدام کامل» دشمن خواهیم شد. در صورت فعال‌سازی این راهبرد دیگر به مقابله‌به‌مثل اکتفا نمی‌کنیم و هیچ مرز سیاسی در مقابل نیروهای تهاجمی ایران امنیت نخواهد داشت.",
+      "reason": "not_today_tehran",
+      "published": "Fri, 17 Jul 2026 19:11:50 +0000",
+      "link": "https://x.com/ir_rezaee/status/2078195992382280039",
+      "checked_at": "2026-09-08T07:01:21.257570+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2080330255978438917",
+      "source": "Mohsen Rezaei / X",
+      "title": "رئیس جمهور متوهم آمریکا با اشتباهات مهلک از «بازی مرد دیوانه» به «بازی مرد مستاصل» رسیده است. حمله به زائران در شلمچه و تهدید به حملات زیرساختی چیزی جز استیصال و درماندگی نیست. پاسخ ایران به حملات زیرساختی تصاعدی و شدید خواهد بود.",
+      "reason": "not_today_tehran",
+      "published": "Thu, 23 Jul 2026 16:32:38 +0000",
+      "link": "https://x.com/ir_rezaee/status/2080330255978438917",
+      "checked_at": "2026-09-08T07:01:21.257570+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2084372249461575696",
+      "source": "Mohsen Rezaei / X",
+      "title": "If the blockade continues, American vessels and forces will face serious risks and casualties. The U.S. must change its behavior — or we will not tolerate this. We will never permit the opening of a second corridor in the Strait of Hormuz.",
+      "reason": "not_today_tehran",
+      "published": "Mon, 03 Aug 2026 20:14:04 +0000",
+      "link": "https://x.com/ir_rezaee/status/2084372249461575696",
+      "checked_at": "2026-09-08T06:59:55.782192+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2087223141630132399",
+      "source": "Mohsen Rezaei / X",
+      "title": "IRAN’s message is clear: the Strait of Hormuz will not reopen until the U.S. ends the war and blockade, releases Iran’s frozen assets, and agrees to a region-wide ceasefire, including in Lebanon and Gaza. Until all conditions are met, the Strait will remain closed.",
+      "reason": "not_today_tehran",
+      "published": "Tue, 11 Aug 2026 17:02:30 +0000",
+      "link": "https://x.com/ir_rezaee/status/2087223141630132399",
+      "checked_at": "2026-09-08T06:59:55.782192+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2089763608146088296",
+      "source": "Mohsen Rezaei / X",
+      "title": "The gap between America’s inability to reopen the Strait of Hormuz and its claim to own it is greater than the 7,000-mile distance between Washington and the Strait itself. Welcome to the post-American order in the Persian Gulf.",
+      "reason": "not_today_tehran",
+      "published": "Tue, 18 Aug 2026 17:17:24 +0000",
+      "link": "https://x.com/ir_rezaee/status/2089763608146088296",
+      "checked_at": "2026-09-08T06:59:55.782192+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2091601549931827456",
+      "source": "Mohsen Rezaei / X",
+      "title": "If the economic war continues, not a single drop of oil will be exported٫ neither through the Strait of Hormuz nor from anywhere in the Persian Gulf. Iran will regard any country’s participation in or support for America’s economic war against the Iranian people as an act of war.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 23 Aug 2026 19:00:44 +0000",
+      "link": "https://x.com/ir_rezaee/status/2091601549931827456",
+      "checked_at": "2026-09-08T06:59:55.782192+00:00"
+    },
+    {
+      "key": "x:ir_rezaee:2095106961394077902",
+      "source": "Mohsen Rezaei / X",
+      "title": "با این دست و پا زدن‌ها، نه تنها از قعر جهنمی که برای خود ساخته‌اید بیرون نخواهید آمد، بلکه به زودی خواهید دید راهبرد جدید ایران در میدان جنگ، دیپلماسی و مقابله با محاصره اقتصادی، بنیان‌‌تان را درهم خواهد شکست.",
+      "reason": "not_today_tehran",
+      "published": "Wed, 02 Sep 2026 11:09:59 +0000",
+      "link": "https://x.com/ir_rezaee/status/2095106961394077902",
+      "checked_at": "2026-09-08T06:59:55.782192+00:00"
+    },
+    {
+      "key": "x:araghchi:2079997466649448760",
+      "source": "Abbas Araghchi / X",
+      "title": "Our defense doctrine is clear: eye for an eye. Any aggression against Iran, including our infrastructure, will compel a powerful and decisive response. Those who contribute to such aggression, whatever the kind of support, will also be considered as legitimate targets.",
+      "reason": "not_today_tehran",
+      "published": "Wed, 22 Jul 2026 18:30:15 +0000",
+      "link": "https://x.com/araghchi/status/2079997466649448760",
+      "checked_at": "2026-09-08T06:59:55.782192+00:00"
+    },
+    {
+      "key": "x:araghchi:2081406217486778612",
+      "source": "Abbas Araghchi / X",
+      "title": "Zelenskyy has attacked an Iranian commercial vessel, killing a sailor. A blatant UN Charter violation done at Israel's behest to drag Europe into its war. In calls with EU High Rep Kallas and FM Lavrov, made clear that what the freeloader in Kyiv did CANNOT GO UNANSWERED.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 26 Jul 2026 15:48:07 +0000",
+      "link": "https://x.com/araghchi/status/2081406217486778612",
+      "checked_at": "2026-09-08T06:59:55.782192+00:00"
+    },
     {
       "key": "x:araghchi:2082177796508459412",
       "source": "Abbas Araghchi / X",
@@ -2269,159 +2422,6 @@
       "published": "Mon, 15 Jun 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOcXNOeWR5aG1WeDFFQ2pIOHlSd3BnSDFKWVpKTzhabEZUcnFiQ1YxMDhpVTYyM2EzUkN1cGZLMVR0U042b09nYUpCNE9kaG5SUVFOSXdOMUcyQWhZUENRNDRuQXM2Q1E1TldCb2piOGlCYlFMYml5ZDhNdlBla28yRFAxbEh4eGlFaHFKbHRhV2FQM2tVbThBclViQ2FtdjlDWDV0dlNsVWhhc3JYdFdTeml2ZFdSWEdVanIyRUxCTlN6dGM?oc=5",
       "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "26f11a3adede493899c26393f5c2e177d13ae665",
-      "source": "France 24",
-      "title": "Israel ready to attack Iran ‘a third time if necessary’, defence minister says",
-      "reason": "not_today_tehran",
-      "published": "Thu, 09 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPa00zRURxc3AzWU1IOHhmaE45VHB6VFhLSDVJVHNFdHk1ZjhMQUEyeVJvNWRFcjl5SnU4RlZQUmJCQ0R3MWlZbHdsMHQ3elBqZW1haEN1SVZ3ZVluV29UT3NLWnNIVWxFYWxUc3E1b0lfOUl4Q0JiT1FvZFRVcE1GS05kazJJeC1WTUk4TmF4eEZHMjFXTGl4ZzZHbUllZHN5TVR2aU1Oc3VWd3F0a2lNZVFOTUlLNWZYTnVRajRNZEZwd215M0E?oc=5",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "a2c24e2789a10d42ec7e01d64cfe68af5d8a8419",
-      "source": "NOTAM / Airspace",
-      "title": "Israeli jets entered Iranian airspace to attack negotiators' plane after talks in Islamabad - Middle East Eye",
-      "reason": "not_today_tehran",
-      "published": "Fri, 03 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxQVzFLeHpVOFNZRTliUzhCUzg5REpkNklwSVlycmNqVXZoaFB0QlZxVkFhaEtBSXpTSHZpR1N0VHlYZzhxOW1xcFNCR3Zhc3FzRUNDMXRyYzNfZ1RPcEYyS2FObjVjbHJHUkhtSkhEWmdvdzg0QzBoLWJya1JDa1VTZU5DYTFxb3JHMkpvcVZua1l1Vy1EbTdGbU5pcUtKTW5FVnRmYUY1OEhmVURGRlU1MkJYRGlpTUliekdfQTFxSkM2dlE?oc=5",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "5dc7933d443a23d18b70422c2c5e53f169b2065f",
-      "source": "NOTAM / Airspace",
-      "title": "Iran says it downed US drone, forced other aircraft to retreat from airspace - aa.com.tr",
-      "reason": "not_today_tehran",
-      "published": "Tue, 26 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOc21WUkJ0R3ZfV0RrOG1UeDFBcEt4OEwxR2RlbE5rNzJ2ajBUak9KdGZzdTBOSDIzM091UVNnclFtODVHSllOYmFjR1JrTzZIdG1rdVRXT0V6VWdVYUVlbVc3dC1BT3VEY1Z2X1hjRGkzYm5EQlktSmhaZmZwNDVtd04xdF9sQmgxbE9ScjdwYUozMEFBb1k4cURtRVVhaDNFMzBYa0VhWHViV1g5SUlyU2dPZDh6TVhLTEFoWUlNRnh4ZG1fNWc?oc=5",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "d7e168cb9bdd5ebabffb2ac7ae00222d4d7ecc53",
-      "source": "NOTAM / Airspace",
-      "title": "Iran, Iraq and Syria close airspace after missile fire at Israel - Middle East Eye",
-      "reason": "not_today_tehran",
-      "published": "Sun, 07 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOcGhUOGxZdUVBYWFuSzJqaGhrQVVuNXlPdjBmZmtaMEcyaWsyY3d6NTNuSmM3ZVE5UlVWakpmUFo2d1JHSkxuTHVIXzFrTGhTU2NNTkRVbldaeTZSWE9zMkc3WnR2cHFKWDl4ZzFJX2pDQXBlLUltYThnMzBhZzNmZXVkNW1fRkY2WVA0VGMtZmNCejBpQXRyZU5UZVlxdU5EZkdiTzdBN1M5RlNUeVR5NGNaUjl2RmM0?oc=5",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "e1d00af5f473cd9b5b2118ad056ee1c3539d8790",
-      "source": "NOTAM / Airspace",
-      "title": "Travel chaos deepens as renewed US-Iran strikes hit key air corridors - Saudi Gazette",
-      "reason": "not_today_tehran",
-      "published": "Thu, 03 Sep 2026 14:15:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE5fX05XOHpwLW9tZzBCeXRIS2NWU3BlbFE4Ynh4aEc1NlBVWUVmampUV0VRTjNaYVhQbW9JYTdLdFVnYi1YZEpqaWt1bjZOWWxUZzNVeQ?oc=5",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "e1de45950983c6a520b18f42df3db5686deb4d32",
-      "source": "کلش ریپورت / Telegram",
-      "title": "Netanyahu: The central question in these elections is: Who will finish what has to be finished? Who will finally finish off this regime in Iran? Who will finally finish off Hezbollah? Who will finally finish off Hamas? My political oppon...",
-      "reason": "question_or_explainer",
-      "published": "Sat, 05 Sep 2026 11:05:55 +0000",
-      "link": "https://t.me/ClashReport/95170",
-      "checked_at": "2026-09-05T14:44:17.936752+00:00"
-    },
-    {
-      "key": "a797ecf7a590fb9ae375fd0eec641f5190de9596",
-      "source": "NOTAM / Airspace",
-      "title": "Iran warns against Israeli military flights through neighboring states’ airspace - Middle East Monitor",
-      "reason": "not_today_tehran",
-      "published": "Fri, 26 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxQbEhWSnkxbGhSYm1nUXNTTG44ZUVldnQzNlR2S2VIUmNfb3ZCUjZCOWtVU0puOTd5NmEzQUQ5bnoxdThRT05nMFdtVy12QnNxcC1NdGhFRm9nU3d6cjluLXJFSzJOcDY0MWE2RVB3dmZ1LVRCQ3NaSVFURk5kS1FvV0ZyWVlKbjk4NWxIY09JMzhDamhCcTk1eWFNcVRtcG82X2gwaUE0a3N4b1BrV1RSZlVGV1c4UWFmTTllMGR4czfSAcYBQVVfeXFMTjVVa2NLWWFlRjZBaEFZVTVsb2V3SFlaMUhITmRCV3hGdE55UjlJTWs3YTZyNHRWNVBEMk5TZGlGOTFfR1BJYlBLTUtQMWk1M1BZQzNUd0FDVWdvQ1JyYzI2VVpiaUdIUDBpX1ZKcWMtZ1Bpa2E3bkdZVnNNNmtTc2JFU01BTFZqakNWeHUxdzBhTHRWaVAxejRDcWpCaC16QUlLMkp0eXNadHFtczI0X2RPUm5acUFGNWY3alRUUVVjcnJjMzR3?oc=5",
-      "checked_at": "2026-09-05T14:44:17.936752+00:00"
-    },
-    {
-      "key": "7d47c7290d9f86db41d38b2cf7894e53c045beea",
-      "source": "NOTAM / Airspace",
-      "title": "War warning: Trump weighs immediate strikes as Iran shuts down airspace - Container News",
-      "reason": "not_today_tehran",
-      "published": "Sat, 23 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQZnBqR1ZTM3JkVkJwT0c0UnFLZGV6YW85WmNzRHBGZkNZRXhvbGtScU5TZ18yZW50dHZnS2JOVWtoQzhlQWhnR1NEcmNOb2VOVVJtVFBPR3A3cE9zLTNtUmxaR2VCVzBOVzNqQmI0UHdkbHU1dUI0anZCeDc2UGlodmIzcXlXaGxvV1I0TnFHczhWYzBOSVRVZ3Jtc3dTZ1k?oc=5",
-      "checked_at": "2026-09-05T14:44:17.936752+00:00"
-    },
-    {
-      "key": "7c2dcffdf2c02da08652931143a7a53884b1534e",
-      "source": "وار نوآر / Telegram",
-      "title": "#Afghanistan 🇦🇫 : “Jamiat-e-Islami” released a new video from Banu Andarab, announcing that they are awaiting instructions from Mohammad Noor to launch attacks. A militant is notably carrying an RPG-7 Launcher with an uncommon #Iran -mad...",
-      "reason": "not_today_tehran",
-      "published": "Fri, 04 Sep 2026 18:24:39 +0000",
-      "link": "https://t.me/war_noir/25077",
-      "checked_at": "2026-09-05T14:26:59.071518+00:00"
-    },
-    {
-      "key": "244751fc15a76c0e3e93d680e547fe8d4e478b64",
-      "source": "کلش ریپورت / Telegram",
-      "title": "Netanyahu on Iran: Who would have believed on October 7 that we would change the face of the Middle East? I did. My intention was that eventually we would clash with Iran.",
-      "reason": "question_or_explainer",
-      "published": "Sat, 05 Sep 2026 11:01:29 +0000",
-      "link": "https://t.me/ClashReport/95168",
-      "checked_at": "2026-09-05T14:26:59.071518+00:00"
-    },
-    {
-      "key": "bc9322da1a8897558bdb66b2aff6dd9a0bd1906e",
-      "source": "دِ کریدل / Telegram",
-      "title": "US military hunts leakers after reports expose interceptor shortages amid Iran war: Report The Pentagon is running low on expensive and difficult-to-produce Patriot, THAAD, and Tomahawk missiles needed to sustain any prolonged war on Iran",
-      "reason": "bundled_or_multi_headline",
-      "published": "Sat, 05 Sep 2026 14:06:18 +0000",
-      "link": "https://t.me/thecradlemedia/67443",
-      "checked_at": "2026-09-05T14:26:59.071518+00:00"
-    },
-    {
-      "key": "b39477140dde2423c06b0603ff54f23fb15bc46a",
-      "source": "NOTAM / Airspace",
-      "title": "Iran Civil Aviation Authority: Iranian airspace is open to overflights, arrivals, and departures, and airports continue to provide their services - MTV Lebanon",
-      "reason": "not_today_tehran",
-      "published": "Sat, 15 Aug 2026 22:51:25 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE55bktwUmE0bFR3MlFKalY0Vnh5WlNvM09qbDh0UzZPMnUxNmlUTFRZZ0RFdV94WVRBcUhoc1JvZUJJcGtLd29YX1BiTHJCTjA?oc=5",
-      "checked_at": "2026-09-05T14:14:43.806121+00:00"
-    },
-    {
-      "key": "x:MFAIRAN:445202070266580993",
-      "source": "Iran Foreign Ministry / X",
-      "title": "First Official acc. of MFA @IRAN that will be up and running, soon enough! Be patient till the media-confirm!",
-      "reason": "not_today_tehran",
-      "published": "Sun, 16 Mar 2014 14:16:59 +0000",
-      "link": "https://x.com/MFAIRAN/status/445202070266580993",
-      "checked_at": "2026-09-05T14:13:21.999002+00:00"
-    },
-    {
-      "key": "x:USABehFarsi:2094850273667625068",
-      "source": "USA Beh Farsi / X",
-      "title": "خاورمیانه: با توجه به تنش‌ها در خاورمیانه، شرایط امنیتی همچنان پیچیده است و احتمال تشدید پیش‌بینی‌نشده تنش‌ها وجود دارد. شهروندان آمریکایی که در حال حاضر در خاورمیانه حضور دارند باید هوشیاری بیشتری به خرج دهند و نسبت به احتمال لغو پروازها، بسته شدن حریم هوایی و اختلال در سفرها آگاه باشند. شهروندان آمریکایی که به منطقه سفر می‌کنند یا از آن خارج می‌شوند، باید اطلاعات مربوط به فعالیت فرودگاه‌ها و شرکت‌های هواپیمایی را به‌طور مستمر دنبال کنند. ایران و گروه‌های حامی ایران ممکن است منافع ایالات متحده در خارج از کشور یا مکان‌های مرتبط با ایالات متحده و شهروندان آمریکایی را در سراسر جهان، از جمله شرکت‌ها و سایر مؤسسات آمریکایی، هدف قرار دهند. آخرین هشدارهای مربوط به هر کشور را در این نشانی بخوانید: Consular Information for Americans in the Middle East",
-      "reason": "not_today_tehran",
-      "published": "Tue, 01 Sep 2026 18:10:00 +0000",
-      "link": "https://x.com/USABehFarsi/status/2094850273667625068",
-      "checked_at": "2026-09-05T14:13:21.999002+00:00"
-    },
-    {
-      "key": "x:USABehFarsi:2095162419823743478",
-      "source": "USA Beh Farsi / X",
-      "title": "اسکات بسنت، وزیر خزانه‌داری ایالات متحده درباره «عملیات انزوای اقتصادی»: «ما می‌دانیم چه کسانی به ایرانی‌ها کمک می‌کنند؛ خودشان هم می‌دانند چه کسانی هستند و این کمک‌ها متوقف خواهد شد. این، پس از ۴۷ سال، حرکت نهایی علیه این رژیم است.»",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 14:50:21 +0000",
-      "link": "https://x.com/USABehFarsi/status/2095162419823743478",
-      "checked_at": "2026-09-05T14:13:21.999002+00:00"
-    },
-    {
-      "key": "x:USABehFarsi:2095182033840472470",
-      "source": "USA Beh Farsi / X",
-      "title": "اسکات بسنت، وزیر خزانه‌داری ایالات متحده: «ما تمام ارتباطات [ایران] با جهان خارج را قطع خواهیم کرد... همه نیروها و امکانات برای این کار بسیج شده‌اند.»",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 16:08:18 +0000",
-      "link": "https://x.com/USABehFarsi/status/2095182033840472470",
-      "checked_at": "2026-09-05T14:13:21.999002+00:00"
-    },
-    {
-      "key": "x:USABehFarsi:2095182155093582068",
-      "source": "USA Beh Farsi / X",
-      "title": "دونالد ترامپ، رئیس‌جمهور ایالات متحده: اگر ما این کار را انجام نداده بودیم، ایران همین حالا سلاح هسته‌ای داشت؛ و اگر سلاح هسته‌ای داشتند، از آن استفاده می‌کردند، چون دیوانه‌اند.",
-      "reason": "not_today_tehran",
-      "published": "Wed, 02 Sep 2026 16:08:47 +0000",
-      "link": "https://x.com/USABehFarsi/status/2095182155093582068",
-      "checked_at": "2026-09-05T14:13:21.999002+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-07",
