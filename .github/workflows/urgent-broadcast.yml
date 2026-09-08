@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install urgent media dependencies
-        run: python -m pip install --quiet requests beautifulsoup4 jdatetime
+        run: python -m pip install --quiet requests jdatetime
       - name: Send urgent Telegram posts
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -30,17 +30,13 @@ jobs:
           import json
           import os
           import re
-          import tempfile
           import time
           from datetime import datetime
           from pathlib import Path
-          from urllib.parse import unquote
           from zoneinfo import ZoneInfo
 
           import jdatetime
           import requests
-          from bs4 import BeautifulSoup
-          from src.services import translate_to_fa
 
           payload = json.loads(Path('data/urgent_broadcast.json').read_text(encoding='utf-8'))
           token = os.environ.get('TELEGRAM_BOT_TOKEN','').strip()
@@ -49,116 +45,54 @@ jobs:
               raise SystemExit('missing TELEGRAM_BOT_TOKEN')
 
           session = requests.Session()
-          session.headers.update({'User-Agent': 'Mozilla/5.0 (compatible; Bikhabar/2.0)'})
           weekdays = ['دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه','یکشنبه']
+          months = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند']
 
           def now_fa():
               now = datetime.now(ZoneInfo('Asia/Tehran'))
               jd = jdatetime.date.fromgregorian(date=now.date())
-              return f"{weekdays[now.weekday()]} {jd.day} {['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'][jd.month-1]} {jd.year} — {now:%H:%M}"
+              return f"{weekdays[now.weekday()]} {jd.day} {months[jd.month-1]} {jd.year} — {now:%H:%M}"
 
-          def send_message(text):
-              r = session.post(
-                  f'https://api.telegram.org/bot{token}/sendMessage',
-                  json={'chat_id': chat_id, 'text': text, 'parse_mode':'HTML', 'disable_web_page_preview': True},
-                  timeout=30,
-              )
-              r.raise_for_status()
-              data = r.json()
-              if not data.get('ok'):
-                  raise RuntimeError(data)
-
-          def extract_telegram_post(post_url):
-              r = session.get(post_url, timeout=25)
-              r.raise_for_status()
-              soup = BeautifulSoup(r.text, 'html.parser')
-              text_node = soup.select_one('.tgme_widget_message_text')
-              raw_text = text_node.get_text(' ', strip=True) if text_node else ''
-              raw_text = re.sub(r'\s+', ' ', raw_text).strip()
-
-              candidates = []
-              for node in soup.select('video[src], source[src]'):
-                  candidates.append(str(node.get('src') or ''))
-              for node in soup.select('meta[property="og:video"], meta[property="og:video:url"], meta[name="twitter:player:stream"]'):
-                  candidates.append(str(node.get('content') or ''))
-              for pattern in (
-                  r'<video[^>]+src="([^"]+)"',
-                  r'data-video="([^"]+)"',
-                  r'property="og:video(?::url)?"[^>]+content="([^"]+)"',
-              ):
-                  candidates.extend(re.findall(pattern, r.text, flags=re.I))
-
-              video_url = ''
-              for candidate in candidates:
-                  candidate = html.unescape(unquote(candidate)).replace('\\u0026','&').strip()
-                  if candidate.startswith('//'):
-                      candidate = 'https:' + candidate
-                  if candidate.startswith('https://') and ('video' in candidate.lower() or '.mp4' in candidate.lower() or 'cdn' in candidate.lower()):
-                      video_url = candidate
-                      break
-              return raw_text, video_url
-
-          def headline_for(text):
-              low = text.lower()
-              if ('jordan' in low or 'اردن' in text) and ('iran' in low or 'ایران' in text):
-                  return '🚨🚀 <b>خبر فوری | تحولات موشکی ایران و اردن</b>'
-              if ('israel' in low or 'اسرائیل' in text) and ('iran' in low or 'ایران' in text):
-                  return '🚨🚀 <b>خبر فوری | تحولات موشکی ایران و اسرائیل</b>'
-              return '🚨🚀 <b>خبر فوری | ویدیوی تازه از تحولات موشکی منطقه</b>'
-
-          def build_caption(post_url, source_text, title=''):
-              body = source_text
-              if body and not re.search(r'[\u0600-\u06ff]', body):
-                  try:
-                      body = translate_to_fa(body)
-                  except Exception:
-                      pass
-              body = (body or 'ویدیوی تازه از تحولات موشکی منطقه منتشر شده است.').strip()
-              if len(body) > 650:
-                  body = body[:647].rstrip() + '…'
-              head = title.strip() or headline_for(body + ' ' + source_text)
-              return (
-                  f"{head}\n\n{html.escape(body)}\n\n"
-                  f"⏰ {now_fa()}\n"
-                  f"📌 <a href=\"{html.escape(post_url, quote=True)}\">لینک منبع خبر</a>\n\n"
-                  f"📡 <a href=\"https://t.me/bikhabaar\">بی‌خبر</a> ←\nمانیتور تحولات ایران\n"
-                  f"🇮🇷 🚀\n#موشک #ایران"
-              )
-
-          def send_video(post_url, title=''):
-              source_text, video_url = extract_telegram_post(post_url)
-              if not video_url:
-                  raise RuntimeError(f'video_not_found: {post_url}')
-              caption = build_caption(post_url, source_text, title)
-              with tempfile.NamedTemporaryFile(suffix='.mp4') as tmp:
-                  with session.get(video_url, stream=True, timeout=60) as vr:
-                      vr.raise_for_status()
-                      for chunk in vr.iter_content(1024 * 1024):
-                          if chunk:
-                              tmp.write(chunk)
-                  tmp.flush()
-                  tmp.seek(0)
-                  r = session.post(
-                      f'https://api.telegram.org/bot{token}/sendVideo',
-                      data={'chat_id': chat_id, 'caption': caption, 'parse_mode':'HTML', 'supports_streaming':'true'},
-                      files={'video': ('video.mp4', tmp, 'video/mp4')},
-                      timeout=120,
-                  )
-                  r.raise_for_status()
-                  data = r.json()
-                  if not data.get('ok'):
-                      raise RuntimeError(data)
+          def api(method, **data):
+              r = session.post(f'https://api.telegram.org/bot{token}/{method}', data=data, timeout=60)
+              if not r.ok:
+                  raise RuntimeError(f'{method} HTTP {r.status_code}: {r.text[:500]}')
+              out = r.json()
+              if not out.get('ok'):
+                  raise RuntimeError(f'{method}: {out}')
+              return out
 
           for text in payload.get('messages') or []:
-              send_message(str(text))
+              api('sendMessage', chat_id=chat_id, text=str(text), parse_mode='HTML', disable_web_page_preview='true')
               time.sleep(2)
 
           for post in payload.get('telegram_video_posts') or []:
               if isinstance(post, str):
                   post = {'url': post}
               url = str(post.get('url') or '').strip()
-              if not url:
-                  continue
-              send_video(url, str(post.get('title') or ''))
+              match = re.search(r'https?://t\.me/(?:s/)?([A-Za-z0-9_]+)/([0-9]+)', url)
+              if not match:
+                  raise RuntimeError(f'invalid_telegram_post_url: {url}')
+              source_chat = '@' + match.group(1)
+              message_id = int(match.group(2))
+              title = str(post.get('title') or '🚨🚀 <b>خبر فوری | ویدیوی تازه از تحولات موشکی منطقه</b>').strip()
+              body = str(post.get('body') or 'ویدیوی تازه مرتبط با تحولات موشکی منطقه منتشر شده است.').strip()
+              hashtags = str(post.get('hashtags') or '#موشک #ایران').strip()
+              caption = (
+                  f"{title}\n\n{html.escape(body)}\n\n"
+                  f"⏰ {now_fa()}\n"
+                  f"📌 <a href=\"{html.escape(url, quote=True)}\">لینک منبع خبر</a>\n\n"
+                  f"📡 <a href=\"https://t.me/bikhabaar\">بی‌خبر</a> ←\nمانیتور تحولات ایران\n"
+                  f"🇮🇷 🚀\n{html.escape(hashtags)}"
+              )
+              api(
+                  'copyMessage',
+                  chat_id=chat_id,
+                  from_chat_id=source_chat,
+                  message_id=message_id,
+                  caption=caption,
+                  parse_mode='HTML',
+                  show_caption_above_media='false',
+              )
               time.sleep(2)
           PY
