@@ -1,0 +1,8 @@
+[Unit]
+Description=Deploy latest tested Bikhabar production revision
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/bikhabar/app/deploy/update-vps.sh
