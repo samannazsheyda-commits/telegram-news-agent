@@ -20,8 +20,8 @@ PYTHON_BIN=python3
 if [[ "${ID:-}" == "ubuntu" && "${VERSION_ID:-}" == "20.04" ]]; then
   add-apt-repository -y ppa:deadsnakes/ppa
   apt-get update
-  DEBIAN_FRONTEND=noninteractive apt-get install -y python3.12 python3.12-venv python3.12-distutils
-  PYTHON_BIN=python3.12
+  DEBIAN_FRONTEND=noninteractive apt-get install -y python3.10 python3.10-venv python3.10-distutils
+  PYTHON_BIN=python3.10
 else
   DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-venv python3-pip
 fi
