@@ -1,0 +1,12 @@
+[Unit]
+Description=Publish Bikhabar air traffic map twice daily
+
+[Timer]
+OnCalendar=*-*-* 08:30:00 UTC
+OnCalendar=*-*-* 20:30:00 UTC
+Persistent=true
+RandomizedDelaySec=30
+Unit=bikhabar-air-traffic.service
+
+[Install]
+WantedBy=timers.target
