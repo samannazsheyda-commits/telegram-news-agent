@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:AlArabiya_Eng:2097398128173285872",
     "x:business:2097395822824428030",
     "x:AJEnglish:2097395796589076543",
     "x:AJEnglish:2097393279826330105",
@@ -499,11 +500,10 @@
     "7701583c5a30cfad14b550d36345ee1b8810de4d",
     "d00cf4433a82553d8600d7123450dd159a7f64a6",
     "62200e1417f9880ca4399604e8bf02b3fda46353",
-    "bffd29467fe10f7442265a2de2d16c2024e5fa39",
-    "9e4e8c237f50c15e9bcbd7da5a3bfe51d25abab3"
+    "bffd29467fe10f7442265a2de2d16c2024e5fa39"
   ],
   "market_last_sent_at": "2026-09-08T17:41:22.609002+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2097398128173285872",
+      "source": "Al Arabiya English / X",
+      "title": "Several explosions were heard near Iran’s Kharg Island in the Gulf, Iran’s state-linked Fars news agency reports 🔴 Fars cited its correspondent on the island as saying the sounds of explosions came from the surrounding waters, but that no signs of smoke or fire had been observed in the Gulf",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097398128173285872",
+      "published": "Tue, 08 Sep 2026 18:54:16 +0000",
+      "sent_at": "2026-09-08T18:59:07.452919+00:00",
+      "fingerprint": "several explosions were heard near iran s kharg island in the gulf iran s state linked fars news agency reports fars cited its correspondent on the island as saying the sounds of explosions came from the surrounding waters but that no signs of smoke or fire had been observed in the gulf"
+    },
     {
       "key": "x:AJEnglish:2097393279826330105",
       "source": "Al Jazeera English / X",
