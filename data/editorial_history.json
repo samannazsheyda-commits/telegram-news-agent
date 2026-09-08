@@ -1,5 +1,23 @@
 [
   {
+    "id": "b5d3159cb73b1c66574603b82f23e64d228d3c5a",
+    "news_key": "x:Doranimated:2093694397955076245",
+    "source": "Michael Doran / X",
+    "source_url": "https://x.com/Doranimated/status/2093694397955076245",
+    "original_title": "Iran’s rial hit another record low on Saturday, trading at 2.06 million rials per US dollar on the open market.",
+    "original_summary": "",
+    "persian_title": "",
+    "persian_body": "",
+    "published_at_source": "Sat, 29 Aug 2026 13:36:58 +0000",
+    "discovered_at": "2026-09-08T11:32:40.183311+00:00",
+    "rejection_reason": "not_today_tehran",
+    "status": "superseded",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-08T11:34:16.234041+00:00"
+  },
+  {
     "id": "2304768d269638596a0b5812eb8800c5e6357069",
     "news_key": "11793538e614e35d40c505011db03cdca00c5744",
     "source": "NOTAM / Airspace",
@@ -6622,24 +6640,6 @@
     "final_persian_body": "",
     "decision_at": "",
     "updated_at": "2026-09-05T09:04:07.441524+00:00"
-  },
-  {
-    "id": "b5d3159cb73b1c66574603b82f23e64d228d3c5a",
-    "news_key": "x:Doranimated:2093694397955076245",
-    "source": "Michael Doran / X",
-    "source_url": "https://x.com/Doranimated/status/2093694397955076245",
-    "original_title": "Iran’s rial hit another record low on Saturday, trading at 2.06 million rials per US dollar on the open market.",
-    "original_summary": "",
-    "persian_title": "",
-    "persian_body": "",
-    "published_at_source": "Sat, 29 Aug 2026 13:36:58 +0000",
-    "discovered_at": "2026-09-05T09:03:17.310539+00:00",
-    "rejection_reason": "not_today_tehran",
-    "status": "superseded",
-    "final_persian_title": "",
-    "final_persian_body": "",
-    "decision_at": "",
-    "updated_at": "2026-09-05T09:04:07.366012+00:00"
   },
   {
     "id": "e0b19506d6ecfd5daa3660d461fd54004ce66853",

@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:JasonMBrodsky:2097286487725224444",
+    "x:AlArabiya_Eng:2097284351738228822",
+    "x:Doranimated:2093694397955076245",
     "x:JasonMBrodsky:2097280546514534630",
     "x:AJEnglish:2097277425377751214",
     "x:Jerusalem_Post:2097273837549219909",
@@ -497,10 +500,7 @@
     "e7927e55dab895a68b8fcff2c6b2c242b9c71570",
     "b2be0cb8622eeb0cc80e8d9a743362d2658c2805",
     "03489f5e135713c585a9ebcfe2138a11e69d09ac",
-    "ff92b318d33c59099f68d1774fa070027b4851c8",
-    "x:haaretzcom:2096044433254797421",
-    "x:AJEnglish:2096159651028934757",
-    "x:Reuters:2096158936885874844"
+    "ff92b318d33c59099f68d1774fa070027b4851c8"
   ],
   "market_last_sent_at": "2026-09-08T11:16:00.342538+00:00",
   "next_news_color": "red",
@@ -623,6 +623,15 @@
     "last_wti": 93.97
   },
   "news_rejections": [
+    {
+      "key": "x:Doranimated:2093694397955076245",
+      "source": "Michael Doran / X",
+      "title": "Iran’s rial hit another record low on Saturday, trading at 2.06 million rials per US dollar on the open market.",
+      "reason": "not_today_tehran",
+      "published": "Sat, 29 Aug 2026 13:36:58 +0000",
+      "link": "https://x.com/Doranimated/status/2093694397955076245",
+      "checked_at": "2026-09-08T11:32:40.183311+00:00"
+    },
     {
       "key": "11793538e614e35d40c505011db03cdca00c5744",
       "source": "NOTAM / Airspace",
@@ -2413,19 +2422,30 @@
       "published": "Tue, 26 May 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPdXBjMWZjWEc5Vy1nRFMwMUxzbmJ3M3JFOWNaMGkxb3Q4UEswbWVRSE5jbE14M1Qzd1MwcWVjcG1qYjdkQS1iN1dyOU01TUd2VXRQNnA5RjIwbFdLaHRTUk13M3NfUmlpQVNhbFlRWHpzaUN5c0tOOWotS1NMRzV0TmxPNlJhV050cF9LLTNNRlhRRFAtdXVudw?oc=5",
       "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "10ce583c1fc3591eacf34e0c872f310a62a16b2e",
-      "source": "NOTAM / Airspace",
-      "title": "IRGC says it downed US MQ-9 drone over Persian Gulf - Iran International",
-      "reason": "not_today_tehran",
-      "published": "Tue, 26 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE8xemVLXzU2Q1lnM3ExQmFPM3JaTEJVOXN6d1Q2NW1BZlNQVG9qNHhSbE1EbU5pUGhHUXQwdWI4YlBFYS1fNWVWQWMwWWhocUk1cUE?oc=5",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2097284351738228822",
+      "source": "Al Arabiya English / X",
+      "title": "Iranians line up at petrol stations in Tehran after authorities announced higher petrol prices for heavier consumers, as US sanctions continue to put pressure on Iran’s economy.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097284351738228822",
+      "published": "Tue, 08 Sep 2026 11:22:09 +0000",
+      "sent_at": "2026-09-08T11:32:40.183311+00:00",
+      "fingerprint": "iranians line up at petrol stations in tehran after authorities announced higher petrol prices for heavier consumers as us sanctions continue to put pressure on iran s economy"
+    },
+    {
+      "key": "x:JasonMBrodsky:2097286487725224444",
+      "source": "Jason Brodsky / X",
+      "title": "Just days ago on Saturday, Saudi Arabia's foreign minister held a phone call with #Iran's regime's foreign minister. Now this. The limits of dialogue with the Islamic Republic:",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2097286487725224444",
+      "published": "Tue, 08 Sep 2026 11:30:39 +0000",
+      "sent_at": "2026-09-08T11:32:40.183311+00:00",
+      "fingerprint": "just days ago on saturday saudi arabia s foreign minister held a phone call with iran s regime s foreign minister now this the limits of dialogue with the islamic republic"
+    },
     {
       "key": "x:JasonMBrodsky:2097280546514534630",
       "source": "Jason Brodsky / X",
