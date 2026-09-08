@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:USABehFarsi:2097374261375602842",
     "x:CNN:2097369663713718780",
     "x:business:2097364355394220219",
     "x:Jerusalem_Post:2097355141401682032",
@@ -499,11 +500,10 @@
     "82c64bd63c492719092ededd69abb3ad0a534558",
     "c2d62d3460ef9587aceed390a745059a345420c9",
     "d1f2475014a9536cbaaa72264b7eea8ee03d23ed",
-    "c723105b64d21a4751d29894ddfd8023aa43a6fa",
-    "5c594f8de88ed4301b00018e011b633c729c03d9"
+    "c723105b64d21a4751d29894ddfd8023aa43a6fa"
   ],
   "market_last_sent_at": "2026-09-08T15:40:37.043002+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:USABehFarsi:2097374261375602842",
+      "source": "USA Beh Farsi / X",
+      "title": "مارکو روبیو، وزیر امور خارجه ایالات متحده: «حوثی‌ها از بسیاری جهات، عاملان و نیروهای نیابتی ایران هستند. به‌وضوح می‌توان دست ایران را پشت برخی از این اقدامات دید.»",
+      "summary": "",
+      "link": "https://x.com/USABehFarsi/status/2097374261375602842",
+      "published": "Tue, 08 Sep 2026 17:19:25 +0000",
+      "sent_at": "2026-09-08T17:23:53.265860+00:00",
+      "fingerprint": "مارکو روبیو، وزیر امور خارجه ایالات متحده حوثی ها از بسیاری جهات، عاملان و نیروهای نیابتی ایران هستند به وضوح می توان دست ایران را پشت برخی از این اقدامات دید"
+    },
     {
       "key": "x:CNN:2097369663713718780",
       "source": "CNN / X",
@@ -4357,26 +4367,6 @@
       "fingerprint": "us central command said in a statement that it has permanently disabled two iranian tankers and completely destroyed a third iran war latest"
     },
     {
-      "key": "a5d1715c786dadfc4a7125dd6df6e0bbe29b7301",
-      "source": "ژئوپی واچ / Telegram",
-      "title": "🇺🇸 ❌ 🇮🇷 - 5 Tankers above the Strait of Hormuz. 3 from Qatar, 2 from Israel.",
-      "summary": "🇺🇸 ❌ 🇮🇷 - 5 Tankers above the Strait of Hormuz. 3 from Qatar, 2 from Israel.",
-      "link": "https://t.me/GeoPWatch/39534",
-      "published": "Sat, 05 Sep 2026 17:10:32 +0000",
-      "sent_at": "2026-09-05T17:19:10.544681+00:00",
-      "fingerprint": "5 tankers above the strait of hormuz 3 from qatar 2 from israel 5 tankers above the strait of hormuz 3 from qatar 2 from israel"
-    },
-    {
-      "key": "4d9208b705368e30e1816e208dd095a090cc995f",
-      "source": "ژئوپی واچ / Telegram",
-      "title": "🇮🇷 💥 - Unconfirmed reports of explosions heard from Qeshm Island and Missile Launches from Iran towards the Strait of Hormuz.",
-      "summary": "🇮🇷 💥 - Unconfirmed reports of explosions heard from Qeshm Island and Missile Launches from Iran towards the Strait of Hormuz.",
-      "link": "https://t.me/GeoPWatch/39535",
-      "published": "Sat, 05 Sep 2026 17:12:04 +0000",
-      "sent_at": "2026-09-05T17:19:10.544681+00:00",
-      "fingerprint": "unconfirmed reports of explosions heard from qeshm island and missile launches from iran towards the strait of hormuz unconfirmed reports of explosions heard from qeshm island and missile launches from iran towards the strait of hormuz"
-    },
-    {
       "key": "x:AlArabiya_Eng:2097344884529111069",
       "source": "Al Arabiya English / X",
       "title": "Saudi Foreign Minister Prince Faisal bin Farhan says that the Iran-backed Houthi militia has embarked on a course of action whose consequences it will not be able to handle, adding that it is attempting to export its internal problems in Yemen to Saudi Arabia.",
@@ -4405,6 +4395,26 @@
       "published": "Tue, 08 Sep 2026 15:52:49 +0000",
       "sent_at": "2026-09-08T15:58:30.720930+00:00",
       "fingerprint": "higher gas and diesel prices have cost americans an additional 100 billion since the iran war began according to a brown university tracker"
+    },
+    {
+      "key": "a5d1715c786dadfc4a7125dd6df6e0bbe29b7301",
+      "source": "ژئوپی واچ / Telegram",
+      "title": "🇺🇸 ❌ 🇮🇷 - 5 Tankers above the Strait of Hormuz. 3 from Qatar, 2 from Israel.",
+      "summary": "🇺🇸 ❌ 🇮🇷 - 5 Tankers above the Strait of Hormuz. 3 from Qatar, 2 from Israel.",
+      "link": "https://t.me/GeoPWatch/39534",
+      "published": "Sat, 05 Sep 2026 17:10:32 +0000",
+      "sent_at": "2026-09-05T17:19:10.544681+00:00",
+      "fingerprint": "5 tankers above the strait of hormuz 3 from qatar 2 from israel 5 tankers above the strait of hormuz 3 from qatar 2 from israel"
+    },
+    {
+      "key": "4d9208b705368e30e1816e208dd095a090cc995f",
+      "source": "ژئوپی واچ / Telegram",
+      "title": "🇮🇷 💥 - Unconfirmed reports of explosions heard from Qeshm Island and Missile Launches from Iran towards the Strait of Hormuz.",
+      "summary": "🇮🇷 💥 - Unconfirmed reports of explosions heard from Qeshm Island and Missile Launches from Iran towards the Strait of Hormuz.",
+      "link": "https://t.me/GeoPWatch/39535",
+      "published": "Sat, 05 Sep 2026 17:12:04 +0000",
+      "sent_at": "2026-09-05T17:19:10.544681+00:00",
+      "fingerprint": "unconfirmed reports of explosions heard from qeshm island and missile launches from iran towards the strait of hormuz unconfirmed reports of explosions heard from qeshm island and missile launches from iran towards the strait of hormuz"
     },
     {
       "key": "x:CENTCOM:2096247889366290840",
