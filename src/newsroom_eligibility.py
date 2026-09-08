@@ -36,6 +36,23 @@ OPERATIONAL_OVERRIDE_TERMS = (
     "attack", "strike", "missile", "drone", "sanction", "tanker", "shipping", "war",
     "ازسرگیری پرواز", "از سرگیری پرواز", "حریم هوایی", "نوتام", "لغو پرواز", "تحریم", "حمله", "موشک", "پهپاد",
 )
+HIGH_VALUE_TERMS = (
+    "explosion", "blast", "bomb", "bombing", "strike", "missile", "drone", "killed", "dead", "casualties",
+    "seized", "seize", "boarded", "disabled", "sunk", "sinking", "intercepted", "intercept", "launched",
+    "sanction", "sanctions", "designated", "ofac", "tanker", "ship", "shipping", "vessel", "hormuz",
+    "strait of hormuz", "oil price", "brent", "crude", "dollar", "usd", "airspace", "notam", "flight ban",
+    "exploded", "warship", "submarine", "carrier", "destroyer", "military facility", "nuclear facility",
+    "انفجار", "بمب", "بمباران", "حمله موشکی", "موشک", "پهپاد", "کشته", "تلفات", "توقیف", "توقیف کرد",
+    "تصرف", "غرق", "رهگیری", "شلیک", "تحریم", "اوفک", "نفتکش", "کشتی", "کشتیرانی", "هرمز",
+    "تنگه هرمز", "قیمت نفت", "نفت برنت", "دلار", "حریم هوایی", "نوتام", "لغو پرواز", "ناو", "زیردریایی",
+    "تأسیسات نظامی", "تاسیسات نظامی", "تأسیسات هسته‌ای", "تاسیسات هسته‌ای",
+)
+LOW_VALUE_REACTION_TERMS = (
+    "condemn", "condemned", "condemns", "welcomed", "welcome", "reiterated", "reiterates", "expressed concern",
+    "called for", "cabinet meeting", "cabinet session", "chairs cabinet", "chaired cabinet", "meeting in",
+    "محکوم کرد", "محکوم می‌کند", "محکوم می کند", "استقبال کرد", "ابراز نگرانی", "تاکید کرد", "تأکید کرد",
+    "جلسه هیئت دولت", "جلسه دولت", "ریاست جلسه", "نشست دولت",
+)
 ARTICLE_PREFIXES = (
     "analysis:", "analysis -", "opinion:", "opinion -", "explainer:", "explainer -",
     "commentary:", "commentary -", "factbox:", "factbox -", "viewpoint:", "viewpoint -",
@@ -169,6 +186,16 @@ def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> Eligibility
     company_like = _contains_any(text, COMPANY_TERMS)
     operational = _contains_any(text, OPERATIONAL_OVERRIDE_TERMS)
     if company_like and not operational:
+        if protected:
+            return EligibilityResult(False, "needs_editorial_review", review=True)
+        return EligibilityResult(False, "filtered_low_value")
+
+    if _contains_any(text, LOW_VALUE_REACTION_TERMS) and not _contains_any(text, HIGH_VALUE_TERMS):
+        return EligibilityResult(False, "filtered_low_value_reaction")
+
+    # Newsroom V2 is intentionally narrow: panel and auto-publish should be dominated by
+    # concrete operational, war, sanctions, maritime, energy, FX and airspace events.
+    if not _contains_any(text, HIGH_VALUE_TERMS) and not operational:
         if protected:
             return EligibilityResult(False, "needs_editorial_review", review=True)
         return EligibilityResult(False, "filtered_low_value")
