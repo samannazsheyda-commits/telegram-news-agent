@@ -1,18 +1,8 @@
 {
   "messages": [],
   "telegram_video_posts": [
-    {
-      "url": "https://t.me/tabzlive/102452?single",
-      "title": "🚨🚀 <b>خبر فوری | ویدیوی تازه از تحولات موشکی منطقه</b>",
-      "body": "ویدیوی تازه مرتبط با موج جاری تحولات موشکی منطقه منتشر شده است.",
-      "hashtags": "#موشک #ایران"
-    },
-    {
-      "url": "https://t.me/tabzlive/102455?single",
-      "title": "🚨🚀 <b>خبر فوری | ویدیوی تازه از تحولات موشکی منطقه</b>",
-      "body": "ویدیوی تازه مرتبط با موج جاری تحولات موشکی منطقه منتشر شده است.",
-      "hashtags": "#موشک #ایران"
-    }
+    {"url": "https://t.me/tabzlive/102452?single"},
+    {"url": "https://t.me/tabzlive/102455?single"}
   ],
-  "retry": 3
+  "retry": 4
 }
