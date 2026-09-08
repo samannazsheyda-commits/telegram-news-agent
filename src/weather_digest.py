@@ -12,6 +12,7 @@ from .services import USER_AGENT, send_telegram
 
 TEHRAN_TZ = ZoneInfo("Asia/Tehran")
 OPEN_METEO = "https://api.open-meteo.com/v1/forecast"
+OPEN_METEO_SOURCE = "https://open-meteo.com/"
 STATE_PATH = Path(os.environ.get("WEATHER_STATE_PATH", "/var/lib/bikhabar/weather_state.json"))
 
 CITIES = (
@@ -66,7 +67,8 @@ def fetch_city(name: str, lat: float, lon: float, *, session=requests) -> dict:
                 "wind_speed_10m_max", "wind_gusts_10m_max",
             )),
         },
-        headers={"User-Agent": USER_AGENT}, timeout=20,
+        headers={"User-Agent": USER_AGENT},
+        timeout=20,
     )
     response.raise_for_status()
     payload = response.json()
@@ -79,7 +81,8 @@ def fetch_city(name: str, lat: float, lon: float, *, session=requests) -> dict:
 
     date = str(pick("time", ""))
     return {
-        "name": name, "date": date,
+        "name": name,
+        "date": date,
         "code": int(pick("weather_code", 0) or 0),
         "tmax": round(float(pick("temperature_2m_max", 0) or 0)),
         "tmin": round(float(pick("temperature_2m_min", 0) or 0)),
@@ -96,34 +99,39 @@ def _note(rows: list[dict]) -> str:
     wet = [r["name"] for r in rows if r.get("pop", 0) >= 50 or r.get("precip", 0) >= 2]
     windy = [r["name"] for r in rows if r.get("gust", 0) >= 45]
     bits = []
-    if hot: bits.append("گرمای شدید در " + "، ".join(hot))
-    if wet: bits.append("احتمال بارش قابل‌توجه در " + "، ".join(wet))
-    if windy: bits.append("تندباد قابل‌توجه در " + "، ".join(windy))
-    return "؛ ".join(bits)
+    if hot:
+        bits.append("گرمای شدید: " + "، ".join(hot))
+    if wet:
+        bits.append("بارش قابل‌توجه: " + "، ".join(wet))
+    if windy:
+        bits.append("تندباد قابل‌توجه: " + "، ".join(windy))
+    return " | ".join(bits)
 
 
 def format_digest(rows: list[dict]) -> str:
     if not rows:
         return ""
     date = rows[0].get("date") or "فردا"
-    lines = [f"🌤️ <b>پیش‌بینی هوای فردا — {date}</b>"]
+    blocks = [f"🌤️ پیش‌بینی هوای فردا — {date}"]
     for row in rows:
         icon, condition = WMO.get(int(row.get("code") or 0), ("🌡️", "نامشخص"))
-        lines.append(
-            f"{icon} <b>{row['name']}</b>: {condition} | 🌡️ {row['tmin']} تا {row['tmax']}°C | "
-            f"💧 رطوبت {row.get('humidity', 0)}٪ | 🌧️ بارش {row['pop']}٪ ({row['precip']} mm) | "
-            f"💨 باد {row['wind']} km/h، تندباد {row['gust']} km/h"
+        blocks.append(
+            f"{icon} {row['name']} — {condition}\n"
+            f"🌡️ {row['tmin']} تا {row['tmax']}°C | 💧 {row.get('humidity', 0)}٪ | "
+            f"🌧️ {row['pop']}٪ ({row['precip']} mm) | 💨 {row['wind']} km/h | تندباد {row['gust']}"
         )
     note = _note(rows)
     if note:
-        lines.append(f"⚠️ <b>توضیح:</b> {note}.")
-    lines.append("📡 منبع داده: Open-Meteo")
-    return "\n".join(lines)
+        blocks.append(f"⚠️ {note}")
+    blocks.append(f'🔗 منبع: <a href="{OPEN_METEO_SOURCE}">Open-Meteo</a>')
+    return "\n\n".join(blocks)
 
 
 def _load_state() -> dict:
-    try: return json.loads(STATE_PATH.read_text(encoding="utf-8"))
-    except Exception: return {}
+    try:
+        return json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
 
 
 def _save_state(state: dict) -> None:
@@ -137,20 +145,29 @@ def run(*, session=requests, force: bool = False) -> int:
     bot_token = str(os.environ.get("TELEGRAM_BOT_TOKEN") or "").strip()
     chat_id = str(os.environ.get("TELEGRAM_CHAT_ID") or "@bikhabaar").strip()
     if not bot_token or not chat_id:
-        print("WEATHER missing Telegram credentials", flush=True); return 2
+        print("WEATHER missing Telegram credentials", flush=True)
+        return 2
     local_now = datetime.now(timezone.utc).astimezone(TEHRAN_TZ)
-    state = _load_state(); day_key = local_now.date().isoformat()
+    state = _load_state()
+    day_key = local_now.date().isoformat()
     if not force and state.get("last_sent_local_day") == day_key:
-        print("WEATHER already sent tonight", flush=True); return 0
+        print("WEATHER already sent tonight", flush=True)
+        return 0
     rows = []
     for city in CITIES:
-        try: rows.append(fetch_city(*city, session=session))
-        except Exception as exc: print(f"WEATHER fetch failed city={city[0]} error={type(exc).__name__}", flush=True)
+        try:
+            rows.append(fetch_city(*city, session=session))
+        except Exception as exc:
+            print(f"WEATHER fetch failed city={city[0]} error={type(exc).__name__}", flush=True)
     if len(rows) < 4:
-        print(f"WEATHER insufficient city data count={len(rows)}", flush=True); return 3
+        print(f"WEATHER insufficient city data count={len(rows)}", flush=True)
+        return 3
     send_telegram(format_digest(rows), bot_token, chat_id, session=session)
-    state["last_sent_local_day"] = day_key; state["last_sent_at"] = datetime.now(timezone.utc).isoformat(); _save_state(state)
-    print(f"WEATHER sent cities={len(rows)}", flush=True); return 0
+    state["last_sent_local_day"] = day_key
+    state["last_sent_at"] = datetime.now(timezone.utc).isoformat()
+    _save_state(state)
+    print(f"WEATHER sent cities={len(rows)}", flush=True)
+    return 0
 
 
 if __name__ == "__main__":
