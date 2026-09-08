@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:JasonMBrodsky:2097383089173406051",
     "x:washingtonpost:2097376956824056091",
     "x:USABehFarsi:2097374261375602842",
     "x:CNN:2097369663713718780",
@@ -499,11 +500,10 @@
     "f3be34501e2e3541aeb82e1663fc7790e15171a5",
     "b2d50900e99fa71b6b9f2c5c04283b61be75c679",
     "82c64bd63c492719092ededd69abb3ad0a534558",
-    "c2d62d3460ef9587aceed390a745059a345420c9",
-    "d1f2475014a9536cbaaa72264b7eea8ee03d23ed"
+    "c2d62d3460ef9587aceed390a745059a345420c9"
   ],
   "market_last_sent_at": "2026-09-08T17:41:22.609002+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:JasonMBrodsky:2097383089173406051",
+      "source": "Jason Brodsky / X",
+      "title": "This won't include the \"spy pigeons\" that #Iran's regime dubbed Mossad Operatives in 2008. (true story)",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2097383089173406051",
+      "published": "Tue, 08 Sep 2026 17:54:30 +0000",
+      "sent_at": "2026-09-08T17:53:59.972491+00:00",
+      "fingerprint": "this won t include the spy pigeons that iran s regime dubbed mossad operatives in 2008 true story"
+    },
     {
       "key": "x:washingtonpost:2097376956824056091",
       "source": "Washington Post / X",
