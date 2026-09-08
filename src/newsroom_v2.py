@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Callable
@@ -12,6 +13,14 @@ from .newsroom_fingerprint import build_fingerprint
 from .newsroom_models import LiveFeedRecord, NormalizedNewsItem, RawNewsItem
 from .newsroom_normalize import normalize_item
 from .panel_live_feed import LiveFeedStore
+
+
+WAR_ALERT_TERMS = (
+    "missile", "ballistic", "cruise missile", "rocket", "launch", "intercept", "strike", "attack",
+    "explosion", "blast", "bombing", "hormuz", "strait of hormuz", "tanker", "warship", "drone",
+    "موشک", "بالستیک", "کروز", "شلیک", "رهگیری", "حمله", "انفجار", "بمباران", "هرمز", "نفتکش", "پهپاد",
+)
+IRAN_ALERT_TERMS = ("iran", "iranian", "tehran", "irgc", "ایران", "ایرانی", "تهران", "سپاه")
 
 
 @dataclass
@@ -38,16 +47,40 @@ def _collect(fetcher) -> tuple[list[RawNewsItem], int, int]:
         except Exception:
             return [], 0, 1
 
+    source_fetchers = list(fetcher or [])
+    if not source_fetchers:
+        return [], 0, 0
+
     items: list[RawNewsItem] = []
     ok = 0
     failed = 0
-    for source_fetcher in fetcher:
-        try:
-            items.extend(list(source_fetcher() or []))
-            ok += 1
-        except Exception:
-            failed += 1
+    # Network feeds are independent. Running them in parallel prevents one slow
+    # site/API from delaying a missile/explosion alert available from another.
+    with ThreadPoolExecutor(max_workers=min(8, len(source_fetchers)), thread_name_prefix="bikhabar-feed") as pool:
+        futures = {pool.submit(source_fetcher): source_fetcher for source_fetcher in source_fetchers}
+        for future in as_completed(futures):
+            try:
+                items.extend(list(future.result() or []))
+                ok += 1
+            except Exception:
+                failed += 1
     return items, ok, failed
+
+
+def _urgency_score(raw: RawNewsItem) -> tuple[int, str]:
+    text = f"{raw.title} {raw.summary}".lower()
+    war_hits = sum(1 for term in WAR_ALERT_TERMS if term in text)
+    iran_hit = any(term in text for term in IRAN_ALERT_TERMS)
+    # Highest class: an operational war/security event connected to Iran.
+    if war_hits and iran_hit:
+        rank = 300 + min(war_hits, 20)
+    elif war_hits:
+        rank = 200 + min(war_hits, 20)
+    elif iran_hit:
+        rank = 100
+    else:
+        rank = 0
+    return rank, str(raw.published_at or raw.fetched_at or "")
 
 
 def _item_id(item: NormalizedNewsItem) -> str:
@@ -124,6 +157,9 @@ def run_cycle(
 
     summary = CycleSummary()
     items, summary.sources_ok, summary.sources_failed = _collect(fetcher)
+    # A missile launch/explosion/Hormuz item must always be handled before
+    # ordinary political or market items in the same scan.
+    items.sort(key=_urgency_score, reverse=True)
     summary.items_fetched = len(items)
 
     for raw in items:
