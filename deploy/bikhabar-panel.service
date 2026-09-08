@@ -11,11 +11,13 @@ WorkingDirectory=/opt/bikhabar/app
 EnvironmentFile=/etc/bikhabar/agent.env
 Environment=PYTHONUNBUFFERED=1
 Environment=PANEL_LOCAL_ROOT=/opt/bikhabar/app
-ExecStart=/opt/bikhabar/venv/bin/gunicorn --workers 2 --threads 2 --timeout 45 --bind 0.0.0.0:8080 panel.wsgi:app
+ExecStart=/opt/bikhabar/venv/bin/gunicorn --workers 2 --threads 2 --timeout 45 --bind 0.0.0.0:80 panel.wsgi:app
 Restart=always
 RestartSec=5
 NoNewPrivileges=true
 PrivateTmp=true
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
 UMask=0077
 
 [Install]
