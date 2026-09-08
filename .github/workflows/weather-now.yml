@@ -1,0 +1,25 @@
+name: Publish Weather Now
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".weather-now"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Publish tomorrow weather digest now
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: "@bikhabaar"
+          WEATHER_STATE_PATH: /tmp/bikhabar-weather-state.json
+        run: python -c "from src.weather_digest import run; raise SystemExit(run(force=True))"
