@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:Reuters:2097298949681901637",
+    "x:AJEnglish:2097297393179840876",
     "x:JasonMBrodsky:2097286487725224444",
     "x:AlArabiya_Eng:2097284351738228822",
     "x:Doranimated:2093694397955076245",
@@ -498,9 +500,7 @@
     "b8e3086705a88b9c4c58c2696689464febabc0a3",
     "75910e7a4032b9d9cc3296205677f461567f4753",
     "e7927e55dab895a68b8fcff2c6b2c242b9c71570",
-    "b2be0cb8622eeb0cc80e8d9a743362d2658c2805",
-    "03489f5e135713c585a9ebcfe2138a11e69d09ac",
-    "ff92b318d33c59099f68d1774fa070027b4851c8"
+    "b2be0cb8622eeb0cc80e8d9a743362d2658c2805"
   ],
   "market_last_sent_at": "2026-09-08T11:16:00.342538+00:00",
   "next_news_color": "red",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2097297393179840876",
+      "source": "Al Jazeera English / X",
+      "title": "Yemen’s Houthi group has carried out attacks in Saudi Arabia, with Riyadh saying that dozens of people have been wounded, as fighting between the Iran-aligned group and pro-Saudi forces in Yemen sharply escalates. Here's what we know about the fighting",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097297393179840876",
+      "published": "Tue, 08 Sep 2026 12:13:59 +0000",
+      "sent_at": "2026-09-08T12:24:34.598685+00:00",
+      "fingerprint": "yemen s houthi group has carried out attacks in saudi arabia with riyadh saying that dozens of people have been wounded as fighting between the iran aligned group and pro saudi forces in yemen sharply escalates here s what we know about the fighting"
+    },
+    {
+      "key": "x:Reuters:2097298949681901637",
+      "source": "Reuters / X",
+      "title": "UK publishes legislation for tougher sanctions on Iran over nuclear programme",
+      "summary": "",
+      "link": "https://x.com/Reuters/status/2097298949681901637",
+      "published": "Tue, 08 Sep 2026 12:20:10 +0000",
+      "sent_at": "2026-09-08T12:24:34.598685+00:00",
+      "fingerprint": "uk publishes legislation for tougher sanctions on iran over nuclear programme"
+    },
     {
       "key": "x:AlArabiya_Eng:2097284351738228822",
       "source": "Al Arabiya English / X",
