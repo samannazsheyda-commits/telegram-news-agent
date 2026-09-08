@@ -35,14 +35,15 @@ if [[ "${ID:-}" == "ubuntu" && "${VERSION_ID:-}" == "20.04" ]]; then
   uv python install 3.12
   rm -rf "${VENV_DIR}"
   uv venv --python 3.12 "${VENV_DIR}"
+  uv pip install --python "${VENV_DIR}/bin/python" -r "${APP_DIR}/requirements.txt"
 else
   DEBIAN_FRONTEND=noninteractive apt-get install -y python3-venv
   rm -rf "${VENV_DIR}"
   python3 -m venv "${VENV_DIR}"
+  "${VENV_DIR}/bin/python" -m pip install --upgrade pip
+  "${VENV_DIR}/bin/pip" install -r "${APP_DIR}/requirements.txt"
 fi
 
-"${VENV_DIR}/bin/python" -m pip install --upgrade pip
-"${VENV_DIR}/bin/pip" install -r "${APP_DIR}/requirements.txt"
 chown -R bikhabar:bikhabar "${VENV_DIR}" "${APP_DIR}"
 
 if [[ ! -f "${ENV_DIR}/agent.env" ]]; then
