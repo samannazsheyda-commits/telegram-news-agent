@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:AlArabiya_Eng:2097407949668815294",
+    "x:JasonMBrodsky:2097405404539953473",
     "x:Jerusalem_Post:2097404576538259729",
     "x:USABehFarsi:2097401572280222025",
     "x:AJEnglish:2097401281987964987",
@@ -498,9 +500,7 @@
     "64a4e630975cfd13bd1e5f114fd16779c29c3f0b",
     "5bfc3dbb8ac497013982211bec2b98c0ba7debc4",
     "1a69134c1b01198dfd26df1bb21f313e57fbdaa6",
-    "6b15a7db9ba4018ad0959e5e3ea8fa1a6453d70e",
-    "17347c27166a060350dd0ac1673839bcebcf94e6",
-    "c1eb0661bd2ded6ea29e5bcae875c9998cb1bb10"
+    "6b15a7db9ba4018ad0959e5e3ea8fa1a6453d70e"
   ],
   "market_last_sent_at": "2026-09-08T17:41:22.609002+00:00",
   "next_news_color": "red",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2097407949668815294",
+      "source": "Al Arabiya English / X",
+      "title": "A small Iranian oil tanker was struck by a US missile near Kharg Island in the Gulf on Tuesday, the state-linked Tasnim news agency reports 🔴 Tasnim said the vessel was hit by a projectile fired by US forces while anchored about four miles from the island 🔴 Tasnim cited local sources as saying that there were no casualties and that the tanker’s crew was being evacuated",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097407949668815294",
+      "published": "Tue, 08 Sep 2026 19:33:17 +0000",
+      "sent_at": "2026-09-08T19:35:08.230947+00:00",
+      "fingerprint": "a small iranian oil tanker was struck by a us missile near kharg island in the gulf on tuesday the state linked tasnim news agency reports tasnim said the vessel was hit by a projectile fired by us forces while anchored about four miles from the island tasnim cited local sources as saying that there were no casualties and that the tanker s crew was being evacuated"
+    },
+    {
+      "key": "x:JasonMBrodsky:2097405404539953473",
+      "source": "Jason Brodsky / X",
+      "title": "For #Iran's regime's Supreme Leader's Office to be hyping and boasting about an incident where a U.S. UUV malfunctioned days ago shows the regime is desperate for fresh propaganda to disinform, demoralize, and compensate for its failures to hit American assets in recent days.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2097405404539953473",
+      "published": "Tue, 08 Sep 2026 19:23:11 +0000",
+      "sent_at": "2026-09-08T19:31:55.228449+00:00",
+      "fingerprint": "for iran s regime s supreme leader s office to be hyping and boasting about an incident where a u s uuv malfunctioned days ago shows the regime is desperate for fresh propaganda to disinform demoralize and compensate for its failures to hit american assets in recent days"
+    },
     {
       "key": "x:Jerusalem_Post:2097404576538259729",
       "source": "Jerusalem Post / X",
@@ -4437,26 +4457,6 @@
       "fingerprint": "jd vance defended us efforts to secure shipping through the strait of hormuz saying iran must stop attacking commercial vessels and warning that withdrawal could cause a global energy crisis"
     },
     {
-      "key": "x:AJEnglish:2096310785924538686",
-      "source": "Al Jazeera English / X",
-      "title": "BREAKING: Iran’s Foreign Ministry has condemned what it called an “aggressive” US attack on Iranian commercial vessels, describing the action as illegal and a war crime.",
-      "summary": "",
-      "link": "https://x.com/AJEnglish/status/2096310785924538686",
-      "published": "Sat, 05 Sep 2026 18:53:33 +0000",
-      "sent_at": "2026-09-05T19:33:33.569403+00:00",
-      "fingerprint": "breaking iran s foreign ministry has condemned what it called an aggressive us attack on iranian commercial vessels describing the action as illegal and a war crime"
-    },
-    {
-      "key": "x:marklevinshow:2096319696668925982",
-      "source": "Mark Levin / X",
-      "title": "Getting close to the most important economic target in Iran, the mother lode",
-      "summary": "",
-      "link": "https://x.com/marklevinshow/status/2096319696668925982",
-      "published": "Sat, 05 Sep 2026 19:28:58 +0000",
-      "sent_at": "2026-09-05T19:33:33.569403+00:00",
-      "fingerprint": "getting close to the most important economic target in iran the mother lode"
-    },
-    {
       "key": "x:AlArabiya_Eng:2097344884529111069",
       "source": "Al Arabiya English / X",
       "title": "Saudi Foreign Minister Prince Faisal bin Farhan says that the Iran-backed Houthi militia has embarked on a course of action whose consequences it will not be able to handle, adding that it is attempting to export its internal problems in Yemen to Saudi Arabia.",
@@ -4485,6 +4485,26 @@
       "published": "Tue, 08 Sep 2026 15:52:49 +0000",
       "sent_at": "2026-09-08T15:58:30.720930+00:00",
       "fingerprint": "higher gas and diesel prices have cost americans an additional 100 billion since the iran war began according to a brown university tracker"
+    },
+    {
+      "key": "x:AJEnglish:2096310785924538686",
+      "source": "Al Jazeera English / X",
+      "title": "BREAKING: Iran’s Foreign Ministry has condemned what it called an “aggressive” US attack on Iranian commercial vessels, describing the action as illegal and a war crime.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2096310785924538686",
+      "published": "Sat, 05 Sep 2026 18:53:33 +0000",
+      "sent_at": "2026-09-05T19:33:33.569403+00:00",
+      "fingerprint": "breaking iran s foreign ministry has condemned what it called an aggressive us attack on iranian commercial vessels describing the action as illegal and a war crime"
+    },
+    {
+      "key": "x:marklevinshow:2096319696668925982",
+      "source": "Mark Levin / X",
+      "title": "Getting close to the most important economic target in Iran, the mother lode",
+      "summary": "",
+      "link": "https://x.com/marklevinshow/status/2096319696668925982",
+      "published": "Sat, 05 Sep 2026 19:28:58 +0000",
+      "sent_at": "2026-09-05T19:33:33.569403+00:00",
+      "fingerprint": "getting close to the most important economic target in iran the mother lode"
     },
     {
       "key": "x:mdubowitz:2096296663375581225",
