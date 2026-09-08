@@ -117,7 +117,7 @@ systemctl enable --now bikhabar-weather.timer >/dev/null
 sleep 8
 systemctl is-active --quiet bikhabar-agent
 systemctl is-active --quiet bikhabar-panel
-curl -fsS --max-time 10 http://127.0.0.1:8080/login >/dev/null
+curl -fsS --max-time 10 http://127.0.0.1/login >/dev/null
 trap - ERR
 
 echo "Deployed ${TARGET_SHA} successfully"
