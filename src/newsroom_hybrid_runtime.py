@@ -5,9 +5,25 @@ import json
 import os
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 
 from . import runtime_v13 as v13
 from .newsroom_runtime_v2 import run_once as run_v2_once
+from .panel_command_router import apply_command as apply_panel_command
+
+
+def _process_panel_commands() -> int:
+    command_dir = Path("panel_commands")
+    if not command_dir.exists():
+        return 0
+    processed = 0
+    for path in sorted(command_dir.glob("*.json"), key=lambda p: p.stat().st_mtime):
+        try:
+            apply_panel_command(path)
+            processed += 1
+        except Exception as exc:
+            print(f"PANEL_COMMAND_FAILED file={path.name} error={type(exc).__name__}:{exc}", flush=True)
+    return processed
 
 
 def run_ancillary_cycle(now: datetime) -> int:
@@ -28,11 +44,16 @@ def run_ancillary_cycle(now: datetime) -> int:
 
 def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
     resolved_now = now or datetime.now(timezone.utc)
+    commands_processed = 0 if shadow else _process_panel_commands()
     ancillary_rc = run_ancillary_cycle(resolved_now)
     if ancillary_rc != 0:
-        return {"rc": ancillary_rc, "mode": "shadow" if shadow else "production", "published": 0, "telegram_writes": 0}
-    # Command Center settings are persisted by the panel. Production must read
-    # them on every scan so pause/auto-publish changes take effect immediately.
+        return {
+            "rc": ancillary_rc,
+            "mode": "shadow" if shadow else "production",
+            "published": 0,
+            "telegram_writes": 0,
+            "panel_commands": commands_processed,
+        }
     newsroom_settings = v13.load_newsroom_settings()
     result = run_v2_once(
         shadow=shadow,
@@ -40,7 +61,7 @@ def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
         data_dir=os.environ.get("DATA_DIR", "data"),
         settings=newsroom_settings,
     )
-    return {"rc": 0, **result}
+    return {"rc": 0, "panel_commands": commands_processed, **result}
 
 
 def monitor(*, shadow: bool, poll_seconds: int, session_seconds: int) -> int:
