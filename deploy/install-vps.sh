@@ -13,7 +13,7 @@ if [[ "${EUID}" -ne 0 ]]; then
 fi
 
 apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y git python3 python3-venv python3-pip ca-certificates
+DEBIAN_FRONTEND=noninteractive apt-get install -y git python3 python3-venv python3-pip ca-certificates util-linux
 
 if ! id bikhabar >/dev/null 2>&1; then
   useradd --system --create-home --home-dir /var/lib/bikhabar --shell /usr/sbin/nologin bikhabar
@@ -23,10 +23,10 @@ mkdir -p /opt/bikhabar "${ENV_DIR}" /var/lib/bikhabar/runtime-snapshot
 chown -R bikhabar:bikhabar /opt/bikhabar /var/lib/bikhabar
 
 if [[ ! -d "${APP_DIR}/.git" ]]; then
-  sudo -u bikhabar git clone --branch "${BRANCH}" --single-branch "${REPO_URL}" "${APP_DIR}"
+  runuser -u bikhabar -- git clone --branch "${BRANCH}" --single-branch "${REPO_URL}" "${APP_DIR}"
 else
-  sudo -u bikhabar git -C "${APP_DIR}" fetch origin "${BRANCH}"
-  sudo -u bikhabar git -C "${APP_DIR}" reset --hard "origin/${BRANCH}"
+  runuser -u bikhabar -- git -C "${APP_DIR}" fetch origin "${BRANCH}"
+  runuser -u bikhabar -- git -C "${APP_DIR}" reset --hard "origin/${BRANCH}"
 fi
 
 python3 -m venv "${VENV_DIR}"
