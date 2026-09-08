@@ -3,6 +3,7 @@ import os
 from src.local_json_repository import LocalJsonRepository
 
 from .app import create_app
+from .command_center import bp as command_center_bp
 
 
 config = {}
@@ -12,3 +13,4 @@ if local_root:
     config["SESSION_COOKIE_SECURE"] = str(os.environ.get("PANEL_COOKIE_SECURE", "0")).strip().lower() in {"1", "true", "yes", "on"}
 
 app = create_app(config)
+app.register_blueprint(command_center_bp)

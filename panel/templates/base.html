@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="theme-color" content="#111317">
   <title>{% block title %}بی‌خبر{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='panel.css') }}">
 </head>
@@ -10,7 +12,7 @@
   <header class="topbar">
     <div>
       <strong>بی‌خبر</strong>
-      <span>پنل سردبیر</span>
+      <span>اتاق فرمان</span>
     </div>
     {% if session.get('admin') %}
     <form method="post" action="{{ url_for('logout') }}" class="inline-form">
@@ -22,7 +24,7 @@
 
   {% if session.get('admin') %}
   <nav class="nav">
-    <a href="{{ url_for('dashboard') }}">داشبورد</a>
+    <a href="{{ url_for('dashboard') }}">داشبورد / اتاق فرمان</a>
     <a href="{{ url_for('review_queue') }}">نیاز به بررسی</a>
     <a href="{{ url_for('history') }}">تاریخچه</a>
     <a href="{{ url_for('sources') }}">منابع</a>

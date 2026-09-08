@@ -12,7 +12,7 @@ from .editorial_store import LocalEditorialStore
 from .panel_command_file import apply_command as apply_legacy_command
 
 TERMINAL = {"succeeded", "failed", "reconciled"}
-NEWSROOM_ACTIONS = {"clear", "settings_save"}
+NEWSROOM_ACTIONS = {"clear", "settings_save", "weather_now", "air_traffic_now"}
 PUBLISHED_STATUSES = {"published_manual", "published_auto"}
 REJECTED_STATUSES = {"rejected_manual", "superseded"}
 
@@ -167,6 +167,22 @@ def _apply_settings(payload: dict[str, Any]) -> dict:
     return _write_result(payload["command_id"], "settings_save", "succeeded", "تنظیمات اتاق خبر ذخیره شد")
 
 
+def _apply_module(payload: dict[str, Any]) -> dict:
+    action = payload["action"]
+    command_id = payload["command_id"]
+    if action == "weather_now":
+        from .weather_digest import run as run_weather
+        rc = int(run_weather(force=True) or 0)
+        if rc != 0:
+            raise RuntimeError(f"weather_failed_rc_{rc}")
+        return _write_result(command_id, action, "succeeded", "هواشناسی همین حالا منتشر شد")
+    if action == "air_traffic_now":
+        from .air_traffic import publish_air_traffic_snapshot
+        publish_air_traffic_snapshot()
+        return _write_result(command_id, action, "succeeded", "نقشه ترافیک هوایی همین حالا منتشر شد")
+    raise ValueError("unsupported_module_action")
+
+
 def apply_command(path: str | Path) -> dict:
     command_path = Path(path)
     if not command_path.exists():
@@ -187,7 +203,12 @@ def apply_command(path: str | Path) -> dict:
 
     _write_result(payload["command_id"], action, "processing", "در حال پردازش")
     try:
-        result = _apply_clear(payload) if action == "clear" else _apply_settings(payload)
+        if action == "clear":
+            result = _apply_clear(payload)
+        elif action == "settings_save":
+            result = _apply_settings(payload)
+        else:
+            result = _apply_module(payload)
         _consume(command_path)
         return result
     except Exception as exc:

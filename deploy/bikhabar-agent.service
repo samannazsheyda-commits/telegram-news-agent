@@ -11,10 +11,11 @@ Group=bikhabar
 WorkingDirectory=/opt/bikhabar/app
 EnvironmentFile=/etc/bikhabar/agent.env
 Environment=PYTHONUNBUFFERED=1
-Environment=POLL_SECONDS=10
+Environment=POLL_SECONDS=5
+Environment=SESSION_SECONDS=0
 ExecStart=/opt/bikhabar/venv/bin/python -m src.newsroom_hybrid_runtime --monitor
 Restart=always
-RestartSec=5
+RestartSec=2
 TimeoutStopSec=30
 KillSignal=SIGTERM
 NoNewPrivileges=true
