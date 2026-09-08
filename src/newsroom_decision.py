@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from .newsroom_fingerprint import fingerprint_similarity
 from .newsroom_models import DecisionResult, EventFingerprint, EventRecord, NormalizedNewsItem
 
@@ -11,6 +13,12 @@ PROTECTED_SOURCES = {
     "white house spokesperson",
     "state department",
     "u.s. treasury",
+}
+
+LEXICAL_STOPWORDS = {
+    "the", "a", "an", "and", "or", "but", "to", "of", "for", "in", "on", "at", "by", "with", "from",
+    "as", "is", "are", "was", "were", "be", "been", "being", "has", "have", "had", "says", "said", "saying",
+    "it", "its", "will", "this", "that", "after", "before", "about", "over", "under", "new", "latest",
 }
 
 
@@ -58,6 +66,19 @@ def _new_material_facts(item: EventFingerprint, record: EventRecord) -> set[str]
     return current - existing
 
 
+def _lexical_tokens(value: str) -> set[str]:
+    tokens = re.findall(r"[a-z0-9_\u0600-\u06ff]+", (value or "").lower())
+    return {token for token in tokens if len(token) > 2 and token not in LEXICAL_STOPWORDS}
+
+
+def _lexical_overlap(current_title: str, prior_title: str) -> float:
+    current = _lexical_tokens(current_title)
+    prior = _lexical_tokens(prior_title)
+    if not current or not prior:
+        return 0.0
+    return len(current & prior) / max(1, min(len(current), len(prior)))
+
+
 def decide_item(
     item: NormalizedNewsItem,
     fingerprint: EventFingerprint,
@@ -88,6 +109,24 @@ def decide_item(
                 reason="distinct_protected_truth_post_id",
                 confidence=1.0,
                 event_id="",
+            )
+
+    # Sparse structural fingerprints (for example, same-day Iran + strike with no
+    # extracted object) can score poorly in the weighted similarity function even
+    # when their canonical structural key is identical. Treat them as the same
+    # claim only when title wording independently supports the structural match.
+    # Text similarity is therefore corroborating evidence, never the sole signal.
+    for record in candidates:
+        if record.fingerprint != fingerprint.key:
+            continue
+        overlap = _lexical_overlap(item.raw.title, record.canonical_title)
+        if overlap >= 0.50:
+            return DecisionResult(
+                decision="duplicate_same_claim",
+                reason="same_structural_fingerprint_with_lexical_support",
+                confidence=overlap,
+                event_id=record.event_id,
+                duplicate_of=record.event_id,
             )
 
     scored: list[tuple[float, EventRecord]] = []

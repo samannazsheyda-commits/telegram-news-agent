@@ -26,14 +26,24 @@ SECURITY_TERMS = (
     "حمله", "موشک", "پهپاد", "انفجار", "رهگیری", "حریم هوایی", "نوتام", "لغو پرواز", "تحریم", "نفتکش",
 )
 COMPANY_TERMS = (
-    "company", "corporate", "ceo", "earnings", "profit", "profits", "revenue", "sales", "shares",
-    "quarterly", "business", "market outlook", "شرکت", "مدیرعامل", "سود", "درآمد", "سهام",
+    "company", "corporate", "ceo", "cso", "chief executive", "chief strategy officer", "earnings", "profit", "profits",
+    "revenue", "sales", "shares", "quarterly", "business", "market outlook", "brewery", "breweries",
+    "شرکت", "مدیرعامل", "سود", "درآمد", "سهام",
 )
 OPERATIONAL_OVERRIDE_TERMS = (
     "resume overflight", "resumes overflight", "resume overflights", "resumes overflights",
     "iranian airspace", "iran airspace", "airspace", "notam", "flight ban", "flight cancellation",
     "attack", "strike", "missile", "drone", "sanction", "tanker", "shipping", "war",
     "ازسرگیری پرواز", "از سرگیری پرواز", "حریم هوایی", "نوتام", "لغو پرواز", "تحریم", "حمله", "موشک", "پهپاد",
+)
+HARD_OPERATIONAL_TERMS = (
+    "airspace", "notam", "flight ban", "flight cancellation", "attack", "strike", "missile", "drone",
+    "sanction", "tanker", "explosion", "intercept", "military operation", "shipping closure",
+    "حریم هوایی", "نوتام", "لغو پرواز", "حمله", "موشک", "پهپاد", "تحریم", "نفتکش", "انفجار", "رهگیری",
+)
+CORPORATE_COMMENTARY_CUES = (
+    "watch ", "interview", "cso", "ceo", "chief strategy officer", "chief executive", "corporate strategy",
+    "business impact", "brewery", "breweries",
 )
 
 
@@ -100,7 +110,18 @@ def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> Eligibility
         return EligibilityResult(False, "not_iran_relevant")
 
     company_like = _contains_any(text, COMPANY_TERMS)
+    corporate_commentary = _contains_any(text, CORPORATE_COMMENTARY_CUES)
+    hard_operational = _contains_any(text, HARD_OPERATIONAL_TERMS)
     operational = _contains_any(text, OPERATIONAL_OVERRIDE_TERMS)
+
+    # A corporate interview or strategy segment that merely uses the Iran war as
+    # business context is not operational war news. Generic mentions of "war"
+    # must not override the normal low-value company filter.
+    if company_like and corporate_commentary and not hard_operational:
+        if protected:
+            return EligibilityResult(False, "needs_editorial_review", review=True)
+        return EligibilityResult(False, "filtered_low_value")
+
     if company_like and not operational:
         if protected:
             return EligibilityResult(False, "needs_editorial_review", review=True)
