@@ -4,7 +4,7 @@
 <h1>داشبورد</h1>
 <div class="stats">
   <div class="stat"><b>{{ live_count }}</b><span>ورودی زنده</span></div>
-  <a class="stat" href="{{ url_for('review_queue') }}"><b>{{ queue_count }}</b><span>در انتظار</span></a>
+  <a class="stat" href="{{ url_for('review_queue') }}"><b>{{ queue_count }}</b><span>نیازمند بررسی</span></a>
   <a class="stat" href="{{ url_for('history') }}"><b>{{ published_today }}</b><span>منتشرشده امروز</span></a>
   <a class="stat" href="{{ url_for('history', status='rejected_manual') }}"><b>{{ rejected_today }}</b><span>ردشده امروز</span></a>
 </div>
@@ -21,8 +21,8 @@
     {% for item in live[:10] %}
       <div class="row">
         <span>
-          <strong>{{ item.title }}</strong><br>
-          <small>{{ item.source }} · {{ item.panel_status }}{% if item.decision_reason %} · {{ item.decision_reason }}{% endif %}</small>
+          <strong>{{ item.display_title }}</strong><br>
+          <small>{{ item.source }} · {{ item.panel_status_fa }}{% if item.decision_reason_fa %} · {{ item.decision_reason_fa }}{% endif %}</small>
         </span>
         {% if item.source_url %}<a class="button" href="{{ item.source_url }}" target="_blank" rel="noopener">منبع</a>{% endif %}
       </div>
@@ -33,7 +33,7 @@
 </section>
 
 <section class="card">
-  <h2>در انتظار</h2>
+  <h2>نیازمند بررسی دستی</h2>
   {% if pending %}
     {% for item in pending[:5] %}
       <div class="row">
@@ -42,7 +42,7 @@
       </div>
     {% endfor %}
   {% else %}
-    <p>خبر در انتظار بررسی نیست.</p>
+    <p>نیاز به تصمیم دستی نیست؛ خبرهای تازه در «ورودی زنده» بالا نمایش داده می‌شوند.</p>
   {% endif %}
 </section>
 
@@ -60,7 +60,7 @@
 </section>
 
 <section class="actions">
-  <a class="primary button" href="{{ url_for('review_queue') }}">بررسی خبرهای در انتظار</a>
+  {% if pending %}<a class="primary button" href="{{ url_for('review_queue') }}">بررسی خبرهای نیازمند تصمیم</a>{% endif %}
   <a class="button" href="{{ url_for('sources') }}">مدیریت منابع</a>
 </section>
 {% endblock %}
