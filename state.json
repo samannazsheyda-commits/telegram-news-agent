@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:business:2097364355394220219",
     "x:Jerusalem_Post:2097355141401682032",
     "e6223e45bc33bc14f66b4a062f368f8d7ca9aa94",
     "x:business:2097349265097990482",
@@ -499,11 +500,10 @@
     "d1f2475014a9536cbaaa72264b7eea8ee03d23ed",
     "c723105b64d21a4751d29894ddfd8023aa43a6fa",
     "5c594f8de88ed4301b00018e011b633c729c03d9",
-    "x:JasonMBrodsky:2096198565404025262",
-    "x:JasonMBrodsky:2096190282983247876"
+    "x:JasonMBrodsky:2096198565404025262"
   ],
   "market_last_sent_at": "2026-09-08T15:40:37.043002+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:business:2097364355394220219",
+      "source": "Bloomberg / X",
+      "title": "Qatar posted its widest quarterly budget deficit in almost a decade, as natural gas revenue all but evaporated with the between the US and Iran effectively shutting the Strait of Hormuz",
+      "summary": "",
+      "link": "https://x.com/business/status/2097364355394220219",
+      "published": "Tue, 08 Sep 2026 16:40:04 +0000",
+      "sent_at": "2026-09-08T16:40:58.442754+00:00",
+      "fingerprint": "qatar posted its widest quarterly budget deficit in almost a decade as natural gas revenue all but evaporated with the between the us and iran effectively shutting the strait of hormuz"
+    },
     {
       "key": "e6223e45bc33bc14f66b4a062f368f8d7ca9aa94",
       "source": "NOTAM / Airspace",
@@ -4407,26 +4417,6 @@
       "fingerprint": "the united states said it struck and destroyed three iranian oil tankers on saturday in response to attempted missile attacks on naval vessels in the latest exchange of fire since renewed hostilities flared between the foes"
     },
     {
-      "key": "x:Jerusalem_Post:2096270163658068212",
-      "source": "Jerusalem Post / X",
-      "title": "Ten people were killed when a fuel tanker exploded on a highway in western Iran as a result of a traffic accident, state media reported on Saturday.",
-      "summary": "",
-      "link": "https://x.com/Jerusalem_Post/status/2096270163658068212",
-      "published": "Sat, 05 Sep 2026 16:12:08 +0000",
-      "sent_at": "2026-09-05T16:26:11.642907+00:00",
-      "fingerprint": "ten people were killed when a fuel tanker exploded on a highway in western iran as a result of a traffic accident state media reported on saturday"
-    },
-    {
-      "key": "x:Jerusalem_Post:2096270696913449391",
-      "source": "Jerusalem Post / X",
-      "title": "US Defense Secretary Pete Hegseth called Iran's oil tanker fleet \"defenseless\" and promised that if Iran shoots towards US ships, the US Navy will destroy and sink the regime's ships in a post on X/Twitter.",
-      "summary": "",
-      "link": "https://x.com/Jerusalem_Post/status/2096270696913449391",
-      "published": "Sat, 05 Sep 2026 16:14:15 +0000",
-      "sent_at": "2026-09-05T16:26:11.642907+00:00",
-      "fingerprint": "us defense secretary pete hegseth called iran s oil tanker fleet defenseless and promised that if iran shoots towards us ships the us navy will destroy and sink the regime s ships in a post on x twitter"
-    },
-    {
       "key": "x:AlArabiya_Eng:2097344884529111069",
       "source": "Al Arabiya English / X",
       "title": "Saudi Foreign Minister Prince Faisal bin Farhan says that the Iran-backed Houthi militia has embarked on a course of action whose consequences it will not be able to handle, adding that it is attempting to export its internal problems in Yemen to Saudi Arabia.",
@@ -4455,6 +4445,26 @@
       "published": "Tue, 08 Sep 2026 15:52:49 +0000",
       "sent_at": "2026-09-08T15:58:30.720930+00:00",
       "fingerprint": "higher gas and diesel prices have cost americans an additional 100 billion since the iran war began according to a brown university tracker"
+    },
+    {
+      "key": "x:Jerusalem_Post:2096270163658068212",
+      "source": "Jerusalem Post / X",
+      "title": "Ten people were killed when a fuel tanker exploded on a highway in western Iran as a result of a traffic accident, state media reported on Saturday.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096270163658068212",
+      "published": "Sat, 05 Sep 2026 16:12:08 +0000",
+      "sent_at": "2026-09-05T16:26:11.642907+00:00",
+      "fingerprint": "ten people were killed when a fuel tanker exploded on a highway in western iran as a result of a traffic accident state media reported on saturday"
+    },
+    {
+      "key": "x:Jerusalem_Post:2096270696913449391",
+      "source": "Jerusalem Post / X",
+      "title": "US Defense Secretary Pete Hegseth called Iran's oil tanker fleet \"defenseless\" and promised that if Iran shoots towards US ships, the US Navy will destroy and sink the regime's ships in a post on X/Twitter.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2096270696913449391",
+      "published": "Sat, 05 Sep 2026 16:14:15 +0000",
+      "sent_at": "2026-09-05T16:26:11.642907+00:00",
+      "fingerprint": "us defense secretary pete hegseth called iran s oil tanker fleet defenseless and promised that if iran shoots towards us ships the us navy will destroy and sink the regime s ships in a post on x twitter"
     },
     {
       "key": "x:AlArabiya_Eng:2096269172426609005",
