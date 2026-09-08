@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:business:2097349265097990482",
+    "x:StateDept:2097348884984938820",
+    "x:AJEnglish:2097347171561418969",
     "x:AlArabiya_Eng:2097340082357158353",
     "x:AJEnglish:2097337326024143139",
     "d6de06ad8e308c747637462c531985e7163c3bec",
@@ -497,13 +500,10 @@
     "x:JasonMBrodsky:2096198565404025262",
     "x:JasonMBrodsky:2096190282983247876",
     "x:business:2096191671138451479",
-    "b7f38256245730b44d39bd30364b452854d7ac99",
-    "x:JasonMBrodsky:2096189697013793139",
-    "x:AJEnglish:2096189272189526020",
-    "x:kann_news:2096188326730494125"
+    "b7f38256245730b44d39bd30364b452854d7ac99"
   ],
-  "market_last_sent_at": "2026-09-08T13:22:23.911953+00:00",
-  "next_news_color": "white",
+  "market_last_sent_at": "2026-09-08T15:40:37.043002+00:00",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -614,13 +614,13 @@
   "market_day_prices": {
     "date": "2026-09-08",
     "first_usd": 222100,
-    "last_usd": 225500,
+    "last_usd": 226700,
     "first_gold": 23062200,
-    "last_gold": 23697500,
+    "last_gold": 23634000,
     "first_brent": 98.44,
-    "last_brent": 97.43,
+    "last_brent": 97.75,
     "first_wti": 93.83,
-    "last_wti": 92.54
+    "last_wti": 92.6
   },
   "news_rejections": [
     {
@@ -2426,6 +2426,36 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2097347171561418969",
+      "source": "Al Jazeera English / X",
+      "title": "In a statement, the Yemeni government describes Houthi strikes as a “dangerous escalation”, adding that the attacks “once again confirm” its position that the Houthis are acting as a “tool” of Iran. 🟠",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097347171561418969",
+      "published": "Tue, 08 Sep 2026 15:31:47 +0000",
+      "sent_at": "2026-09-08T15:40:37.043002+00:00",
+      "fingerprint": "in a statement the yemeni government describes houthi strikes as a dangerous escalation adding that the attacks once again confirm its position that the houthis are acting as a tool of iran"
+    },
+    {
+      "key": "x:StateDept:2097348884984938820",
+      "source": "US State Department / X",
+      "title": "SECRETARY RUBIO: The Houthis, in many ways, are agents and proxies of the Iranians. Behind some of this is clearly the Iranian hand.",
+      "summary": "",
+      "link": "https://x.com/StateDept/status/2097348884984938820",
+      "published": "Tue, 08 Sep 2026 15:38:35 +0000",
+      "sent_at": "2026-09-08T15:40:37.043002+00:00",
+      "fingerprint": "secretary rubio the houthis in many ways are agents and proxies of the iranians behind some of this is clearly the iranian hand"
+    },
+    {
+      "key": "x:business:2097349265097990482",
+      "source": "Bloomberg / X",
+      "title": "The US took action against dozens of firms supporting Iran’s aviation sector on Tuesday, as part of a new sanctions effort from the Trump administration that hasn’t appeared to have much impact on Tehran’s main trading partners",
+      "summary": "",
+      "link": "https://x.com/business/status/2097349265097990482",
+      "published": "Tue, 08 Sep 2026 15:40:06 +0000",
+      "sent_at": "2026-09-08T15:40:37.043002+00:00",
+      "fingerprint": "the us took action against dozens of firms supporting iran s aviation sector on tuesday as part of a new sanctions effort from the trump administration that hasn t appeared to have much impact on tehran s main trading partners"
+    },
     {
       "key": "x:AlArabiya_Eng:2097340082357158353",
       "source": "Al Arabiya English / X",
@@ -4397,6 +4427,16 @@
       "fingerprint": "the enemies seek to create division amid rising public discontent iran accuses adversaries of encouraging unrest president masoud pezeshkian says iranians will stand united against us economic pressure"
     },
     {
+      "key": "x:AlArabiya_Eng:2097344884529111069",
+      "source": "Al Arabiya English / X",
+      "title": "Saudi Foreign Minister Prince Faisal bin Farhan says that the Iran-backed Houthi militia has embarked on a course of action whose consequences it will not be able to handle, adding that it is attempting to export its internal problems in Yemen to Saudi Arabia.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097344884529111069",
+      "published": "Tue, 08 Sep 2026 15:22:41 +0000",
+      "sent_at": "2026-09-08T15:26:20.887109+00:00",
+      "fingerprint": "saudi foreign minister prince faisal bin farhan says that the iran backed houthi militia has embarked on a course of action whose consequences it will not be able to handle adding that it is attempting to export its internal problems in yemen to saudi arabia"
+    },
+    {
       "key": "x:CENTCOMFarsi:2096255895445373362",
       "source": "CENTCOM Farsi / X",
       "title": "«بگذارید پیام به سپاه پاسداران انقلاب اسلامی روشن باشد: اگر به دو کشتی ما شلیک کنید، ما هزینه اقتصادی حتی بالاتری را به شما تحمیل خواهیم کرد - سه کشتی شما را از بین خواهیم برد. ما در دفاع از نیروهای آمریکایی و در صورت لزوم، نابود کردن ناوگان نفتی محدود و در معرض دید ایران تردید نخواهیم کرد.» — دریابد برد کوپر، فرمانده سنتکام",
@@ -5165,16 +5205,6 @@
       "published": "Fri, 04 Sep 2026 19:57:37 +0000",
       "sent_at": "2026-09-04T22:07:27.041621+00:00",
       "fingerprint": "five anti ship cruise missile launches from sirik towards the strait of hormuz five anti ship cruise missile launches from sirik towards the strait of hormuz"
-    },
-    {
-      "key": "x:AlArabiya_Eng:2097344884529111069",
-      "source": "Al Arabiya English / X",
-      "title": "Saudi Foreign Minister Prince Faisal bin Farhan says that the Iran-backed Houthi militia has embarked on a course of action whose consequences it will not be able to handle, adding that it is attempting to export its internal problems in Yemen to Saudi Arabia.",
-      "summary": "",
-      "link": "https://x.com/AlArabiya_Eng/status/2097344884529111069",
-      "published": "Tue, 08 Sep 2026 15:22:41 +0000",
-      "sent_at": "2026-09-08T15:26:20.887109+00:00",
-      "fingerprint": "saudi foreign minister prince faisal bin farhan says that the iran backed houthi militia has embarked on a course of action whose consequences it will not be able to handle adding that it is attempting to export its internal problems in yemen to saudi arabia"
     }
   ],
   "hormuz_last_sent_date": "2026-09-05",
