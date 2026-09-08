@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:JasonMBrodsky:2097269112774828242",
+    "x:Reuters:2097267450593395102",
     "11793538e614e35d40c505011db03cdca00c5744",
     "x:JasonMBrodsky:2097265697990582667",
     "x:AJEnglish:2097264408766427502",
@@ -498,9 +500,7 @@
     "x:AlArabiya_Eng:2096158601412772116",
     "x:AFP:2096153142488403991",
     "x:AlArabiya_Eng:2096131070928249270",
-    "x:AP:2095996244455792731",
-    "x:NBCNews:2096070875636236603",
-    "x:WSJ:2096097004812132790"
+    "x:AP:2095996244455792731"
   ],
   "market_last_sent_at": "2026-09-08T09:00:17.351726+00:00",
   "next_news_color": "red",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:Reuters:2097267450593395102",
+      "source": "Reuters / X",
+      "title": "Global oil benchmark Brent crude has rallied this month but stayed below $100 a barrel despite recent escalation in the US-Iran conflict that has disrupted Gulf exports from the Strait of Hormuz and the Red Sea",
+      "summary": "",
+      "link": "https://x.com/Reuters/status/2097267450593395102",
+      "published": "Tue, 08 Sep 2026 10:15:00 +0000",
+      "sent_at": "2026-09-08T10:27:22.825387+00:00",
+      "fingerprint": "global oil benchmark brent crude has rallied this month but stayed below 100 a barrel despite recent escalation in the us iran conflict that has disrupted gulf exports from the strait of hormuz and the red sea"
+    },
+    {
+      "key": "x:JasonMBrodsky:2097269112774828242",
+      "source": "Jason Brodsky / X",
+      "title": "\"But now that lifeline is disappearing. Kpler estimates that current deliveries of around a million barrels a day—which mostly go to China—could exhaust the store of Iranian oil on the water by mid-October. Payments for previously delivered cargoes would likely dry up by mid-December.\"",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2097269112774828242",
+      "published": "Tue, 08 Sep 2026 10:21:36 +0000",
+      "sent_at": "2026-09-08T10:27:22.825387+00:00",
+      "fingerprint": "but now that lifeline is disappearing kpler estimates that current deliveries of around a million barrels a day which mostly go to china could exhaust the store of iranian oil on the water by mid october payments for previously delivered cargoes would likely dry up by mid december"
+    },
     {
       "key": "x:AJEnglish:2097263684464890114",
       "source": "Al Jazeera English / X",
