@@ -32,8 +32,8 @@
     "name": "تبز لایو",
     "channel": "tabzlive",
     "active": true,
-    "status": "reference",
-    "updated_at": "2026-09-05T00:00:00+00:00"
+    "status": "active",
+    "updated_at": "2026-09-09T01:00:00+00:00"
   },
   {
     "id": "0d773e49d3380aa50af60a0ba330dbe229a22488",
@@ -41,8 +41,8 @@
     "name": "دِ کریدل",
     "channel": "thecradlemedia",
     "active": true,
-    "status": "reference",
-    "updated_at": "2026-09-04T21:56:00+00:00"
+    "status": "active",
+    "updated_at": "2026-09-09T01:00:00+00:00"
   },
   {
     "id": "warnoir-telegram",
@@ -50,7 +50,16 @@
     "name": "وار نوآر",
     "channel": "war_noir",
     "active": true,
-    "status": "reference",
-    "updated_at": "2026-09-04T22:10:00+00:00"
+    "status": "active",
+    "updated_at": "2026-09-09T01:00:00+00:00"
+  },
+  {
+    "id": "rnintel-telegram",
+    "kind": "telegram",
+    "name": "RN Intel",
+    "channel": "rnintel",
+    "active": true,
+    "status": "active",
+    "updated_at": "2026-09-09T01:00:00+00:00"
   }
 ]
