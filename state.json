@@ -1,6 +1,10 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:AlArabiya_Eng:2097328457801756921",
+    "x:AJEnglish:2097327849090769375",
+    "x:AJEnglish:2097327515849158706",
+    "x:manniefabian:2096635954920382757",
     "x:JasonMBrodsky:2097313311993774152",
     "x:AlArabiya_Eng:2097310435871486059",
     "x:AlArabiya_Eng:2097309043467419809",
@@ -496,14 +500,10 @@
     "559b5805fe2931340064966615e3e8f644ce60f6",
     "f2caf86472fe22b733cc27c76c5317cabf5082c4",
     "a3ab5ada96fc549ca941b88052a2b5fd7372bc94",
-    "a75d63b937e059016f74d42e449cbec01a607bd2",
-    "ed8ef7e06b237e1e93f1dc0dd1428dd3f434be7c",
-    "f06acfa3150de5eef2fb82a2ea9abc9782f59ffe",
-    "f30ca6a2fdc377365cb5606e95f3ad46015c99f9",
-    "044eff1b265ccae47f290854842c576054a807a0"
+    "a75d63b937e059016f74d42e449cbec01a607bd2"
   ],
   "market_last_sent_at": "2026-09-08T13:22:23.911953+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -623,6 +623,15 @@
     "last_wti": 92.54
   },
   "news_rejections": [
+    {
+      "key": "x:manniefabian:2096635954920382757",
+      "source": "Emanuel Fabian / X",
+      "title": "The snap drill conducted by the Israeli military this morning was designed to push the General Staff to its limits, testing how commanders would prioritize forces amid simultaneous “complex” incidents on multiple fronts. IDF Chief of Staff Lt. Gen. Eyal Zamir launched the drill in the early morning hours, with the military saying it was aimed at testing the functioning of the military's top-level headquarters during a crisis. Most members of the General Staff -- including commanders of the military’s commands, directorates and wings -- were kept unaware of the exercise. The head of the Operations Directorate was the main exception. The drill ended with the entire military being called up and the IDF shifting to a defensive posture on all fronts. Among the scenarios tested simultaneously were the infiltration of 10 to 15 terrorists from Lebanon into a border community, a terror attack on Route 60 in the West Bank, an infiltration into a West Bank settlement, rocket attacks on Tel Aviv, and fighting along the Yellow Line in the Gaza Strip. As part of the simulated scenario, the fighting on the Yellow Line spiraled out of control, allowing terrorists to breach Israeli territory from Gaza and infiltrate three border communities. One battalion was airlifted by helicopters from central Israel to the Tzeelim training base in the south, where the troops then “recaptured” one of the communities invaded by the simulated terrorists. During the drill, some systems were deliberately disrupted to test how commanders would operate without them. No Iranian ballistic missile attack was simulated, as that would have made the scenario artificially decisive. Instead, the IDF focused on creating operational dilemmas for commanders and testing their decision-making under pressure. An initial debrief by senior officers found that the IDF’s overall readiness was “very good.” A more extensive review of the drill is expected to take place in the coming days. The IDF said earlier that the drill was intended to better prepare the military for the upcoming Jewish holiday period while also testing the implementation of lessons learned from the Oct. 7, 2023, Hamas-led onslaught and the war that followed.",
+      "reason": "not_today_tehran",
+      "published": "Sun, 06 Sep 2026 16:25:39 +0000",
+      "link": "https://x.com/manniefabian/status/2096635954920382757",
+      "checked_at": "2026-09-08T14:14:44.237712+00:00"
+    },
     {
       "key": "x:Doranimated:2093694397955076245",
       "source": "Michael Doran / X",
@@ -2413,19 +2422,40 @@
       "published": "Mon, 08 Jun 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFA0Y09CZ3RMSEtGV0FIcDZwaEVfcnhkemt2RHVzUzlWS2ZPRzRCbFdINGlxaUU2U1hrdGFsTWdEQUpUbWtOeFZaU2pmU0lOWThsLWN5b3V4eTBRdU13cC1v?oc=5",
       "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "4aa3ca1235b3159c72f44b2b07b7499ae3457d07",
-      "source": "NOTAM / Airspace",
-      "title": "Iran’s IRGC claims downing of US drone, warns against ceasefire violations - Türkiye Today",
-      "reason": "not_today_tehran",
-      "published": "Tue, 26 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPdXBjMWZjWEc5Vy1nRFMwMUxzbmJ3M3JFOWNaMGkxb3Q4UEswbWVRSE5jbE14M1Qzd1MwcWVjcG1qYjdkQS1iN1dyOU01TUd2VXRQNnA5RjIwbFdLaHRTUk13M3NfUmlpQVNhbFlRWHpzaUN5c0tOOWotS1NMRzV0TmxPNlJhV050cF9LLTNNRlhRRFAtdXVudw?oc=5",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2097327849090769375",
+      "source": "Al Jazeera English / X",
+      "title": "Saudi Arabia’s Foreign Minister is in Moscow for a joint Saudi Russian press conference. Key topics included political cooperation with Russia, Houthi attacks on Saudi Arabia, and the confrontation involving Washington, Tel Aviv, Tehran, and the Gulf states.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097327849090769375",
+      "published": "Tue, 08 Sep 2026 14:15:00 +0000",
+      "sent_at": "2026-09-08T14:17:30.934835+00:00",
+      "fingerprint": "saudi arabia s foreign minister is in moscow for a joint saudi russian press conference key topics included political cooperation with russia houthi attacks on saudi arabia and the confrontation involving washington tel aviv tehran and the gulf states"
+    },
+    {
+      "key": "x:AlArabiya_Eng:2097328457801756921",
+      "source": "Al Arabiya English / X",
+      "title": "BREAKING: The US issues fresh Iran-related sanctions.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097328457801756921",
+      "published": "Tue, 08 Sep 2026 14:17:25 +0000",
+      "sent_at": "2026-09-08T14:17:30.934835+00:00",
+      "fingerprint": "breaking the us issues fresh iran related sanctions"
+    },
+    {
+      "key": "x:AJEnglish:2097327515849158706",
+      "source": "Al Jazeera English / X",
+      "title": "Iranian FM Seyed Ali Madanizadeh says Iran and Russia have reached an agreement that would “create new openings” and “increase Iran’s resilience to sanctions,” reports Fars news agency.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097327515849158706",
+      "published": "Tue, 08 Sep 2026 14:13:40 +0000",
+      "sent_at": "2026-09-08T14:14:44.237712+00:00",
+      "fingerprint": "iranian fm seyed ali madanizadeh says iran and russia have reached an agreement that would create new openings and increase iran s resilience to sanctions reports fars news agency"
+    },
     {
       "key": "x:AlArabiya_Eng:2097310435871486059",
       "source": "Al Arabiya English / X",
