@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:AlArabiya_Eng:2097344884529111069",
     "x:AlArabiya_Eng:2097340082357158353",
     "x:AJEnglish:2097337326024143139",
     "d6de06ad8e308c747637462c531985e7163c3bec",
@@ -499,11 +500,10 @@
     "x:business:2096191671138451479",
     "b7f38256245730b44d39bd30364b452854d7ac99",
     "x:JasonMBrodsky:2096189697013793139",
-    "x:AJEnglish:2096189272189526020",
-    "x:kann_news:2096188326730494125"
+    "x:AJEnglish:2096189272189526020"
   ],
-  "market_last_sent_at": "2026-09-08T13:22:23.911953+00:00",
-  "next_news_color": "white",
+  "market_last_sent_at": "2026-09-08T15:26:20.887109+00:00",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -614,13 +614,13 @@
   "market_day_prices": {
     "date": "2026-09-08",
     "first_usd": 222100,
-    "last_usd": 225500,
+    "last_usd": 226700,
     "first_gold": 23062200,
-    "last_gold": 23697500,
+    "last_gold": 23634000,
     "first_brent": 98.44,
-    "last_brent": 97.43,
+    "last_brent": 97.73,
     "first_wti": 93.83,
-    "last_wti": 92.54
+    "last_wti": 92.73
   },
   "news_rejections": [
     {
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2097344884529111069",
+      "source": "Al Arabiya English / X",
+      "title": "Saudi Foreign Minister Prince Faisal bin Farhan says that the Iran-backed Houthi militia has embarked on a course of action whose consequences it will not be able to handle, adding that it is attempting to export its internal problems in Yemen to Saudi Arabia.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097344884529111069",
+      "published": "Tue, 08 Sep 2026 15:22:41 +0000",
+      "sent_at": "2026-09-08T15:26:20.887109+00:00",
+      "fingerprint": "saudi foreign minister prince faisal bin farhan says that the iran backed houthi militia has embarked on a course of action whose consequences it will not be able to handle adding that it is attempting to export its internal problems in yemen to saudi arabia"
+    },
     {
       "key": "x:AlArabiya_Eng:2097340082357158353",
       "source": "Al Arabiya English / X",
