@@ -1,6 +1,10 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:Reuters:2097305232900235638",
+    "x:haaretzcom:2097305222552936757",
+    "x:washingtonpost:2097305209739296968",
+    "x:CBSNews:2097304030363942917",
     "x:Reuters:2097298949681901637",
     "x:AJEnglish:2097297393179840876",
     "x:JasonMBrodsky:2097286487725224444",
@@ -496,11 +500,7 @@
     "044eff1b265ccae47f290854842c576054a807a0",
     "9c9375e4fab33f334cde2f6e5bb72c3e13cf7163",
     "5c3d1f72d14471500076d18bd5ada9acd6461bd5",
-    "995e67d06916d3528a441065ab3cd4307ab619e5",
-    "b8e3086705a88b9c4c58c2696689464febabc0a3",
-    "75910e7a4032b9d9cc3296205677f461567f4753",
-    "e7927e55dab895a68b8fcff2c6b2c242b9c71570",
-    "b2be0cb8622eeb0cc80e8d9a743362d2658c2805"
+    "995e67d06916d3528a441065ab3cd4307ab619e5"
   ],
   "market_last_sent_at": "2026-09-08T11:16:00.342538+00:00",
   "next_news_color": "red",
@@ -2426,6 +2426,46 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:CBSNews:2097304030363942917",
+      "source": "CBS News / X",
+      "title": "First on @60Minutes: U.S. Air Force officer shot down in Iran details his two days surviving behind enemy lines before being rescued",
+      "summary": "",
+      "link": "https://x.com/CBSNews/status/2097304030363942917",
+      "published": "Tue, 08 Sep 2026 12:40:21 +0000",
+      "sent_at": "2026-09-08T12:45:59.666033+00:00",
+      "fingerprint": "first on 60minutes u s air force officer shot down in iran details his two days surviving behind enemy lines before being rescued"
+    },
+    {
+      "key": "x:washingtonpost:2097305209739296968",
+      "source": "Washington Post / X",
+      "title": "The Persian Gulf nations are building up their own defenses and finding routes around the Strait of Hormuz, officials said, as they confront a U.S. war against Iran with no end in sight and in which they have borne the brunt of retaliatory attacks.",
+      "summary": "",
+      "link": "https://x.com/washingtonpost/status/2097305209739296968",
+      "published": "Tue, 08 Sep 2026 12:45:02 +0000",
+      "sent_at": "2026-09-08T12:45:59.666033+00:00",
+      "fingerprint": "the persian gulf nations are building up their own defenses and finding routes around the strait of hormuz officials said as they confront a u s war against iran with no end in sight and in which they have borne the brunt of retaliatory attacks"
+    },
+    {
+      "key": "x:haaretzcom:2097305222552936757",
+      "source": "Haaretz / X",
+      "title": "Proxies, security zones, fundamentalism • Are Israel's war tactics taken from Iran's playbook? | Dahlia Scheindlin",
+      "summary": "",
+      "link": "https://x.com/haaretzcom/status/2097305222552936757",
+      "published": "Tue, 08 Sep 2026 12:45:05 +0000",
+      "sent_at": "2026-09-08T12:45:59.666033+00:00",
+      "fingerprint": "proxies security zones fundamentalism are israel s war tactics taken from iran s playbook dahlia scheindlin"
+    },
+    {
+      "key": "x:Reuters:2097305232900235638",
+      "source": "Reuters / X",
+      "title": "Huawei heads to trial in US over its business dealings in Iran",
+      "summary": "",
+      "link": "https://x.com/Reuters/status/2097305232900235638",
+      "published": "Tue, 08 Sep 2026 12:45:08 +0000",
+      "sent_at": "2026-09-08T12:45:59.666033+00:00",
+      "fingerprint": "huawei heads to trial in us over its business dealings in iran"
+    },
     {
       "key": "x:AJEnglish:2097297393179840876",
       "source": "Al Jazeera English / X",
