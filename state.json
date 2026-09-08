@@ -1,6 +1,9 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:business:2097395822824428030",
+    "x:AJEnglish:2097395796589076543",
+    "x:AJEnglish:2097393279826330105",
     "x:araghchi:2097389306306330727",
     "x:AJEnglish:2097387150673346843",
     "x:Jerusalem_Post:2097386584471392748",
@@ -497,13 +500,10 @@
     "d00cf4433a82553d8600d7123450dd159a7f64a6",
     "62200e1417f9880ca4399604e8bf02b3fda46353",
     "bffd29467fe10f7442265a2de2d16c2024e5fa39",
-    "9e4e8c237f50c15e9bcbd7da5a3bfe51d25abab3",
-    "d4440958b0ecf46590959ae1eb100fe0af6bc7d8",
-    "84e8e2bee9d4e051260c05b537f38e6ede691896",
-    "f3be34501e2e3541aeb82e1663fc7790e15171a5"
+    "9e4e8c237f50c15e9bcbd7da5a3bfe51d25abab3"
   ],
   "market_last_sent_at": "2026-09-08T17:41:22.609002+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,36 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2097393279826330105",
+      "source": "Al Jazeera English / X",
+      "title": "Qatar’s Foreign Ministry says Doha is working towards diplomatic solutions to end the US war on Iran, and that reopening Strait of Hormuz ‘unconditionally’ is a priority. 🔗",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097393279826330105",
+      "published": "Tue, 08 Sep 2026 18:35:00 +0000",
+      "sent_at": "2026-09-08T18:45:01.614567+00:00",
+      "fingerprint": "qatar s foreign ministry says doha is working towards diplomatic solutions to end the us war on iran and that reopening strait of hormuz unconditionally is a priority"
+    },
+    {
+      "key": "x:AJEnglish:2097395796589076543",
+      "source": "Al Jazeera English / X",
+      "title": "Iran raises petrol prices for motorists again as the government struggles to manage declining revenues and sustain a costly subsidy regime. 🔗",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097395796589076543",
+      "published": "Tue, 08 Sep 2026 18:45:00 +0000",
+      "sent_at": "2026-09-08T18:45:01.614567+00:00",
+      "fingerprint": "iran raises petrol prices for motorists again as the government struggles to manage declining revenues and sustain a costly subsidy regime"
+    },
+    {
+      "key": "x:business:2097395822824428030",
+      "source": "Bloomberg / X",
+      "title": "China has allowed its first outbound shipment of sulfuric acid since May, offering some relief to copper producers squeezed by a global shortage after the Iran war choked off Middle East supplies",
+      "summary": "",
+      "link": "https://x.com/business/status/2097395822824428030",
+      "published": "Tue, 08 Sep 2026 18:45:06 +0000",
+      "sent_at": "2026-09-08T18:45:01.614567+00:00",
+      "fingerprint": "china has allowed its first outbound shipment of sulfuric acid since may offering some relief to copper producers squeezed by a global shortage after the iran war choked off middle east supplies"
+    },
     {
       "key": "x:Jerusalem_Post:2097386584471392748",
       "source": "Jerusalem Post / X",
