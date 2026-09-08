@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install urgent media dependencies
-        run: python -m pip install --quiet requests jdatetime yt-dlp
+        run: python -m pip install --quiet requests beautifulsoup4 jdatetime yt-dlp
       - name: Send urgent Telegram posts
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -29,15 +29,18 @@ jobs:
           import html
           import json
           import os
+          import re
           import subprocess
           import tempfile
           import time
-          from datetime import datetime
+          from datetime import datetime, timezone
           from pathlib import Path
           from zoneinfo import ZoneInfo
 
           import jdatetime
           import requests
+          from bs4 import BeautifulSoup
+          from src.services import translate_to_fa
 
           payload = json.loads(Path('data/urgent_broadcast.json').read_text(encoding='utf-8'))
           token = os.environ.get('TELEGRAM_BOT_TOKEN','').strip()
@@ -46,13 +49,20 @@ jobs:
               raise SystemExit('missing TELEGRAM_BOT_TOKEN')
 
           session = requests.Session()
+          session.headers.update({'User-Agent': 'Mozilla/5.0 (compatible; Bikhabar/2.0)'})
+          TEHRAN = ZoneInfo('Asia/Tehran')
           weekdays = ['دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه','یکشنبه']
           months = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند']
+          digit_map = str.maketrans('0123456789', '۰۱۲۳۴۵۶۷۸۹')
 
-          def now_fa():
-              now = datetime.now(ZoneInfo('Asia/Tehran'))
-              jd = jdatetime.date.fromgregorian(date=now.date())
-              return f"{weekdays[now.weekday()]} {jd.day} {months[jd.month-1]} {jd.year} — {now:%H:%M}"
+          def fa_digits(value):
+              return str(value).translate(digit_map)
+
+          def format_fa_dt(dt):
+              local = dt.astimezone(TEHRAN)
+              jd = jdatetime.date.fromgregorian(date=local.date())
+              text = f"{weekdays[local.weekday()]} {jd.day} {months[jd.month-1]} {jd.year} — {local:%H:%M}"
+              return fa_digits(text)
 
           def send_text(text):
               r = session.post(
@@ -63,6 +73,33 @@ jobs:
               r.raise_for_status()
               if not r.json().get('ok'):
                   raise RuntimeError(r.text)
+
+          def canonical_preview_url(url):
+              clean = url.split('?', 1)[0]
+              match = re.search(r'https?://t\.me/(?:s/)?([A-Za-z0-9_]+)/([0-9]+)', clean)
+              if not match:
+                  return clean
+              return f'https://t.me/s/{match.group(1)}/{match.group(2)}?single'
+
+          def fetch_source_post(url):
+              preview = canonical_preview_url(url)
+              r = session.get(preview, timeout=30)
+              r.raise_for_status()
+              soup = BeautifulSoup(r.text, 'html.parser')
+              msg = soup.select_one('.tgme_widget_message') or soup
+              text_node = msg.select_one('.tgme_widget_message_text')
+              raw = text_node.get_text('\n', strip=True) if text_node else ''
+              raw = re.sub(r'\n{3,}', '\n\n', raw).strip()
+              time_node = msg.select_one('.tgme_widget_message_date time[datetime]')
+              source_dt = None
+              if time_node:
+                  stamp = str(time_node.get('datetime') or '').strip()
+                  if stamp:
+                      try:
+                          source_dt = datetime.fromisoformat(stamp.replace('Z', '+00:00'))
+                      except ValueError:
+                          source_dt = None
+              return raw, source_dt
 
           def download_telegram_video(url, output_path):
               clean = url.split('?', 1)[0]
@@ -85,14 +122,45 @@ jobs:
                       errors.append(f'{candidate}: {exc}')
               raise RuntimeError('telegram_video_download_failed: ' + ' | '.join(errors))
 
+          def choose_title(body):
+              low = body.lower()
+              if ('hormuz' in low or 'هرمز' in body) and ('missile' in low or 'موشک' in body):
+                  return '🚨🚀 <b>خبر فوری | شلیک موشک در تنگه هرمز</b>'
+              if ('jordan' in low or 'اردن' in body) and ('iran' in low or 'ایران' in body):
+                  return '🚨🚀 <b>خبر فوری | تحولات موشکی ایران و اردن</b>'
+              if ('israel' in low or 'اسرائیل' in body) and ('iran' in low or 'ایران' in body):
+                  return '🚨🚀 <b>خبر فوری | شلیک موشک از ایران</b>'
+              if 'explosion' in low or 'انفجار' in body:
+                  return '🚨💥 <b>خبر فوری | انفجار</b>'
+              return '🚨🚀 <b>خبر فوری | تحولات موشکی</b>'
+
+          def hashtags_for(body):
+              low = body.lower()
+              if 'hormuz' in low or 'هرمز' in body:
+                  return '#هرمز #موشک'
+              if 'jordan' in low or 'اردن' in body:
+                  return '#اردن #موشک'
+              if 'israel' in low or 'اسرائیل' in body:
+                  return '#اسرائیل #موشک'
+              return '#موشک #ایران'
+
           def send_video(post):
               url = str(post.get('url') or '').strip()
-              title = str(post.get('title') or '🚨🚀 <b>خبر فوری | ویدیوی تازه از تحولات موشکی منطقه</b>').strip()
-              body = str(post.get('body') or 'ویدیوی تازه مرتبط با موج جاری تحولات موشکی منطقه منتشر شده است.').strip()
-              hashtags = str(post.get('hashtags') or '#موشک #ایران').strip()
+              source_text, source_dt = fetch_source_post(url)
+              if not source_text:
+                  raise RuntimeError(f'source_text_not_found: {url}')
+              body = source_text
+              if not re.search(r'[\u0600-\u06ff]', body):
+                  body = str(translate_to_fa(body) or '').strip()
+              if not body:
+                  raise RuntimeError(f'source_translation_failed: {url}')
+              body = re.sub(r'\s+', ' ', body).strip()
+              title = str(post.get('title') or '').strip() or choose_title(body)
+              hashtags = str(post.get('hashtags') or '').strip() or hashtags_for(body)
+              stamp = source_dt or datetime.now(timezone.utc)
               caption = (
                   f"{title}\n\n{html.escape(body)}\n\n"
-                  f"⏰ {now_fa()}\n"
+                  f"⏰ {format_fa_dt(stamp)}\n"
                   f"📌 <a href=\"{html.escape(url, quote=True)}\">لینک منبع خبر</a>\n\n"
                   f"📡 <a href=\"https://t.me/bikhabaar\">بی‌خبر</a> ←\nمانیتور تحولات ایران\n"
                   f"🇮🇷 🚀\n{html.escape(hashtags)}"
