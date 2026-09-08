@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:Reuters:2097220915981402156",
+    "x:business:2097220914731483280",
     "x:Sepah_News:936375644757331969",
     "x:ir_rezaee:2065018605058552089",
     "x:ir_rezaee:2067698990376697943",
@@ -498,9 +500,7 @@
     "5fc26d05852e9c264a578ce806086009b7997318",
     "e0cf08d952598dca107733f85068fc40b3718e2c",
     "x:TankerTrackers:2094003065112109302",
-    "x:TankerTrackers:2094354765169729926",
-    "x:TankerTrackers:2094493456236499108",
-    "x:TankerTrackers:2094823610200269240"
+    "x:TankerTrackers:2094354765169729926"
   ],
   "market_last_sent_at": "2026-09-08T06:50:13.875935+00:00",
   "next_news_color": "red",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:business:2097220914731483280",
+      "source": "Bloomberg / X",
+      "title": "Kuwait is exporting about one million barrels of crude a day, including through ship-to-ship transfers outside the Strait of Hormuz",
+      "summary": "",
+      "link": "https://x.com/business/status/2097220914731483280",
+      "published": "Tue, 08 Sep 2026 07:10:05 +0000",
+      "sent_at": "2026-09-08T07:20:55.885717+00:00",
+      "fingerprint": "kuwait is exporting about one million barrels of crude a day including through ship to ship transfers outside the strait of hormuz"
+    },
+    {
+      "key": "x:Reuters:2097220915981402156",
+      "source": "Reuters / X",
+      "title": "Asia stocks waver as yen surges, Iran warns of retaliation",
+      "summary": "",
+      "link": "https://x.com/Reuters/status/2097220915981402156",
+      "published": "Tue, 08 Sep 2026 07:10:05 +0000",
+      "sent_at": "2026-09-08T07:20:55.885717+00:00",
+      "fingerprint": "asia stocks waver as yen surges iran warns of retaliation"
+    },
     {
       "key": "x:sfrantzman:2097067066406670688",
       "source": "Seth Frantzman / X",
