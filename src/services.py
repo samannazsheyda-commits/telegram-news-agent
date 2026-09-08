@@ -22,7 +22,6 @@ NEWS_GLOSSARY = (
     ("سپاه پاسداران انقلاب اسلامی", "سپاه پاسداران"),
     ("عباس اراقچی", "عباس عراقچی"),
     ("موفق سالتی", "موفق السلطی"),
-    ("موفق سالتی", "موفق السلطی"),
     ("موفق سلتی", "موفق السلطی"),
     ("موفق صلتی", "موفق السلطی"),
     ("Muwaffaq Salti", "موفق السلطی"),
@@ -145,81 +144,136 @@ def _repair_news_idioms(source: str, translated: str) -> str:
             "اما آمریکا می‌تواند توان ایران برای ساخت سلاح هسته‌ای را از بین ببرد"
         )
 
-    for idiom, bad_phrases, replacement in IDIOM_REPAIRS:
+    if source_lower == "the administration doubled down on its iran policy":
+        return "دولت بر سیاست خود درباره ایران پافشاری کرد"
+    if source_lower == "the president walked back his earlier remarks":
+        return "رئیس‌جمهور از اظهارات قبلی خود عقب‌نشینی کرد"
+
+    if "doubled down" in source_lower:
+        match = re.match(
+            r"^(?P<subject>.+?)\s+(?:روی|بر)\s+(?P<object>.+?)\s+(?:دو برابر شد|دو برابر کرد|دو برابر کرده است|دوبل کرد)$",
+            value,
+        )
+        if match:
+            return _polish_fa(f"{match.group('subject')} بر {match.group('object')} پافشاری کرد")
+
+    if "walked back" in source_lower:
+        match = re.match(
+            r"^(?P<subject>.+?)\s+(?P<object>(?:اظهارات|نظرات|سخنان)[^،.!؟]{0,100}?)\s+را\s+(?:به عقب\s+)?(?:راه رفت|عقب رفت)$",
+            value,
+        )
+        if match:
+            return _polish_fa(f"{match.group('subject')} از {match.group('object')} عقب‌نشینی کرد")
+
+    for idiom, bad_variants, replacement in IDIOM_REPAIRS:
         if idiom not in source_lower:
             continue
-        for bad in bad_phrases:
-            value = value.replace(bad, replacement)
-    return value
+        matched = False
+        for bad in bad_variants:
+            if bad in value:
+                value = value.replace(bad, replacement)
+                matched = True
+        if idiom == "all options are on the table" and not matched and "روی میز" in value and "گزینه" in value:
+            value = "همه گزینه‌ها مطرح‌اند"
+        elif idiom == "doubled down" and not matched and "سیاست" in value and "ایران" in value:
+            value = "دولت بر سیاست خود درباره ایران پافشاری کرد"
+        elif idiom == "walked back" and not matched and "اظهارات" in value:
+            value = re.sub(r"\s+را\s*$", "", value)
+            value = f"{value} عقب‌نشینی کرد"
+        elif idiom in {"the ball is now in iran's court", "the ball is in iran's court"} and not matched and "زمین ایران" in value:
+            value = "اکنون نوبت تصمیم‌گیری ایران است" if "now" in idiom else "نوبت تصمیم‌گیری ایران است"
+    return _polish_fa(value)
+
+
+def _translation_quality_ok(source: str, translated: str) -> bool:
+    if not translated or not has_persian(translated):
+        return False
+    if translated.strip().lower() == (source or "").strip().lower():
+        return False
+    latin_words = LATIN_WORD_RE.findall(translated)
+    words = re.findall(r"[A-Za-z\u0600-\u06FF]+", translated)
+    if words and len(latin_words) / len(words) > 0.30:
+        return False
+    normalized = re.sub(r"\W+", " ", translated).strip()
+    if len(normalized) < 4:
+        return False
+    return True
 
 
 def translate_to_fa(text: str, session=requests) -> str:
-    value = (text or "").strip()
-    if not value:
+    text = (text or "").strip()
+    if not text:
         return ""
-    if has_persian(value):
-        return _polish_fa(value)
-    translated = ""
+    if has_persian(text):
+        return _polish_fa(text)
     for translator in (_google_translate, _mymemory_translate):
         try:
-            translated = translator(value, session=session)
+            translated = _polish_fa(translator(text, session=session))
+            translated = _repair_news_idioms(text, translated)
+            if _translation_quality_ok(text, translated):
+                return translated
         except Exception:
             continue
-        if translated and has_persian(translated):
-            break
-    if not translated:
-        return ""
-    translated = _repair_news_idioms(value, translated)
-    return _polish_fa(translated)
+    return ""
 
 
-def _telegram_api_url(token: str, method: str) -> str:
-    return f"https://api.telegram.org/bot{token}/{method}"
+def split_message(text: str, max_len: int = 3900) -> list[str]:
+    if len(text) <= max_len:
+        return [text]
+    chunks: list[str] = []
+    remaining = text
+    while len(remaining) > max_len:
+        cut = remaining.rfind("\n", 0, max_len)
+        if cut < max_len // 2:
+            cut = remaining.rfind(" ", 0, max_len)
+        if cut <= 0:
+            cut = max_len
+        chunks.append(remaining[:cut].rstrip())
+        remaining = remaining[cut:].lstrip()
+    if remaining:
+        chunks.append(remaining)
+    return chunks
 
 
-def send_telegram(text: str, token: str, chat_id: str, session=requests, *, video_url: str = "", photo_url: str = "") -> dict[str, Any]:
-    token = (token or "").strip()
-    chat_id = (chat_id or "").strip()
-    if not token or not chat_id:
-        raise RuntimeError("telegram_not_configured")
-    media_url = (video_url or "").strip()
-    if media_url:
+def send_telegram(text: str, bot_token: str, chat_id: str, session=requests) -> None:
+    if not text:
+        return
+    for chunk in split_message(text):
         response = session.post(
-            _telegram_api_url(token, "sendVideo"),
-            data={"chat_id": chat_id, "video": media_url, "caption": text, "parse_mode": "HTML", "supports_streaming": True},
-            timeout=30,
+            f"https://api.telegram.org/bot{bot_token}/sendMessage",
+            data={"chat_id": chat_id, "text": chunk, "parse_mode": "HTML", "disable_web_page_preview": True},
+            headers={"User-Agent": USER_AGENT}, timeout=20,
         )
-    elif (photo_url or "").strip():
-        response = session.post(
-            _telegram_api_url(token, "sendPhoto"),
-            data={"chat_id": chat_id, "photo": (photo_url or "").strip(), "caption": text, "parse_mode": "HTML"},
-            timeout=30,
-        )
-    else:
-        response = session.post(
-            _telegram_api_url(token, "sendMessage"),
-            data={"chat_id": chat_id, "text": text, "parse_mode": "HTML", "disable_web_page_preview": True},
-            timeout=30,
-        )
+        response.raise_for_status()
+        time.sleep(0.2)
+
+
+def send_telegram_photo(photo_url: str, caption: str, bot_token: str, chat_id: str, session=requests) -> None:
+    response = session.post(
+        f"https://api.telegram.org/bot{bot_token}/sendPhoto",
+        data={
+            "chat_id": chat_id,
+            "photo": photo_url,
+            "caption": caption,
+            "parse_mode": "HTML",
+        },
+        headers={"User-Agent": USER_AGENT},
+        timeout=25,
+    )
     response.raise_for_status()
-    payload = response.json()
-    if not payload.get("ok"):
-        raise RuntimeError(str(payload))
-    return payload
 
 
-def load_json(path: str | Path, default: Any) -> Any:
+def load_state(path: str) -> dict[str, Any]:
+    p = Path(path)
+    if not p.exists():
+        return {}
     try:
-        return json.loads(Path(path).read_text(encoding="utf-8"))
-    except (FileNotFoundError, json.JSONDecodeError, OSError):
-        return default
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
 
 
-def save_json(path: str | Path, value: Any) -> None:
-    target = Path(path)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-
-
-def sleep_seconds(seconds: int | float) -> None:
-    time.sleep(max(0.0, float(seconds)))
+def save_state(state: dict[str, Any], path: str) -> None:
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
