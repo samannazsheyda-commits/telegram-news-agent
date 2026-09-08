@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:washingtonpost:2097376956824056091",
     "x:USABehFarsi:2097374261375602842",
     "x:CNN:2097369663713718780",
     "x:business:2097364355394220219",
@@ -499,11 +500,10 @@
     "b2d50900e99fa71b6b9f2c5c04283b61be75c679",
     "82c64bd63c492719092ededd69abb3ad0a534558",
     "c2d62d3460ef9587aceed390a745059a345420c9",
-    "d1f2475014a9536cbaaa72264b7eea8ee03d23ed",
-    "c723105b64d21a4751d29894ddfd8023aa43a6fa"
+    "d1f2475014a9536cbaaa72264b7eea8ee03d23ed"
   ],
-  "market_last_sent_at": "2026-09-08T15:40:37.043002+00:00",
-  "next_news_color": "white",
+  "market_last_sent_at": "2026-09-08T17:41:22.609002+00:00",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -614,13 +614,13 @@
   "market_day_prices": {
     "date": "2026-09-08",
     "first_usd": 222100,
-    "last_usd": 226700,
+    "last_usd": 226705,
     "first_gold": 23062200,
-    "last_gold": 23634000,
+    "last_gold": 23623400,
     "first_brent": 98.44,
-    "last_brent": 97.75,
+    "last_brent": 96.94,
     "first_wti": 93.83,
-    "last_wti": 92.6
+    "last_wti": 92.11
   },
   "news_rejections": [
     {
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:washingtonpost:2097376956824056091",
+      "source": "Washington Post / X",
+      "title": "The U.S. Treasury Department placed sanctions on more than two-dozen Iranian airlines and their service providers as part of an effort to choke Tehran off from the global economy.",
+      "summary": "",
+      "link": "https://x.com/washingtonpost/status/2097376956824056091",
+      "published": "Tue, 08 Sep 2026 17:30:08 +0000",
+      "sent_at": "2026-09-08T17:38:37.194171+00:00",
+      "fingerprint": "the u s treasury department placed sanctions on more than two dozen iranian airlines and their service providers as part of an effort to choke tehran off from the global economy"
+    },
     {
       "key": "x:USABehFarsi:2097374261375602842",
       "source": "USA Beh Farsi / X",
@@ -4347,26 +4357,6 @@
       "fingerprint": "breaking at least 11 people killed after a fuel tanker caught fire in an accident on the hamadan sanandaj road in iran s kurdistan province according to the local red crescent"
     },
     {
-      "key": "5390a15f6ca1320c2de73019845487baf4f50813",
-      "source": "کلش ریپورت / Telegram",
-      "title": "John Bolton on Iran: I think and have thought for decades that the only way you're ever going to get true lasting peace and security in the Middle East is to get rid of the regime in Tehran. I think the U.S.-Israeli strikes did considera...",
-      "summary": "John Bolton on Iran: I think and have thought for decades that the only way you're ever going to get true lasting peace and security in the Middle East is to get rid of the regime in Tehran. I think the U.S.-Israeli strikes did considerable damage to the regime. I think we made a lot of mistakes, that's for sure. But the objective is still realizable if we were willing to think through how to do it.",
-      "link": "https://t.me/ClashReport/95196",
-      "published": "Sat, 05 Sep 2026 17:31:36 +0000",
-      "sent_at": "2026-09-05T17:33:13.150155+00:00",
-      "fingerprint": "john bolton on iran i think and have thought for decades that the only way you re ever going to get true lasting peace and security in the middle east is to get rid of the regime in tehran i think the u s israeli strikes did considera john bolton on iran i think and have thought for decades that the only way you re ever going to get true lasting peace and security in the middle east is to get rid of the regime in tehran i think the u s israeli strikes did considerable damage to the regime i think we made a lot of mistakes that s for sure but the objective is still realizable if we were willing to think through how to do it"
-    },
-    {
-      "key": "x:SkyNews:2096289453287350440",
-      "source": "Sky News / X",
-      "title": "US Central Command said in a statement that it has 'permanently disabled' two Iranian tankers and 'completely destroyed' a third. Iran war latest:",
-      "summary": "",
-      "link": "https://x.com/SkyNews/status/2096289453287350440",
-      "published": "Sat, 05 Sep 2026 17:28:47 +0000",
-      "sent_at": "2026-09-05T17:30:35.368562+00:00",
-      "fingerprint": "us central command said in a statement that it has permanently disabled two iranian tankers and completely destroyed a third iran war latest"
-    },
-    {
       "key": "x:AlArabiya_Eng:2097344884529111069",
       "source": "Al Arabiya English / X",
       "title": "Saudi Foreign Minister Prince Faisal bin Farhan says that the Iran-backed Houthi militia has embarked on a course of action whose consequences it will not be able to handle, adding that it is attempting to export its internal problems in Yemen to Saudi Arabia.",
@@ -4395,6 +4385,26 @@
       "published": "Tue, 08 Sep 2026 15:52:49 +0000",
       "sent_at": "2026-09-08T15:58:30.720930+00:00",
       "fingerprint": "higher gas and diesel prices have cost americans an additional 100 billion since the iran war began according to a brown university tracker"
+    },
+    {
+      "key": "5390a15f6ca1320c2de73019845487baf4f50813",
+      "source": "کلش ریپورت / Telegram",
+      "title": "John Bolton on Iran: I think and have thought for decades that the only way you're ever going to get true lasting peace and security in the Middle East is to get rid of the regime in Tehran. I think the U.S.-Israeli strikes did considera...",
+      "summary": "John Bolton on Iran: I think and have thought for decades that the only way you're ever going to get true lasting peace and security in the Middle East is to get rid of the regime in Tehran. I think the U.S.-Israeli strikes did considerable damage to the regime. I think we made a lot of mistakes, that's for sure. But the objective is still realizable if we were willing to think through how to do it.",
+      "link": "https://t.me/ClashReport/95196",
+      "published": "Sat, 05 Sep 2026 17:31:36 +0000",
+      "sent_at": "2026-09-05T17:33:13.150155+00:00",
+      "fingerprint": "john bolton on iran i think and have thought for decades that the only way you re ever going to get true lasting peace and security in the middle east is to get rid of the regime in tehran i think the u s israeli strikes did considera john bolton on iran i think and have thought for decades that the only way you re ever going to get true lasting peace and security in the middle east is to get rid of the regime in tehran i think the u s israeli strikes did considerable damage to the regime i think we made a lot of mistakes that s for sure but the objective is still realizable if we were willing to think through how to do it"
+    },
+    {
+      "key": "x:SkyNews:2096289453287350440",
+      "source": "Sky News / X",
+      "title": "US Central Command said in a statement that it has 'permanently disabled' two Iranian tankers and 'completely destroyed' a third. Iran war latest:",
+      "summary": "",
+      "link": "https://x.com/SkyNews/status/2096289453287350440",
+      "published": "Sat, 05 Sep 2026 17:28:47 +0000",
+      "sent_at": "2026-09-05T17:30:35.368562+00:00",
+      "fingerprint": "us central command said in a statement that it has permanently disabled two iranian tankers and completely destroyed a third iran war latest"
     },
     {
       "key": "a5d1715c786dadfc4a7125dd6df6e0bbe29b7301",
