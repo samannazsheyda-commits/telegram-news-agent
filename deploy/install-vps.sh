@@ -14,17 +14,7 @@ fi
 
 . /etc/os-release
 apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y git ca-certificates curl util-linux software-properties-common
-
-PYTHON_BIN=python3
-if [[ "${ID:-}" == "ubuntu" && "${VERSION_ID:-}" == "20.04" ]]; then
-  add-apt-repository -y ppa:deadsnakes/ppa
-  apt-get update
-  DEBIAN_FRONTEND=noninteractive apt-get install -y python3.10 python3.10-venv python3.10-distutils
-  PYTHON_BIN=python3.10
-else
-  DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-venv python3-pip
-fi
+DEBIAN_FRONTEND=noninteractive apt-get install -y git ca-certificates curl util-linux python3 python3-pip
 
 if ! id bikhabar >/dev/null 2>&1; then
   useradd --system --create-home --home-dir /var/lib/bikhabar --shell /usr/sbin/nologin bikhabar
@@ -40,7 +30,17 @@ else
   runuser -u bikhabar -- git -C "${APP_DIR}" reset --hard "origin/${BRANCH}"
 fi
 
-"${PYTHON_BIN}" -m venv "${VENV_DIR}"
+if [[ "${ID:-}" == "ubuntu" && "${VERSION_ID:-}" == "20.04" ]]; then
+  python3 -m pip install --upgrade uv
+  uv python install 3.12
+  rm -rf "${VENV_DIR}"
+  uv venv --python 3.12 "${VENV_DIR}"
+else
+  DEBIAN_FRONTEND=noninteractive apt-get install -y python3-venv
+  rm -rf "${VENV_DIR}"
+  python3 -m venv "${VENV_DIR}"
+fi
+
 "${VENV_DIR}/bin/python" -m pip install --upgrade pip
 "${VENV_DIR}/bin/pip" install -r "${APP_DIR}/requirements.txt"
 chown -R bikhabar:bikhabar "${VENV_DIR}" "${APP_DIR}"
