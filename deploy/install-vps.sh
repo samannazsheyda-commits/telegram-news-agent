@@ -5,6 +5,7 @@ REPO_URL="${REPO_URL:-https://github.com/samannazsheyda-commits/telegram-news-ag
 BRANCH="${BRANCH:-main}"
 APP_DIR="/opt/bikhabar/app"
 VENV_DIR="/opt/bikhabar/venv"
+PYTHON_DIR="/opt/bikhabar/python"
 ENV_DIR="/etc/bikhabar"
 
 if [[ "${EUID}" -ne 0 ]]; then
@@ -20,7 +21,7 @@ if ! id bikhabar >/dev/null 2>&1; then
   useradd --system --create-home --home-dir /var/lib/bikhabar --shell /usr/sbin/nologin bikhabar
 fi
 
-mkdir -p /opt/bikhabar "${ENV_DIR}" /var/lib/bikhabar/runtime-snapshot
+mkdir -p /opt/bikhabar "${PYTHON_DIR}" "${ENV_DIR}" /var/lib/bikhabar/runtime-snapshot
 chown -R bikhabar:bikhabar /opt/bikhabar /var/lib/bikhabar
 
 if [[ ! -d "${APP_DIR}/.git" ]]; then
@@ -32,6 +33,7 @@ fi
 
 if [[ "${ID:-}" == "ubuntu" && "${VERSION_ID:-}" == "20.04" ]]; then
   python3 -m pip install --upgrade uv
+  export UV_PYTHON_INSTALL_DIR="${PYTHON_DIR}"
   uv python install 3.12
   rm -rf "${VENV_DIR}"
   uv venv --python 3.12 "${VENV_DIR}"
@@ -44,7 +46,8 @@ else
   "${VENV_DIR}/bin/pip" install -r "${APP_DIR}/requirements.txt"
 fi
 
-chown -R bikhabar:bikhabar "${VENV_DIR}" "${APP_DIR}"
+chown -R bikhabar:bikhabar "${PYTHON_DIR}" "${VENV_DIR}" "${APP_DIR}"
+chmod -R a+rX "${PYTHON_DIR}" "${VENV_DIR}"
 
 if [[ ! -f "${ENV_DIR}/agent.env" ]]; then
   install -m 600 "${APP_DIR}/deploy/agent.env.example" "${ENV_DIR}/agent.env"
