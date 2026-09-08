@@ -65,9 +65,14 @@ rollback() {
   chown -R bikhabar:bikhabar "${APP_DIR}" "${SNAPSHOT_DIR}" || true
   install -m 644 "${APP_DIR}/deploy/bikhabar-agent.service" /etc/systemd/system/bikhabar-agent.service || true
   [[ -f "${APP_DIR}/deploy/bikhabar-panel.service" ]] && install -m 644 "${APP_DIR}/deploy/bikhabar-panel.service" /etc/systemd/system/bikhabar-panel.service || true
+  [[ -f "${APP_DIR}/deploy/bikhabar-weather.service" ]] && install -m 644 "${APP_DIR}/deploy/bikhabar-weather.service" /etc/systemd/system/bikhabar-weather.service || true
+  [[ -f "${APP_DIR}/deploy/bikhabar-weather.timer" ]] && install -m 644 "${APP_DIR}/deploy/bikhabar-weather.timer" /etc/systemd/system/bikhabar-weather.timer || true
+  [[ -f "${APP_DIR}/deploy/bikhabar-air-traffic.service" ]] && install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.service" /etc/systemd/system/bikhabar-air-traffic.service || true
+  [[ -f "${APP_DIR}/deploy/bikhabar-air-traffic.timer" ]] && install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.timer" /etc/systemd/system/bikhabar-air-traffic.timer || true
   systemctl daemon-reload || true
   systemctl restart bikhabar-agent || true
   systemctl restart bikhabar-panel || true
+  systemctl enable --now bikhabar-weather.timer bikhabar-air-traffic.timer >/dev/null 2>&1 || true
 }
 trap rollback ERR
 
@@ -109,14 +114,18 @@ install -m 644 "${APP_DIR}/deploy/bikhabar-agent.service" /etc/systemd/system/bi
 install -m 644 "${APP_DIR}/deploy/bikhabar-panel.service" /etc/systemd/system/bikhabar-panel.service
 install -m 644 "${APP_DIR}/deploy/bikhabar-weather.service" /etc/systemd/system/bikhabar-weather.service
 install -m 644 "${APP_DIR}/deploy/bikhabar-weather.timer" /etc/systemd/system/bikhabar-weather.timer
+install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.service" /etc/systemd/system/bikhabar-air-traffic.service
+install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.timer" /etc/systemd/system/bikhabar-air-traffic.timer
 systemctl daemon-reload
-systemctl enable bikhabar-agent bikhabar-panel bikhabar-weather.timer >/dev/null
+systemctl enable bikhabar-agent bikhabar-panel bikhabar-weather.timer bikhabar-air-traffic.timer >/dev/null
 systemctl restart bikhabar-agent
 systemctl restart bikhabar-panel
-systemctl enable --now bikhabar-weather.timer >/dev/null
+systemctl enable --now bikhabar-weather.timer bikhabar-air-traffic.timer >/dev/null
 sleep 8
 systemctl is-active --quiet bikhabar-agent
 systemctl is-active --quiet bikhabar-panel
+systemctl is-active --quiet bikhabar-weather.timer
+systemctl is-active --quiet bikhabar-air-traffic.timer
 curl -fsS --max-time 10 http://127.0.0.1/login >/dev/null
 trap - ERR
 
@@ -124,3 +133,4 @@ echo "Deployed ${TARGET_SHA} successfully"
 echo "AGENT=$(systemctl is-active bikhabar-agent)"
 echo "PANEL=$(systemctl is-active bikhabar-panel)"
 echo "WEATHER_TIMER=$(systemctl is-active bikhabar-weather.timer)"
+echo "AIR_TRAFFIC_TIMER=$(systemctl is-active bikhabar-air-traffic.timer)"
