@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:Jerusalem_Post:2097273837549219909",
+    "x:AJEnglish:2097273249461645811",
     "x:JasonMBrodsky:2097269112774828242",
     "x:Reuters:2097267450593395102",
     "11793538e614e35d40c505011db03cdca00c5744",
@@ -498,9 +500,7 @@
     "x:AJEnglish:2096159651028934757",
     "x:Reuters:2096158936885874844",
     "x:AlArabiya_Eng:2096158601412772116",
-    "x:AFP:2096153142488403991",
-    "x:AlArabiya_Eng:2096131070928249270",
-    "x:AP:2095996244455792731"
+    "x:AFP:2096153142488403991"
   ],
   "market_last_sent_at": "2026-09-08T09:00:17.351726+00:00",
   "next_news_color": "red",
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2097273249461645811",
+      "source": "Al Jazeera English / X",
+      "title": "Tehran has threatened “serious consequences” for South Korea if it interferes in the US-Israel war on Iran amid reports that Seoul is mulling contributing to the US naval blockade of the Strait of Hormuz passage. Here’s what we know",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097273249461645811",
+      "published": "Tue, 08 Sep 2026 10:38:02 +0000",
+      "sent_at": "2026-09-08T10:44:43.050648+00:00",
+      "fingerprint": "tehran has threatened serious consequences for south korea if it interferes in the us israel war on iran amid reports that seoul is mulling contributing to the us naval blockade of the strait of hormuz passage here s what we know"
+    },
+    {
+      "key": "x:Jerusalem_Post:2097273837549219909",
+      "source": "Jerusalem Post / X",
+      "title": "Qatar is working with partners in the region and around the world, including China, to resume talks between the United States and Iran, a Qatar foreign ministry spokesperson said on Tuesday.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2097273837549219909",
+      "published": "Tue, 08 Sep 2026 10:40:22 +0000",
+      "sent_at": "2026-09-08T10:44:43.050648+00:00",
+      "fingerprint": "qatar is working with partners in the region and around the world including china to resume talks between the united states and iran a qatar foreign ministry spokesperson said on tuesday"
+    },
     {
       "key": "x:Reuters:2097267450593395102",
       "source": "Reuters / X",
