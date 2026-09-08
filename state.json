@@ -1,6 +1,10 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:Jerusalem_Post:2097404576538259729",
+    "x:USABehFarsi:2097401572280222025",
+    "x:AJEnglish:2097401281987964987",
+    "x:AlArabiya_Eng:2097399933066203274",
     "x:AlArabiya_Eng:2097398128173285872",
     "x:business:2097395822824428030",
     "x:AJEnglish:2097395796589076543",
@@ -496,11 +500,7 @@
     "1a69134c1b01198dfd26df1bb21f313e57fbdaa6",
     "6b15a7db9ba4018ad0959e5e3ea8fa1a6453d70e",
     "17347c27166a060350dd0ac1673839bcebcf94e6",
-    "c1eb0661bd2ded6ea29e5bcae875c9998cb1bb10",
-    "7701583c5a30cfad14b550d36345ee1b8810de4d",
-    "d00cf4433a82553d8600d7123450dd159a7f64a6",
-    "62200e1417f9880ca4399604e8bf02b3fda46353",
-    "bffd29467fe10f7442265a2de2d16c2024e5fa39"
+    "c1eb0661bd2ded6ea29e5bcae875c9998cb1bb10"
   ],
   "market_last_sent_at": "2026-09-08T17:41:22.609002+00:00",
   "next_news_color": "red",
@@ -2426,6 +2426,46 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:Jerusalem_Post:2097404576538259729",
+      "source": "Jerusalem Post / X",
+      "title": "A US official told The Jerusalem Post on Tuesday that CENTCOM is currently striking Iranian oil tankers.",
+      "summary": "",
+      "link": "https://x.com/Jerusalem_Post/status/2097404576538259729",
+      "published": "Tue, 08 Sep 2026 19:19:53 +0000",
+      "sent_at": "2026-09-08T19:20:28.012540+00:00",
+      "fingerprint": "a us official told the jerusalem post on tuesday that centcom is currently striking iranian oil tankers"
+    },
+    {
+      "key": "x:AlArabiya_Eng:2097399933066203274",
+      "source": "Al Arabiya English / X",
+      "title": "Explosions were heard near the coast of Iran’s southern Jask district on Tuesday evening, the state-linked Fars news agency reports 🔴 Fars said the explosions in Jask were heard at around 9:45 p.m. local time 🔴 The agency cited local sources as saying that the sounds came from the direction of the sea near the Sang-e Siah area and occurred in two stages a short time apart 🔴 Earlier, Fars reported that several explosions had been heard in the waters surrounding Kharg Island",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097399933066203274",
+      "published": "Tue, 08 Sep 2026 19:01:26 +0000",
+      "sent_at": "2026-09-08T19:17:44.538759+00:00",
+      "fingerprint": "explosions were heard near the coast of iran s southern jask district on tuesday evening the state linked fars news agency reports fars said the explosions in jask were heard at around 9 45 p m local time the agency cited local sources as saying that the sounds came from the direction of the sea near the sang e siah area and occurred in two stages a short time apart earlier fars reported that several explosions had been heard in the waters surrounding kharg island"
+    },
+    {
+      "key": "x:AJEnglish:2097401281987964987",
+      "source": "Al Jazeera English / X",
+      "title": "BREAKING: Several explosions have been heard on Iran’s Kharg Island, according to Iran’s semi-official Mehr news agency. No official information has been released on the cause or origin of the explosions.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097401281987964987",
+      "published": "Tue, 08 Sep 2026 19:06:48 +0000",
+      "sent_at": "2026-09-08T19:17:44.538759+00:00",
+      "fingerprint": "breaking several explosions have been heard on iran s kharg island according to iran s semi official mehr news agency no official information has been released on the cause or origin of the explosions"
+    },
+    {
+      "key": "x:USABehFarsi:2097401572280222025",
+      "source": "USA Beh Farsi / X",
+      "title": "تامی پیگوت، سخنگوی وزارت امور خارجه ایالات متحده: ایالات متحده در کارزار رئیس‌جمهور ترامپ برای قطع منابع مالی حکومت ایران، کوتاه نخواهد آمد. امروز، ۳۶ نهاد و فرد را که به بخش هوانوردی حکومت کمک می‌کنند و از این طریق به اشاعه تسلیحات و تروریسم در سراسر جهان کمک می‌کنند، تحریم کردیم.",
+      "summary": "",
+      "link": "https://x.com/USABehFarsi/status/2097401572280222025",
+      "published": "Tue, 08 Sep 2026 19:07:57 +0000",
+      "sent_at": "2026-09-08T19:17:44.538759+00:00",
+      "fingerprint": "تامی پیگوت، سخنگوی وزارت امور خارجه ایالات متحده ایالات متحده در کارزار رئیس جمهور ترامپ برای قطع منابع مالی حکومت ایران، کوتاه نخواهد آمد امروز، ۳۶ نهاد و فرد را که به بخش هوانوردی حکومت کمک می کنند و از این طریق به اشاعه تسلیحات و تروریسم در سراسر جهان کمک می کنند، تحریم کردیم"
+    },
     {
       "key": "x:AlArabiya_Eng:2097398128173285872",
       "source": "Al Arabiya English / X",
