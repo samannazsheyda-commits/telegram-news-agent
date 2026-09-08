@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:AlArabiya_Eng:2097340082357158353",
     "x:AJEnglish:2097337326024143139",
     "d6de06ad8e308c747637462c531985e7163c3bec",
     "94b78e039ca3b8738fc5728cc20cc98b8cfc9849",
@@ -499,11 +500,10 @@
     "b7f38256245730b44d39bd30364b452854d7ac99",
     "x:JasonMBrodsky:2096189697013793139",
     "x:AJEnglish:2096189272189526020",
-    "x:kann_news:2096188326730494125",
-    "x:TankerTrackers:2096031376487133584"
+    "x:kann_news:2096188326730494125"
   ],
   "market_last_sent_at": "2026-09-08T13:22:23.911953+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2097340082357158353",
+      "source": "Al Arabiya English / X",
+      "title": "Iran’s Revolutionary Guard Corps (IRGC) claims in a statement that it has captured an unmanned US submersible at the entrance of the Strait of Hormuz 🔴 The statement said the vessel is now in Iranian custody and that images of it will be released in the coming hours",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097340082357158353",
+      "published": "Tue, 08 Sep 2026 15:03:36 +0000",
+      "sent_at": "2026-09-08T15:06:10.096398+00:00",
+      "fingerprint": "iran s revolutionary guard corps irgc claims in a statement that it has captured an unmanned us submersible at the entrance of the strait of hormuz the statement said the vessel is now in iranian custody and that images of it will be released in the coming hours"
+    },
     {
       "key": "x:AJEnglish:2097337326024143139",
       "source": "Al Jazeera English / X",
