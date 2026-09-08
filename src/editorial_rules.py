@@ -93,6 +93,15 @@ BOILERPLATE_TERMS = (
     "جمع‌آوری‌شده از منابع مختلف در سراسر جهان توسط گوگل نیوز",
 )
 
+NAMED_SPEAKERS = {
+    "trump": ("donald trump", "trump"),
+    "netanyahu": ("benjamin netanyahu", "netanyahu", "نتانیاهو"),
+    "israel_katz": ("israel katz", "اسرائیل کاتز", "یسرائیل کاتز"),
+    "araghchi": ("abbas araghchi", "araghchi", "عراقچی"),
+    "rezaei": ("mohsen rezaei", "rezaei", "محسن رضایی"),
+    "ghalibaf": ("ghalibaf", "قالیباف"),
+}
+
 
 def _normalize(value: str) -> str:
     text = re.sub(r"\s+", " ", (value or "").lower()).strip()
@@ -105,6 +114,29 @@ def _tokens(item: NewsItem) -> set[str]:
     text = _normalize(f"{item.title} {item.summary}")
     tokens = re.findall(r"[a-z0-9_\u0600-\u06ff]+", text)
     return {token for token in tokens if len(token) > 2 and token not in STOPWORDS and token not in SOURCE_WORDS}
+
+
+def _ordered_tokens(item: NewsItem) -> list[str]:
+    text = _normalize(f"{item.title} {item.summary}")
+    tokens = re.findall(r"[a-z0-9_\u0600-\u06ff]+", text)
+    return [token for token in tokens if len(token) > 2 and token not in STOPWORDS and token not in SOURCE_WORDS]
+
+
+def _named_speakers(item: NewsItem) -> set[str]:
+    text = _normalize(f"{item.title} {item.summary}")
+    return {name for name, aliases in NAMED_SPEAKERS.items() if any(alias in text for alias in aliases)}
+
+
+def _shared_distinctive_bigram(left: NewsItem, right: NewsItem) -> bool:
+    generic = {
+        ("iran", "war"), ("war", "iran"), ("iran", "usa"), ("usa", "iran"),
+        ("iran", "israel"), ("israel", "iran"), ("strait", "hormuz"),
+    }
+    left_tokens = _ordered_tokens(left)
+    right_tokens = _ordered_tokens(right)
+    left_pairs = {(a, b) for a, b in zip(left_tokens, left_tokens[1:]) if (a, b) not in generic}
+    right_pairs = {(a, b) for a, b in zip(right_tokens, right_tokens[1:]) if (a, b) not in generic}
+    return bool(left_pairs & right_pairs)
 
 
 def _concepts(item: NewsItem) -> set[str]:
@@ -205,7 +237,11 @@ def is_duplicate_story(left: NewsItem, right: NewsItem) -> bool:
 
     common = a & b
     overlap = len(common) / max(1, min(len(a), len(b)))
-    return len(common) >= 5 and overlap >= 0.42
+    if len(common) >= 5 and overlap >= 0.42:
+        return True
+
+    shared_speakers = _named_speakers(left) & _named_speakers(right)
+    return bool(shared_speakers) and len(common) >= 4 and _shared_distinctive_bigram(left, right)
 
 
 def is_priority_security_news(item: NewsItem) -> bool:

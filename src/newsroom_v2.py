@@ -1,0 +1,281 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Callable
+
+from .editorial_store import LocalEditorialStore, ReviewItem
+from .event_ledger import EventLedger
+from .newsroom_decision import decide_item
+from .newsroom_eligibility import evaluate_eligibility
+from .newsroom_fingerprint import build_fingerprint
+from .newsroom_models import LiveFeedRecord, NormalizedNewsItem, RawNewsItem
+from .newsroom_normalize import normalize_item
+from .panel_live_feed import LiveFeedStore
+
+
+@dataclass
+class CycleSummary:
+    sources_ok: int = 0
+    sources_failed: int = 0
+    items_fetched: int = 0
+    new_events: int = 0
+    material_updates: int = 0
+    exact_duplicates: int = 0
+    same_claim_duplicates: int = 0
+    stale: int = 0
+    filtered: int = 0
+    review_items: int = 0
+    published: int = 0
+    publish_failed: int = 0
+    panel_feed_count: int = 0
+
+
+def _collect(fetcher) -> tuple[list[RawNewsItem], int, int]:
+    if callable(fetcher):
+        try:
+            return list(fetcher() or []), 1, 0
+        except Exception:
+            return [], 0, 1
+
+    items: list[RawNewsItem] = []
+    ok = 0
+    failed = 0
+    for source_fetcher in fetcher:
+        try:
+            items.extend(list(source_fetcher() or []))
+            ok += 1
+        except Exception:
+            failed += 1
+    return items, ok, failed
+
+
+def _item_id(item: NormalizedNewsItem) -> str:
+    return item.raw.source_item_id or item.raw.source_url
+
+
+def _feed_record(
+    item: NormalizedNewsItem,
+    *,
+    event_id: str,
+    decision: str,
+    reason: str,
+    duplicate_of: str = "",
+    panel_status: str,
+    message_id: int | None,
+    now: datetime,
+) -> LiveFeedRecord:
+    return LiveFeedRecord(
+        item_id=_item_id(item),
+        event_id=event_id,
+        source=item.raw.source,
+        source_url=item.raw.source_url,
+        title=item.raw.title,
+        published_at_source=item.raw.published_at,
+        discovered_at=item.raw.fetched_at or now.isoformat(),
+        decision=decision,
+        decision_reason=reason,
+        duplicate_of=duplicate_of,
+        telegram_message_id=message_id,
+        panel_status=panel_status,
+        updated_at=now.isoformat(),
+    )
+
+
+def _queue_item(editorial_store: LocalEditorialStore, item: NormalizedNewsItem, reason: str, now: datetime) -> None:
+    editorial_store.upsert_queue(
+        ReviewItem.for_news(
+            news_key=_item_id(item),
+            source=item.raw.source,
+            source_url=item.raw.source_url,
+            original_title=item.raw.title,
+            original_summary=item.raw.summary,
+            published_at_source=item.raw.published_at,
+            discovered_at=item.raw.fetched_at or now.isoformat(),
+            rejection_reason=reason,
+        )
+    )
+
+
+def _publisher_result(payload) -> tuple[bool, int | None]:
+    if isinstance(payload, dict):
+        ok = payload.get("ok") is True
+        message_id = payload.get("message_id")
+        if message_id is None and isinstance(payload.get("result"), dict):
+            message_id = payload["result"].get("message_id")
+        return ok and isinstance(message_id, int), message_id if isinstance(message_id, int) else None
+    if isinstance(payload, int):
+        return True, payload
+    return False, None
+
+
+def run_cycle(
+    fetcher,
+    ledger: EventLedger,
+    live_feed: LiveFeedStore,
+    editorial_store: LocalEditorialStore,
+    publisher: Callable[[NormalizedNewsItem], object],
+    settings: dict,
+    now: datetime,
+    shadow: bool = False,
+) -> CycleSummary:
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=timezone.utc)
+
+    summary = CycleSummary()
+    items, summary.sources_ok, summary.sources_failed = _collect(fetcher)
+    summary.items_fetched = len(items)
+
+    for raw in items:
+        item = normalize_item(raw)
+        fingerprint = build_fingerprint(item)
+        candidates = ledger.find_candidates(fingerprint)
+        decision = decide_item(item, fingerprint, candidates)
+
+        if decision.decision == "duplicate_exact":
+            summary.exact_duplicates += 1
+            event_id = decision.duplicate_of
+            try:
+                ledger.add_variant(event_id, item.raw.source_url, now.isoformat())
+            except KeyError:
+                pass
+            live_feed.upsert(_feed_record(
+                item,
+                event_id=event_id,
+                decision=decision.decision,
+                reason=decision.reason,
+                duplicate_of=decision.duplicate_of,
+                panel_status="duplicate",
+                message_id=None,
+                now=now,
+            ))
+            continue
+
+        if decision.decision == "duplicate_same_claim":
+            summary.same_claim_duplicates += 1
+            event_id = decision.duplicate_of
+            try:
+                ledger.add_variant(event_id, item.raw.source_url, now.isoformat())
+            except KeyError:
+                pass
+            live_feed.upsert(_feed_record(
+                item,
+                event_id=event_id,
+                decision=decision.decision,
+                reason=decision.reason,
+                duplicate_of=decision.duplicate_of,
+                panel_status="duplicate",
+                message_id=None,
+                now=now,
+            ))
+            continue
+
+        if decision.decision == "material_update":
+            summary.material_updates += 1
+            event_id = decision.event_id
+            ledger.update_material_facts(event_id, fingerprint.key_facts, now.isoformat())
+            ledger.add_variant(event_id, item.raw.source_url, now.isoformat())
+        else:
+            event = ledger.create_event(
+                fingerprint=fingerprint,
+                canonical_title=item.raw.title,
+                primary_source=item.raw.source,
+                source_url=item.raw.source_url,
+                first_seen=item.raw.fetched_at or now.isoformat(),
+                key_facts=fingerprint.key_facts,
+            )
+            event_id = event.event_id
+            if decision.decision == "new_event":
+                summary.new_events += 1
+
+        eligibility = evaluate_eligibility(item, now)
+        if not eligibility.eligible:
+            if eligibility.reason == "stale":
+                summary.stale += 1
+            elif eligibility.review:
+                summary.review_items += 1
+            else:
+                summary.filtered += 1
+
+            if eligibility.review:
+                _queue_item(editorial_store, item, eligibility.reason, now)
+                panel_status = "waiting"
+            else:
+                panel_status = "rejected"
+
+            live_feed.upsert(_feed_record(
+                item,
+                event_id=event_id,
+                decision=decision.decision,
+                reason=eligibility.reason,
+                panel_status=panel_status,
+                message_id=None,
+                now=now,
+            ))
+            continue
+
+        auto_publish = settings.get("auto_publish") is not False
+        needs_review = decision.decision == "needs_editorial_review" or not auto_publish
+
+        if needs_review:
+            summary.review_items += 1
+            _queue_item(editorial_store, item, decision.reason if decision.decision == "needs_editorial_review" else "auto_publish_off", now)
+            live_feed.upsert(_feed_record(
+                item,
+                event_id=event_id,
+                decision=decision.decision,
+                reason=decision.reason,
+                panel_status="waiting",
+                message_id=None,
+                now=now,
+            ))
+            continue
+
+        if shadow:
+            live_feed.upsert(_feed_record(
+                item,
+                event_id=event_id,
+                decision=decision.decision,
+                reason=decision.reason,
+                panel_status="new",
+                message_id=None,
+                now=now,
+            ))
+            continue
+
+        try:
+            ok, message_id = _publisher_result(publisher(item))
+        except Exception:
+            ok, message_id = False, None
+
+        if ok and message_id is not None:
+            ledger.mark_published(event_id, message_id, fingerprint.key_facts, now.isoformat())
+            summary.published += 1
+            live_feed.upsert(_feed_record(
+                item,
+                event_id=event_id,
+                decision=decision.decision,
+                reason=decision.reason,
+                panel_status="auto_published",
+                message_id=message_id,
+                now=now,
+            ))
+        else:
+            summary.publish_failed += 1
+            summary.review_items += 1
+            _queue_item(editorial_store, item, "publish_failed", now)
+            live_feed.upsert(_feed_record(
+                item,
+                event_id=event_id,
+                decision=decision.decision,
+                reason="publish_failed",
+                panel_status="failed",
+                message_id=None,
+                now=now,
+            ))
+
+    freshness_hours = int(settings.get("freshness_hours") or 3)
+    max_records = int(settings.get("panel_max_records") or 500)
+    live_feed.prune(now, freshness_hours=freshness_hours, max_records=max_records)
+    summary.panel_feed_count = len(live_feed.records())
+    return summary
