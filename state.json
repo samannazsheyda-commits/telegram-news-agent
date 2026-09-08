@@ -1,6 +1,10 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:AJEnglish:2097337326024143139",
+    "d6de06ad8e308c747637462c531985e7163c3bec",
+    "94b78e039ca3b8738fc5728cc20cc98b8cfc9849",
+    "x:nytimes:2096252918211006466",
     "x:Reuters:2097331693220741437",
     "c6abf66847e0b622940181b94246e2628a91d466",
     "24a3267711aca01a125e095a339f797fec4e456c",
@@ -496,14 +500,10 @@
     "x:JasonMBrodsky:2096189697013793139",
     "x:AJEnglish:2096189272189526020",
     "x:kann_news:2096188326730494125",
-    "x:TankerTrackers:2096031376487133584",
-    "x:AlArabiya_Eng:2096175236408344804",
-    "x:AlArabiya_Eng:2096182873434800389",
-    "38eb433999b0dfc7d81388041a9d1019f9cbfdc9",
-    "d67f6153077252082556849d7dbbb76c6a18a21b"
+    "x:TankerTrackers:2096031376487133584"
   ],
   "market_last_sent_at": "2026-09-08T13:22:23.911953+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -623,6 +623,33 @@
     "last_wti": 92.54
   },
   "news_rejections": [
+    {
+      "key": "d6de06ad8e308c747637462c531985e7163c3bec",
+      "source": "Al Jazeera",
+      "title": "The Evolution of Iran’s Asymmetric Air Defence Strategy - Al Jazeera Centre for Studies",
+      "reason": "not_today_tehran",
+      "published": "Wed, 22 Jul 2026 11:35:38 GMT",
+      "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxOUWhfNEtNOTBiR0hWcjhXaHRCT0sxRE5EU1MwR3o0MTRCRk0tbGhuRzVON2pRTXVXY1l5M2w2UUhGR2xVOTM0djV1Rkx0ZWNfcmFQUmNHZl8tblpzQ3lWbUc1QmlkaEZNYVJUYjM4WWhhWlRLbmZTV0hDb2xuT3QtOFBITHRlUEdSY3g4VVNyeHZxeVZXbldjenI4OE5xZw?oc=5",
+      "checked_at": "2026-09-08T14:54:23.242241+00:00"
+    },
+    {
+      "key": "94b78e039ca3b8738fc5728cc20cc98b8cfc9849",
+      "source": "NOTAM / Airspace",
+      "title": "Iran Announces Temporary Airspace Closure During Ali Khamenei's Funeral - Caspian Post",
+      "reason": "not_today_tehran",
+      "published": "Fri, 03 Jul 2026 12:19:09 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPdjFZSzZMMlNIUFlVbXg1Q2h3TUdzd3hDWGgtdzJPOGFMcXJUSjJucDVOY1E1czYzSEJrNFE4SzBmQmVJeGd1RENXOWptM1EzT3JhOEdHZWNXTEp4RWtkNWR5LW1fblBlZU9waEFQQlpoWG5mUVBMeVVPdU9pUW9ORy1EVFU2ajZmOFFUNFV5a3EzQ3BuRHFqYjFDMFpJaTBGSlE?oc=5",
+      "checked_at": "2026-09-08T14:54:23.242241+00:00"
+    },
+    {
+      "key": "x:nytimes:2096252918211006466",
+      "source": "The New York Times / X",
+      "title": "Breaking News: The U.S. said it struck three Iranian oil tankers in retaliation for what it said were unprovoked attempts by Iran to attack two U.S. warships. The strikes came days after the two sides exchanged some of their most intense fire in weeks.",
+      "reason": "not_today_tehran",
+      "published": "Sat, 05 Sep 2026 15:03:36 +0000",
+      "link": "https://x.com/nytimes/status/2096252918211006466",
+      "checked_at": "2026-09-08T14:51:31.495825+00:00"
+    },
     {
       "key": "ed8ef7e06b237e1e93f1dc0dd1428dd3f434be7c",
       "source": "Al Jazeera",
@@ -2395,37 +2422,20 @@
       "published": "Sat, 18 Apr 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxNaUZHZHRja1FGSzczNjNhQVhxYkxKZFV5NWdueFRLSlZqVFZtYXdieEtPcWd1aFpSc0tCcmZvckRwOEdhUFhVWGVFbzZ3a0ZrTUVwOEo4dnFGSWpMRndhRFA1QUJMa3lyN2ZnQUV5T1F3YlZreFdnS0kwNElOazFoT1RYajBaREU3OEtZT3V6WEFaWExvZ3VUYWVPc0R3UdIBowFBVV95cUxOOVNZWEhaaTIxVDhyYUZuNkZuSjR4NEVYcnhpemRzT1JvV3ZPaGtnY2hyc1dNUVlSOEpNdl9SVXJZRmhNNTlXZmRHQmRwbDc5dThlWlg5WkZ4b0ljZUxCR010U1gwcVZNeElVbkIzeU9MSWUxLWdfRVE1czk2cWhnbkNsMlhPdXRfOHoyalFNVUpHNE9lX2JPeHg0ck9HT28yc3R3?oc=5",
       "checked_at": "2026-09-05T16:47:54.422321+00:00"
-    },
-    {
-      "key": "3601300f4f8b86148773d0ceb2e6f21eb63bf378",
-      "source": "NOTAM / Airspace",
-      "title": "Iran reopens western part of country’s airspace - aa.com.tr",
-      "reason": "not_today_tehran",
-      "published": "Tue, 23 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQSGFMQWNqSDU2TVR2UzVKVHdWZVh3NnI5akxDRlA5WFZBd0RTWHVHX3hKM2lXSTZGcllnREEwTGJ0MllRZVVHUE85SHRLVk91dU9EeElGU0pJNGtTRk1oSXJzTGFLZjdKalVTWEZTV1BySXBwellXMVd0a1U4b0U5XzhibmpQcHBYMWdSV0dUWU1LMlFvamgw?oc=5",
-      "checked_at": "2026-09-05T16:47:54.422321+00:00"
-    },
-    {
-      "key": "e68a456a9e612d264126b32db7c32368b54dd603",
-      "source": "Times of Israel",
-      "title": "EU regulator eases restrictions on flights to Israel, urges avoiding Iran, Iraq, Lebanon airspaces",
-      "reason": "not_today_tehran",
-      "published": "Thu, 09 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPc25pcUxzcWFrWkdZSk1ZeVA1SWFpanVRNW5wRmstYmMxWGRnUk5YWlJhR0VPUnZXMFdoYXNjVGpoZVZQdDM1UU96U3hJcmc5YlVNYlBab2pySlFHSGhzaVlrTUx0ZlJ1WDg0ekh4QXFvVkJVLXV2WGIyN1VFU0pRUVNLVmp5b2hQdDdiYzY2UUNJeEhubUI0WHBsYlFmNW9KLXo3cl90b3NXcWhq0gGyAUFVX3lxTE9NNUZJTF9samlHYlFCN2Uyc21HMUpHelVpMHNaYzZMMndob3FUaUh0T0VHSXRhcmhpcTlRd3dLUXlYQXlsNnRkamR5RVNQTXZpdDQtandTTGJNM0RSTVN5R19vRG9BNjRCbk1ucGlzSXpWc054eWdvQk52R2FoNDZ3d3FmMWx6Zk1yeGo3WWVCNVhGNGNzZGtWUkR5QnJKTVVYMmVoQ1BhenVVXzJ2akMyMnc?oc=5",
-      "checked_at": "2026-09-05T16:47:54.422321+00:00"
-    },
-    {
-      "key": "8eaba729baf0f3af5667937a7654266c60235df1",
-      "source": "NOTAM / Airspace",
-      "title": "Civil Aviation Organization Reopens Iranian Airspace - WANA News Agency",
-      "reason": "not_today_tehran",
-      "published": "Mon, 08 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5iVmlKQ2dKQXRGNmZPakp4alZaMkhTWk9TT3RmTjNBRFhiS0NIakJ6U2VrT3NtdDF0bzFialM5MG1EdXQ5MEg5V3ZyTWtEYXVoOFE3QUhmd1BnS19vTzVkTU9sUXRkekJPMjhvLVM3VURucFh0NW9MTnRLYWo?oc=5",
-      "checked_at": "2026-09-05T16:47:54.422321+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2097337326024143139",
+      "source": "Al Jazeera English / X",
+      "title": "BREAKING: The US Treasury announces new sanctions on 36 entities, including 27 Iranian airlines, for “supporting Iran’s aviation sector”.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097337326024143139",
+      "published": "Tue, 08 Sep 2026 14:52:39 +0000",
+      "sent_at": "2026-09-08T14:54:23.242241+00:00",
+      "fingerprint": "breaking the us treasury announces new sanctions on 36 entities including 27 iranian airlines for supporting iran s aviation sector"
+    },
     {
       "key": "24a3267711aca01a125e095a339f797fec4e456c",
       "source": "NOTAM / Airspace",
