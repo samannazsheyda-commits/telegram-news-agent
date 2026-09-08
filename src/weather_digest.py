@@ -117,12 +117,12 @@ def format_digest(rows: list[dict]) -> str:
         icon, condition = WMO.get(int(row.get("code") or 0), ("🌡️", "نامشخص"))
         blocks.append(
             f"{icon} {row['name']} — {condition}\n"
-            f"🌡️ {row['tmin']} تا {row['tmax']}°C | 💧 {row.get('humidity', 0)}٪ | "
-            f"🌧️ {row['pop']}٪ ({row['precip']} mm) | 💨 {row['wind']} km/h | تندباد {row['gust']}"
+            f"🌡️ {row['tmin']} تا {row['tmax']}°C | 💧 رطوبت {row.get('humidity', 0)}٪ | "
+            f"🌧️ {row['pop']}٪ ({row['precip']} mm) | 💨 {row['wind']}/{row['gust']} km/h"
         )
     note = _note(rows)
     if note:
-        blocks.append(f"⚠️ {note}")
+        blocks.append(f"⚠️ توضیح: {note}")
     blocks.append(f'🔗 منبع: <a href="{OPEN_METEO_SOURCE}">Open-Meteo</a>')
     return "\n\n".join(blocks)
 
