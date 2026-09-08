@@ -16,32 +16,25 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Inspect suspicious fresh events
+      - name: List recent V2 Telegram publications
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          event_ids = {
-              'ea6c57794bd10354e242b11ab08755ce05ba3cf4',
-              '2351615c91b89610c9d7cd29c9becca2a18bd243',
-              '2f617c7e1ac76fef48f6c826e0d3d7d6917a5b92',
-          }
-          titles = (
-              'Iran-backed Houthis attack Saudi energy facilities',
-              'Hormuz traffic slows after Iran threatens retaliation',
-              'Iran foreign ministry takes aim at Canada',
-          )
           ledger = json.loads(Path('data/event_ledger.json').read_text(encoding='utf-8'))
+          rows = []
           for row in ledger:
-              if row.get('event_id') in event_ids:
-                  print('LEDGER_EVENT', json.dumps(row, ensure_ascii=False, sort_keys=True))
-          for filename in ('data/editorial_history.json', 'state.json'):
-              try:
-                  payload = json.loads(Path(filename).read_text(encoding='utf-8'))
-              except Exception as exc:
-                  print('READ_ERROR', filename, type(exc).__name__)
-                  continue
-              text = json.dumps(payload, ensure_ascii=False)
-              for title in titles:
-                  print('MATCH', filename, title, title in text)
+              ids = [i for i in row.get('published_message_ids', []) if isinstance(i, int) and i >= 520]
+              if ids:
+                  rows.append({
+                      'message_ids': ids,
+                      'title': row.get('canonical_title'),
+                      'source': row.get('primary_source'),
+                      'status': row.get('status'),
+                      'last_updated': row.get('last_updated'),
+                  })
+          rows.sort(key=lambda r: min(r['message_ids']))
+          for row in rows:
+              print('RECENT_PUBLICATION', json.dumps(row, ensure_ascii=False, sort_keys=True))
+          print('RECENT_PUBLICATION_COUNT', len(rows))
           PY
