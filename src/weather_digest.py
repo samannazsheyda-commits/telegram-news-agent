@@ -18,6 +18,7 @@ STATE_PATH = Path(os.environ.get("WEATHER_STATE_PATH", "/var/lib/bikhabar/weathe
 CITIES = (
     ("تهران", 35.6892, 51.3890),
     ("کرج", 35.8400, 50.9391),
+    ("رشت", 37.2808, 49.5832),
     ("مشهد", 36.2605, 59.6168),
     ("اصفهان", 32.6546, 51.6680),
     ("شیراز", 29.5918, 52.5837),
@@ -117,8 +118,8 @@ def format_digest(rows: list[dict]) -> str:
         icon, condition = WMO.get(int(row.get("code") or 0), ("🌡️", "نامشخص"))
         blocks.append(
             f"{icon} {row['name']} — {condition}\n"
-            f"🌡️ {row['tmin']} تا {row['tmax']}°C | 💧 رطوبت {row.get('humidity', 0)}٪ | "
-            f"🌧️ {row['pop']}٪ ({row['precip']} mm) | 💨 {row['wind']}/{row['gust']} km/h"
+            f"🌡️ {row['tmin']} تا {row['tmax']}°C | 💧 رطوبت {row.get('humidity', 0)}٪\n"
+            f"🌧️ بارش {row['pop']}٪ | 💨 باد {row['wind']} km/h | تندباد {row['gust']} km/h"
         )
     note = _note(rows)
     if note:
