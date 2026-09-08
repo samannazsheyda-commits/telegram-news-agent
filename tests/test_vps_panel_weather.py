@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from src.local_json_repository import LocalJsonRepository, LocalWriteConflict
-from src.weather_digest import format_digest
+from src.weather_digest import CITIES, format_digest
 
 
 def test_local_json_repository_reads_writes_and_detects_conflict(tmp_path: Path):
@@ -24,7 +24,11 @@ def test_local_json_repository_reads_writes_and_detects_conflict(tmp_path: Path)
         raise AssertionError("stale local write must conflict")
 
 
-def test_weather_digest_is_short_technical_and_has_required_metrics():
+def test_weather_city_list_includes_rasht():
+    assert any(city[0] == "رشت" for city in CITIES)
+
+
+def test_weather_digest_is_short_technical_and_has_required_metrics_without_mm():
     text = format_digest([
         {
             "name": "تهران",
@@ -42,13 +46,14 @@ def test_weather_digest_is_short_technical_and_has_required_metrics():
     assert "تهران" in text
     assert "18 تا 27°C" in text
     assert "رطوبت 41٪" in text
-    assert "🌧️ 55٪ (1.8 mm)" in text
-    assert "💨 22/39 km/h" in text
+    assert "🌧️ بارش 55٪" in text
+    assert "💨 باد 22 km/h | تندباد 39 km/h" in text
+    assert "mm" not in text
     assert "https://open-meteo.com/" in text
     assert "محاوره" not in text
 
 
-def test_weather_digest_uses_readable_two_line_city_blocks_with_blank_spacing():
+def test_weather_digest_uses_three_line_city_blocks_with_blank_spacing():
     text = format_digest([
         {
             "name": "تهران", "date": "2026-09-09", "code": 2,
@@ -56,11 +61,11 @@ def test_weather_digest_uses_readable_two_line_city_blocks_with_blank_spacing():
             "pop": 0, "precip": 0.0, "wind": 11, "gust": 30,
         },
         {
-            "name": "کرج", "date": "2026-09-09", "code": 3,
-            "tmax": 30, "tmin": 14, "humidity": 57,
-            "pop": 3, "precip": 0.0, "wind": 18, "gust": 44,
+            "name": "رشت", "date": "2026-09-09", "code": 3,
+            "tmax": 26, "tmin": 20, "humidity": 76,
+            "pop": 20, "precip": 0.0, "wind": 14, "gust": 28,
         },
     ])
-    assert "⛅ تهران — نیمه‌ابری\n🌡️ 20 تا 32°C" in text
-    assert "☁️ کرج — ابری\n🌡️ 14 تا 30°C" in text
-    assert "💨 11/30 km/h\n\n☁️ کرج" in text
+    assert "⛅ تهران — نیمه‌ابری\n🌡️ 20 تا 32°C | 💧 رطوبت 40٪\n🌧️ بارش 0٪ | 💨 باد 11 km/h | تندباد 30 km/h" in text
+    assert "☁️ رشت — ابری\n🌡️ 20 تا 26°C | 💧 رطوبت 76٪\n🌧️ بارش 20٪ | 💨 باد 14 km/h | تندباد 28 km/h" in text
+    assert "تندباد 30 km/h\n\n☁️ رشت" in text
