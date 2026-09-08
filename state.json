@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:AJEnglish:2097277425377751214",
     "x:Jerusalem_Post:2097273837549219909",
     "x:AJEnglish:2097273249461645811",
     "x:JasonMBrodsky:2097269112774828242",
@@ -499,11 +500,10 @@
     "x:haaretzcom:2096044433254797421",
     "x:AJEnglish:2096159651028934757",
     "x:Reuters:2096158936885874844",
-    "x:AlArabiya_Eng:2096158601412772116",
-    "x:AFP:2096153142488403991"
+    "x:AlArabiya_Eng:2096158601412772116"
   ],
   "market_last_sent_at": "2026-09-08T09:00:17.351726+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2097277425377751214",
+      "source": "Al Jazeera English / X",
+      "title": "Khaled Batarfi, a Saudi political analyst, says the war with the Houthis will not be 'prolonged' and that the Kingdom has tried not to respond to recent attacks by the Iran-backed rebel group.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097277425377751214",
+      "published": "Tue, 08 Sep 2026 10:54:38 +0000",
+      "sent_at": "2026-09-08T10:57:03.518245+00:00",
+      "fingerprint": "khaled batarfi a saudi political analyst says the war with the houthis will not be prolonged and that the kingdom has tried not to respond to recent attacks by the iran backed rebel group"
+    },
     {
       "key": "x:AJEnglish:2097273249461645811",
       "source": "Al Jazeera English / X",
