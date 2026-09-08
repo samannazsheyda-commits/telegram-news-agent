@@ -4,6 +4,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
+from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
 from .newsroom_models import NormalizedNewsItem
@@ -45,6 +46,13 @@ QUESTION_PREFIXES = (
     "can ", "will ", "is ", "are ", "does ", "do ", "did ", "what we know", "what to know",
     "چرا ", "چگونه ", "چطور ", "آیا ", "چه چیزی ", "چه می‌دانیم", "آنچه می‌دانیم",
 )
+TEASER_PATTERNS = (
+    "read more", "continue reading", "full story", "click here", "more at ", "more on ",
+    "ادامه مطلب", "ادامه خبر", "برای ادامه", "متن کامل", "بیشتر بخوانید",
+)
+AGGREGATOR_HOSTS = {
+    "news.google.com", "www.news.google.com", "feedproxy.google.com", "google.com", "www.google.com",
+}
 
 
 @dataclass(frozen=True)
@@ -106,6 +114,35 @@ def _question_or_article(title: str) -> bool:
     return False
 
 
+def _incomplete_or_teaser(title: str, summary: str) -> bool:
+    title_clean = re.sub(r"\s+", " ", str(title or "")).strip()
+    summary_clean = re.sub(r"\s+", " ", str(summary or "")).strip()
+    combined = f"{title_clean} {summary_clean}".lower()
+    if any(pattern in combined for pattern in TEASER_PATTERNS):
+        return True
+    if title_clean.endswith(("...", "…")) or summary_clean.endswith(("...", "…")):
+        return True
+    if summary_clean and re.search(r"\b(?:in|on|at)\s+[a-z0-9-]+(?:\.[a-z0-9-]+)+[.!]?\s*$", summary_clean, re.I):
+        return True
+    return False
+
+
+def _direct_source_link(url: str) -> bool:
+    raw = str(url or "").strip()
+    if not raw:
+        return False
+    try:
+        parsed = urlparse(raw)
+    except Exception:
+        return False
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        return False
+    host = parsed.netloc.lower().split(":", 1)[0]
+    if host in AGGREGATOR_HOSTS:
+        return False
+    return True
+
+
 def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> EligibilityResult:
     published = _parse_published(item.raw.published_at)
     if published is None:
@@ -115,6 +152,10 @@ def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> Eligibility
 
     if _question_or_article(item.raw.title):
         return EligibilityResult(False, "filtered_question_or_article")
+    if _incomplete_or_teaser(item.raw.title, item.raw.summary):
+        return EligibilityResult(False, "filtered_incomplete_or_teaser")
+    if not _direct_source_link(item.raw.source_url):
+        return EligibilityResult(False, "filtered_non_direct_source")
 
     text = re.sub(r"\s+", " ", f"{item.raw.title} {item.raw.summary}".lower()).strip()
     protected = item.raw.source_priority == "protected"

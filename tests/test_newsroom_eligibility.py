@@ -6,10 +6,10 @@ from src.newsroom_models import RawNewsItem
 from src.newsroom_normalize import normalize_item
 
 
-def _raw(*, source="Reuters", title, summary="", published_at, priority="normal"):
+def _raw(*, source="Reuters", title, summary="", published_at, priority="normal", source_url="https://example.com/story"):
     return RawNewsItem(
         source=source,
-        source_url="https://example.com/story",
+        source_url=source_url,
         source_item_id="id-1",
         published_at=published_at,
         fetched_at="2026-09-07T21:30:00+00:00",
@@ -132,3 +132,42 @@ def test_factual_breaking_headline_is_not_filtered_as_article():
         published_at="2026-09-07T20:45:00+00:00",
     ))
     assert d.eligible is True
+
+
+def test_malformed_domain_tail_summary_is_hard_filtered():
+    d = _decision(_raw(
+        source="Bloomberg",
+        title="Iran seized an underwater drone that US forces say malfunctioned",
+        summary="Iran seized an underwater drone that US forces say malfunctioned in Bloomberg.com.",
+        published_at="2026-09-07T20:45:00+00:00",
+        source_url="https://www.bloomberg.com/news/articles/example",
+    ))
+    assert d.eligible is False
+    assert d.reason == "filtered_incomplete_or_teaser"
+
+
+def test_teaser_and_truncated_content_never_auto_publishes():
+    for summary in (
+        "Read more at the original source",
+        "Continue reading on Reuters.com",
+        "Officials said the operation was ongoing…",
+        "Officials said the operation was ongoing...",
+    ):
+        d = _decision(_raw(
+            title="Iran announces a new maritime security operation in the Gulf",
+            summary=summary,
+            published_at="2026-09-07T20:45:00+00:00",
+        ))
+        assert d.eligible is False
+        assert d.reason == "filtered_incomplete_or_teaser"
+
+
+def test_aggregator_link_is_not_accepted_as_direct_source():
+    d = _decision(_raw(
+        title="Iran announces a new maritime security operation in the Gulf",
+        summary="Officials said the operation began on Monday.",
+        published_at="2026-09-07T20:45:00+00:00",
+        source_url="https://news.google.com/rss/articles/example",
+    ))
+    assert d.eligible is False
+    assert d.reason == "filtered_non_direct_source"
