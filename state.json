@@ -1,6 +1,21 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:Reuters:2097331693220741437",
+    "c6abf66847e0b622940181b94246e2628a91d466",
+    "24a3267711aca01a125e095a339f797fec4e456c",
+    "ed8ef7e06b237e1e93f1dc0dd1428dd3f434be7c",
+    "f06acfa3150de5eef2fb82a2ea9abc9782f59ffe",
+    "f30ca6a2fdc377365cb5606e95f3ad46015c99f9",
+    "044eff1b265ccae47f290854842c576054a807a0",
+    "9c9375e4fab33f334cde2f6e5bb72c3e13cf7163",
+    "5c3d1f72d14471500076d18bd5ada9acd6461bd5",
+    "995e67d06916d3528a441065ab3cd4307ab619e5",
+    "b8e3086705a88b9c4c58c2696689464febabc0a3",
+    "75910e7a4032b9d9cc3296205677f461567f4753",
+    "03489f5e135713c585a9ebcfe2138a11e69d09ac",
+    "e7927e55dab895a68b8fcff2c6b2c242b9c71570",
+    "b2be0cb8622eeb0cc80e8d9a743362d2658c2805",
     "x:AlArabiya_Eng:2097328457801756921",
     "x:AJEnglish:2097327849090769375",
     "x:AJEnglish:2097327515849158706",
@@ -485,25 +500,10 @@
     "x:AlArabiya_Eng:2096175236408344804",
     "x:AlArabiya_Eng:2096182873434800389",
     "38eb433999b0dfc7d81388041a9d1019f9cbfdc9",
-    "d67f6153077252082556849d7dbbb76c6a18a21b",
-    "097c69b1737517a9d22f8fe5bc729e74b9156fb0",
-    "39a9bd9ee9da921059c843538b5d62565caf831d",
-    "01961dbd96723a63fa9d7dac98247a91f8aee7e1",
-    "a4be0b00561dc5e1c0b4de85d16b21a07a3adc8a",
-    "419a4e81ff33ef22f80bd3283cd4f94103447370",
-    "3f720616147390ad2e8def4596ee6009fdd4188d",
-    "ae34ab00c573131895e20912a18ca8cee5f9b1a7",
-    "3c61c224d6307e3e4242a9fba4ed2188a215d140",
-    "658e0035cca9bebeb54106d42a6422fa349cdd33",
-    "5641260675cff4496937709ed70e2faaea337921",
-    "fef6e943ba1553dfd161d8befb0b53455d5766c1",
-    "559b5805fe2931340064966615e3e8f644ce60f6",
-    "f2caf86472fe22b733cc27c76c5317cabf5082c4",
-    "a3ab5ada96fc549ca941b88052a2b5fd7372bc94",
-    "a75d63b937e059016f74d42e449cbec01a607bd2"
+    "d67f6153077252082556849d7dbbb76c6a18a21b"
   ],
   "market_last_sent_at": "2026-09-08T13:22:23.911953+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -623,6 +623,114 @@
     "last_wti": 92.54
   },
   "news_rejections": [
+    {
+      "key": "ed8ef7e06b237e1e93f1dc0dd1428dd3f434be7c",
+      "source": "Al Jazeera",
+      "title": "Qatar partially reopens airspace as Iranian strikes continue to hit Gulf",
+      "reason": "not_today_tehran",
+      "published": "Fri, 06 Mar 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxPdjd4ZlR0azR4UXFXY1pkckxyQ29CX0tGUXpKWjlwYkUyekRyLVQ4LWVtQzVyTTVRZTk2T2U1UXBGcXN0SDZ3UVlQSzJnYnF1N0RaOEZsXzF6elZTcjRVRlhvN1VzRy0ycEdqQWxhMW5HZlVOMGNwWDJDWkJFSFRGNjdFZTltX2tlRWZ1NV9BVndMYnFCNUFLUEJja3dIVGZ4Yi1vRXdtdG9rQlJfLUJOMmtR0gG3AUFVX3lxTFBMMWRjQjFxbmxkZ1d1dWYtQVVpSklsVkdLY0h1MUtNWEJDUHhhV0pXbWF3czRidWdIRFNBSExMVTdSaHZESG53STFCWmNsdjNoMGdCVXVYdzd4WG4zenRxWU1rRTd3QmJsU0diNWdSeXRDT1pDWEFNZWhqejZfQTZNbWRVblVuaDBIcVBjai1XNlpEOVREaXdTZDVBQU04Rk5UMkpsclotU1FfVDFvcTI0ekFXUjdQcw?oc=5",
+      "checked_at": "2026-09-08T14:34:20.896865+00:00"
+    },
+    {
+      "key": "f06acfa3150de5eef2fb82a2ea9abc9782f59ffe",
+      "source": "NOTAM / Airspace",
+      "title": "Iran's airspace closed for six hours, official says - Iran International",
+      "reason": "not_today_tehran",
+      "published": "Sat, 28 Feb 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE81YjBaVjM3OXh0cVh5cDJZT0JCQUdhblFyNzc3VmFfWHZlTDg2LVJsQ1Zabm56czd6ay13MUFYREctOG5WRXp4dU9lOUhEUVJIMnc?oc=5",
+      "checked_at": "2026-09-08T14:34:20.896865+00:00"
+    },
+    {
+      "key": "f30ca6a2fdc377365cb5606e95f3ad46015c99f9",
+      "source": "NOTAM / Airspace",
+      "title": "Airspace closures across Middle East cause flight cancellations after strikes on Iran - The Points Guy",
+      "reason": "not_today_tehran",
+      "published": "Sat, 28 Feb 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOcjdpSVJnVmJRcTNhWkluYkI2TW9lRFpkT1JZZlJ0TzB5Wng1dUotOHVpZmFMaUhjMmk4ZXplaWlXdmNrLVM2SkJiTU9YalktVjdrLUxPLURXTEtDN3F5b1pVYkRXWkcydTRaRk5PekRfOUVxcTRnbS13YktPWWxScGNB?oc=5",
+      "checked_at": "2026-09-08T14:34:20.896865+00:00"
+    },
+    {
+      "key": "044eff1b265ccae47f290854842c576054a807a0",
+      "source": "NOTAM / Airspace",
+      "title": "Iran’s skies empty after strikes as regional states close airspace - Iran International",
+      "reason": "not_today_tehran",
+      "published": "Sat, 28 Feb 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE5INkdQUE85VlJDTWtSTDZDZzlVN2ViZGtFMTdTUlBCRFJVV1VJZU91dThTOGJlY3FYMFNFNnNfSC1CNlRiWVdiSzBERVVNSEtFVVE?oc=5",
+      "checked_at": "2026-09-08T14:34:20.896865+00:00"
+    },
+    {
+      "key": "9c9375e4fab33f334cde2f6e5bb72c3e13cf7163",
+      "source": "BBC News",
+      "title": "Flight paths squeezed as Iran conflict closes more airspace",
+      "reason": "not_today_tehran",
+      "published": "Fri, 06 Mar 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE45aUtBVU9IRUF1REpqaVp0RWRCaDJkM2lScHJTdWp2ejZ1UjVSTzloZDlqVjREQXhlOFJlZTVqXy1tMm9UanlBcDdIUmhhcnlvcWJDdlhvRVFFQQ?oc=5",
+      "checked_at": "2026-09-08T14:34:20.896865+00:00"
+    },
+    {
+      "key": "5c3d1f72d14471500076d18bd5ada9acd6461bd5",
+      "source": "NOTAM / Airspace",
+      "title": "US says it is nearing 'complete control' of Iran's airspace - Le Monde.fr",
+      "reason": "not_today_tehran",
+      "published": "Wed, 04 Mar 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQaEVIZUpsRFFrdy12eFdHcEVZLXIxekw2ZzlHSjlPREN0ZjR2bVpiSjV3Q0dnbHpVejByU1NicG4yS1ZESEsyMzNHY3FKMWEyRzBvMnRvN3l0ZzJmcVU2TmktWWItd29Wa0U1MU9lV01Ca3dBVHhFSWNXRnh6Nk1UaVdfRk00VEdPUVdQZDdNTkhxR2pkaE5fVUNvckoyYU9ER0d6bFNwaHgyb2xBM0NnclB1MGFYZHlmRVZ0eC1zaDNUd2xlRnE1aw?oc=5",
+      "checked_at": "2026-09-08T14:34:20.896865+00:00"
+    },
+    {
+      "key": "995e67d06916d3528a441065ab3cd4307ab619e5",
+      "source": "CNBC",
+      "title": "Iran reopens airspace after hours-long shutdown spooks airlines",
+      "reason": "not_today_tehran",
+      "published": "Wed, 14 Jan 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxNRTctbmJEdmJFeDNLZEQ2Vzc2X3NsQlB4MExoMUdVdUg3THZta3NGUzZXLUM2OTh6cWZ0U010T20yUnpaLTdJYWJJVGdoN01aRmFuUHVLVGxZVUpMQXVJWnVzOWVDeThjbExOS0N4UFRDS3gzZnNPVEpuY0pVcjhFQWt2SjhWQVU2QVM5X3dTRGtlaEJ6UWN3Z1ZZYTNLMTgwcmhJQjhFdnpqR3VMRmVzaFpDODMyeTjSAbwBQVVfeXFMT3E0VTdRZy1CaGlSZGZoaXkyVmNJR2VfTzFDYWIyY0R3V25tR1FfQTJrMnNvTmd2R2RoTVBETy1pS1RDY2ttNlY4c0NYN09TYjZNR0daUWo4U2tmY2FzWEp1ejhZSGJzdEdFb0p5NkVVZzNhZ21QWXp6cDFQbjV0aEhxQzdRVkdxWVVwek9lTkhmcFdTM2hHTERLQ1o2QXRmVC1iN3ZhRVJpajFGcDYwUkdQdnRRTldnTUg1Z0Q?oc=5",
+      "checked_at": "2026-09-08T14:34:20.896865+00:00"
+    },
+    {
+      "key": "b8e3086705a88b9c4c58c2696689464febabc0a3",
+      "source": "NOTAM / Airspace",
+      "title": "Gulf carriers resume some flights as Iran strikes and retaliation fuel travel chaos - PBS",
+      "reason": "not_today_tehran",
+      "published": "Mon, 02 Mar 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOVWpNcmVhQkt0YWg4SkR2bjRsZVFhckYxaXVISkJfWUtLRE1ldGp6ZDlsWG1vOHdFVF9DWU5DLUJKeUh5dVJtcXpEc3JneTBsX1hESzJ3YUtaZFJIT3VISnd4MkhpcXpJX3lkWVR3V2pZUGYzaXM2SWFiSklOa3pHLWtCekd3RmF3U1ZLR1lKZFhTMW5Wa0E3R09GTjRId3hlNWFxaGZMYnU4cXpoMG9Fd3pBSmxsR1lXamfSAb8BQVVfeXFMTzBHTi1rWDdDOWJBeThDZF9YZFhKazlJeURkbWR6Z2NKaUVLOGcxS0ZPYTlmQnFHMzI0d0NDdmlrVmVBTkp0Y2xBWHp0UVduZmp5dFk4UXBlWnItb2dYRENXX05HSXU0UFpHaEVqRERIOFIxTExwUGpySHBra0VzQXBrdVE2akxoYUhBVXp2NTBxVXlWeHNMczlGUTNHUnhkdERzOW9waG51dWRHRU54YzlqNXQ1X2MxNmgtb3AzQXc?oc=5",
+      "checked_at": "2026-09-08T14:34:20.896865+00:00"
+    },
+    {
+      "key": "75910e7a4032b9d9cc3296205677f461567f4753",
+      "source": "Reuters",
+      "title": "Thousands of flights cancelled as Iran conflict upends global air travel",
+      "reason": "not_today_tehran",
+      "published": "Sun, 01 Mar 2026 08:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPSUFnZXpXOGZiVHRJTVB1YmwzVHhqZk1pUjJEWWdiM0dBN2hiUkc2a2VrR3RvbU9QcWpuXzBUUS1DVnh2VXYwdVVzUVE5Yld1Mmgyb2Q2cEVfNURkdmo2bF9xNTEyRHlqXzdIUmxMT29DWDBnOEY0d2d5M2tMbG95Vk9BemJmanlEV2lxY1paUFVCd1lTaFlqaW5VRWdOLVlvU2w3aERmUTZMVmZKclhhaFh0MmhMTURTY2c?oc=5",
+      "checked_at": "2026-09-08T14:34:20.896865+00:00"
+    },
+    {
+      "key": "03489f5e135713c585a9ebcfe2138a11e69d09ac",
+      "source": "NOTAM / Airspace",
+      "title": "Dubai and Middle East flight disruption: Kuwait faces ‘heinous’ Iranian drone and missile fire, impacting air travel in the region - Condé Nast Traveller Middle East",
+      "reason": "not_today_tehran",
+      "published": "Thu, 03 Sep 2026 08:14:14 GMT",
+      "link": "https://news.google.com/rss/articles/CBMi9AFBVV95cUxOLU5LUXhCekM1RnlXM3RfMllreXFyVG5adHJQMlhPZDVTVXdvSk02YWVVVC1nRTZhRFE0RGtvZEhSRGhpNFpTTW11Nm9salRJTWZaNWh1R2NUSnptOFhCcDRrZTJJc0FGeTdVbElyR3ItYWdpb1B0TmJvNzVTYnZzcHUzQ0w1Z1BsaGpRSmNtTjZEcldkVkNVb0JDeHdtY3RtaHdBQWNESXlzS2g3d3lCUlhrODNOS2hQVlhFVlhhcmhxRjVReVdkQVpIMGdXdmhGRmpSM1ZkZzgzMzJxVlVscmg1Z2hWbkRHcjN6dU0zYmtXR29u?oc=5",
+      "checked_at": "2026-09-08T14:34:20.896865+00:00"
+    },
+    {
+      "key": "e7927e55dab895a68b8fcff2c6b2c242b9c71570",
+      "source": "NOTAM / Airspace",
+      "title": "Spain closes airspace to US warplanes in Iran operation - The Hill",
+      "reason": "not_today_tehran",
+      "published": "Mon, 30 Mar 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOYkhaUGVZLTFmNjVMbG5MMS1hbmsxdkpUVDJRbU1XUnY4MTZhZXgxTTBoWHNEQzlQNjJPZHg0YW9oLWZ6XzMtRG5OOHYtVTBicGN2eHpSU0FvREJlVnRkSDBsMENjTE9TZ2NVbEFobTlTT1MybEgtWEhHa3hBcmh3LUtKMk_SAYoBQVVfeXFMTjdoZVZ1VE9fZ2JDbUo1WGFtYnNLQkVnTWdtQl9mUnl0dERrLXIwSlBaRmdNZlFzX1ZDZFR4WWN2SzZTenQ4SkVhRVJqTTNiXzVFOHlIYlRScVktWXNvSFNGTmZvQk05YWprOXFiU2ZfLTdJSmI1WU5fYmF0Z0h1T3JoblhQTjFPTGNB?oc=5",
+      "checked_at": "2026-09-08T14:34:20.896865+00:00"
+    },
+    {
+      "key": "b2be0cb8622eeb0cc80e8d9a743362d2658c2805",
+      "source": "NOTAM / Airspace",
+      "title": "Iran travel advice - GOV.UK",
+      "reason": "not_today_tehran",
+      "published": "Thu, 13 Aug 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE5TZDhrZmFBQ1A1ZmhyZndRTWtZcnNzX3dyQXllWnlRcnRtSGVvWGZTeXhkOEtiY0tSVmptZnFMZFIwX2xvZzl5LXcxUUd5M1d4V1V4cVM4SzI?oc=5",
+      "checked_at": "2026-09-08T14:34:20.896865+00:00"
+    },
     {
       "key": "x:manniefabian:2096635954920382757",
       "source": "Emanuel Fabian / X",
@@ -2314,118 +2422,40 @@
       "published": "Mon, 08 Jun 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5iVmlKQ2dKQXRGNmZPakp4alZaMkhTWk9TT3RmTjNBRFhiS0NIakJ6U2VrT3NtdDF0bzFialM5MG1EdXQ5MEg5V3ZyTWtEYXVoOFE3QUhmd1BnS19vTzVkTU9sUXRkekJPMjhvLVM3VURucFh0NW9MTnRLYWo?oc=5",
       "checked_at": "2026-09-05T16:47:54.422321+00:00"
-    },
-    {
-      "key": "9b34a46cc79c19049821f4984b173671b0697267",
-      "source": "NOTAM / Airspace",
-      "title": "EASA urges continued caution over Iran, Iraq and Lebanon airspace - The Jerusalem Post",
-      "reason": "not_today_tehran",
-      "published": "Wed, 24 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE9RRmtTQ2pqbXlfYTN1S3lxQWpsRHl6ekc3bTIwdDdEME8tUG9WWmZ1cmZIeFNDdFJwRFZlc3AwakJFSXB1QkNBU3MxRWZBLWxhWHBpRnNYQ2Jhd3hw?oc=5",
-      "checked_at": "2026-09-05T16:47:54.422321+00:00"
-    },
-    {
-      "key": "92429e201834392ee2d1994d0c9b449381bfdaa4",
-      "source": "Reuters",
-      "title": "EU aviation agency tells operators to avoid Iran, Iraq and Lebanon airspaces until August 31",
-      "reason": "not_today_tehran",
-      "published": "Wed, 08 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxNUG9VaFJkWWFCR2NzcmJXbzBCUnN3UlEtRGFvV29RVEZ6NGRrUnhlcUtOcGJWVUJqSGREQ2h3cHJFU2Z0ODBmUl9sNmM0TEVqMHZZSXVocEplMzlUNVdyQmdMekNOTGZBV1hDSjl3NmtMUThlOTBBYjJQYkdLOUcwWDZYUWRLeC1wNkJYR2VhZFFpQlpWOXJ2bmhQUUM1bUpvV3d0elUwOExMNmNNOXYtWWw1RUdRRjhRR3pGQ3RlZ3dCaDhXOFNr?oc=5",
-      "checked_at": "2026-09-05T16:46:34.484486+00:00"
-    },
-    {
-      "key": "76757a1c4e3d8d0b3652ac5708d58703bc6a5347",
-      "source": "NOTAM / Airspace",
-      "title": "Qatar rejects claims of detaining Iranian pilots after airspace breach - Egypt Today",
-      "reason": "not_today_tehran",
-      "published": "Sat, 15 Aug 2026 08:37:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQcThXcXoweTRTemgwcGgxNi1pbUhuZzlmeGlZbENGV2IyQWRSUWhPUFhXdTNzb3hJdFJEVTZJQTBoSHVmYTJJZ2VhaEVjMmxHRmwzTC1PMVMycmhxb3RodmxVdkNtMkJneTJKYm05bG9aUG1KblJWWldLYzlRV2dkcFpldmpmV2hSbV9LdzZPUFNUbjNfRUkzaUh5RVdhNUNYQS1Ndk1mNEhmdy1WeVZ3R0ZvVUg?oc=5",
-      "checked_at": "2026-09-05T16:46:34.484486+00:00"
-    },
-    {
-      "key": "53da305b4e08467406d8d3da1c5fea25c7ce1b25",
-      "source": "NOTAM / Airspace",
-      "title": "Qatar denies holding Iranian pilots, says jets violated its airspace - Iran International",
-      "reason": "not_today_tehran",
-      "published": "Sat, 15 Aug 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTFAxZjBQR3hMcnk4blJseTNOT2lkT1FMVlh6MExRTEhSLWNxYWVOYVI5U1AwM0hGd1B2Slk3cXNCcnNvQlY0ajF4WnVWckZwb2NiaHc?oc=5",
-      "checked_at": "2026-09-05T16:46:34.484486+00:00"
-    },
-    {
-      "key": "50e16eb576fbf321ae6256e102ff4ac397a5b5d4",
-      "source": "NOTAM / Airspace",
-      "title": "Will Iran’s eastern corridor help reduce flight times?",
-      "reason": "not_today_tehran",
-      "published": "Thu, 20 Aug 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxOaFZ2b2FLczc2V2swOVRGRGdiZzZIYWhScXpoRVdSNnJHWHFjZklOU3g2d0J0OEo0WnR4d3h3dlpZQk5TMXBSRHVTTXE2QnRiYU1EVklGQlVwbm9YOE1YX2ZCbjNLMjdWcHU1aDRTdmFJdndJMGFxTU56U0dEckxsaTNHRG9kMXl4SWwxam5qYVRVaS1rYXA1blNnVy1rSklQTHRQMkF5UktvZW9pZUc2cGsyZ0I?oc=5",
-      "checked_at": "2026-09-05T16:46:34.484486+00:00"
-    },
-    {
-      "key": "1fe753db12bc122bd9fea6ad8b3dbca8b3c75409",
-      "source": "NOTAM / Airspace",
-      "title": "Afghanistan Sees Surge in Overflights After Iran Airspace Shutdown - TOLOnews",
-      "reason": "not_today_tehran",
-      "published": "Sat, 29 Aug 2026 10:27:38 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5CalpjZm9SdnBOV2FWc2dkWnVBREVDZlFYSDZ5Z0RqZFEtUGtkakI0T3p2NDBmOXRwd2hScXBYamVrMHhIcTFFQ0M3LWVta2xCZDZreE81bWQ0dw?oc=5",
-      "checked_at": "2026-09-05T16:46:34.484486+00:00"
-    },
-    {
-      "key": "7ae4700ed1b879f6105e7149e39ec5951bc39a4e",
-      "source": "NOTAM / Airspace",
-      "title": "Iran denies issuing notice to close national airspace - Iran International",
-      "reason": "not_today_tehran",
-      "published": "Tue, 01 Sep 2026 20:50:38 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE0zZ3dfS2FsT0VaekVKaWVDMUxTM05CdnpsaFo0LXdPamFjc0E4ZFlSNUtFa3ZfaEJjYTNVYlZRcDYxaHRRSjdRSlN4MWdscjNnRGc?oc=5",
-      "checked_at": "2026-09-05T16:46:34.484486+00:00"
-    },
-    {
-      "key": "c641c9dff9d99bc929582c19eac7b0d131656ff9",
-      "source": "NOTAM / Airspace",
-      "title": "Europe has updated its Gulf airspace warning as US-Iran tensions continue - here's what it means for air travel - Condé Nast Traveller Middle East",
-      "reason": "not_today_tehran",
-      "published": "Tue, 01 Sep 2026 08:42:33 GMT",
-      "link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxNN01LN3k2WmxqRGxBZW9INXBtakRmUnFHQ3dpOV9sSlNVWG5vX2h5QmUtQU1jVjhycXBaRTR6US1YQzcyZlYzRzUweGFZX3VRMUNNYkU2R1dMdXNOa2NTemxxNHExZzZ3X2Z1N01ucXFpdkpoazQ3LXQyVXRPcERqd3U1WFpYd0k5eEhxVzhxZURuYmJJaTBMbVhIa3c0VmplRlF1UElKQXJURUVEY3pDN0dDSFp3X2pCdzM1MXczNnFPMm1uMjFiSDVienBQQnQzaVlsQ0tDU0RyR0l4?oc=5",
-      "checked_at": "2026-09-05T16:46:34.484486+00:00"
-    },
-    {
-      "key": "2e1d3eb72a24cbc70f83b9de149100c3879cba68",
-      "source": "ژئوپی واچ / Telegram",
-      "title": "⚡️ 🇮🇱 – Netanyahu posted an AI-generated video of New York Mayor Zohran Mamdani, Turkish President Erdogan, an injured Iranian Ayatollah Khamenei and President of the Palestinian Authority Mahmoud Abbas celebrating at the prospect of the...",
-      "reason": "bundled_or_multi_headline",
-      "published": "Fri, 04 Sep 2026 20:59:59 +0000",
-      "link": "https://t.me/GeoPWatch/39512",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "3e6641edfb46a38c6a29038efe61c3ead18a51f4",
-      "source": "BBC News",
-      "title": "US launches new strikes on Iran, targeting missile sites and boats",
-      "reason": "not_today_tehran",
-      "published": "Tue, 26 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9WaDJGdEZ0YndpVVJXUlUydGhtZnZWVUFDdnR6MUdTSmhQNVMyZmRKUGMxZC0yTUNNTGw1Q2Q1M3VsNWVacFJ2X3cwd1BiOTd4b1BSYWxBM1Bodw?oc=5",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "ca8163e6bb0aa944006a01fad432565db33ad12f",
-      "source": "NOTAM / Airspace",
-      "title": "US Embassy in Jordan issues security alert over missiles, drones in airspace - Iran International",
-      "reason": "not_today_tehran",
-      "published": "Thu, 09 Jul 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTFA0QmEyNERNa0tUaFJzLWEtbVB3WUQ3UmRqV2t3YjI0TF9udnEzbHg4MURPTHpWTmtWYjYya1pMbmRENi1KdmJld0dBS2htRkhpZHc?oc=5",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "b7ac959b4256e87093a18ff8f60039794ff81f17",
-      "source": "NOTAM / Airspace",
-      "title": "Reports claim Israel Air Force strikes targets in Iran via Azerbaijan route - The Jerusalem Post",
-      "reason": "not_today_tehran",
-      "published": "Mon, 08 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFA0Y09CZ3RMSEtGV0FIcDZwaEVfcnhkemt2RHVzUzlWS2ZPRzRCbFdINGlxaUU2U1hrdGFsTWdEQUpUbWtOeFZaU2pmU0lOWThsLWN5b3V4eTBRdU13cC1v?oc=5",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "24a3267711aca01a125e095a339f797fec4e456c",
+      "source": "NOTAM / Airspace",
+      "title": "Yemen fighting escalates at Bab al-Mandeb Strait, impacting US-Iran talks - Crypto Briefing",
+      "summary": "Yemen fighting escalates at Bab al-Mandeb Strait, impacting US-Iran talks Crypto Briefing",
+      "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQZWd0SG1uRWd6QXhONUQwSnh4TW9TX1pZVEhfTFlnaWt6RjB2WkVCb2VRYkxHcFNmSlBoYzVRY2l3MUtTUmUxbVUzOGt2SzU4NFNlQnIyTndKQjNzM3J2cWVjazFzdEFtZXNyYk96b0tuTmRyWnlCMFJtR0hxY2NuSlYzc2V3WEJoYnV0cF9vSVc3Sk5qakZjUG9oTTNGcUF6bXc?oc=5",
+      "published": "Mon, 07 Sep 2026 21:09:07 GMT",
+      "sent_at": "2026-09-08T14:34:20.896865+00:00",
+      "fingerprint": "yemen fighting escalates at bab al mandeb strait impacting us iran talks crypto briefing yemen fighting escalates at bab al mandeb strait impacting us iran talks crypto briefing"
+    },
+    {
+      "key": "c6abf66847e0b622940181b94246e2628a91d466",
+      "source": "NOTAM / Airspace",
+      "title": "Airlines gradually restore Middle East flights amid Iran conflict de-escalation - Crypto Briefing",
+      "summary": "Airlines gradually restore Middle East flights amid Iran conflict de-escalation Crypto Briefing",
+      "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQRUV5UEtBMXlUYzdXS1hua1VBZDRxVW0xWnZ3c1BsU0I4QUoxM0ZVTTh2d2dZUmtYeTRKdTVFSjZDLTdTY29UQ2lnZUZ6bDBjVlVSaUJuSE4yZmtwem44Q3lpdWlWWmotTGU3dkp4WFByb0RsZm5jc2RHQzN1dzFsaXhQVUpGRm9pY3FvQi1GT2tVcF9sVnUzOWhZNWZkdHhwSW03UDVUSXZxdTQ?oc=5",
+      "published": "Tue, 08 Sep 2026 11:25:53 GMT",
+      "sent_at": "2026-09-08T14:34:20.896865+00:00",
+      "fingerprint": "airlines gradually restore middle east flights amid iran conflict de escalation crypto briefing airlines gradually restore middle east flights amid iran conflict de escalation crypto briefing"
+    },
+    {
+      "key": "x:Reuters:2097331693220741437",
+      "source": "Reuters / X",
+      "title": "South Korea sends team to assess situation in Strait of Hormuz",
+      "summary": "",
+      "link": "https://x.com/Reuters/status/2097331693220741437",
+      "published": "Tue, 08 Sep 2026 14:30:16 +0000",
+      "sent_at": "2026-09-08T14:34:20.896865+00:00",
+      "fingerprint": "south korea sends team to assess situation in strait of hormuz"
+    },
     {
       "key": "x:AJEnglish:2097327849090769375",
       "source": "Al Jazeera English / X",
