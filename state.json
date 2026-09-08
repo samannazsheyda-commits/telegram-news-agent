@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "de3c4983298657bdc45524d6be846fd4657f19d5",
+    "eb581beefa14d77b4104bd28baec1cdbb7f19a5d",
     "x:mdubowitz:2097232570354204937",
     "x:business:2097230978934567359",
     "x:business:2097210850192904306",
@@ -498,9 +500,7 @@
     "x:NBCNews:2095995361173139672",
     "x:AlArabiya_Eng:2096059197045555636",
     "x:haaretzcom:2096082180216676858",
-    "x:haaretzcom:2096089726721704066",
-    "x:Jerusalem_Post:2096129575667310642",
-    "x:AJEnglish:2096140818335535225"
+    "x:haaretzcom:2096089726721704066"
   ],
   "market_last_sent_at": "2026-09-08T06:50:13.875935+00:00",
   "next_news_color": "red",
@@ -623,6 +623,24 @@
     "last_wti": 93.83
   },
   "news_rejections": [
+    {
+      "key": "de3c4983298657bdc45524d6be846fd4657f19d5",
+      "source": "NOTAM / Airspace",
+      "title": "US F-35 Stealth Fighters Forced to Emergency Landing After Alleged Attack Over Iranian Airspace - Ratopati",
+      "reason": "not_today_tehran",
+      "published": "Wed, 26 Aug 2026 14:43:25 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9XTGh6MjlJeXJGeHhfc3FsN2YxNllfZEszeEthZDVHVENndm1DcDlXWUZqTmhSOXJwbFUxMy1yQkRSbFpfX1FTVG5wR1NxN2dmM3JZcUZR?oc=5",
+      "checked_at": "2026-09-08T08:09:17.501583+00:00"
+    },
+    {
+      "key": "eb581beefa14d77b4104bd28baec1cdbb7f19a5d",
+      "source": "NOTAM / Airspace",
+      "title": "Iran partially reopens airspace to international flights",
+      "reason": "not_today_tehran",
+      "published": "Sat, 18 Apr 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPbFRWV09RUU9TTkxFeEt4WERzdFRyUVVCbkVJcFFwUC1KRGVqZzVJN1RJS1RwQi1ZZjNVMkk5cG4wSFczRURVSHk2Q2xFZjlKeG9XOVpIdkxlcHRBN0FQMHp5NDJVMU96NGVFMnVSSTFqX0VQUnotTldkMlNKYjV5LTlCQmZHVDdaODhWYWFUM0hGbV9rN0ZhRUtPbjY1Vjd0Z2c?oc=5",
+      "checked_at": "2026-09-08T08:09:17.501583+00:00"
+    },
     {
       "key": "x:Sepah_News:936375644757331969",
       "source": "Sepah News / X",
@@ -2403,24 +2421,6 @@
       "reason": "not_today_tehran",
       "published": "Sun, 07 Jun 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiuAJBVV95cUxQQ1E3Z3JoYmJQcEMtWWs4RW80ZUNwM1g1dVFmeTBQWU5nTjlGczhBMTBWc3o1b3JOSGxIOXBXMkhLaGlfZmlweWphbGV0Y2FjU1JEYWtGUWd4aTd2Z0t3TGdMWVVFLVVKWGJmeE9Jb0dQMUxvV2U0R3Q4TjBfelJLR1JlUllCMkJRSHQxdUlJOVA2U2ZRWFZNcndtN1hQLXZwUFk5RVBHZUlUUDBHemVOT0U3d296cnRmZWNHZDMxNWJES2p3UW84VEluOVl2YWpOSS1xZjJwaFpBRG91dU44bGtsUWNfZmNMRzhWcTFmRHZiN0tMOGltUklpVEhkZVk2NTNRMHRHQUNwdXJ0ZEM4OXZpSXdFLW1iUndmSWhSTzdNeVAwVEd5dUhNSjVJRV9JNHNsTG9JQzc?oc=5",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "d82f0209f7baaeaca90c70a890e5b61f30ba4f3b",
-      "source": "NOTAM / Airspace",
-      "title": "Iran shuts western airspace as US weighs fresh strikes; Rubio in Delhi flags ‘progress’ in Tehran talks - The Indian Express",
-      "reason": "not_today_tehran",
-      "published": "Sat, 23 May 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxOYUlqVU4xVUVTWG1GUmZHM29XWmQ4T29nSWhFU2ZGeW42aERaOFc0VFA0VnZ5MnpFRmZPN2U2LUFlbXI5ckpyTlJoaE1vSHdka2l0ZmY1NFdfWVF0UmZIcURSNVdQa0g4RlRTSk81OGR5UUZwVkVlQnVSUjhiMm1SNHNfWnBUZEZxYWFvQ0ZhcXlaU3VXYzdXd1ZTVXByOFREdzNrWWJQQTVSVkdwS3doTVM1TFBBbjg1MV9kOEFVN3JkWjI0NHlUWnd30gHQAUFVX3lxTE1hTm9RSUdUSlJVVVBKSXRCNTVDUHpSd3l0YnVTQkk4a3VuTlBlaTUzQVdfZ1RORXdWc1pEbE5jeWo2LVhIX2VZd09yLThPQWxnRllPRUJfSTdfQm8tVEdJaWtMdzgxVWluc1hQSEU5ZDhoaXhzQmQ2eDhFcjRDcmlLdVVhZGdGOVl6Sm1WOUcwWk5ENzNHOGJ1RTNBRUkyWjA0Qk5vRnU1T1R3Z3VTUi1sSGhjVUpteEp2Z01SdTkwaWZBeVBMR0VidzRORUdXMzM?oc=5",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "a3a26ccf87f647276f42de344c3cd70e49021a53",
-      "source": "NOTAM / Airspace",
-      "title": "UN reports continued Israeli airspace violations in Lebanon despite US-Iran deal - aa.com.tr",
-      "reason": "not_today_tehran",
-      "published": "Mon, 15 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOcXNOeWR5aG1WeDFFQ2pIOHlSd3BnSDFKWVpKTzhabEZUcnFiQ1YxMDhpVTYyM2EzUkN1cGZLMVR0U042b09nYUpCNE9kaG5SUVFOSXdOMUcyQWhZUENRNDRuQXM2Q1E1TldCb2piOGlCYlFMYml5ZDhNdlBla28yRFAxbEh4eGlFaHFKbHRhV2FQM2tVbThBclViQ2FtdjlDWDV0dlNsVWhhc3JYdFdTeml2ZFdSWEdVanIyRUxCTlN6dGM?oc=5",
       "checked_at": "2026-09-05T16:44:46.685583+00:00"
     }
   ],
