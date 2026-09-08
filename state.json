@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:JasonMBrodsky:2097280546514534630",
     "x:AJEnglish:2097277425377751214",
     "x:Jerusalem_Post:2097273837549219909",
     "x:AJEnglish:2097273249461645811",
@@ -499,11 +500,10 @@
     "ff92b318d33c59099f68d1774fa070027b4851c8",
     "x:haaretzcom:2096044433254797421",
     "x:AJEnglish:2096159651028934757",
-    "x:Reuters:2096158936885874844",
-    "x:AlArabiya_Eng:2096158601412772116"
+    "x:Reuters:2096158936885874844"
   ],
-  "market_last_sent_at": "2026-09-08T09:00:17.351726+00:00",
-  "next_news_color": "white",
+  "market_last_sent_at": "2026-09-08T11:16:00.342538+00:00",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -614,13 +614,13 @@
   "market_day_prices": {
     "date": "2026-09-08",
     "first_usd": 222100,
-    "last_usd": 223700,
+    "last_usd": 225500,
     "first_gold": 23062200,
-    "last_gold": 23382400,
+    "last_gold": 23465800,
     "first_brent": 98.44,
-    "last_brent": 99.23,
+    "last_brent": 98.64,
     "first_wti": 93.83,
-    "last_wti": 94.53
+    "last_wti": 93.97
   },
   "news_rejections": [
     {
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:JasonMBrodsky:2097280546514534630",
+      "source": "Jason Brodsky / X",
+      "title": "Britain ‌on Tuesday published legislation to introduce tougher sanctions on #Iran, expanding trade restrictions ​and powers to target ships ​as part of what it described ⁠as wider effort to curb ​Tehran's nuclear programme and other hostile ​activities.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2097280546514534630",
+      "published": "Tue, 08 Sep 2026 11:07:02 +0000",
+      "sent_at": "2026-09-08T11:16:00.342538+00:00",
+      "fingerprint": "britain on tuesday published legislation to introduce tougher sanctions on iran expanding trade restrictions and powers to target ships as part of what it described as wider effort to curb tehran s nuclear programme and other hostile activities"
+    },
     {
       "key": "x:AJEnglish:2097277425377751214",
       "source": "Al Jazeera English / X",
