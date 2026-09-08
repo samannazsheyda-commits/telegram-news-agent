@@ -12,8 +12,19 @@ if [[ "${EUID}" -ne 0 ]]; then
   exit 1
 fi
 
+. /etc/os-release
 apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y git python3 python3-venv python3-pip ca-certificates util-linux
+DEBIAN_FRONTEND=noninteractive apt-get install -y git ca-certificates curl util-linux software-properties-common
+
+PYTHON_BIN=python3
+if [[ "${ID:-}" == "ubuntu" && "${VERSION_ID:-}" == "20.04" ]]; then
+  add-apt-repository -y ppa:deadsnakes/ppa
+  apt-get update
+  DEBIAN_FRONTEND=noninteractive apt-get install -y python3.12 python3.12-venv python3.12-distutils
+  PYTHON_BIN=python3.12
+else
+  DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-venv python3-pip
+fi
 
 if ! id bikhabar >/dev/null 2>&1; then
   useradd --system --create-home --home-dir /var/lib/bikhabar --shell /usr/sbin/nologin bikhabar
@@ -29,8 +40,8 @@ else
   runuser -u bikhabar -- git -C "${APP_DIR}" reset --hard "origin/${BRANCH}"
 fi
 
-python3 -m venv "${VENV_DIR}"
-"${VENV_DIR}/bin/pip" install --upgrade pip
+"${PYTHON_BIN}" -m venv "${VENV_DIR}"
+"${VENV_DIR}/bin/python" -m pip install --upgrade pip
 "${VENV_DIR}/bin/pip" install -r "${APP_DIR}/requirements.txt"
 chown -R bikhabar:bikhabar "${VENV_DIR}" "${APP_DIR}"
 
