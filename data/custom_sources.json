@@ -1,5 +1,32 @@
 [
   {
+    "id": "middle-east-spectator-telegram",
+    "kind": "telegram",
+    "name": "میدل ایست اسپکتیتور",
+    "channel": "Middle_East_Spectator",
+    "active": true,
+    "status": "active",
+    "updated_at": "2026-09-09T00:00:00+00:00"
+  },
+  {
+    "id": "2a8bc21b3156cc672a0f3d18a354429db5fa1d94",
+    "kind": "telegram",
+    "name": "کلش ریپورت",
+    "channel": "ClashReport",
+    "active": true,
+    "status": "active",
+    "updated_at": "2026-09-09T00:00:00+00:00"
+  },
+  {
+    "id": "geopwatch-telegram",
+    "kind": "telegram",
+    "name": "ژئوپی واچ",
+    "channel": "GeoPWatch",
+    "active": true,
+    "status": "active",
+    "updated_at": "2026-09-09T00:00:00+00:00"
+  },
+  {
     "id": "ffe6178d0fa0b28b190e3fcd287d2464e5c7e6dd",
     "kind": "telegram",
     "name": "تبز لایو",
@@ -16,24 +43,6 @@
     "active": true,
     "status": "reference",
     "updated_at": "2026-09-04T21:56:00+00:00"
-  },
-  {
-    "id": "2a8bc21b3156cc672a0f3d18a354429db5fa1d94",
-    "kind": "telegram",
-    "name": "کلش ریپورت",
-    "channel": "ClashReport",
-    "active": true,
-    "status": "reference",
-    "updated_at": "2026-09-04T21:56:00+00:00"
-  },
-  {
-    "id": "geopwatch-telegram",
-    "kind": "telegram",
-    "name": "ژئوپی واچ",
-    "channel": "GeoPWatch",
-    "active": true,
-    "status": "reference",
-    "updated_at": "2026-09-04T22:10:00+00:00"
   },
   {
     "id": "warnoir-telegram",
