@@ -1,0 +1,15 @@
+[Unit]
+Description=Publish Bikhabar Middle East air traffic snapshot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=bikhabar
+Group=bikhabar
+WorkingDirectory=/opt/bikhabar/app
+EnvironmentFile=/etc/bikhabar/agent.env
+ExecStart=/opt/bikhabar/venv/bin/python -m src.air_traffic --publish
+TimeoutStartSec=180
+NoNewPrivileges=true
+PrivateTmp=true
