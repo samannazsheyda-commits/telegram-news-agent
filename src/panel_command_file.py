@@ -9,11 +9,16 @@ from typing import Callable
 
 import requests
 
-from .editorial_store import LocalEditorialStore, ReviewItem
+from .editorial_store import LocalEditorialStore
+from .event_ledger import EventLedger
 from .manual_publish import publish_review_item, reject_review_item
+from .newsroom_models import RawNewsItem
+from .newsroom_v2 import CycleSummary, run_cycle
+from .panel_live_feed import LiveFeedStore
 from .runtime_v12 import _normalise_url, extract_public_telegram_source_links
 from .services import send_telegram
 from .sources import USER_AGENT
+from .truth_social import fetch_trump_truth_items
 
 OWN_CHANNEL = "bikhabaar"
 TERMINAL = {"succeeded", "failed", "reconciled"}
@@ -115,74 +120,88 @@ def _consume(path: Path) -> None:
         pass
 
 
-def _safe_translate(agent, value: str) -> str:
-    text = str(value or "").strip()
-    if not text:
-        return ""
-    try:
-        return str(agent.translate_to_fa(text) or "").strip()
-    except Exception:
-        return ""
+def scan_items_into_v2_panel(
+    items: list[RawNewsItem],
+    *,
+    store: LocalEditorialStore,
+    ledger: EventLedger,
+    live_feed: LiveFeedStore,
+    settings: dict,
+    now: datetime,
+) -> CycleSummary:
+    """Run a shadow V2 cycle for the panel.
+
+    Shadow mode never publishes. With auto-publish enabled, normal new events
+    appear only in the live feed. If publication is paused or a decision needs
+    editorial review, the item is also placed in the manual queue.
+    """
+    return run_cycle(
+        fetcher=lambda: items,
+        ledger=ledger,
+        live_feed=live_feed,
+        editorial_store=store,
+        publisher=lambda item: (_ for _ in ()).throw(RuntimeError("panel_refresh_must_not_publish")),
+        settings=settings,
+        now=now,
+        shadow=True,
+    )
+
+
+def _legacy_news_to_raw(item, now: datetime) -> RawNewsItem | None:
+    key = str(getattr(item, "key", "") or "").strip()
+    title = str(getattr(item, "title", "") or "").strip()
+    if not key or not title:
+        return None
+    media: list[str] = []
+    for attr in ("photo_url", "image_url", "media_url"):
+        value = str(getattr(item, attr, "") or "").strip()
+        if value and value not in media:
+            media.append(value)
+    return RawNewsItem(
+        source=str(getattr(item, "source", "") or "").strip(),
+        source_url=str(getattr(item, "link", "") or "").strip(),
+        source_item_id=key,
+        published_at=str(getattr(item, "published", "") or "").strip(),
+        fetched_at=now.isoformat(),
+        title=title,
+        summary=str(getattr(item, "summary", "") or "").strip(),
+        media=media,
+        source_priority="normal",
+    )
 
 
 def _scan_fresh_items_into_queue(store: LocalEditorialStore) -> int:
-    """Fetch a fresh snapshot for the browser panel without auto-publishing it.
-
-    Production policies are installed so the same sources/dedup rules are used as
-    the live agent, but we stop at fetch and write today's unseen items to the
-    editorial queue for explicit publish/reject from the panel.
-    """
+    """Compatibility entrypoint: refresh the V2 live feed, not the old catch-all queue."""
     from . import runtime_v13
 
     runtime_v13.install_production_policies()
     agent = runtime_v13.base.agent
     now = datetime.now(timezone.utc)
-    today_tehran = now.astimezone(agent.TEHRAN).date()
+    raw_items: list[RawNewsItem] = []
+    for item in list(agent.fetch_news_items() or []):
+        converted = _legacy_news_to_raw(item, now)
+        if converted is not None:
+            raw_items.append(converted)
+    try:
+        raw_items.extend(fetch_trump_truth_items())
+    except Exception as exc:
+        print(f"V2_PANEL_SOURCE_FAILED source=truth_social error={exc}", file=sys.stderr)
 
-    terminal_keys = {
-        str(record.get("news_key") or "")
-        for record in store.history()
-        if record.get("status") in {"published_manual", "published_auto", "rejected_manual", "superseded"}
-    }
-    queued_keys = {
-        str(record.get("news_key") or "")
-        for record in store.queue()
-        if record.get("status", "pending") == "pending"
-    }
-
-    items = list(agent.fetch_news_items() or [])
-    added = 0
-    for item in items:
-        key = str(getattr(item, "key", "") or "").strip()
-        if not key or key in terminal_keys or key in queued_keys:
-            continue
-
-        published = agent._published_dt(getattr(item, "published", ""))
-        if published is None or published.astimezone(agent.TEHRAN).date() != today_tehran:
-            continue
-
-        title = str(getattr(item, "title", "") or "").strip()
-        summary = str(getattr(item, "summary", "") or "").strip()
-        if not title:
-            continue
-
-        record = ReviewItem.for_news(
-            news_key=key,
-            source=str(getattr(item, "source", "") or "").strip(),
-            source_url=str(getattr(item, "link", "") or "").strip(),
-            original_title=title,
-            original_summary=summary,
-            persian_title=_safe_translate(agent, title),
-            persian_body=_safe_translate(agent, summary) if summary and summary != title else "",
-            published_at_source=str(getattr(item, "published", "") or "").strip(),
-            discovered_at=now.isoformat(),
-            rejection_reason="panel_refresh",
-        )
-        store.upsert_queue(record)
-        queued_keys.add(key)
-        added += 1
-
-    return added
+    settings = runtime_v13.load_newsroom_settings()
+    summary = scan_items_into_v2_panel(
+        raw_items,
+        store=store,
+        ledger=EventLedger("data/event_ledger.json"),
+        live_feed=LiveFeedStore("data/panel_live_feed.json"),
+        settings=settings,
+        now=now,
+    )
+    print(
+        "V2_PANEL_REFRESH "
+        f"fetched={summary.items_fetched} live={summary.panel_feed_count} "
+        f"waiting={summary.review_items} duplicates={summary.exact_duplicates + summary.same_claim_duplicates}"
+    )
+    return summary.panel_feed_count
 
 
 def process_command_file(
@@ -222,8 +241,8 @@ def process_command_file(
                     raise RuntimeError(f"refresh_failed_rc_{rc}")
                 message = "اسکن تازه ایجنت انجام شد"
             else:
-                added = _scan_fresh_items_into_queue(store)
-                message = f"اسکن تازه انجام شد؛ {added} خبر جدید وارد پنل شد"
+                visible = _scan_fresh_items_into_queue(store)
+                message = f"اسکن تازه انجام شد؛ {visible} خبر در ورودی زنده پنل موجود است"
             terminal = _write_result(result_dir, _result(args, "succeeded", message))
             _consume(command_path)
             return terminal

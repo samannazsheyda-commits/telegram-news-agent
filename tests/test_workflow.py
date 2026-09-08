@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-RUNTIME_COMMAND = 'python -m src.runtime_v13 --monitor'
+RUNTIME_COMMAND = 'python -m src.newsroom_hybrid_runtime --monitor'
 
 
 def _workflow_text() -> str:
@@ -17,6 +17,8 @@ def test_workflow_runs_bounded_monitor_and_keeps_manual_dispatch():
     assert "cancel-in-progress: ${{ github.event_name == 'push' }}" in text
     assert 'data/editorial_queue.json' in text
     assert 'data/editorial_history.json' in text
+    assert 'data/event_ledger.json' in text
+    assert 'data/panel_live_feed.json' in text
     assert 'POLL_SECONDS: "60"' in text
     assert 'SESSION_SECONDS: "270"' in text
 

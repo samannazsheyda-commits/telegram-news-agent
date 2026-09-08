@@ -103,6 +103,16 @@ def _effective_queue(data) -> list[dict]:
     return [r for r in queue if r.get("status", "pending") == "pending" and r.get("id") not in terminal]
 
 
+def _live_feed(data) -> list[dict]:
+    rows = _read_list(data, "data/panel_live_feed.json")
+    return sorted(rows, key=lambda r: str(r.get("updated_at") or r.get("discovered_at") or ""), reverse=True)
+
+
+def _published_history(data) -> list[dict]:
+    rows = _read_list(data, "data/editorial_history.json")
+    return [r for r in rows if r.get("status") in {"published_manual", "published_auto"}]
+
+
 def _write_latest_list(data, path: str, transform, message: str) -> list[dict]:
     for attempt in range(2):
         current, sha = data.read_json(path, [])
@@ -217,13 +227,19 @@ def create_app(config: dict | None = None):
     @login_required
     def dashboard():
         queue = _effective_queue(data)
+        live = _live_feed(data)
+        published = _published_history(data)
         history = _read_list(data, "data/editorial_history.json")
-        published_today = sum(1 for r in history if r.get("status") in {"published_manual", "published_auto"} and _same_tehran_day(str(r.get("decision_at") or r.get("updated_at") or "")))
+        published_today = sum(1 for r in published if _same_tehran_day(str(r.get("decision_at") or r.get("updated_at") or "")))
         rejected_today = sum(1 for r in history if r.get("status") in {"rejected_manual", "superseded"} and _same_tehran_day(str(r.get("decision_at") or r.get("updated_at") or "")))
         state, _ = data.read_json("state.json", {})
-        last_publication = next((r.get("decision_at") or r.get("updated_at") for r in history if r.get("status") in {"published_manual", "published_auto"}), "")
+        last_publication = next((r.get("decision_at") or r.get("updated_at") for r in published), "")
         return render_template(
             "dashboard.html",
+            live=live,
+            pending=queue,
+            published=published,
+            live_count=len(live),
             queue_count=len(queue),
             published_today=published_today,
             rejected_today=rejected_today,
@@ -284,7 +300,6 @@ def create_app(config: dict | None = None):
                             decision_at=now,
                             updated_at=now,
                         )
-                        # History first: even if a later GitHub write conflicts, the item becomes non-publishable.
                         _upsert_record(data, "data/editorial_history.json", final, "chore: record manual telegram publication")
                         try:
                             data.mark_news_seen(str(record.get("news_key") or ""))

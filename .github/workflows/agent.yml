@@ -49,7 +49,7 @@ jobs:
         run: python -m pytest -q
 
       - name: Restore production runtime state after tests
-        run: git restore --source=HEAD -- state.json data/editorial_queue.json data/editorial_history.json
+        run: git restore --source=HEAD -- state.json data/editorial_queue.json data/editorial_history.json data/event_ledger.json data/panel_live_feed.json
 
       - name: Run near-realtime monitor
         id: monitor
@@ -58,7 +58,7 @@ jobs:
           TELEGRAM_CHAT_ID: "@bikhabaar"
           POLL_SECONDS: "60"
           SESSION_SECONDS: "270"
-        run: python -m src.runtime_v13 --monitor
+        run: python -m src.newsroom_hybrid_runtime --monitor
 
       - name: Persist runtime data
         if: ${{ always() && steps.monitor.outcome != 'skipped' }}
@@ -67,18 +67,20 @@ jobs:
           cp state.json /tmp/runtime-snapshot/state.json
           cp data/editorial_queue.json /tmp/runtime-snapshot/data/editorial_queue.json
           cp data/editorial_history.json /tmp/runtime-snapshot/data/editorial_history.json
+          cp data/event_ledger.json /tmp/runtime-snapshot/data/event_ledger.json
+          cp data/panel_live_feed.json /tmp/runtime-snapshot/data/panel_live_feed.json
 
           git fetch origin main
           git reset --hard origin/main
           python -m src.persist_merge /tmp/runtime-snapshot
 
-          if git diff --quiet -- state.json data/editorial_queue.json data/editorial_history.json; then
+          if git diff --quiet -- state.json data/editorial_queue.json data/editorial_history.json data/event_ledger.json data/panel_live_feed.json; then
             echo "No runtime data changes"
             exit 0
           fi
 
           git config user.name "telegram-news-agent[bot]"
           git config user.email "telegram-news-agent[bot]@users.noreply.github.com"
-          git add state.json data/editorial_queue.json data/editorial_history.json
+          git add state.json data/editorial_queue.json data/editorial_history.json data/event_ledger.json data/panel_live_feed.json
           git commit -m "chore: update agent runtime data"
           git push

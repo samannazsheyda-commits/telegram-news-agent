@@ -74,6 +74,21 @@ def _merge_recent_published(remote: list, local: list) -> list:
     return merged
 
 
+def _merge_by_identity(remote: list, local: list, *, identity: str, updated: str) -> list[dict]:
+    by_id: dict[str, dict] = {}
+    for raw in list(remote or []) + list(local or []):
+        if not isinstance(raw, dict):
+            continue
+        record_id = str(raw.get(identity) or "").strip()
+        if not record_id:
+            continue
+        record = dict(raw)
+        existing = by_id.get(record_id)
+        if existing is None or str(record.get(updated) or "") >= str(existing.get(updated) or ""):
+            by_id[record_id] = record
+    return sorted(by_id.values(), key=lambda row: str(row.get(updated) or ""), reverse=True)
+
+
 def merge_state(remote: dict, local: dict) -> dict:
     result = dict(remote or {})
     result.update(local or {})
@@ -110,6 +125,30 @@ def merge_snapshot(snapshot_dir: str | Path, repo_dir: str | Path = ".") -> None
         if not isinstance(local_records, list):
             local_records = []
         _write(repo / rel, merge_record_sets(remote_records, local_records))
+
+    remote_ledger = _read(repo / "data/event_ledger.json", [])
+    local_ledger = _read(snapshot / "data/event_ledger.json", [])
+    _write(
+        repo / "data/event_ledger.json",
+        _merge_by_identity(
+            remote_ledger if isinstance(remote_ledger, list) else [],
+            local_ledger if isinstance(local_ledger, list) else [],
+            identity="event_id",
+            updated="last_updated",
+        ),
+    )
+
+    remote_live = _read(repo / "data/panel_live_feed.json", [])
+    local_live = _read(snapshot / "data/panel_live_feed.json", [])
+    _write(
+        repo / "data/panel_live_feed.json",
+        _merge_by_identity(
+            remote_live if isinstance(remote_live, list) else [],
+            local_live if isinstance(local_live, list) else [],
+            identity="item_id",
+            updated="updated_at",
+        ),
+    )
 
 
 def _cli() -> int:
