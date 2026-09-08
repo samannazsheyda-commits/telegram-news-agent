@@ -197,3 +197,34 @@ def test_restart_does_not_republish_same_source_event(tmp_path):
     assert first.published == 1
     assert second.exact_duplicates == 1
     assert sent == ["restart"]
+
+
+def test_unpublished_exact_duplicate_is_retried_instead_of_suppressed(tmp_path):
+    ledger, live, editorial = stores(tmp_path)
+    item = raw("Reuters", "retry", "Iran announces a new maritime restriction in the Strait of Hormuz")
+    sent = []
+
+    first = run_cycle(
+        fetcher=lambda: [item],
+        ledger=ledger,
+        live_feed=live,
+        editorial_store=editorial,
+        publisher=lambda item: {"ok": False},
+        settings={"auto_publish": True},
+        now=NOW,
+    )
+    second = run_cycle(
+        fetcher=lambda: [item],
+        ledger=EventLedger(tmp_path / "ledger.json"),
+        live_feed=LiveFeedStore(tmp_path / "live.json"),
+        editorial_store=LocalEditorialStore(tmp_path / "queue.json", tmp_path / "history.json"),
+        publisher=lambda item: sent.append(item.raw.source_item_id) or {"ok": True, "message_id": 902},
+        settings={"auto_publish": True},
+        now=NOW,
+    )
+
+    assert first.publish_failed == 1
+    assert second.published == 1
+    assert sent == ["retry"]
+    event = EventLedger(tmp_path / "ledger.json").records()[0]
+    assert event.published_message_ids == [902]

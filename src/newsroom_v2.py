@@ -132,6 +132,12 @@ def run_cycle(
         candidates = ledger.find_candidates(fingerprint)
         decision = decide_item(item, fingerprint, candidates)
 
+        duplicate_event = None
+        retry_unpublished_duplicate = False
+        if decision.decision in {"duplicate_exact", "duplicate_same_claim"}:
+            duplicate_event = ledger.get(decision.duplicate_of)
+            retry_unpublished_duplicate = duplicate_event is not None and not duplicate_event.published_message_ids
+
         if decision.decision == "duplicate_exact":
             summary.exact_duplicates += 1
             event_id = decision.duplicate_of
@@ -139,17 +145,18 @@ def run_cycle(
                 ledger.add_variant(event_id, item.raw.source_url, now.isoformat())
             except KeyError:
                 pass
-            live_feed.upsert(_feed_record(
-                item,
-                event_id=event_id,
-                decision=decision.decision,
-                reason=decision.reason,
-                duplicate_of=decision.duplicate_of,
-                panel_status="duplicate",
-                message_id=None,
-                now=now,
-            ))
-            continue
+            if not retry_unpublished_duplicate:
+                live_feed.upsert(_feed_record(
+                    item,
+                    event_id=event_id,
+                    decision=decision.decision,
+                    reason=decision.reason,
+                    duplicate_of=decision.duplicate_of,
+                    panel_status="duplicate",
+                    message_id=None,
+                    now=now,
+                ))
+                continue
 
         if decision.decision == "duplicate_same_claim":
             summary.same_claim_duplicates += 1
@@ -158,19 +165,22 @@ def run_cycle(
                 ledger.add_variant(event_id, item.raw.source_url, now.isoformat())
             except KeyError:
                 pass
-            live_feed.upsert(_feed_record(
-                item,
-                event_id=event_id,
-                decision=decision.decision,
-                reason=decision.reason,
-                duplicate_of=decision.duplicate_of,
-                panel_status="duplicate",
-                message_id=None,
-                now=now,
-            ))
-            continue
+            if not retry_unpublished_duplicate:
+                live_feed.upsert(_feed_record(
+                    item,
+                    event_id=event_id,
+                    decision=decision.decision,
+                    reason=decision.reason,
+                    duplicate_of=decision.duplicate_of,
+                    panel_status="duplicate",
+                    message_id=None,
+                    now=now,
+                ))
+                continue
 
-        if decision.decision == "material_update":
+        if retry_unpublished_duplicate:
+            event_id = decision.duplicate_of
+        elif decision.decision == "material_update":
             summary.material_updates += 1
             event_id = decision.event_id
             ledger.update_material_facts(event_id, fingerprint.key_facts, now.isoformat())
@@ -208,6 +218,7 @@ def run_cycle(
                 event_id=event_id,
                 decision=decision.decision,
                 reason=eligibility.reason,
+                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
                 panel_status=panel_status,
                 message_id=None,
                 now=now,
@@ -225,6 +236,7 @@ def run_cycle(
                 event_id=event_id,
                 decision=decision.decision,
                 reason=decision.reason,
+                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
                 panel_status="waiting",
                 message_id=None,
                 now=now,
@@ -237,6 +249,7 @@ def run_cycle(
                 event_id=event_id,
                 decision=decision.decision,
                 reason=decision.reason,
+                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
                 panel_status="new",
                 message_id=None,
                 now=now,
@@ -256,6 +269,7 @@ def run_cycle(
                 event_id=event_id,
                 decision=decision.decision,
                 reason=decision.reason,
+                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
                 panel_status="auto_published",
                 message_id=message_id,
                 now=now,
@@ -269,6 +283,7 @@ def run_cycle(
                 event_id=event_id,
                 decision=decision.decision,
                 reason="publish_failed",
+                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
                 panel_status="failed",
                 message_id=None,
                 now=now,
