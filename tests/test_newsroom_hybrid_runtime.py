@@ -38,6 +38,20 @@ def test_hybrid_cycle_runs_ancillary_then_v2(monkeypatch):
     assert result["published"] == 2
 
 
+def test_hybrid_uses_configured_v2_data_dir(monkeypatch):
+    seen = {}
+    monkeypatch.setattr(hybrid, "run_ancillary_cycle", lambda now: 0)
+
+    def v2(**kwargs):
+        seen.update(kwargs)
+        return {"published": 0, "telegram_writes": 0}
+
+    monkeypatch.setattr(hybrid, "run_v2_once", v2)
+    monkeypatch.setenv("DATA_DIR", "/var/lib/bikhabar/data")
+    hybrid.run_cycle(shadow=True, now=datetime(2026, 9, 8, 1, 0, tzinfo=timezone.utc))
+    assert seen["data_dir"] == "/var/lib/bikhabar/data"
+
+
 def test_hybrid_stops_if_ancillary_cycle_fails(monkeypatch):
     calls = []
     monkeypatch.setattr(hybrid, "run_ancillary_cycle", lambda now: 7)
@@ -45,3 +59,18 @@ def test_hybrid_stops_if_ancillary_cycle_fails(monkeypatch):
     result = hybrid.run_cycle(shadow=False, now=datetime(2026, 9, 8, 1, 0, tzinfo=timezone.utc))
     assert result["rc"] == 7
     assert calls == []
+
+
+def test_zero_session_runs_until_real_failure(monkeypatch):
+    calls = []
+
+    def cycle(*, shadow):
+        calls.append(shadow)
+        if len(calls) == 1:
+            return {"rc": 0, "published": 0}
+        return {"rc": 9, "published": 0}
+
+    monkeypatch.setattr(hybrid, "run_cycle", cycle)
+    monkeypatch.setattr(hybrid.time, "sleep", lambda _: None)
+    assert hybrid.monitor(shadow=False, poll_seconds=1, session_seconds=0) == 9
+    assert calls == [False, False]
