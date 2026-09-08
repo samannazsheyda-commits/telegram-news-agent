@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:BBCWorld:2097249761623413244",
     "de3c4983298657bdc45524d6be846fd4657f19d5",
     "eb581beefa14d77b4104bd28baec1cdbb7f19a5d",
     "x:mdubowitz:2097232570354204937",
@@ -499,11 +500,10 @@
     "x:ABC:2096116416256598069",
     "x:NBCNews:2095995361173139672",
     "x:AlArabiya_Eng:2096059197045555636",
-    "x:haaretzcom:2096082180216676858",
-    "x:haaretzcom:2096089726721704066"
+    "x:haaretzcom:2096082180216676858"
   ],
   "market_last_sent_at": "2026-09-08T09:00:17.351726+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:BBCWorld:2097249761623413244",
+      "source": "BBC World / X",
+      "title": "'Tirana teeth': Albania hopes to be the new Turkey for dental work",
+      "summary": "",
+      "link": "https://x.com/BBCWorld/status/2097249761623413244",
+      "published": "Tue, 08 Sep 2026 09:04:42 +0000",
+      "sent_at": "2026-09-08T09:20:23.642928+00:00",
+      "fingerprint": "tirana teeth albania hopes to be the new turkey for dental work"
+    },
     {
       "key": "x:mdubowitz:2097232570354204937",
       "source": "Mark Dubowitz / X",
