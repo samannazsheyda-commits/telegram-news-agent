@@ -24,26 +24,30 @@ def _app(tmp_path):
     })
 
 
-def test_live_feed_api_returns_latest_items_for_authenticated_user(tmp_path):
+def _client(tmp_path):
     app = _app(tmp_path)
     client = app.test_client()
     with client.session_transaction() as sess:
         sess["admin"] = True
-    response = client.get("/api/live")
-    assert response.status_code == 200
-    payload = response.get_json()
-    assert payload["items"][0]["id"] == "n1"
-    assert payload["items"][0]["display_title"] == "خبر تازه"
-    assert "generated_at" in payload
+    return client
 
 
 def test_dashboard_has_realtime_feed_and_sound_toggle(tmp_path):
-    app = _app(tmp_path)
-    client = app.test_client()
-    with client.session_transaction() as sess:
-        sess["admin"] = True
+    client = _client(tmp_path)
     html = client.get("/").get_data(as_text=True)
     assert 'id="liveFeed"' in html
     assert 'id="soundToggle"' in html
     assert 'id="newNewsBadge"' in html
+    assert 'data-news-id="n1"' in html
     assert "live.js" in html
+
+
+def test_live_js_updates_feed_without_page_reload_and_keeps_sound_preference(tmp_path):
+    client = _client(tmp_path)
+    js = client.get("/static/live.js").get_data(as_text=True)
+    assert "setInterval(refreshLiveFeed, 3000)" in js
+    assert "AudioContext" in js
+    assert "localStorage" in js
+    assert "DOMParser" in js
+    assert "replaceChildren" in js
+    assert "location.reload" not in js
