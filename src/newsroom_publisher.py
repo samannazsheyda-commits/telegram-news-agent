@@ -31,15 +31,23 @@ def _published_rfc2822(value: str) -> str:
         return ""
 
 
-def _first_image(item: NormalizedNewsItem) -> str:
+def _first_media(item: NormalizedNewsItem, kinds: set[str]) -> str:
     for media in item.raw.media or []:
         if not isinstance(media, dict):
             continue
-        url = str(media.get("url") or media.get("preview_url") or "").strip()
         kind = str(media.get("type") or "").lower().strip()
-        if url and kind in {"image", "photo"}:
+        url = str(media.get("url") or media.get("preview_url") or "").strip()
+        if url and kind in kinds:
             return url
     return ""
+
+
+def _first_image(item: NormalizedNewsItem) -> str:
+    return _first_media(item, {"image", "photo"})
+
+
+def _first_video(item: NormalizedNewsItem) -> str:
+    return _first_media(item, {"video", "mp4", "gif"})
 
 
 class TelegramNewsroomPublisher:
@@ -72,8 +80,18 @@ class TelegramNewsroomPublisher:
         if not message:
             return {"ok": False, "error": "translation_or_format_failed"}
 
+        video = _first_video(item)
         photo = _first_image(item)
-        if photo:
+        if video:
+            endpoint = "sendVideo"
+            data = {
+                "chat_id": self.chat_id,
+                "video": video,
+                "caption": message[:1024],
+                "parse_mode": "HTML",
+                "supports_streaming": "true",
+            }
+        elif photo:
             endpoint = "sendPhoto"
             data = {
                 "chat_id": self.chat_id,
@@ -95,7 +113,7 @@ class TelegramNewsroomPublisher:
                 f"https://api.telegram.org/bot{self.bot_token}/{endpoint}",
                 data=data,
                 headers={"User-Agent": USER_AGENT},
-                timeout=25,
+                timeout=35 if video else 25,
             )
             response.raise_for_status()
             payload = response.json()

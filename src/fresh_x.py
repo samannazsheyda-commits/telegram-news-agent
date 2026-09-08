@@ -19,6 +19,7 @@ _X_MEDIA_URLS: dict[str, str] = {}
 @dataclass(frozen=True)
 class MediaNewsItem(NewsItem):
     media_url: str = ""
+    video_url: str = ""
 
 
 _EXTRA_X_SOURCES = (
@@ -92,13 +93,6 @@ def monitored_x_sources() -> tuple[dict[str, str], ...]:
 
 
 def is_fresh_iran_topic(text: str) -> bool:
-    """Broad Iran relevance gate for curated X sources.
-
-    The account list is already curated. Requiring both an Iran anchor and a second
-    security keyword was dropping legitimate fresh Iran developments, so an Iran/
-    Hormuz/nuclear-site anchor is now sufficient. Editorial promo and duplicate
-    filters still run later.
-    """
     value = (text or "").lower()
     return any(anchor in value for anchor in _IRAN_ANCHORS)
 
@@ -154,6 +148,38 @@ def _photo_url_from_row(row: dict) -> str:
     return ""
 
 
+def _candidate_video_urls(value: object) -> list[tuple[int, str]]:
+    found: list[tuple[int, str]] = []
+
+    def walk(node: object) -> None:
+        if isinstance(node, dict):
+            url = str(node.get("url") or node.get("src") or "").strip()
+            content_type = str(node.get("content_type") or node.get("mime_type") or "").lower()
+            bitrate_raw = node.get("bitrate") or 0
+            try:
+                bitrate = int(bitrate_raw)
+            except (TypeError, ValueError):
+                bitrate = 0
+            if url.startswith("https://") and ("video/mp4" in content_type or ".mp4" in url.lower()):
+                found.append((bitrate, url))
+            for child in node.values():
+                walk(child)
+        elif isinstance(node, list):
+            for child in node:
+                walk(child)
+
+    walk(value)
+    return found
+
+
+def _video_url_from_row(row: dict) -> str:
+    candidates = _candidate_video_urls(row.get("media")) + _candidate_video_urls(row.get("videos"))
+    if not candidates:
+        return ""
+    candidates.sort(key=lambda item: item[0], reverse=True)
+    return candidates[0][1]
+
+
 def media_url_for_item(item: NewsItem) -> str:
     direct = str(getattr(item, "media_url", "") or "").strip()
     if direct:
@@ -194,15 +220,16 @@ def parse_fxtwitter_timeline(payload: object, source_name: str, handle: str) -> 
         published = _normalise_created_at(row.get("created_at"))
         if not text or not published or not is_fresh_iran_topic(text):
             continue
-        if _VIDEO_DEPENDENT_RE.search(text):
-            print(f"NEWS_SUPPRESSED video_without_channel_media source={source!r} post_id={post_id!r}")
-            continue
         if _PROMO_CTA_RE.search(text):
             print(f"NEWS_SUPPRESSED promotional_post source={source!r} post_id={post_id!r}")
             continue
 
         key = f"x:{screen_name}:{post_id}"
         photo_url = _photo_url_from_row(row)
+        video_url = _video_url_from_row(row)
+        if _VIDEO_DEPENDENT_RE.search(text) and not video_url:
+            print(f"NEWS_SUPPRESSED video_without_channel_media source={source!r} post_id={post_id!r}")
+            continue
         if photo_url:
             _X_MEDIA_URLS[key] = photo_url
         else:
@@ -218,6 +245,7 @@ def parse_fxtwitter_timeline(payload: object, source_name: str, handle: str) -> 
                 f"https://x.com/{screen_name}/status/{post_id}",
                 published,
                 photo_url,
+                video_url,
             )
         )
     return items

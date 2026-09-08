@@ -19,10 +19,11 @@ def test_expanded_x_registry_contains_required_accounts():
         "@WSJ", "@TheEconomist", "@netanyahu", "@Israel_katz", "@kann_news", "@N12News",
         "@newsisrael13", "@C14_news", "@IDF", "@Jerusalem_Post", "@IsraelHayomEng", "@CENTCOM",
         "@USTreasury", "@SecScottBessent", "@PeteHegseth", "@DeptofWar", "@SecRubio", "@VP", "@StateDept",
-        "@statedeptspox", "@WhiteHouse", "@marklevinshow", "@JasonMBrodsky", "@mdubowitz",
+        "@statedeptspox", "@WhiteHouse", "@marklevinshow", "@mdubowitz",
         "@manniefabian", "@sfrantzman", "@jconricus", "@Doranimated", "@jmhansler", "@JoeTruzman",
     }
     assert required <= handles
+    assert "@JasonMBrodsky" not in handles
 
 
 def test_no_iranian_commentators_are_in_expanded_x_registry():

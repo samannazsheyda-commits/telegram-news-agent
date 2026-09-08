@@ -46,7 +46,7 @@ def test_parser_rejects_status_from_wrong_profile():
     assert parse_fxtwitter_timeline(payload, "Reuters", "@Reuters") == []
 
 
-def test_parser_suppresses_video_dependent_x_post_when_channel_has_no_video_attachment():
+def test_parser_keeps_video_dependent_x_post_when_direct_video_attachment_exists():
     payload = {
         "code": 200,
         "results": [{
@@ -62,6 +62,23 @@ def test_parser_suppresses_video_dependent_x_post_when_channel_has_no_video_atta
         }],
     }
 
+    items = parse_fxtwitter_timeline(payload, "TankerTrackers", "@TankerTrackers")
+    assert len(items) == 1
+    assert items[0].video_url == "https://video.example/test.mp4"
+
+
+def test_parser_still_suppresses_video_dependent_post_without_direct_video_media():
+    payload = {
+        "code": 200,
+        "results": [{
+            "type": "status",
+            "id": "2096215788063498469",
+            "url": "https://x.com/TankerTrackers/status/2096215788063498469",
+            "text": "Video shows an Iranian NITC VLCC fully loaded at Kharg Island.",
+            "created_at": "Sat Sep 05 12:36:00 +0000 2026",
+            "author": {"screen_name": "TankerTrackers"},
+        }],
+    }
     assert parse_fxtwitter_timeline(payload, "TankerTrackers", "@TankerTrackers") == []
 
 
@@ -86,6 +103,7 @@ def test_monitored_x_sources_use_active_current_accounts_not_dead_or_suspended_h
     handles = {source["handle"].lower() for source in monitored_x_sources()}
     assert "@petehegseth" in handles
     assert "@deptofwar" in handles
+    assert "@jasonmbrodsky" not in handles
     assert "@secdef" not in handles
     assert "@dwnews" not in handles
     assert "@tasnimnews_fa" not in handles

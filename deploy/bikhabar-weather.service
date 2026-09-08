@@ -1,0 +1,16 @@
+[Unit]
+Description=Bikhabar Nightly Weather Digest
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=bikhabar
+Group=bikhabar
+WorkingDirectory=/opt/bikhabar/app
+EnvironmentFile=/etc/bikhabar/agent.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/bikhabar/venv/bin/python -m src.weather_digest
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0077

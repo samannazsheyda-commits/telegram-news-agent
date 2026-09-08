@@ -10,6 +10,17 @@ from .sources import NewsItem, fetch_news_items
 from .truth_social import fetch_trump_truth_items
 
 
+def _media_from_news_item(item: NewsItem) -> list[dict[str, str]]:
+    media: list[dict[str, str]] = []
+    video_url = str(getattr(item, "video_url", "") or "").strip()
+    image_url = str(getattr(item, "media_url", "") or "").strip()
+    if video_url.startswith("https://"):
+        media.append({"type": "video", "url": video_url})
+    if image_url.startswith("https://"):
+        media.append({"type": "image", "url": image_url})
+    return media
+
+
 def news_item_to_raw(item: NewsItem, *, fetched_at: str | None = None, source_priority: str = "normal") -> RawNewsItem:
     return RawNewsItem(
         source=str(item.source or "").strip(),
@@ -19,7 +30,7 @@ def news_item_to_raw(item: NewsItem, *, fetched_at: str | None = None, source_pr
         fetched_at=fetched_at or datetime.now(timezone.utc).isoformat(),
         title=str(item.title or "").strip(),
         summary=str(item.summary or "").strip(),
-        media=[],
+        media=_media_from_news_item(item),
         source_priority=source_priority,
     )
 
