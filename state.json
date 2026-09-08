@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:AlArabiya_Eng:2097258480600011257",
     "x:BBCWorld:2097249761623413244",
     "de3c4983298657bdc45524d6be846fd4657f19d5",
     "eb581beefa14d77b4104bd28baec1cdbb7f19a5d",
@@ -499,11 +500,10 @@
     "x:TheEconomist:2096156413575716874",
     "x:ABC:2096116416256598069",
     "x:NBCNews:2095995361173139672",
-    "x:AlArabiya_Eng:2096059197045555636",
-    "x:haaretzcom:2096082180216676858"
+    "x:AlArabiya_Eng:2096059197045555636"
   ],
   "market_last_sent_at": "2026-09-08T09:00:17.351726+00:00",
-  "next_news_color": "white",
+  "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2097258480600011257",
+      "source": "Al Arabiya English / X",
+      "title": "Iran has threatened the United States with “economic warfare” and said it had fired an advanced missile at US warships, underscoring the risks of further escalation in the war only days after both sides traded blows again.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097258480600011257",
+      "published": "Tue, 08 Sep 2026 09:39:21 +0000",
+      "sent_at": "2026-09-08T09:39:48.087160+00:00",
+      "fingerprint": "iran has threatened the united states with economic warfare and said it had fired an advanced missile at us warships underscoring the risks of further escalation in the war only days after both sides traded blows again"
+    },
     {
       "key": "x:BBCWorld:2097249761623413244",
       "source": "BBC World / X",
