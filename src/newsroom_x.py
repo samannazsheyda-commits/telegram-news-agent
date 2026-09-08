@@ -34,7 +34,7 @@ _BUILTIN_X_NEWSROOMS = (
     ("US State Department", "@StateDept"), ("State Department Spokesperson", "@statedeptspox"),
     ("White House", "@WhiteHouse"),
     # Foreign reporters/analysts with recurring Iran, military, nuclear or sanctions coverage
-    ("Mark Levin", "@marklevinshow"), ("Jason Brodsky", "@JasonMBrodsky"),
+    ("Mark Levin", "@marklevinshow"),
     ("Mark Dubowitz", "@mdubowitz"), ("Emanuel Fabian", "@manniefabian"),
     ("Seth Frantzman", "@sfrantzman"), ("Jonathan Conricus", "@jconricus"),
     ("Michael Doran", "@Doranimated"), ("Jennifer Hansler", "@jmhansler"),
@@ -59,7 +59,7 @@ _PERSIAN_SOURCE_NAMES = {
     "Pete Hegseth": "پیت هگست", "Department of War": "وزارت جنگ آمریکا",
     "Marco Rubio": "مارکو روبیو", "JD Vance": "جی‌دی ونس",
     "US State Department": "وزارت خارجه آمریکا", "State Department Spokesperson": "سخنگوی وزارت خارجه آمریکا",
-    "White House": "کاخ سفید", "Mark Levin": "مارک لوین", "Jason Brodsky": "جیسون برادسکی",
+    "White House": "کاخ سفید", "Mark Levin": "مارک لوین",
     "Mark Dubowitz": "مارک دوبوویتز", "Emanuel Fabian": "امانوئل فابیان", "Seth Frantzman": "ست فرانتزمن",
     "Jonathan Conricus": "جاناتان کانریکوس", "Michael Doran": "مایکل دوران", "Jennifer Hansler": "جنیفر هنسلر",
     "Joe Truzman": "جو تروزمن",
@@ -183,7 +183,6 @@ def fetch_builtin_x_news_items(*, searcher=None, session=requests) -> list[NewsI
             summary = clean_x_post_text(item.summary)
             direct_link = resolve_x_post_url(item.link, source["handle"], session=session)
             if not direct_link:
-                # Never publish an X item with a Google News or newsroom-site source link.
                 continue
             normalized = NewsItem(item.key, display, title, summary, direct_link, item.published)
             if is_monitored_x_topic(f"{normalized.title} {normalized.summary}"):
