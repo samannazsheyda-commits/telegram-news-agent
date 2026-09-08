@@ -1,6 +1,7 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:AlArabiya_Eng:2097309043467419809",
     "x:Reuters:2097305232900235638",
     "x:haaretzcom:2097305222552936757",
     "x:washingtonpost:2097305209739296968",
@@ -499,11 +500,10 @@
     "f30ca6a2fdc377365cb5606e95f3ad46015c99f9",
     "044eff1b265ccae47f290854842c576054a807a0",
     "9c9375e4fab33f334cde2f6e5bb72c3e13cf7163",
-    "5c3d1f72d14471500076d18bd5ada9acd6461bd5",
-    "995e67d06916d3528a441065ab3cd4307ab619e5"
+    "5c3d1f72d14471500076d18bd5ada9acd6461bd5"
   ],
   "market_last_sent_at": "2026-09-08T11:16:00.342538+00:00",
-  "next_news_color": "red",
+  "next_news_color": "white",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
     "پژو 207 اتوماتیک پانوراما": 3100000000,
@@ -2426,6 +2426,16 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AlArabiya_Eng:2097309043467419809",
+      "source": "Al Arabiya English / X",
+      "title": "“It is unacceptable to normalize this state of no-war-no-peace in the region.” Qatar says it is working with China and other regional and international partners to resume diplomacy and dialogue between the United States and Iran.",
+      "summary": "",
+      "link": "https://x.com/AlArabiya_Eng/status/2097309043467419809",
+      "published": "Tue, 08 Sep 2026 13:00:16 +0000",
+      "sent_at": "2026-09-08T13:00:32.409723+00:00",
+      "fingerprint": "it is unacceptable to normalize this state of no war no peace in the region qatar says it is working with china and other regional and international partners to resume diplomacy and dialogue between the united states and iran"
+    },
     {
       "key": "x:CBSNews:2097304030363942917",
       "source": "CBS News / X",
