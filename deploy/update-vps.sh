@@ -28,8 +28,8 @@ for path in "${RUNTIME_FILES[@]}"; do
   fi
 done
 
-sudo -u bikhabar git -C "${APP_DIR}" fetch origin "${BRANCH}"
-sudo -u bikhabar git -C "${APP_DIR}" reset --hard "origin/${BRANCH}"
+runuser -u bikhabar -- git -C "${APP_DIR}" fetch origin "${BRANCH}"
+runuser -u bikhabar -- git -C "${APP_DIR}" reset --hard "origin/${BRANCH}"
 "${VENV_DIR}/bin/pip" install -r "${APP_DIR}/requirements.txt"
 
 for path in "${RUNTIME_FILES[@]}"; do
