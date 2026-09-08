@@ -1,5 +1,23 @@
 [
   {
+    "id": "2304768d269638596a0b5812eb8800c5e6357069",
+    "news_key": "11793538e614e35d40c505011db03cdca00c5744",
+    "source": "NOTAM / Airspace",
+    "source_url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxQUldUZjZBS0pxS1ItZFFuX19ZNktVNHVuaURzRko0eHFleWREeDNqSzR4QlpZY09rZlJnZ2NIZGhfNU05Y000ZTJBd3NxZnYwblU2Tks0ZUtIREM2TzRIX1psTkhpc2JGdEEtUE1UdUhiWm81MDlxMm5BQTRGclhLdURLai1sc01DVGFiS2owbk_SAZYBQVVfeXFMTWFMdGhQekRWaXhsLVJNUGZRS2N1WlVGOVZ6d3R0UFZPNFJpbWg5R2RMVWp5TjJsU2RMNEphMHJ6bmJuQTlyWmlIb2pFMF9rejI1M0JWWVFfdklKNU1WR0tPQjcydDYzYXhaZWpsTWV1RHYwaXNWU1VRdXM2Vm1ab3lOeUJyV0tFRjNSODJGNlprb29Mb1hn?oc=5",
+    "original_title": "Kuwait closes airspace as Iranian attacks disrupt Gulf flights - aerotime.aero",
+    "original_summary": "Kuwait closes airspace as Iranian attacks disrupt Gulf flights aerotime.aero",
+    "persian_title": "",
+    "persian_body": "",
+    "published_at_source": "Sat, 18 Jul 2026 07:00:00 GMT",
+    "discovered_at": "2026-09-08T10:11:15.975585+00:00",
+    "rejection_reason": "not_today_tehran",
+    "status": "superseded",
+    "final_persian_title": "",
+    "final_persian_body": "",
+    "decision_at": "",
+    "updated_at": "2026-09-08T10:12:52.780577+00:00"
+  },
+  {
     "id": "811ae2bd497b7b594316fddd221a5b21ea1935fc",
     "news_key": "48c85c77c31c5ae88c67c8c38e1fc31fe88ba2a6",
     "source": "Al Jazeera",
@@ -7252,24 +7270,6 @@
     "final_persian_body": "",
     "decision_at": "",
     "updated_at": "2026-09-05T08:52:39.865888+00:00"
-  },
-  {
-    "id": "2304768d269638596a0b5812eb8800c5e6357069",
-    "news_key": "11793538e614e35d40c505011db03cdca00c5744",
-    "source": "NOTAM / Airspace",
-    "source_url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxQUldUZjZBS0pxS1ItZFFuX19ZNktVNHVuaURzRko0eHFleWREeDNqSzR4QlpZY09rZlJnZ2NIZGhfNU05Y000ZTJBd3NxZnYwblU2Tks0ZUtIREM2TzRIX1psTkhpc2JGdEEtUE1UdUhiWm81MDlxMm5BQTRGclhLdURLai1sc01DVGFiS2owbk_SAZYBQVVfeXFMTWFMdGhQekRWaXhsLVJNUGZRS2N1WlVGOVZ6d3R0UFZPNFJpbWg5R2RMVWp5TjJsU2RMNEphMHJ6bmJuQTlyWmlIb2pFMF9rejI1M0JWWVFfdklKNU1WR0tPQjcydDYzYXhaZWpsTWV1RHYwaXNWU1VRdXM2Vm1ab3lOeUJyV0tFRjNSODJGNlprb29Mb1hn?oc=5",
-    "original_title": "Kuwait closes airspace as Iranian attacks disrupt Gulf flights - AeroTime",
-    "original_summary": "Kuwait closes airspace as Iranian attacks disrupt Gulf flights AeroTime",
-    "persian_title": "",
-    "persian_body": "",
-    "published_at_source": "Sat, 18 Jul 2026 07:00:00 GMT",
-    "discovered_at": "2026-09-05T08:48:09.445792+00:00",
-    "rejection_reason": "not_today_tehran",
-    "status": "superseded",
-    "final_persian_title": "",
-    "final_persian_body": "",
-    "decision_at": "",
-    "updated_at": "2026-09-05T08:52:39.828124+00:00"
   },
   {
     "id": "5b846285db592093fb3cdcaebf78f562ca8b4639",

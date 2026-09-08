@@ -1,6 +1,11 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "11793538e614e35d40c505011db03cdca00c5744",
+    "x:JasonMBrodsky:2097265697990582667",
+    "x:AJEnglish:2097264408766427502",
+    "x:CNN:2097263749002342585",
+    "x:AJEnglish:2097263684464890114",
     "x:AlArabiya_Eng:2097258480600011257",
     "x:BBCWorld:2097249761623413244",
     "de3c4983298657bdc45524d6be846fd4657f19d5",
@@ -495,12 +500,7 @@
     "x:AlArabiya_Eng:2096131070928249270",
     "x:AP:2095996244455792731",
     "x:NBCNews:2096070875636236603",
-    "x:WSJ:2096097004812132790",
-    "x:Jerusalem_Post:2095996925795258559",
-    "x:TheEconomist:2096156413575716874",
-    "x:ABC:2096116416256598069",
-    "x:NBCNews:2095995361173139672",
-    "x:AlArabiya_Eng:2096059197045555636"
+    "x:WSJ:2096097004812132790"
   ],
   "market_last_sent_at": "2026-09-08T09:00:17.351726+00:00",
   "next_news_color": "red",
@@ -623,6 +623,15 @@
     "last_wti": 94.53
   },
   "news_rejections": [
+    {
+      "key": "11793538e614e35d40c505011db03cdca00c5744",
+      "source": "NOTAM / Airspace",
+      "title": "Kuwait closes airspace as Iranian attacks disrupt Gulf flights - aerotime.aero",
+      "reason": "not_today_tehran",
+      "published": "Sat, 18 Jul 2026 07:00:00 GMT",
+      "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxQUldUZjZBS0pxS1ItZFFuX19ZNktVNHVuaURzRko0eHFleWREeDNqSzR4QlpZY09rZlJnZ2NIZGhfNU05Y000ZTJBd3NxZnYwblU2Tks0ZUtIREM2TzRIX1psTkhpc2JGdEEtUE1UdUhiWm81MDlxMm5BQTRGclhLdURLai1sc01DVGFiS2owbk_SAZYBQVVfeXFMTWFMdGhQekRWaXhsLVJNUGZRS2N1WlVGOVZ6d3R0UFZPNFJpbWg5R2RMVWp5TjJsU2RMNEphMHJ6bmJuQTlyWmlIb2pFMF9rejI1M0JWWVFfdklKNU1WR0tPQjcydDYzYXhaZWpsTWV1RHYwaXNWU1VRdXM2Vm1ab3lOeUJyV0tFRjNSODJGNlprb29Mb1hn?oc=5",
+      "checked_at": "2026-09-08T10:11:15.975585+00:00"
+    },
     {
       "key": "de3c4983298657bdc45524d6be846fd4657f19d5",
       "source": "NOTAM / Airspace",
@@ -2413,19 +2422,50 @@
       "published": "Tue, 26 May 2026 07:00:00 GMT",
       "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE8xemVLXzU2Q1lnM3ExQmFPM3JaTEJVOXN6d1Q2NW1BZlNQVG9qNHhSbE1EbU5pUGhHUXQwdWI4YlBFYS1fNWVWQWMwWWhocUk1cUE?oc=5",
       "checked_at": "2026-09-05T16:44:46.685583+00:00"
-    },
-    {
-      "key": "0ef73536dad338a4ab20f2e1701e5fec895567db",
-      "source": "NOTAM / Airspace",
-      "title": "Iran closes airspace around Tehran's Imam Khomeini International Airport, country's main airfield, after Israeli attack - KVUE",
-      "reason": "not_today_tehran",
-      "published": "Sun, 07 Jun 2026 07:00:00 GMT",
-      "link": "https://news.google.com/rss/articles/CBMiuAJBVV95cUxQQ1E3Z3JoYmJQcEMtWWs4RW80ZUNwM1g1dVFmeTBQWU5nTjlGczhBMTBWc3o1b3JOSGxIOXBXMkhLaGlfZmlweWphbGV0Y2FjU1JEYWtGUWd4aTd2Z0t3TGdMWVVFLVVKWGJmeE9Jb0dQMUxvV2U0R3Q4TjBfelJLR1JlUllCMkJRSHQxdUlJOVA2U2ZRWFZNcndtN1hQLXZwUFk5RVBHZUlUUDBHemVOT0U3d296cnRmZWNHZDMxNWJES2p3UW84VEluOVl2YWpOSS1xZjJwaFpBRG91dU44bGtsUWNfZmNMRzhWcTFmRHZiN0tMOGltUklpVEhkZVk2NTNRMHRHQUNwdXJ0ZEM4OXZpSXdFLW1iUndmSWhSTzdNeVAwVEd5dUhNSjVJRV9JNHNsTG9JQzc?oc=5",
-      "checked_at": "2026-09-05T16:44:46.685583+00:00"
     }
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:AJEnglish:2097263684464890114",
+      "source": "Al Jazeera English / X",
+      "title": "IAEA chief urges Iran to re-engage as the US, UK, France and Germany push a resolution that could send Tehran to the UN Security Council over nuclear reporting. Professor Cyrus Schayegh tells Al Jazeera that Iran is unlikely to move unless Washington shifts its Gulf strategy.",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097263684464890114",
+      "published": "Tue, 08 Sep 2026 10:00:02 +0000",
+      "sent_at": "2026-09-08T10:08:24.443056+00:00",
+      "fingerprint": "iaea chief urges iran to re engage as the us uk france and germany push a resolution that could send tehran to the un security council over nuclear reporting professor cyrus schayegh tells al jazeera that iran is unlikely to move unless washington shifts its gulf strategy"
+    },
+    {
+      "key": "x:CNN:2097263749002342585",
+      "source": "CNN / X",
+      "title": "Brazilian oil production and exports have hit record highs this year, largely due to increased demand from China as the US-Iran war continues to reshape global trade and geopolitical relationships.",
+      "summary": "",
+      "link": "https://x.com/CNN/status/2097263749002342585",
+      "published": "Tue, 08 Sep 2026 10:00:17 +0000",
+      "sent_at": "2026-09-08T10:08:24.443056+00:00",
+      "fingerprint": "brazilian oil production and exports have hit record highs this year largely due to increased demand from china as the us iran war continues to reshape global trade and geopolitical relationships"
+    },
+    {
+      "key": "x:AJEnglish:2097264408766427502",
+      "source": "Al Jazeera English / X",
+      "title": "Iranian President Masoud Pezeshkian says in a social media post that Iran will continue to resist 'until aggressors are brought to complete regret.'",
+      "summary": "",
+      "link": "https://x.com/AJEnglish/status/2097264408766427502",
+      "published": "Tue, 08 Sep 2026 10:02:54 +0000",
+      "sent_at": "2026-09-08T10:08:24.443056+00:00",
+      "fingerprint": "iranian president masoud pezeshkian says in a social media post that iran will continue to resist until aggressors are brought to complete regret"
+    },
+    {
+      "key": "x:JasonMBrodsky:2097265697990582667",
+      "source": "Jason Brodsky / X",
+      "title": "A 34-year-old protester shot in the Iranian city of Qazvin on January 8 has undergone five major operations and months of largely secret medical care as doctors work to save and reconstruct his badly damaged leg.",
+      "summary": "",
+      "link": "https://x.com/JasonMBrodsky/status/2097265697990582667",
+      "published": "Tue, 08 Sep 2026 10:08:02 +0000",
+      "sent_at": "2026-09-08T10:08:24.443056+00:00",
+      "fingerprint": "a 34 year old protester shot in the iranian city of qazvin on january 8 has undergone five major operations and months of largely secret medical care as doctors work to save and reconstruct his badly damaged leg"
+    },
     {
       "key": "x:AlArabiya_Eng:2097258480600011257",
       "source": "Al Arabiya English / X",
