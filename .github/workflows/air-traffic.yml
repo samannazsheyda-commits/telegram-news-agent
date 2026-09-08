@@ -2,6 +2,10 @@ name: Middle East Air Traffic
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".air-traffic-now"
 
 jobs:
   publish:
