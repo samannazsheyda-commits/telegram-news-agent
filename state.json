@@ -502,7 +502,7 @@
     "x:haaretzcom:2096082180216676858",
     "x:haaretzcom:2096089726721704066"
   ],
-  "market_last_sent_at": "2026-09-08T06:50:13.875935+00:00",
+  "market_last_sent_at": "2026-09-08T09:00:17.351726+00:00",
   "next_news_color": "red",
   "car_last_prices": {
     "پژو 207 اتوماتیک": 2880000000,
@@ -614,13 +614,13 @@
   "market_day_prices": {
     "date": "2026-09-08",
     "first_usd": 222100,
-    "last_usd": 222100,
+    "last_usd": 223700,
     "first_gold": 23062200,
-    "last_gold": 23062200,
+    "last_gold": 23382400,
     "first_brent": 98.44,
-    "last_brent": 98.44,
+    "last_brent": 99.23,
     "first_wti": 93.83,
-    "last_wti": 93.83
+    "last_wti": 94.53
   },
   "news_rejections": [
     {
