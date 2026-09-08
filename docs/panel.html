@@ -8,8 +8,8 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>بی‌خبر | اتاق خبر</title>
-<link rel="stylesheet" href="panel.css?v=20260908-1">
-<link rel="stylesheet" href="newsroom-v1.css?v=20260907-5">
+<link rel="stylesheet" href="panel.css?v=20260908-3">
+<link rel="stylesheet" href="newsroom-v1.css?v=20260908-3">
 </head>
 <body>
 <main class="app">
@@ -22,13 +22,15 @@
   <div class="meta"><span>این اتصال فقط برای مخزن ایجنت بی‌خبر ذخیره می‌شود. توکن باید دسترسی Contents: Read and write به telegram-news-agent داشته باشد.</span><button id="disconnectBtn" class="btn ghost">قطع اتصال</button></div>
 </section>
 <section class="stats">
-  <article class="stat"><span>در انتظار</span><strong id="pendingCount">۰</strong></article>
+  <article class="stat"><span>ورودی زنده</span><strong id="liveCount">۰</strong></article>
+  <article class="stat"><span>نیازمند تصمیم</span><strong id="pendingCount">۰</strong></article>
   <article class="stat"><span>در حال انتشار</span><strong id="processingCount">۰</strong></article>
   <article class="stat"><span>منتشرشده امروز</span><strong id="publishedCount">۰</strong></article>
   <article class="stat"><span>ردشده امروز</span><strong id="rejectedCount">۰</strong></article>
 </section>
 <nav class="tabs" aria-label="بخش‌های پنل">
-  <button class="tab active" data-view="pending">در انتظار</button>
+  <button class="tab active" data-view="live">ورودی زنده</button>
+  <button class="tab" data-view="pending">نیازمند تصمیم</button>
   <button class="tab" data-view="processing">در حال انجام</button>
   <button class="tab" data-view="published">منتشرشده</button>
   <button class="tab" data-view="rejected">ردشده</button>
@@ -36,7 +38,14 @@
   <button class="tab" data-view="settings">تنظیمات</button>
   <button class="tab" data-view="system">سیستم</button>
 </nav>
-<section id="view-pending" class="view active">
+<section id="view-live" class="view active">
+  <div class="toolbar">
+    <input id="liveSearch" class="field" type="search" placeholder="جست‌وجو در ورودی زنده">
+    <select id="liveStatus" class="field"><option value="">همه وضعیت‌ها</option><option value="new">جدید</option><option value="auto_published">منتشرشده خودکار</option><option value="waiting">در انتظار</option><option value="duplicate">تکراری</option><option value="rejected">ردشده</option><option value="failed">خطا</option></select>
+  </div>
+  <div id="liveList" class="queue"><div class="skeleton"></div><div class="skeleton"></div></div>
+</section>
+<section id="view-pending" class="view">
   <div class="toolbar">
     <input id="queueSearch" class="field" type="search" placeholder="جست‌وجو در تیتر، متن یا منبع">
     <select id="sourceFilter" class="field"><option value="">همه منابع</option></select>
@@ -62,11 +71,11 @@
 <div class="meta" style="margin-top:14px"><span id="lastRefresh">—</span></div>
 </main>
 <div id="toast" class="toast" role="status" aria-live="polite"><span id="toastText"></span><button id="toastAction"></button></div>
-<script src="panel.js?v=20260907-5" defer></script>
-<script src="panel-live-refresh.js?v=20260907-6" defer></script>
-<script src="newsroom-v1.js?v=20260907-5" defer></script>
-<script src="panel-command-sync.js?v=20260907-5" defer></script>
-<script src="panel-publish-visibility.js?v=20260907-5" defer></script>
-<script src="panel-v2-live.js?v=20260908-2" defer></script>
+<script src="panel.js?v=20260908-3" defer></script>
+<script src="panel-live-refresh.js?v=20260908-3" defer></script>
+<script src="newsroom-v1.js?v=20260908-3" defer></script>
+<script src="panel-command-sync.js?v=20260908-3" defer></script>
+<script src="panel-publish-visibility.js?v=20260908-3" defer></script>
+<script src="panel-v2-live.js?v=20260908-3" defer></script>
 </body>
 </html>
