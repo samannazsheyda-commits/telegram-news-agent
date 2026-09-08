@@ -35,6 +35,16 @@ OPERATIONAL_OVERRIDE_TERMS = (
     "attack", "strike", "missile", "drone", "sanction", "tanker", "shipping", "war",
     "ازسرگیری پرواز", "از سرگیری پرواز", "حریم هوایی", "نوتام", "لغو پرواز", "تحریم", "حمله", "موشک", "پهپاد",
 )
+ARTICLE_PREFIXES = (
+    "analysis:", "analysis -", "opinion:", "opinion -", "explainer:", "explainer -",
+    "commentary:", "commentary -", "factbox:", "factbox -", "viewpoint:", "viewpoint -",
+    "تحلیل:", "تحلیل -", "یادداشت:", "یادداشت -", "نظر:", "نظر -", "گزارش تحلیلی:",
+)
+QUESTION_PREFIXES = (
+    "why ", "how ", "what ", "when ", "where ", "who ", "could ", "would ", "should ",
+    "can ", "will ", "is ", "are ", "does ", "do ", "did ", "what we know", "what to know",
+    "چرا ", "چگونه ", "چطور ", "آیا ", "چه چیزی ", "چه می‌دانیم", "آنچه می‌دانیم",
+)
 
 
 @dataclass(frozen=True)
@@ -83,12 +93,28 @@ def _contains_any(text: str, terms) -> bool:
     return any(term in text for term in terms)
 
 
+def _question_or_article(title: str) -> bool:
+    clean = re.sub(r"\s+", " ", str(title or "")).strip().lower()
+    if not clean:
+        return False
+    if clean.endswith("?") or clean.endswith("؟"):
+        return True
+    if clean.startswith(ARTICLE_PREFIXES):
+        return True
+    if clean.startswith(QUESTION_PREFIXES):
+        return True
+    return False
+
+
 def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> EligibilityResult:
     published = _parse_published(item.raw.published_at)
     if published is None:
         return EligibilityResult(False, "invalid_publish_time", review=item.raw.source_priority == "protected")
     if not _fresh_enough(published, now):
         return EligibilityResult(False, "stale")
+
+    if _question_or_article(item.raw.title):
+        return EligibilityResult(False, "filtered_question_or_article")
 
     text = re.sub(r"\s+", " ", f"{item.raw.title} {item.raw.summary}".lower()).strip()
     protected = item.raw.source_priority == "protected"
