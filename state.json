@@ -1,6 +1,8 @@
 {
   "truth_last_id": "41633",
   "news_seen": [
+    "x:business:2097210850192904306",
+    "x:FoxNews:2097097478155698177",
     "x:Reuters:2097220915981402156",
     "x:business:2097220914731483280",
     "x:Sepah_News:936375644757331969",
@@ -498,9 +500,7 @@
     "x:Jerusalem_Post:2096129575667310642",
     "x:AJEnglish:2096140818335535225",
     "5fc26d05852e9c264a578ce806086009b7997318",
-    "e0cf08d952598dca107733f85068fc40b3718e2c",
-    "x:TankerTrackers:2094003065112109302",
-    "x:TankerTrackers:2094354765169729926"
+    "e0cf08d952598dca107733f85068fc40b3718e2c"
   ],
   "market_last_sent_at": "2026-09-08T06:50:13.875935+00:00",
   "next_news_color": "red",
@@ -608,7 +608,7 @@
     "لوکانو L7": 7700000000,
     "لوکانو L8": 10500000000
   },
-  "car_last_sent_date": "2026-09-07",
+  "car_last_sent_date": "2026-09-08",
   "weather_noon_last_sent_date": "2026-09-06",
   "weather_night_last_sent_date": "2026-09-05",
   "market_day_prices": {
@@ -2426,6 +2426,26 @@
   ],
   "market_daily_summary_last_date": "2026-09-07",
   "recent_published_news": [
+    {
+      "key": "x:FoxNews:2097097478155698177",
+      "source": "Fox News / X",
+      "title": "FOX NEWS REPORT: Tensions rise in the Strait of Hormuz as Iran announces a restricted zone in the key waterway and threatens sanctions against vessels that enter, Fox News' @AlexandriaHoffreports.",
+      "summary": "",
+      "link": "https://x.com/FoxNews/status/2097097478155698177",
+      "published": "Mon, 07 Sep 2026 22:59:35 +0000",
+      "sent_at": "2026-09-08T07:37:34.499923+00:00",
+      "fingerprint": "fox news report tensions rise in the strait of hormuz as iran announces a restricted zone in the key waterway and threatens sanctions against vessels that enter fox news alexandriahoffreports"
+    },
+    {
+      "key": "x:business:2097210850192904306",
+      "source": "Bloomberg / X",
+      "title": "Novartis suffered its third clinical-trial setback in a week after del-desiran, a treatment for a rare muscle-wasting disease, failed a late-stage study.",
+      "summary": "",
+      "link": "https://x.com/business/status/2097210850192904306",
+      "published": "Tue, 08 Sep 2026 06:30:05 +0000",
+      "sent_at": "2026-09-08T07:37:34.499923+00:00",
+      "fingerprint": "novartis suffered its third clinical trial setback in a week after del desiran a treatment for a rare muscle wasting disease failed a late stage study"
+    },
     {
       "key": "x:business:2097220914731483280",
       "source": "Bloomberg / X",
