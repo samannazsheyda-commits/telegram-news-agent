@@ -6,11 +6,28 @@
   const statusFa={new:'جدید',auto_published:'منتشرشده خودکار',waiting:'در انتظار',duplicate:'تکراری',rejected:'ردشده',failed:'خطا'};
   let rows=[];
 
+  function activateLive(){
+    const liveTab=document.querySelector('[data-view="live"]');
+    const liveView=$('view-live');
+    if(!liveTab||!liveView)return;
+    document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===liveTab));
+    document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v===liveView));
+  }
+
+  function pendingIsEmpty(){
+    const pending=$('pendingCount');
+    if(!pending)return true;
+    const text=String(pending.textContent||'').replace(/[^0-9۰-۹]/g,'');
+    const fa='۰۱۲۳۴۵۶۷۸۹';
+    const en=text.replace(/[۰-۹]/g,d=>String(fa.indexOf(d)));
+    return Number(en||0)===0;
+  }
+
   function ensureUI(){
     const tabs=document.querySelector('.tabs');
     if(tabs&&!document.querySelector('[data-view="live"]')){
       const b=document.createElement('button');b.className='tab';b.dataset.view='live';b.textContent='ورودی زنده';tabs.prepend(b);
-      b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));$('view-live')?.classList.add('active');});
+      b.addEventListener('click',activateLive);
     }
     if(!$('view-live')){
       const section=document.createElement('section');section.id='view-live';section.className='view';section.innerHTML='<div class="toolbar"><input id="liveSearch" class="field" type="search" placeholder="جست‌وجو در ورودی زنده"><select id="liveStatus" class="field"><option value="">همه وضعیت‌ها</option><option value="new">جدید</option><option value="auto_published">منتشرشده خودکار</option><option value="waiting">در انتظار</option><option value="duplicate">تکراری</option><option value="rejected">ردشده</option><option value="failed">خطا</option></select></div><div id="liveList" class="queue"><div class="skeleton"></div></div>';
@@ -43,6 +60,7 @@
       const data=await r.json();rows=Array.isArray(data)?data:[];
       rows.sort((a,b)=>new Date(b.updated_at||b.discovered_at||0)-new Date(a.updated_at||a.discovered_at||0));
       render();
+      if(rows.length&&pendingIsEmpty())activateLive();
     }catch(e){const list=$('liveList');if(list)list.innerHTML='<div class="empty">دریافت Live Feed ناموفق بود.</div>';}
   }
 
