@@ -22,7 +22,7 @@ jobs:
       - name: Check newsroom JavaScript syntax
         run: node --check docs/newsroom-v1.js
       - name: Run V2 focused tests
-        if: github.head_ref == 'design/newsroom-v2-2026-09-07'
+        if: github.head_ref == 'design/newsroom-v2-2026-09-07' || startsWith(github.head_ref, 'feat/newsroom-v2-cutover-')
         run: >-
           python -m pytest -q
           tests/test_newsroom_raw_intake.py
@@ -37,15 +37,16 @@ jobs:
           tests/test_newsroom_v2_eligibility_integration.py
           tests/test_newsroom_publisher.py
           tests/test_newsroom_runtime_v2.py
+          tests/test_newsroom_hybrid_runtime.py
           tests/test_truth_social.py
       - name: Run live V2 shadow cycle
-        if: github.head_ref == 'design/newsroom-v2-2026-09-07'
+        if: github.head_ref == 'design/newsroom-v2-2026-09-07' || startsWith(github.head_ref, 'feat/newsroom-v2-cutover-')
         env:
           NEWSROOM_V2_FRESHNESS_HOURS: "6"
           NEWSROOM_V2_PANEL_MAX_RECORDS: "500"
         run: python -m src.newsroom_v2_runtime
       - name: Verify V2 shadow made no Telegram writes
-        if: github.head_ref == 'design/newsroom-v2-2026-09-07'
+        if: github.head_ref == 'design/newsroom-v2-2026-09-07' || startsWith(github.head_ref, 'feat/newsroom-v2-cutover-')
         run: |
           python - <<'PY'
           import json
