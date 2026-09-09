@@ -49,6 +49,12 @@ class EventLedger:
     def get(self, event_id: str) -> EventRecord | None:
         return next((record for record in self._read() if record.event_id == event_id), None)
 
+    def find_by_source_url(self, source_url: str) -> EventRecord | None:
+        url = str(source_url or "").strip()
+        if not url:
+            return None
+        return next((record for record in self._read() if url in record.source_variants), None)
+
     def _replace(self, updated: EventRecord) -> EventRecord:
         records = self._read()
         replaced = False
@@ -84,10 +90,6 @@ class EventLedger:
         matches: list[EventRecord] = []
         for record in self._read():
             stored = self._record_fingerprint(record)
-            # Event similarity is only meaningful inside the source event day.
-            # Without this guard, recurring operational claims months apart
-            # (e.g. CENTCOM strike/tanker reports) poison the ledger and suppress
-            # genuinely new breaking news as duplicate_same_claim.
             if stored is not None and stored.time_bucket != fingerprint.time_bucket:
                 continue
             if record.fingerprint == fingerprint.key:
@@ -97,16 +99,7 @@ class EventLedger:
                 matches.append(record)
         return matches
 
-    def create_event(
-        self,
-        *,
-        fingerprint: EventFingerprint,
-        canonical_title: str,
-        primary_source: str,
-        source_url: str,
-        first_seen: str,
-        key_facts: list[str] | None = None,
-    ) -> EventRecord:
+    def create_event(self, *, fingerprint: EventFingerprint, canonical_title: str, primary_source: str, source_url: str, first_seen: str, key_facts: list[str] | None = None) -> EventRecord:
         seed = f"{fingerprint.key}|{first_seen}|{source_url}"
         event_id = hashlib.sha1(seed.encode("utf-8")).hexdigest()
         existing = self.get(event_id)
@@ -154,15 +147,7 @@ class EventLedger:
         if message_id not in ids:
             ids.append(message_id)
         merged_facts = list(dict.fromkeys([*event.key_facts, *facts]))
-        return self._replace(
-            replace(
-                event,
-                published_message_ids=ids,
-                key_facts=merged_facts,
-                last_updated=updated_at,
-                status="published",
-            )
-        )
+        return self._replace(replace(event, published_message_ids=ids, key_facts=merged_facts, last_updated=updated_at, status="published"))
 
     def update_material_facts(self, event_id: str, facts: list[str], updated_at: str) -> EventRecord:
         event = self.get(event_id)
