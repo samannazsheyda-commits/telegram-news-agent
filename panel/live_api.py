@@ -9,6 +9,7 @@ from .app import PANEL_STATUS_FA, REASON_FA
 
 
 bp = Blueprint("live_api", __name__)
+_TERMINAL_LIVE_STATUSES = {"auto_published", "published_auto", "published_manual"}
 
 
 def _row_id(row: dict) -> str:
@@ -84,6 +85,7 @@ def _fast_rows(limit: int = 40) -> list[dict]:
             "media_type": str(row.get("media_type") or ""),
             "media_url": str(row.get("video_url") or row.get("media_url") or ""),
             "review_url": f"/review/{row_id}" if row_id in queued_ids else "",
+            "can_review": bool(row_id) and status not in _TERMINAL_LIVE_STATUSES,
             "final_message": _final_message(row, title_fa, body_fa),
         })
     return result
