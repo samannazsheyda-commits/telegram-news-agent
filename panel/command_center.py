@@ -22,6 +22,12 @@ PREVIEW_PATHS = {
     "tanker": "data/tanker_preview.json",
     "market": "data/market_preview.json",
 }
+PREVIEW_ACTIONS = {
+    "weather": "weather_preview",
+    "air-traffic": "air_traffic_preview",
+    "tanker": "tanker_preview",
+    "market": "market_preview",
+}
 _TIME_RE = re.compile(r"^(?:[01]\d|2[0-3]):[0-5]\d$")
 _CLEAR_SCOPES = {"live", "pending", "published", "rejected"}
 _TERMINAL_LIVE_STATUSES = {"auto_published", "published_auto", "published_manual"}
@@ -207,6 +213,18 @@ def module_preview(module_name: str):
         return jsonify({"ok": True, "available": False, "message": "", "generated_at": ""})
     message = str(preview.get("message") or preview.get("text") or preview.get("caption") or "")
     return jsonify({"ok": True, "available": bool(message or preview), "message": message, **preview})
+
+
+@bp.post("/api/command-center/module/<module_name>/preview")
+def build_module_preview(module_name: str):
+    action = PREVIEW_ACTIONS.get(module_name)
+    if not action:
+        return jsonify({"ok": False, "error": "unknown_module"}), 404
+    module = MODULES.get(module_name)
+    if module is None or not module.get("available"):
+        return jsonify({"ok": False, "error": "module_unavailable", "module": module_name}), 409
+    command_id = _enqueue(action)
+    return jsonify({"ok": True, "command_id": command_id, "status": "queued"}), 202
 
 
 @bp.post("/api/command-center/publishing")

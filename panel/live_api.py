@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from flask import Blueprint, current_app, jsonify, session
+from flask import Blueprint, current_app, jsonify, request, session
 
 from src.formatters import _source_label, format_news
 from src.sources import NewsItem
@@ -10,6 +10,9 @@ from .app import PANEL_STATUS_FA, REASON_FA
 
 bp = Blueprint("live_api", __name__)
 _TERMINAL_LIVE_STATUSES = {"auto_published", "published_auto", "published_manual"}
+_LOCALIZATION_CACHE: dict[str, dict] = {}
+_LOCALIZATION_CACHE_LIMIT = 240
+_LOCALIZE_BATCH_LIMIT = 12
 
 
 def _row_id(row: dict) -> str:
@@ -18,6 +21,58 @@ def _row_id(row: dict) -> str:
 
 def _has_persian(value: str) -> bool:
     return any("\u0600" <= ch <= "\u06ff" for ch in str(value or ""))
+
+
+def _raw_fields(row: dict) -> tuple[str, str]:
+    title = str(row.get("original_title") or row.get("title") or "").strip()
+    body = str(row.get("original_summary") or row.get("summary") or row.get("body") or "").strip()
+    return title, body
+
+
+def _cache_signature(row: dict) -> str:
+    title, body = _raw_fields(row)
+    return f"{title}\u241f{body}"
+
+
+def _cache_get(row: dict) -> dict | None:
+    row_id = _row_id(row)
+    cached = _LOCALIZATION_CACHE.get(row_id)
+    if not isinstance(cached, dict) or cached.get("signature") != _cache_signature(row):
+        return None
+    return cached
+
+
+def _cache_put(row: dict, *, title: str, body: str, final_message: str) -> dict:
+    row_id = _row_id(row)
+    value = {
+        "signature": _cache_signature(row),
+        "title": title,
+        "body": body,
+        "final_message": final_message,
+    }
+    _LOCALIZATION_CACHE[row_id] = value
+    while len(_LOCALIZATION_CACHE) > _LOCALIZATION_CACHE_LIMIT:
+        oldest = next(iter(_LOCALIZATION_CACHE), None)
+        if oldest is None:
+            break
+        _LOCALIZATION_CACHE.pop(oldest, None)
+    return value
+
+
+def _translate_persian(value: str) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    if _has_persian(text):
+        return text
+    translator = current_app.config.get("LIVE_FEED_TRANSLATOR")
+    if not callable(translator):
+        return ""
+    try:
+        translated = str(translator(text) or "").strip()
+    except Exception:
+        return ""
+    return translated if _has_persian(translated) else ""
 
 
 def _final_message(row: dict, title_fa: str, body_fa: str) -> str:
@@ -40,7 +95,57 @@ def _final_message(row: dict, title_fa: str, body_fa: str) -> str:
         return ""
 
 
-def _fast_rows(limit: int = 40) -> list[dict]:
+def _public_row(row: dict, queued_ids: set[str]) -> dict:
+    row_id = _row_id(row)
+    raw_title, raw_body = _raw_fields(row)
+    persisted_title = str(row.get("final_persian_title") or row.get("persian_title") or row.get("display_title") or "").strip()
+    persisted_body = str(row.get("final_persian_body") or row.get("persian_body") or "").strip()
+    cached = _cache_get(row)
+
+    if _has_persian(persisted_title):
+        title_fa = persisted_title
+        body_fa = persisted_body
+        final_message = _final_message(row, title_fa, body_fa)
+        needs_localization = False
+    elif cached and _has_persian(str(cached.get("title") or "")):
+        title_fa = str(cached.get("title") or "")
+        body_fa = str(cached.get("body") or "")
+        final_message = str(cached.get("final_message") or "")
+        needs_localization = False
+    else:
+        title_fa = "عنوان فارسی در حال آماده‌سازی"
+        body_fa = ""
+        final_message = ""
+        needs_localization = bool(row_id and raw_title)
+
+    status = str(row.get("panel_status") or "new")
+    reason = str(row.get("decision_reason") or "")
+    return {
+        "id": row_id,
+        "item_id": row_id,
+        "title": title_fa,
+        "body": body_fa,
+        "original_title": raw_title,
+        "original_body": raw_body,
+        "source": _source_label(str(row.get("source") or "")),
+        "source_raw": str(row.get("source") or ""),
+        "source_url": str(row.get("source_url") or ""),
+        "panel_status": status,
+        "panel_status_fa": PANEL_STATUS_FA.get(status, "در حال پردازش"),
+        "decision_reason": reason,
+        "decision_reason_fa": REASON_FA.get(reason, ""),
+        "published_at_source": str(row.get("published_at_source") or ""),
+        "updated_at": str(row.get("updated_at") or row.get("discovered_at") or ""),
+        "media_type": str(row.get("media_type") or ""),
+        "media_url": str(row.get("video_url") or row.get("media_url") or ""),
+        "review_url": f"/review/{row_id}" if row_id in queued_ids else "",
+        "can_review": bool(row_id) and status not in _TERMINAL_LIVE_STATUSES,
+        "final_message": final_message,
+        "needs_localization": needs_localization,
+    }
+
+
+def _raw_rows(limit: int = 40) -> tuple[list[dict], set[str]]:
     data = current_app.extensions["editorial_data"]
     value, _ = data.read_json("data/panel_live_feed.json", [])
     rows = value if isinstance(value, list) else []
@@ -55,40 +160,12 @@ def _fast_rows(limit: int = 40) -> list[dict]:
         for r in (queue if isinstance(queue, list) else [])
         if isinstance(r, dict)
     }
-    result: list[dict] = []
-    for row in rows:
-        row_id = _row_id(row)
-        raw_title = str(row.get("original_title") or row.get("title") or "").strip()
-        raw_body = str(row.get("original_summary") or row.get("summary") or row.get("body") or "").strip()
-        title_fa = str(row.get("final_persian_title") or row.get("persian_title") or row.get("display_title") or "").strip()
-        if not _has_persian(title_fa):
-            title_fa = "عنوان فارسی در حال آماده‌سازی"
-        body_fa = str(row.get("final_persian_body") or row.get("persian_body") or "").strip()
-        status = str(row.get("panel_status") or "new")
-        reason = str(row.get("decision_reason") or "")
-        result.append({
-            "id": row_id,
-            "item_id": row_id,
-            "title": title_fa,
-            "body": body_fa,
-            "original_title": raw_title,
-            "original_body": raw_body,
-            "source": _source_label(str(row.get("source") or "")),
-            "source_raw": str(row.get("source") or ""),
-            "source_url": str(row.get("source_url") or ""),
-            "panel_status": status,
-            "panel_status_fa": PANEL_STATUS_FA.get(status, "در حال پردازش"),
-            "decision_reason": reason,
-            "decision_reason_fa": REASON_FA.get(reason, ""),
-            "published_at_source": str(row.get("published_at_source") or ""),
-            "updated_at": str(row.get("updated_at") or row.get("discovered_at") or ""),
-            "media_type": str(row.get("media_type") or ""),
-            "media_url": str(row.get("video_url") or row.get("media_url") or ""),
-            "review_url": f"/review/{row_id}" if row_id in queued_ids else "",
-            "can_review": bool(row_id) and status not in _TERMINAL_LIVE_STATUSES,
-            "final_message": _final_message(row, title_fa, body_fa),
-        })
-    return result
+    return rows, queued_ids
+
+
+def _fast_rows(limit: int = 40) -> list[dict]:
+    rows, queued_ids = _raw_rows(limit)
+    return [_public_row(row, queued_ids) for row in rows]
 
 
 @bp.before_request
@@ -100,6 +177,8 @@ def require_admin():
 
 @bp.get("/api/live-feed")
 def live_feed():
+    # Deliberately does not translate. Polling stays fast; missing Persian text
+    # is localized asynchronously through /api/live-feed/localize.
     items = _fast_rows(40)
     response = jsonify({
         "ok": True,
@@ -109,3 +188,41 @@ def live_feed():
     })
     response.headers["Cache-Control"] = "no-store, max-age=0"
     return response
+
+
+@bp.post("/api/live-feed/localize")
+def localize_live_feed():
+    payload = request.get_json(silent=True) or {}
+    values = payload.get("ids")
+    if not isinstance(values, list):
+        return jsonify({"ok": False, "error": "invalid_ids"}), 400
+
+    ids: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        item_id = str(value or "").strip()
+        if item_id and item_id not in seen:
+            seen.add(item_id)
+            ids.append(item_id)
+        if len(ids) >= _LOCALIZE_BATCH_LIMIT:
+            break
+    if not ids:
+        return jsonify({"ok": True, "items": []})
+
+    rows, queued_ids = _raw_rows(100)
+    by_id = {_row_id(row): row for row in rows if _row_id(row)}
+    localized: list[dict] = []
+    for item_id in ids:
+        row = by_id.get(item_id)
+        if row is None:
+            continue
+        raw_title, raw_body = _raw_fields(row)
+        title_fa = _translate_persian(raw_title)
+        if not title_fa:
+            continue
+        body_fa = _translate_persian(raw_body) if raw_body else ""
+        final_message = _final_message(row, title_fa, body_fa)
+        _cache_put(row, title=title_fa, body=body_fa, final_message=final_message)
+        localized.append(_public_row(row, queued_ids))
+
+    return jsonify({"ok": True, "items": localized})
