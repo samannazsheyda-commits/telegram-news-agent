@@ -79,3 +79,32 @@ def test_iso_source_time_is_rendered_in_publication_text():
     publisher(item(published="2026-09-07T21:00:00+00:00"))
     text = session.calls[0][1]["data"]["text"]
     assert "⏰" in text
+
+
+def test_explosion_post_has_one_clean_persian_breaking_header_without_flags_or_handles():
+    session = Session({"ok": True, "result": {"message_id": 555}})
+    translations = {
+        "UNCONFIRMED: 2 explosions heard in Jask, Hormozgan province, Iran 🇮🇷 @GeoPWatch":
+            "گزارش‌های تاییدنشده از شنیده شدن ۲ انفجار در جاسک استان هرمزگان ایران 🇮🇷 @GeoPWatch",
+        "Reports remain unconfirmed 🇮🇷": "این گزارش‌ها هنوز تایید نشده‌اند 🇮🇷",
+    }
+    publisher = TelegramNewsroomPublisher(
+        "token",
+        "@bikhabaar",
+        session=session,
+        translator=lambda text: translations.get(text, text),
+    )
+    publisher(item(
+        source="GeoPWatch / Telegram",
+        title="UNCONFIRMED: 2 explosions heard in Jask, Hormozgan province, Iran 🇮🇷 @GeoPWatch",
+        summary="Reports remain unconfirmed 🇮🇷",
+    ))
+    text = session.calls[0][1]["data"]["text"]
+    assert text.startswith("💥 🔴 <b>خبر فوری | ژئوپی‌واچ / تلگرام: ")
+    assert "GeoPWatch" not in text
+    assert "/ Telegram" not in text
+    assert "@GeoPWatch" not in text
+    assert "🇮🇷" not in text
+    assert "🇮🇱" not in text
+    assert "🛑" not in text
+    assert text.count("خبر فوری") == 1
