@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 import tempfile
@@ -13,8 +14,24 @@ from .newsroom_runtime_v2 import run_once as run_v2_once
 from .panel_command_router import apply_command as apply_panel_command
 
 
+def _acquire_singleton_lock(path: str | Path | None = None):
+    lock_path = Path(path or os.environ.get("BIKHABAR_AGENT_LOCK") or "/var/lib/bikhabar/runtime/agent.lock")
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    handle = lock_path.open("a+", encoding="utf-8")
+    try:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        handle.close()
+        return None
+    handle.seek(0)
+    handle.truncate()
+    handle.write(str(os.getpid()))
+    handle.flush()
+    return handle
+
+
 def _process_panel_commands() -> int:
-    command_dir = Path("panel_commands")
+    command_dir = Path(os.environ.get("PANEL_COMMAND_DIR") or "panel_commands")
     if not command_dir.exists():
         return 0
     processed = 0
@@ -27,8 +44,8 @@ def _process_panel_commands() -> int:
     return processed
 
 
-def _record_runtime_heartbeat(result: dict, *, now: datetime | None = None, state_path: str | Path = "state.json") -> None:
-    path = Path(state_path)
+def _record_runtime_heartbeat(result: dict, *, now: datetime | None = None, state_path: str | Path | None = None) -> None:
+    path = Path(state_path or os.environ.get("STATE_PATH") or "state.json")
     try:
         current = json.loads(path.read_text(encoding="utf-8"))
         state = current if isinstance(current, dict) else {}
@@ -100,7 +117,6 @@ def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
 
 
 def monitor(*, shadow: bool, poll_seconds: int, session_seconds: int) -> int:
-    """Run continuously when session_seconds <= 0, otherwise stop after the session."""
     poll_seconds = max(1, int(poll_seconds))
     session_seconds = int(session_seconds)
     bounded = session_seconds > 0
@@ -111,13 +127,11 @@ def monitor(*, shadow: bool, poll_seconds: int, session_seconds: int) -> int:
         cycle_started = time.monotonic()
         if bounded and cycle_started - started >= session_seconds:
             return 0
-
         result = run_cycle(shadow=shadow)
         cycle += 1
         print(json.dumps({"cycle": cycle, **result}, ensure_ascii=False, sort_keys=True), flush=True)
         if int(result.get("rc") or 0) != 0:
             return int(result["rc"])
-
         cycle_finished = time.monotonic()
         sleep_for = max(0.0, poll_seconds - (cycle_finished - cycle_started))
         if bounded:
@@ -135,11 +149,21 @@ def main() -> int:
     parser.add_argument("--monitor", action="store_true")
     args = parser.parse_args()
     if args.monitor:
-        return monitor(
-            shadow=args.shadow,
-            poll_seconds=int(os.environ.get("POLL_SECONDS", "5")),
-            session_seconds=int(os.environ.get("SESSION_SECONDS", "0")),
-        )
+        lock = _acquire_singleton_lock()
+        if lock is None:
+            print("AGENT_ALREADY_RUNNING", flush=True)
+            return 0
+        try:
+            return monitor(
+                shadow=args.shadow,
+                poll_seconds=int(os.environ.get("POLL_SECONDS", "5")),
+                session_seconds=int(os.environ.get("SESSION_SECONDS", "0")),
+            )
+        finally:
+            try:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+            finally:
+                lock.close()
     print(json.dumps(run_cycle(shadow=args.shadow), ensure_ascii=False, sort_keys=True))
     return 0
 
