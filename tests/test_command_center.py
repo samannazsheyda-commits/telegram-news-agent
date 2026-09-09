@@ -11,7 +11,14 @@ from panel.command_center import bp as command_center_bp
 class FakeData:
     def __init__(self):
         self.files = {
-            "data/newsroom_settings.json": {"auto_publish": True, "emergency_lock": False},
+            "data/newsroom_settings.json": {
+                "auto_publish": True,
+                "emergency_lock": False,
+                "quiet_mode": False,
+                "quiet_start": "00:00",
+                "quiet_end": "07:00",
+                "freshness_hours": 3,
+            },
             "data/panel_live_feed.json": [{"id": "a"}, {"id": "b"}],
             "data/editorial_queue.json": [{"id": "q"}],
         }
@@ -79,6 +86,8 @@ def test_status_reports_safe_operational_capabilities():
     assert payload["modules"]["air-traffic"]["available"] is True
     assert payload["modules"]["tanker"]["available"] is False
     assert payload["modules"]["market"]["available"] is False
+    assert payload["settings"]["freshness_hours"] == 3
+    assert payload["settings"]["quiet_mode"] is False
     serialized = str(payload).lower()
     assert "token" not in serialized
     assert "password" not in serialized
@@ -105,6 +114,43 @@ def test_panic_stop_and_resume_are_persisted():
     assert resumed.status_code == 200
     assert resumed.get_json()["publishing"] is True
     assert data.files["data/newsroom_settings.json"]["emergency_lock"] is False
+
+
+def test_live_settings_update_runtime_supported_fields():
+    data = FakeData()
+    client = _app(data).test_client()
+    csrf = _login(client)
+    response = client.post(
+        "/api/command-center/settings",
+        json={
+            "freshness_hours": 1,
+            "quiet_mode": True,
+            "quiet_start": "01:30",
+            "quiet_end": "06:15",
+        },
+        headers={"X-CSRFToken": csrf},
+    )
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["settings"]["freshness_hours"] == 1
+    assert payload["settings"]["quiet_mode"] is True
+    saved = data.files["data/newsroom_settings.json"]
+    assert saved["freshness_hours"] == 1
+    assert saved["quiet_start"] == "01:30"
+    assert saved["quiet_end"] == "06:15"
+
+
+def test_live_settings_are_validated_and_clamped():
+    data = FakeData()
+    client = _app(data).test_client()
+    csrf = _login(client)
+    response = client.post(
+        "/api/command-center/settings",
+        json={"freshness_hours": 99, "quiet_mode": True, "quiet_start": "88:10", "quiet_end": "bad"},
+        headers={"X-CSRFToken": csrf},
+    )
+    assert response.status_code == 400
+    assert response.get_json()["error"] == "invalid_settings"
 
 
 def test_supported_modules_enqueue_real_commands():

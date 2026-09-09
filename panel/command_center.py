@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from datetime import datetime, timezone
 from uuid import uuid4
 
@@ -15,6 +16,7 @@ MODULES = {
     "tanker": {"available": False, "action": None, "label": "نفتکش‌ها و هرمز"},
     "market": {"available": False, "action": None, "label": "بازار و دلار"},
 }
+_TIME_RE = re.compile(r"^(?:[01]\d|2[0-3]):[0-5]\d$")
 
 
 def _data():
@@ -31,6 +33,9 @@ def _settings() -> tuple[dict, str | None]:
     value.setdefault("auto_publish", True)
     value.setdefault("emergency_lock", False)
     value.setdefault("quiet_mode", False)
+    value.setdefault("quiet_start", "00:00")
+    value.setdefault("quiet_end", "07:00")
+    value.setdefault("freshness_hours", 3)
     return value, sha
 
 
@@ -63,6 +68,19 @@ def _module_public_state() -> dict:
     }
 
 
+def _public_settings(settings: dict) -> dict:
+    try:
+        freshness = max(1, min(48, int(settings.get("freshness_hours") or 3)))
+    except (TypeError, ValueError):
+        freshness = 3
+    return {
+        "quiet_mode": bool(settings.get("quiet_mode", False)),
+        "quiet_start": str(settings.get("quiet_start") or "00:00"),
+        "quiet_end": str(settings.get("quiet_end") or "07:00"),
+        "freshness_hours": freshness,
+    }
+
+
 @bp.before_request
 def require_admin():
     if not session.get("admin"):
@@ -85,6 +103,7 @@ def status():
             "poll_seconds": 5,
             "updated_at": settings.get("updated_at", ""),
             "modules": _module_public_state(),
+            "settings": _public_settings(settings),
         }
     )
 
@@ -101,6 +120,30 @@ def publishing():
 
     settings = _write_settings(transform)
     return jsonify({"ok": True, "publishing": bool(settings.get("auto_publish")) and not bool(settings.get("emergency_lock"))})
+
+
+@bp.post("/api/command-center/settings")
+def update_settings():
+    payload = request.get_json(silent=True) or {}
+    try:
+        freshness = int(payload.get("freshness_hours"))
+    except (TypeError, ValueError):
+        return jsonify({"ok": False, "error": "invalid_settings"}), 400
+    quiet_start = str(payload.get("quiet_start") or "").strip()
+    quiet_end = str(payload.get("quiet_end") or "").strip()
+    if not 1 <= freshness <= 48 or not _TIME_RE.fullmatch(quiet_start) or not _TIME_RE.fullmatch(quiet_end):
+        return jsonify({"ok": False, "error": "invalid_settings"}), 400
+    quiet_mode = bool(payload.get("quiet_mode"))
+
+    def transform(settings: dict) -> dict:
+        settings["freshness_hours"] = freshness
+        settings["quiet_mode"] = quiet_mode
+        settings["quiet_start"] = quiet_start
+        settings["quiet_end"] = quiet_end
+        return settings
+
+    settings = _write_settings(transform)
+    return jsonify({"ok": True, "settings": _public_settings(settings)})
 
 
 @bp.post("/api/command-center/module/<module_name>")

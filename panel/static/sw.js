@@ -1,5 +1,11 @@
-const CACHE = 'bikhabar-command-center-v1';
-const SHELL = ['/static/panel.css', '/static/live.js', '/static/manifest.webmanifest'];
+const CACHE = 'bikhabar-command-center-v2';
+const SHELL = [
+  '/static/panel.css',
+  '/static/live.js',
+  '/static/settings.css',
+  '/static/settings.js',
+  '/static/manifest.webmanifest',
+];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));

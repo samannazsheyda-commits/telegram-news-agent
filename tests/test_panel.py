@@ -104,6 +104,8 @@ def test_authenticated_dashboard_loads():
     assert 'id="panicToggle"' in text
     assert 'id="liveConnection"' in text
     assert 'rel="manifest"' in text
+    assert "settings.css" in text
+    assert "settings.js" in text
     assert "serviceWorker" in text
 
 
@@ -114,6 +116,16 @@ def test_panel_css_uses_doran_first_without_external_font_dependency():
     assert "@import" not in css
 
 
+def test_live_settings_assets_define_real_runtime_controls():
+    script = Path("panel/static/settings.js").read_text(encoding="utf-8")
+    css = Path("panel/static/settings.css").read_text(encoding="utf-8")
+    assert "تنظیمات ایجنت" in script
+    assert "freshness_hours" in script
+    assert "quiet_mode" in script
+    assert "/api/command-center/settings" in script
+    assert ".agent-settings-card" in css
+
+
 def test_pwa_assets_exist_and_do_not_cache_api_routes():
     manifest = Path("panel/static/manifest.webmanifest").read_text(encoding="utf-8")
     worker = Path("panel/static/sw.js").read_text(encoding="utf-8")
@@ -121,6 +133,8 @@ def test_pwa_assets_exist_and_do_not_cache_api_routes():
     assert "standalone" in manifest
     assert "/api/" in worker
     assert "networkOnly" in worker or "startsWith('/api/')" in worker
+    assert "settings.js" in worker
+    assert "settings.css" in worker
 
 
 def test_dashboard_shows_live_items_in_persian_when_pending_queue_is_empty():
