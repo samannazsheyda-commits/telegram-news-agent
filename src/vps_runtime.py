@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import fcntl
 import json
 import os
 from pathlib import Path
@@ -16,21 +17,11 @@ def runtime_root() -> Path:
 
 
 def newsroom_settings_path() -> Path:
-    return Path(
-        os.environ.get(
-            "NEWSROOM_SETTINGS_PATH",
-            str(runtime_root() / "data" / "newsroom_settings.json"),
-        )
-    )
+    return Path(os.environ.get("NEWSROOM_SETTINGS_PATH", str(runtime_root() / "data" / "newsroom_settings.json")))
 
 
 def panel_command_dir() -> Path:
-    return Path(
-        os.environ.get(
-            "PANEL_COMMAND_DIR",
-            str(runtime_root() / "panel_commands"),
-        )
-    )
+    return Path(os.environ.get("PANEL_COMMAND_DIR", str(runtime_root() / "panel_commands")))
 
 
 def _process_panel_commands() -> int:
@@ -42,17 +33,11 @@ def _process_panel_commands() -> int:
         command_path = path.resolve()
         previous_cwd = Path.cwd()
         try:
-            # The command router still uses relative data/ and panel_results/
-            # paths. Executing it from the VPS runtime root keeps every mutable
-            # write outside the Git checkout.
             os.chdir(runtime_root())
             hybrid.apply_panel_command(command_path)
             processed += 1
         except Exception as exc:
-            print(
-                f"PANEL_COMMAND_FAILED file={path.name} error={type(exc).__name__}:{exc}",
-                flush=True,
-            )
+            print(f"PANEL_COMMAND_FAILED file={path.name} error={type(exc).__name__}:{exc}", flush=True)
         finally:
             os.chdir(previous_cwd)
     return processed
@@ -69,26 +54,20 @@ def install_vps_paths() -> None:
 
 def main() -> int:
     install_vps_paths()
-    poll_seconds = max(1, int(os.environ.get("POLL_SECONDS", "5")))
-    session_seconds = int(os.environ.get("SESSION_SECONDS", "0"))
-    print(
-        json.dumps(
-            {
-                "mode": "vps-first",
-                "runtime_root": str(runtime_root()),
-                "poll_seconds": poll_seconds,
-                "continuous": session_seconds <= 0,
-            },
-            ensure_ascii=False,
-            sort_keys=True,
-        ),
-        flush=True,
-    )
-    return hybrid.monitor(
-        shadow=False,
-        poll_seconds=poll_seconds,
-        session_seconds=session_seconds,
-    )
+    lock = hybrid._acquire_singleton_lock(runtime_root() / "agent.lock")
+    if lock is None:
+        print("AGENT_ALREADY_RUNNING", flush=True)
+        return 0
+    try:
+        poll_seconds = max(1, int(os.environ.get("POLL_SECONDS", "5")))
+        session_seconds = int(os.environ.get("SESSION_SECONDS", "0"))
+        print(json.dumps({"mode": "vps-first", "runtime_root": str(runtime_root()), "poll_seconds": poll_seconds, "continuous": session_seconds <= 0}, ensure_ascii=False, sort_keys=True), flush=True)
+        return hybrid.monitor(shadow=False, poll_seconds=poll_seconds, session_seconds=session_seconds)
+    finally:
+        try:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+        finally:
+            lock.close()
 
 
 if __name__ == "__main__":
