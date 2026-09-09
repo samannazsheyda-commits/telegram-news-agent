@@ -1,5 +1,5 @@
 (() => {
-  const modules = document.querySelector('.premium-modules');
+  const modules = document.querySelector('.newsroom-modules, .premium-modules');
   const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
   if (!modules || !csrf) return;
 
@@ -7,14 +7,14 @@
   wrapper.className = 'agent-settings-wrap';
   wrapper.innerHTML = `
     <div class="section-head settings-heading">
-      <div><span class="section-kicker">AGENT SETTINGS</span><h2>تنظیمات ایجنت</h2></div>
-      <small>تنظیمات واقعی که در چرخه بعدی VPS اعمال می‌شوند</small>
+      <div><span class="section-kicker">تنظیمات</span><h2>تنظیمات ایجنت</h2></div>
+      <small>هر تغییر بعد از ذخیره در چرخه بعدی ایجنت اعمال می‌شود.</small>
     </div>
     <form id="agentSettingsForm" class="agent-settings-card">
       <label class="setting-field">
         <span>حداکثر سن خبر</span>
         <div class="setting-control"><input id="freshnessHours" type="number" min="1" max="48" inputmode="numeric" value="3"><em>ساعت</em></div>
-        <small>خبر قدیمی‌تر از این بازه از ورودی خودکار حذف می‌شود.</small>
+        <small>خبر قدیمی‌تر از این بازه وارد انتشار خودکار نمی‌شود.</small>
       </label>
       <label class="setting-field setting-toggle-field">
         <span>حالت سکوت انتشار</span>
@@ -33,13 +33,13 @@
         <small>بر اساس ساعت تهران</small>
       </label>
       <div class="setting-field readonly-setting">
-        <span>فاصله رصد</span>
+        <span>فاصله رصد ایجنت</span>
         <strong>۵ ثانیه</strong>
-        <small>برای پایداری production از پنل قابل تغییر نیست.</small>
+        <small>برای پایداری سرویس از این صفحه قابل تغییر نیست.</small>
       </div>
       <div class="settings-actions">
         <span id="settingsResult">در حال دریافت تنظیمات…</span>
-        <button id="saveAgentSettings" class="button primary-action" type="submit">ذخیره تنظیمات</button>
+        <button id="saveAgentSettings" class="button primary-action" type="submit" disabled>ذخیره تغییرات</button>
       </div>
     </form>`;
   modules.insertAdjacentElement('afterend', wrapper);
@@ -51,6 +51,27 @@
   const quietEnd = wrapper.querySelector('#quietEnd');
   const result = wrapper.querySelector('#settingsResult');
   const save = wrapper.querySelector('#saveAgentSettings');
+  let baseline = '';
+
+  function snapshot() {
+    return JSON.stringify({
+      freshness_hours: Number(freshness.value),
+      quiet_mode: quietMode.checked,
+      quiet_start: quietStart.value,
+      quiet_end: quietEnd.value,
+    });
+  }
+
+  function syncDirty() {
+    const dirty = snapshot() !== baseline;
+    save.disabled = !dirty;
+    if (dirty) {
+      result.textContent = 'تغییر ذخیره‌نشده داری.';
+      result.classList.remove('settings-error');
+    } else if (baseline) {
+      result.textContent = 'تنظیمات همگام است.';
+    }
+  }
 
   async function loadSettings() {
     try {
@@ -62,6 +83,8 @@
       quietMode.checked = Boolean(settings.quiet_mode);
       quietStart.value = settings.quiet_start || '00:00';
       quietEnd.value = settings.quiet_end || '07:00';
+      baseline = snapshot();
+      save.disabled = true;
       result.textContent = 'تنظیمات همگام است.';
       result.classList.remove('settings-error');
     } catch (_) {
@@ -70,31 +93,31 @@
     }
   }
 
+  [freshness, quietMode, quietStart, quietEnd].forEach(input => input.addEventListener('input', syncDirty));
+  quietMode.addEventListener('change', syncDirty);
+
   form.addEventListener('submit', async event => {
     event.preventDefault();
+    if (save.disabled) return;
     save.disabled = true;
     result.textContent = 'در حال ذخیره…';
     result.classList.remove('settings-error');
     try {
+      const payload = JSON.parse(snapshot());
       const response = await fetch('/api/command-center/settings', {
-        method: 'POST',
-        credentials: 'same-origin',
+        method: 'POST', credentials: 'same-origin',
         headers: {'Content-Type':'application/json', 'X-CSRFToken': csrf},
-        body: JSON.stringify({
-          freshness_hours: Number(freshness.value),
-          quiet_mode: quietMode.checked,
-          quiet_start: quietStart.value,
-          quiet_end: quietEnd.value,
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok || data.ok === false) throw new Error(data.error || `HTTP ${response.status}`);
-      result.textContent = 'ذخیره شد؛ از چرخه بعدی ایجنت اعمال می‌شود.';
+      baseline = snapshot();
+      result.textContent = `ذخیره شد · ${new Date().toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit', second:'2-digit'})}`;
     } catch (error) {
       result.textContent = error.message === 'invalid_settings' ? 'مقادیر تنظیمات معتبر نیست.' : `خطا: ${error.message}`;
       result.classList.add('settings-error');
     } finally {
-      save.disabled = false;
+      save.disabled = snapshot() === baseline;
     }
   });
 
