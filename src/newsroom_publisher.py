@@ -33,6 +33,11 @@ def _is_explosion(item: NormalizedNewsItem) -> bool:
     return any(term in text for term in EXPLOSION_TERMS)
 
 
+def _breaking_prefix(item: NormalizedNewsItem) -> str:
+    """Compatibility helper used by presentation tests; publishing now folds this into one headline."""
+    return "💥 🔴 <b>خبر فوری</b>\n" if _is_explosion(item) else ""
+
+
 def _collapse_breaking_header(message: str) -> str:
     lines = str(message or "").splitlines()
     if not lines:
