@@ -30,7 +30,7 @@ def test_stale_story_is_dropped_before_realtime_state_and_never_published(tmp_pa
     ledger, live, editorial = stores(tmp_path)
     sent = []
     summary = run_cycle(
-        lambda: [item("old", "Iran announces maritime restrictions", "2026-09-05T12:00:00+00:00")],
+        lambda: [item("old", "Iran announces tanker restrictions in Strait of Hormuz", "2026-09-05T12:00:00+00:00")],
         ledger, live, editorial,
         lambda x: sent.append(x) or {"ok": True, "message_id": 1},
         {"auto_publish": True}, NOW,
@@ -52,29 +52,30 @@ def test_low_value_company_story_is_visible_but_never_published(tmp_path):
     )
     assert sent == []
     assert summary.filtered == 1
-    assert live.records()[0].decision_reason == "filtered_low_value"
+    assert live.records()[0].decision_reason == "filtered_outside_channel_scope"
 
 
-def test_protected_ambiguous_story_enters_review_not_publish(tmp_path):
+def test_protected_ambiguous_story_is_hard_filtered_not_reviewed(tmp_path):
     ledger, live, editorial = stores(tmp_path)
     sent = []
     summary = run_cycle(
-        lambda: [item("protected", "White House issues a new statement", "2026-09-07T21:00:00+00:00", source="White House", priority="protected")],
+        lambda: [item("protected", "White House issues a new statement about Iran", "2026-09-07T21:00:00+00:00", source="White House", priority="protected")],
         ledger, live, editorial,
         lambda x: sent.append(x) or {"ok": True, "message_id": 3},
         {"auto_publish": True}, NOW,
     )
     assert sent == []
-    assert summary.review_items == 1
-    assert len(editorial.queue()) == 1
-    assert live.records()[0].panel_status == "waiting"
+    assert summary.review_items == 0
+    assert editorial.queue() == []
+    assert live.records()[0].panel_status == "rejected"
+    assert live.records()[0].decision_reason == "filtered_outside_channel_scope"
 
 
-def test_fresh_operational_iran_story_reaches_publisher(tmp_path):
+def test_fresh_in_scope_iran_story_reaches_publisher(tmp_path):
     ledger, live, editorial = stores(tmp_path)
     sent = []
     summary = run_cycle(
-        lambda: [item("fresh", "Iran partially reopens airspace after security restrictions", "2026-09-07T21:00:00+00:00")],
+        lambda: [item("fresh", "Iran launches ballistic missiles toward Israel", "2026-09-07T21:00:00+00:00")],
         ledger, live, editorial,
         lambda x: sent.append(x.raw.source_item_id) or {"ok": True, "message_id": 44},
         {"auto_publish": True}, NOW,
