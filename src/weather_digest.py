@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 
 import requests
 
+from .publication_guard import publication_paused
 from .services import USER_AGENT, send_telegram
 
 TEHRAN_TZ = ZoneInfo("Asia/Tehran")
@@ -171,6 +172,9 @@ def _save_state(state: dict) -> None:
 
 
 def run(*, session=requests, force: bool = False) -> int:
+    if publication_paused():
+        print("WEATHER publication paused by newsroom emergency lock", flush=True)
+        return 4
     bot_token = str(os.environ.get("TELEGRAM_BOT_TOKEN") or "").strip()
     chat_id = str(os.environ.get("TELEGRAM_CHAT_ID") or "@bikhabaar").strip()
     if not bot_token or not chat_id:
