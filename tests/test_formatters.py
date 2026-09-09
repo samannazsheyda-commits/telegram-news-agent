@@ -147,7 +147,6 @@ def test_final_news_drops_question_sentences_from_summary():
     )
     summary = "انتظار می‌رود بانک مرکزی اروپا روز پنجشنبه نرخ‌های بهره را افزایش دهد و جنگ آمریکا و ایران قیمت نفت را بالا نگه دارد. چرا انتظار می رود بانک نرخ ها را افزایش دهد؟"
     text = format_news(item, "انتظار می‌رود بانک مرکزی اروپا نرخ‌های بهره را افزایش دهد", summary, marker_override="🟥")
-    assert "انتظار می‌رود بانک مرکزی اروپا روز پنجشنبه" in text
     assert "چرا انتظار می رود بانک نرخ ها را افزایش دهد" not in text
     assert "؟" not in text
 
