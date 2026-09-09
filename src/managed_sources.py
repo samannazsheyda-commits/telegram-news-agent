@@ -10,6 +10,7 @@ from typing import Any
 
 import requests
 
+from .editorial_rules import priority_search_queries
 from .newsroom_models import RawNewsItem
 from .sources import (
     NEWS_QUERIES,
@@ -75,6 +76,18 @@ def system_source_definitions() -> list[dict[str, Any]]:
                 "system": True,
                 "status": "active",
             })
+    for name, query in priority_search_queries():
+        identity = f"priority:{name}:{query}:en"
+        rows.append({
+            "id": _source_id("system", identity),
+            "kind": "system_query",
+            "name": name,
+            "query": query,
+            "lang": "en",
+            "group": "priority",
+            "system": True,
+            "status": "active",
+        })
     rows.append({
         "id": "system-truth-realdonaldtrump",
         "kind": "truth",
@@ -114,22 +127,26 @@ def _system_active(source_id: str, overrides: dict[str, dict[str, Any]]) -> bool
     return not state.get("hidden") and bool(state.get("active", True))
 
 
-def fetch_managed_base_news_items(session=requests) -> list[NewsItem]:
+def _fetch_managed_query_group(group: str, session=requests) -> list[NewsItem]:
     merged: dict[str, NewsItem] = {}
     overrides = source_overrides()
-    definitions = {row["id"]: row for row in system_source_definitions() if row["kind"] == "system_query"}
-    for source_id, row in definitions.items():
+    rows = [
+        row for row in system_source_definitions()
+        if row.get("kind") == "system_query" and row.get("group") == group
+    ]
+    for row in rows:
+        source_id = str(row["id"])
         if not _system_active(source_id, overrides):
             continue
         fallback_source = str(row["name"])
         query = str(row["query"])
         lang = str(row["lang"])
-        special = row.get("group") == "special"
+        allow_special = group == "special"
         try:
-            items = _fetch_google_news_query(session, fallback_source, query, lang, allow_special_source=special)
+            items = _fetch_google_news_query(session, fallback_source, query, lang, allow_special_source=allow_special)
         except Exception:
             continue
-        for item in items:
+        for item in items[:20] if group == "priority" else items:
             combined = f"{item.title} {item.summary}"
             if fallback_source in {"TankerTrackers", "NOTAM / Airspace"} and not is_security_alert(combined):
                 continue
@@ -137,6 +154,18 @@ def fetch_managed_base_news_items(session=requests) -> list[NewsItem]:
                 continue
             merged.setdefault(item.key, item)
     return list(merged.values())
+
+
+def fetch_managed_base_news_items(session=requests) -> list[NewsItem]:
+    merged: dict[str, NewsItem] = {}
+    for group in ("news", "special"):
+        for item in _fetch_managed_query_group(group, session=session):
+            merged.setdefault(item.key, item)
+    return list(merged.values())
+
+
+def fetch_managed_priority_news_items(session=requests) -> list[NewsItem]:
+    return _fetch_managed_query_group("priority", session=session)
 
 
 def _fetch_truth_account(handle: str, name: str, session=requests, limit: int = 40) -> list[RawNewsItem]:
