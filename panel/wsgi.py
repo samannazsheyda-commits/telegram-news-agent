@@ -4,6 +4,7 @@ from src.local_json_repository import LocalJsonRepository
 
 from .app import create_app
 from .command_center import bp as command_center_bp
+from .live_api import bp as live_api_bp
 from .source_manager import bp as source_manager_bp
 from .weather_preview import bp as weather_preview_bp
 
@@ -16,5 +17,6 @@ if local_root:
 
 app = create_app(config)
 app.register_blueprint(command_center_bp)
+app.register_blueprint(live_api_bp)
 app.register_blueprint(source_manager_bp)
 app.register_blueprint(weather_preview_bp)
