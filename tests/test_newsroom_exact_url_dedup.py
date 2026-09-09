@@ -33,7 +33,13 @@ def test_same_source_url_is_never_published_twice_even_if_item_id_and_text_chang
 
     def publisher(item):
         calls.append(item.raw.source_item_id)
-        return {"ok": True, "message_id": 1000 + len(calls)}
+        return {
+            "ok": True,
+            "message_id": 1000 + len(calls),
+            "persian_title": "هشدار موشکی ایران در اسرائیل",
+            "persian_body": "اسرائیل از هشدار مرتبط با موشک ایران خبر داد.",
+            "final_message": "🛑 جروزالم پست / ایکس: هشدار موشکی ایران در اسرائیل",
+        }
 
     settings = {"auto_publish": True, "freshness_hours": 2, "panel_max_records": 100}
     first = _raw(
@@ -50,6 +56,10 @@ def test_same_source_url_is_never_published_twice_even_if_item_id_and_text_chang
     )
 
     run_cycle(lambda: [first], ledger, live, editorial, publisher, settings, now)
-    run_cycle(lambda: [mutated_same_post], ledger, live, editorial, publisher, settings, now)
+    row = live.records()[0]
+    assert row.persian_title == "هشدار موشکی ایران در اسرائیل"
+    assert row.persian_body == "اسرائیل از هشدار مرتبط با موشک ایران خبر داد."
+    assert row.final_message.startswith("🛑 جروزالم پست / ایکس")
 
+    run_cycle(lambda: [mutated_same_post], ledger, live, editorial, publisher, settings, now)
     assert calls == ["first-id"]

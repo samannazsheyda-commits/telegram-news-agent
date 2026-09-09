@@ -112,6 +112,17 @@ def _item_id(item: NormalizedNewsItem) -> str:
     return item.raw.source_item_id or item.raw.source_url
 
 
+def _media_for_panel(item: NormalizedNewsItem) -> tuple[str, str]:
+    for media in item.raw.media or []:
+        if not isinstance(media, dict):
+            continue
+        kind = str(media.get("type") or "").strip().lower()
+        url = str(media.get("url") or media.get("preview_url") or "").strip()
+        if url:
+            return kind, url
+    return "", ""
+
+
 def _feed_record(
     item: NormalizedNewsItem,
     *,
@@ -122,7 +133,10 @@ def _feed_record(
     panel_status: str,
     message_id: int | None,
     now: datetime,
+    render: dict | None = None,
 ) -> LiveFeedRecord:
+    render = render if isinstance(render, dict) else {}
+    media_type, media_url = _media_for_panel(item)
     return LiveFeedRecord(
         item_id=_item_id(item),
         event_id=event_id,
@@ -137,6 +151,12 @@ def _feed_record(
         telegram_message_id=message_id,
         panel_status=panel_status,
         updated_at=now.isoformat(),
+        original_summary=item.raw.summary,
+        persian_title=str(render.get("persian_title") or ""),
+        persian_body=str(render.get("persian_body") or ""),
+        final_message=str(render.get("final_message") or ""),
+        media_type=media_type,
+        media_url=media_url,
     )
 
 
@@ -155,16 +175,21 @@ def _queue_item(editorial_store: LocalEditorialStore, item: NormalizedNewsItem, 
     )
 
 
-def _publisher_result(payload) -> tuple[bool, int | None]:
+def _publisher_result(payload) -> tuple[bool, int | None, dict]:
     if isinstance(payload, dict):
         ok = payload.get("ok") is True
         message_id = payload.get("message_id")
         if message_id is None and isinstance(payload.get("result"), dict):
             message_id = payload["result"].get("message_id")
-        return ok and isinstance(message_id, int), message_id if isinstance(message_id, int) else None
+        render = {
+            "persian_title": str(payload.get("persian_title") or ""),
+            "persian_body": str(payload.get("persian_body") or ""),
+            "final_message": str(payload.get("final_message") or ""),
+        }
+        return ok and isinstance(message_id, int), message_id if isinstance(message_id, int) else None, render
     if isinstance(payload, int):
-        return True, payload
-    return False, None
+        return True, payload, {}
+    return False, None, {}
 
 
 def run_cycle(
@@ -287,21 +312,22 @@ def run_cycle(
             live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="new", message_id=None, now=now))
             continue
 
+        render: dict = {}
         try:
-            ok, message_id = _publisher_result(publisher(item))
+            ok, message_id, render = _publisher_result(publisher(item))
         except Exception as exc:
             print(f"PUBLISH_EXCEPTION source={item.raw.source!r} type={type(exc).__name__} error={exc}", flush=True)
-            ok, message_id = False, None
+            ok, message_id, render = False, None, {}
 
         if ok and message_id is not None:
             ledger.mark_published(event_id, message_id, fingerprint.key_facts, now.isoformat())
             summary.published += 1
-            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="auto_published", message_id=message_id, now=now))
+            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="auto_published", message_id=message_id, now=now, render=render))
         else:
             summary.publish_failed += 1
             summary.review_items += 1
             _queue_item(editorial_store, item, "publish_failed", now)
-            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason="publish_failed", duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="failed", message_id=None, now=now))
+            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason="publish_failed", duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="failed", message_id=None, now=now, render=render))
 
     max_records = int(settings.get("panel_max_records") or 500)
     live_feed.prune(now, freshness_hours=freshness_hours, max_records=max_records)

@@ -34,7 +34,7 @@ def _is_explosion(item: NormalizedNewsItem) -> bool:
 
 
 def _breaking_prefix(item: NormalizedNewsItem) -> str:
-    """Compatibility helper used by presentation tests; publishing now folds this into one headline."""
+    """Compatibility helper used by presentation tests; publishing folds this into one headline."""
     return "💥 🔴 <b>خبر فوری</b>\n" if _is_explosion(item) else ""
 
 
@@ -141,10 +141,10 @@ class TelegramNewsroomPublisher:
             return translated
         return _lingva_translate(raw, session=self.session)
 
-    def _message(self, item: NormalizedNewsItem) -> str:
+    def _render(self, item: NormalizedNewsItem) -> dict[str, str]:
         title_fa = self._translate_resilient(item.raw.title)
         if not title_fa:
-            return ""
+            return {"persian_title": "", "persian_body": "", "final_message": ""}
         summary_fa = self._translate_resilient(item.raw.summary) if item.raw.summary else ""
         legacy = NewsItem(
             key=item.raw.source_item_id,
@@ -155,7 +155,27 @@ class TelegramNewsroomPublisher:
             published=_published_rfc2822(item.raw.published_at),
         )
         message = format_news(legacy, title_fa, summary_fa)
-        return _collapse_breaking_header(message) if _is_explosion(item) else message
+        if _is_explosion(item):
+            message = _collapse_breaking_header(message)
+        return {
+            "persian_title": title_fa,
+            "persian_body": summary_fa,
+            "final_message": message,
+        }
+
+    def _message(self, item: NormalizedNewsItem) -> str:
+        return self._render(item)["final_message"]
+
+    @staticmethod
+    def _with_render(result: dict, render: dict[str, str]) -> dict:
+        if result.get("ok") is not True:
+            return result
+        return {
+            **result,
+            "persian_title": render.get("persian_title", ""),
+            "persian_body": render.get("persian_body", ""),
+            "final_message": render.get("final_message", ""),
+        }
 
     def _telegram_post_has_video(self, url: str) -> bool:
         if not TELEGRAM_POST_RE.match(str(url or "")):
@@ -256,7 +276,9 @@ class TelegramNewsroomPublisher:
         if not self.bot_token or not self.chat_id:
             print("TELEGRAM_PUBLISH_FAILED endpoint=none error='missing_telegram_credentials'", flush=True)
             return {"ok": False, "error": "missing_telegram_credentials"}
-        message = self._message(item)
+
+        render = self._render(item)
+        message = render["final_message"]
         if not message:
             print(f"TELEGRAM_PUBLISH_FAILED endpoint=none error='translation_or_format_failed' source={item.raw.source!r}", flush=True)
             return {"ok": False, "error": "translation_or_format_failed"}
@@ -270,8 +292,8 @@ class TelegramNewsroomPublisher:
                 timeout=40,
             )
             if result.get("ok") is True:
-                return result
-            return self._fallback_to_text(message, "sendVideo", result)
+                return self._with_render(result, render)
+            return self._with_render(self._fallback_to_text(message, "sendVideo", result), render)
 
         source_url = str(item.raw.source_url or "").strip()
         if self._telegram_post_has_video(source_url):
@@ -287,8 +309,8 @@ class TelegramNewsroomPublisher:
                                 timeout=120,
                             )
                         if result.get("ok") is True:
-                            return result
-                        return self._fallback_to_text(message, "sendVideo", result)
+                            return self._with_render(result, render)
+                        return self._with_render(self._fallback_to_text(message, "sendVideo", result), render)
                     except OSError:
                         pass
 
@@ -299,7 +321,7 @@ class TelegramNewsroomPublisher:
                 timeout=30,
             )
             if result.get("ok") is True:
-                return result
-            return self._fallback_to_text(message, "sendPhoto", result)
+                return self._with_render(result, render)
+            return self._with_render(self._fallback_to_text(message, "sendPhoto", result), render)
 
-        return self._text_post(message)
+        return self._with_render(self._text_post(message), render)
