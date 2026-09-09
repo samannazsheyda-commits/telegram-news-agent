@@ -14,6 +14,7 @@ TEHRAN_TZ = ZoneInfo("Asia/Tehran")
 OPEN_METEO = "https://api.open-meteo.com/v1/forecast"
 OPEN_METEO_SOURCE = "https://open-meteo.com/"
 STATE_PATH = Path(os.environ.get("WEATHER_STATE_PATH", "/var/lib/bikhabar/weather_state.json"))
+PREVIEW_PATH = Path(os.environ.get("WEATHER_PREVIEW_PATH", "/var/lib/bikhabar/runtime/data/weather_preview.json"))
 
 CITIES = (
     ("تهران", 35.6892, 51.3890),
@@ -128,6 +129,33 @@ def format_digest(rows: list[dict]) -> str:
     return "\n\n".join(blocks)
 
 
+def build_preview(*, session=requests) -> dict:
+    """Build exactly the message that would be sent, without writing to Telegram."""
+    rows: list[dict] = []
+    for city in CITIES:
+        try:
+            rows.append(fetch_city(*city, session=session))
+        except Exception as exc:
+            print(f"WEATHER preview fetch failed city={city[0]} error={type(exc).__name__}", flush=True)
+    if len(rows) < 4:
+        raise RuntimeError(f"insufficient_weather_data:{len(rows)}")
+    return {
+        "message": format_digest(rows),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "target_date": str(rows[0].get("date") or ""),
+        "source": "Open-Meteo",
+        "source_url": OPEN_METEO_SOURCE,
+        "city_count": len(rows),
+    }
+
+
+def save_preview(preview: dict, path: Path = PREVIEW_PATH) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(preview, ensure_ascii=False, indent=2), encoding="utf-8")
+    tmp.replace(path)
+
+
 def _load_state() -> dict:
     try:
         return json.loads(STATE_PATH.read_text(encoding="utf-8"))
@@ -154,20 +182,17 @@ def run(*, session=requests, force: bool = False) -> int:
     if not force and state.get("last_sent_local_day") == day_key:
         print("WEATHER already sent tonight", flush=True)
         return 0
-    rows = []
-    for city in CITIES:
-        try:
-            rows.append(fetch_city(*city, session=session))
-        except Exception as exc:
-            print(f"WEATHER fetch failed city={city[0]} error={type(exc).__name__}", flush=True)
-    if len(rows) < 4:
-        print(f"WEATHER insufficient city data count={len(rows)}", flush=True)
+    try:
+        preview = build_preview(session=session)
+    except RuntimeError as exc:
+        print(f"WEATHER {exc}", flush=True)
         return 3
-    send_telegram(format_digest(rows), bot_token, chat_id, session=session)
+    save_preview(preview)
+    send_telegram(preview["message"], bot_token, chat_id, session=session)
     state["last_sent_local_day"] = day_key
     state["last_sent_at"] = datetime.now(timezone.utc).isoformat()
     _save_state(state)
-    print(f"WEATHER sent cities={len(rows)}", flush=True)
+    print(f"WEATHER sent cities={preview['city_count']}", flush=True)
     return 0
 
 
