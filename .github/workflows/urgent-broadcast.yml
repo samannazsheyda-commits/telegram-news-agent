@@ -41,6 +41,7 @@ jobs:
           import requests
           from bs4 import BeautifulSoup
           from src.services import translate_to_fa
+          from src.urgent_output import normalize_urgent_message
 
           payload = json.loads(Path('data/urgent_broadcast.json').read_text(encoding='utf-8'))
           token = os.environ.get('TELEGRAM_BOT_TOKEN','').strip()
@@ -184,6 +185,7 @@ jobs:
                   f"📡 <a href=\"https://t.me/bikhabaar\">بی‌خبر</a> ←\nمانیتور تحولات ایران\n"
                   f"🇮🇷 🚀\n{html.escape(hashtags)}"
               )
+              caption = normalize_urgent_message(caption)
               with tempfile.TemporaryDirectory() as td:
                   video_path = str(Path(td) / 'video.mp4')
                   download_telegram_video(url, video_path)
@@ -200,7 +202,7 @@ jobs:
                       raise RuntimeError(out)
 
           for text in payload.get('messages') or []:
-              send_text(str(text))
+              send_text(normalize_urgent_message(str(text)))
               time.sleep(2)
 
           for post in payload.get('telegram_video_posts') or []:
