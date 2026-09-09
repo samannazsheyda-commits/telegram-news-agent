@@ -4,8 +4,7 @@ from datetime import datetime, timezone
 from typing import Callable
 
 from .custom_sources import fetch_custom_news_items
-from .editorial_rules import fetch_priority_news_items
-from .managed_sources import fetch_managed_base_news_items, fetch_managed_truth_items
+from .managed_sources import fetch_managed_base_news_items, fetch_managed_priority_news_items, fetch_managed_truth_items
 from .newsroom_models import RawNewsItem
 from .sources import NewsItem
 
@@ -47,7 +46,7 @@ def build_raw_fetchers(
     *,
     base_fetch=fetch_managed_base_news_items,
     custom_fetch=fetch_custom_news_items,
-    priority_fetch=fetch_priority_news_items,
+    priority_fetch=fetch_managed_priority_news_items,
     truth_fetch=fetch_managed_truth_items,
 ):
     return [
