@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}مدیریت منابع | بی‌خبر{% endblock %}
+{% block content %}
+<section class="warroom-head">
+  <div>
+    <div class="eyebrow">SOURCE MANAGER</div>
+    <h1>مدیریت کامل منابع رصد</h1>
+    <p class="muted">هر منبعی که اینجا روشن است وارد چرخه‌ی رصد VPS می‌شود. تغییرات بدون deploy و از اسکن بعدی اعمال می‌شوند.</p>
+  </div>
+</section>
+
+<section class="card source-add-card">
+  <h2>➕ اضافه کردن منبع</h2>
+  <form method="post" action="{{ url_for('source_manager.add_source') }}" class="source-add-grid">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>نوع منبع
+      <select name="kind" required>
+        <option value="telegram">Telegram</option>
+        <option value="x">X / Twitter</option>
+        <option value="truth">Truth Social</option>
+        <option value="website">Website / RSS</option>
+      </select>
+    </label>
+    <label>آیدی / لینک
+      <input name="identity" required placeholder="@CENTCOM · @rnintel · @realDonaldTrump · https://example.com">
+    </label>
+    <label>نام نمایشی
+      <input name="name" placeholder="نام دلخواه">
+    </label>
+    <label>RSS / Feed اختیاری
+      <input name="feed_url" placeholder="https://example.com/rss.xml">
+    </label>
+    <button class="primary" type="submit">اضافه به رصد زنده</button>
+  </form>
+</section>
+
+<section class="source-summary-grid">
+  <div class="metric"><strong>{{ sources|length }}</strong><span>کل منابع</span></div>
+  <div class="metric"><strong>{{ counts.get('telegram', 0) }}</strong><span>Telegram</span></div>
+  <div class="metric"><strong>{{ counts.get('x', 0) }}</strong><span>X / Twitter</span></div>
+  <div class="metric"><strong>{{ counts.get('truth', 0) }}</strong><span>Truth Social</span></div>
+  <div class="metric"><strong>{{ counts.get('website', 0) }}</strong><span>Website / RSS</span></div>
+  <div class="metric"><strong>{{ counts.get('system_query', 0) }}</strong><span>فیدهای خبری سیستم</span></div>
+</section>
+
+<section class="card">
+  <div class="section-title-row">
+    <div>
+      <div class="eyebrow">MONITORED SOURCES</div>
+      <h2>همه منابع فعلی</h2>
+    </div>
+    <span class="status-pill live">LIVE</span>
+  </div>
+
+  <div class="source-manager-list">
+  {% for source in sources %}
+    <article class="source-manager-row {% if not source.active %}source-off{% endif %}">
+      <div class="source-kind-icon">
+        {% if source.kind == 'telegram' %}✈️
+        {% elif source.kind == 'x' %}𝕏
+        {% elif source.kind == 'truth' %}🟢
+        {% elif source.kind == 'website' %}🌐
+        {% else %}🛰️{% endif %}
+      </div>
+      <div class="source-main">
+        <div class="source-name-line">
+          <strong>{{ source.name or source.identity }}</strong>
+          {% if source.system %}<span class="mini-badge">سیستمی</span>{% endif %}
+          <span class="mini-badge {{ 'on' if source.active else 'off' }}">{{ 'روشن' if source.active else 'خاموش' }}</span>
+        </div>
+        <div class="source-identity">{{ source.identity or source.handle or source.channel or source.feed_url or source.website_url or '' }}</div>
+        <div class="meta">
+          <span>{{ source.kind }}</span>
+          <span>{{ source.status or '' }}</span>
+          {% if source.last_checked_at %}<span>آخرین چک: {{ source.last_checked_at }}</span>{% endif %}
+          {% if source.last_error %}<span class="danger-text">{{ source.last_error }}</span>{% endif %}
+        </div>
+      </div>
+      <div class="source-actions">
+        <form method="post" action="{{ url_for('source_manager.toggle', source_id=source.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit">{{ 'خاموش' if source.active else 'روشن' }}</button>
+        </form>
+        <form method="post" action="{{ url_for('source_manager.delete', source_id=source.id) }}" onsubmit="return confirm('این منبع از رصد حذف شود؟')">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="danger-text">حذف</button>
+        </form>
+      </div>
+    </article>
+  {% else %}
+    <div class="empty">هیچ منبعی برای رصد تعریف نشده.</div>
+  {% endfor %}
+  </div>
+</section>
+{% endblock %}
