@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from typing import Callable
 
 from .editorial_store import LocalEditorialStore, ReviewItem
@@ -54,8 +55,6 @@ def _collect(fetcher) -> tuple[list[RawNewsItem], int, int]:
     items: list[RawNewsItem] = []
     ok = 0
     failed = 0
-    # Network feeds are independent. Running them in parallel prevents one slow
-    # site/API from delaying a missile/explosion alert available from another.
     with ThreadPoolExecutor(max_workers=min(8, len(source_fetchers)), thread_name_prefix="bikhabar-feed") as pool:
         futures = {pool.submit(source_fetcher): source_fetcher for source_fetcher in source_fetchers}
         for future in as_completed(futures):
@@ -67,11 +66,37 @@ def _collect(fetcher) -> tuple[list[RawNewsItem], int, int]:
     return items, ok, failed
 
 
+def _parse_source_time(value: str) -> datetime | None:
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        try:
+            dt = parsedate_to_datetime(raw)
+        except Exception:
+            return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def _stale_before_ingest(raw: RawNewsItem, now: datetime, freshness_hours: int) -> bool:
+    published = _parse_source_time(raw.published_at)
+    if published is None:
+        return False
+    now_utc = now.astimezone(timezone.utc)
+    age = now_utc - published
+    if age < timedelta(minutes=-10):
+        return True
+    return age > timedelta(hours=max(1, int(freshness_hours)))
+
+
 def _urgency_score(raw: RawNewsItem) -> tuple[int, str]:
     text = f"{raw.title} {raw.summary}".lower()
     war_hits = sum(1 for term in WAR_ALERT_TERMS if term in text)
     iran_hit = any(term in text for term in IRAN_ALERT_TERMS)
-    # Highest class: an operational war/security event connected to Iran.
     if war_hits and iran_hit:
         rank = 300 + min(war_hits, 20)
     elif war_hits:
@@ -157,12 +182,22 @@ def run_cycle(
 
     summary = CycleSummary()
     items, summary.sources_ok, summary.sources_failed = _collect(fetcher)
-    # A missile launch/explosion/Hormuz item must always be handled before
-    # ordinary political or market items in the same scan.
-    items.sort(key=_urgency_score, reverse=True)
     summary.items_fetched = len(items)
+    freshness_hours = int(settings.get("freshness_hours") or 2)
 
+    # Old search-engine discoveries used to create events and fill the panel even
+    # though eligibility later rejected them. Drop them before fingerprinting so
+    # realtime state contains only actionable/fresh candidates.
+    fresh_items: list[RawNewsItem] = []
     for raw in items:
+        if _stale_before_ingest(raw, now, freshness_hours):
+            summary.stale += 1
+            continue
+        fresh_items.append(raw)
+
+    fresh_items.sort(key=_urgency_score, reverse=True)
+
+    for raw in fresh_items:
         item = normalize_item(raw)
         fingerprint = build_fingerprint(item)
         candidates = ledger.find_candidates(fingerprint)
@@ -183,14 +218,8 @@ def run_cycle(
                 pass
             if not retry_unpublished_duplicate:
                 live_feed.upsert(_feed_record(
-                    item,
-                    event_id=event_id,
-                    decision=decision.decision,
-                    reason=decision.reason,
-                    duplicate_of=decision.duplicate_of,
-                    panel_status="duplicate",
-                    message_id=None,
-                    now=now,
+                    item, event_id=event_id, decision=decision.decision, reason=decision.reason,
+                    duplicate_of=decision.duplicate_of, panel_status="duplicate", message_id=None, now=now,
                 ))
                 continue
 
@@ -203,14 +232,8 @@ def run_cycle(
                 pass
             if not retry_unpublished_duplicate:
                 live_feed.upsert(_feed_record(
-                    item,
-                    event_id=event_id,
-                    decision=decision.decision,
-                    reason=decision.reason,
-                    duplicate_of=decision.duplicate_of,
-                    panel_status="duplicate",
-                    message_id=None,
-                    now=now,
+                    item, event_id=event_id, decision=decision.decision, reason=decision.reason,
+                    duplicate_of=decision.duplicate_of, panel_status="duplicate", message_id=None, now=now,
                 ))
                 continue
 
@@ -325,7 +348,6 @@ def run_cycle(
                 now=now,
             ))
 
-    freshness_hours = int(settings.get("freshness_hours") or 3)
     max_records = int(settings.get("panel_max_records") or 500)
     live_feed.prune(now, freshness_hours=freshness_hours, max_records=max_records)
     summary.panel_feed_count = len(live_feed.records())
