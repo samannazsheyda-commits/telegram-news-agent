@@ -31,8 +31,10 @@ def test_editor_repairs_known_bad_persian_and_latin_labels():
     assert "تلگرام" in cleaned
 
 
-def test_flags_are_only_at_the_end_of_final_post():
-    message = format_news(
+def test_flags_are_only_at_the_end_of_production_news_card():
+    from src import runtime_v7 as v7
+
+    message = v7._format_news_with_footer_icons(
         _item(),
         "هشدار موشکی در عربستان سعودی",
         "پدافند هوایی عربستان در آماده‌باش قرار گرفته است",
