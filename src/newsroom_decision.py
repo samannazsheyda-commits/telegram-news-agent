@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import re
+from difflib import SequenceMatcher
+
 from .newsroom_fingerprint import fingerprint_similarity
 from .newsroom_models import DecisionResult, EventFingerprint, EventRecord, NormalizedNewsItem
 
@@ -58,6 +61,25 @@ def _new_material_facts(item: EventFingerprint, record: EventRecord) -> set[str]
     return current - existing
 
 
+def _normalized_claim_text(value: str) -> str:
+    text = re.sub(r"\s+", " ", str(value or "").lower()).strip()
+    return re.sub(r"[^a-z0-9\u0600-\u06ff]+", " ", text).strip()
+
+
+def _claim_text_similarity(item: NormalizedNewsItem, record: EventRecord) -> float:
+    current = _normalized_claim_text(item.normalized_text or item.raw.title)
+    prior = _normalized_claim_text(record.canonical_title)
+    if not current or not prior:
+        return 0.0
+    current_tokens = set(current.split())
+    prior_tokens = set(prior.split())
+    token_overlap = 0.0
+    if current_tokens and prior_tokens:
+        token_overlap = len(current_tokens & prior_tokens) / max(1, min(len(current_tokens), len(prior_tokens)))
+    sequence = SequenceMatcher(None, current, prior).ratio()
+    return max(token_overlap, sequence)
+
+
 def decide_item(
     item: NormalizedNewsItem,
     fingerprint: EventFingerprint,
@@ -89,6 +111,33 @@ def decide_item(
                 confidence=1.0,
                 event_id="",
             )
+
+    # Sparse fingerprints can legitimately collide (for example two unrelated
+    # Iran diplomacy stories with no extracted action/object). Only treat an
+    # exact sparse hash as a duplicate when the claim text is also strongly
+    # similar. Structured breaking alerts still dedupe through the normal
+    # weighted fingerprint path below.
+    for record in candidates:
+        if record.fingerprint != fingerprint.key:
+            continue
+        text_similarity = _claim_text_similarity(item, record)
+        if text_similarity < 0.78:
+            continue
+        new_facts = _new_material_facts(fingerprint, record)
+        if new_facts:
+            return DecisionResult(
+                decision="material_update",
+                reason="exact_structural_claim_with_new_material_facts:" + ",".join(sorted(new_facts)),
+                confidence=text_similarity,
+                event_id=record.event_id,
+            )
+        return DecisionResult(
+            decision="duplicate_same_claim",
+            reason="exact_structural_claim_and_text_already_seen",
+            confidence=text_similarity,
+            event_id=record.event_id,
+            duplicate_of=record.event_id,
+        )
 
     scored: list[tuple[float, EventRecord]] = []
     for record in candidates:

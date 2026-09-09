@@ -12,6 +12,7 @@ _BREAKING_TERMS = (
     "explosion", "blast", "bombing", "hormuz", "strait of hormuz", "tanker", "warship", "drone",
     "موشک", "بالستیک", "کروز", "شلیک", "رهگیری", "حمله", "انفجار", "بمباران", "هرمز", "نفتکش", "پهپاد",
 )
+_BROAD_LOCATIONS = {"Iran"}
 
 
 def _parse_time(value: str) -> datetime | None:
@@ -86,6 +87,12 @@ def _jaccard(left: list[str], right: list[str]) -> float:
     return len(a & b) / max(1, len(a | b))
 
 
+def _specific_location_conflict(a: EventFingerprint, b: EventFingerprint) -> bool:
+    left = set(a.locations) - _BROAD_LOCATIONS
+    right = set(b.locations) - _BROAD_LOCATIONS
+    return bool(left and right and left.isdisjoint(right))
+
+
 def fingerprint_similarity(a: EventFingerprint, b: EventFingerprint) -> float:
     action_score = _jaccard(a.actions, b.actions)
     object_score = _jaccard(a.objects, b.objects)
@@ -102,4 +109,10 @@ def fingerprint_similarity(a: EventFingerprint, b: EventFingerprint) -> float:
     )
     if action_score == 1.0 and object_score >= 0.5:
         score = max(score, 0.80 + 0.10 * location_score + 0.05 * actor_score + 0.05 * fact_score)
+
+    # Two specific, non-overlapping places must not be collapsed merely because
+    # they are both explosions/strikes in Iran during the same 30-minute bucket.
+    if _specific_location_conflict(a, b):
+        score = min(score, 0.64)
+
     return min(1.0, score)
