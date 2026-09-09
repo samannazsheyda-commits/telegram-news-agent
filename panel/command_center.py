@@ -8,6 +8,14 @@ from flask import Blueprint, current_app, jsonify, request, session
 
 bp = Blueprint("command_center", __name__)
 
+MODULES = {
+    "scan": {"available": True, "action": "refresh", "label": "اسکن فوری"},
+    "weather": {"available": True, "action": "weather_now", "label": "هواشناسی فردا"},
+    "air-traffic": {"available": True, "action": "air_traffic_now", "label": "ترافیک هوایی"},
+    "tanker": {"available": False, "action": None, "label": "نفتکش‌ها و هرمز"},
+    "market": {"available": False, "action": None, "label": "بازار و دلار"},
+}
+
 
 def _data():
     return current_app.extensions["editorial_data"]
@@ -48,6 +56,13 @@ def _enqueue(action: str, **extra) -> str:
     return command_id
 
 
+def _module_public_state() -> dict:
+    return {
+        name: {"available": bool(meta["available"]), "label": str(meta["label"])}
+        for name, meta in MODULES.items()
+    }
+
+
 @bp.before_request
 def require_admin():
     if not session.get("admin"):
@@ -69,6 +84,7 @@ def status():
             "queue_count": len(queue) if isinstance(queue, list) else 0,
             "poll_seconds": 5,
             "updated_at": settings.get("updated_at", ""),
+            "modules": _module_public_state(),
         }
     )
 
@@ -89,13 +105,10 @@ def publishing():
 
 @bp.post("/api/command-center/module/<module_name>")
 def run_module(module_name: str):
-    actions = {
-        "weather": "weather_now",
-        "air-traffic": "air_traffic_now",
-        "scan": "refresh",
-    }
-    action = actions.get(module_name)
-    if action is None:
+    module = MODULES.get(module_name)
+    if module is None:
         return jsonify({"ok": False, "error": "unknown_module"}), 404
-    command_id = _enqueue(action)
+    if not module["available"]:
+        return jsonify({"ok": False, "error": "module_unavailable", "module": module_name}), 409
+    command_id = _enqueue(str(module["action"]))
     return jsonify({"ok": True, "command_id": command_id, "status": "queued"}), 202
