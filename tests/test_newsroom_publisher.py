@@ -37,16 +37,20 @@ def item(*, media=None, source="Reuters", title="Iran reopens airspace", summary
     ))
 
 
-def test_text_publication_requires_telegram_ok_and_message_id():
+def test_text_publication_requires_telegram_ok_and_message_id_and_returns_final_persian_render():
     session = Session({"ok": True, "result": {"message_id": 321}})
     publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=lambda x: f"فا {x}")
     result = publisher(item())
-    assert result == {"ok": True, "message_id": 321}
+    assert result["ok"] is True
+    assert result["message_id"] == 321
+    assert result["persian_title"] == "فا Iran reopens airspace"
+    assert result["persian_body"] == "فا Flights resume after restrictions"
+    assert "فا Iran reopens airspace" in result["final_message"]
+    assert "لینک منبع خبر" in result["final_message"]
     url, kwargs = session.calls[0]
     assert url.endswith("/sendMessage")
     assert kwargs["data"]["chat_id"] == "@bikhabaar"
-    assert "لینک منبع خبر" in kwargs["data"]["text"]
-    assert "فا Iran reopens airspace" in kwargs["data"]["text"]
+    assert kwargs["data"]["text"] == result["final_message"]
 
 
 def test_ok_false_never_returns_success_even_on_http_200():
@@ -57,7 +61,7 @@ def test_ok_false_never_returns_success_even_on_http_200():
     assert "message_id" not in result
 
 
-def test_truth_photo_uses_sendphoto_and_preserves_media():
+def test_truth_photo_uses_sendphoto_and_preserves_media_and_render_metadata():
     session = Session({"ok": True, "result": {"message_id": 777}})
     publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=lambda x: f"فا {x}")
     result = publisher(item(
@@ -66,11 +70,14 @@ def test_truth_photo_uses_sendphoto_and_preserves_media():
         summary="Iran oil and Hormuz",
         media=[{"type": "image", "url": "https://cdn.example.com/photo.jpg", "description": "Iran Navy"}],
     ))
-    assert result == {"ok": True, "message_id": 777}
+    assert result["ok"] is True
+    assert result["message_id"] == 777
+    assert result["persian_title"] == "فا Iran Navy image"
+    assert result["final_message"]
     url, kwargs = session.calls[0]
     assert url.endswith("/sendPhoto")
     assert kwargs["data"]["photo"] == "https://cdn.example.com/photo.jpg"
-    assert "caption" in kwargs["data"]
+    assert kwargs["data"]["caption"] == result["final_message"][:1024]
 
 
 def test_iso_source_time_is_rendered_in_publication_text():
@@ -94,12 +101,13 @@ def test_explosion_post_has_one_clean_persian_breaking_header_without_flags_or_h
         session=session,
         translator=lambda text: translations.get(text, text),
     )
-    publisher(item(
+    result = publisher(item(
         source="GeoPWatch / Telegram",
         title="UNCONFIRMED: 2 explosions heard in Jask, Hormozgan province, Iran 🇮🇷 @GeoPWatch",
         summary="Reports remain unconfirmed 🇮🇷",
     ))
     text = session.calls[0][1]["data"]["text"]
+    assert text == result["final_message"]
     assert text.startswith("💥 🔴 <b>خبر فوری | ژئوپی‌واچ / تلگرام: ")
     assert "GeoPWatch" not in text
     assert "/ Telegram" not in text
