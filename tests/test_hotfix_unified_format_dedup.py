@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from src.editorial_store import LocalEditorialStore
 from src.event_ledger import EventLedger
-from src.formatters import finalize_telegram_message
+from src.final_output import finalize_telegram_message
 from src.newsroom_decision import decide_item
 from src.newsroom_fingerprint import build_fingerprint
 from src.newsroom_models import EventRecord, RawNewsItem
@@ -40,6 +40,7 @@ def test_every_breaking_path_uses_one_final_formatter_guard():
     assert final == normalize_urgent_message(legacy)
     assert "RN Intel" not in final
     assert "Telegram" not in final
+    assert "🇮🇷" not in final
     assert "آر‌اِن اینتل / تلگرام" in final
     assert final.startswith("💥 🔴 <b>خبر فوری | آر‌اِن اینتل / تلگرام:")
     assert "\n\n⏰ " in final
@@ -122,6 +123,36 @@ def test_cross_source_same_explosion_alert_publishes_once(tmp_path):
     assert summary.published == 1
     assert summary.same_claim_duplicates == 1
     assert len(sent) == 1
+
+
+def test_distinct_explosion_locations_are_not_collapsed(tmp_path):
+    items = [
+        _raw(
+            "Tabz Live / Telegram",
+            "qeshm",
+            "Explosion reported in Qeshm in southern Iran",
+            url="https://t.me/tabzlive/200001",
+        ),
+        _raw(
+            "RN Intel / Telegram",
+            "bushehr",
+            "Explosion reported in Bushehr in southern Iran",
+            url="https://t.me/rnintel/200002",
+            published="2026-09-09T21:23:00+00:00",
+        ),
+    ]
+    sent = []
+    summary = run_cycle(
+        fetcher=lambda: items,
+        ledger=EventLedger(tmp_path / "ledger.json"),
+        live_feed=LiveFeedStore(tmp_path / "live.json"),
+        editorial_store=LocalEditorialStore(tmp_path / "queue.json", tmp_path / "history.json"),
+        publisher=lambda item: sent.append(item.raw.source_item_id) or {"ok": True, "message_id": 800 + len(sent)},
+        settings={"auto_publish": True, "freshness_hours": 3},
+        now=NOW,
+    )
+    assert summary.published == 2
+    assert len(sent) == 2
 
 
 def test_event_ledger_persists_source_item_id(tmp_path):
