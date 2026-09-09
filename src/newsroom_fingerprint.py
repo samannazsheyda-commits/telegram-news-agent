@@ -7,14 +7,39 @@ from datetime import datetime, timezone
 from .newsroom_models import EventFingerprint, NormalizedNewsItem
 
 
-def _time_bucket(value: str) -> str:
+_BREAKING_TERMS = (
+    "missile", "ballistic", "cruise missile", "rocket", "launch", "intercept", "strike", "attack",
+    "explosion", "blast", "bombing", "hormuz", "strait of hormuz", "tanker", "warship", "drone",
+    "موشک", "بالستیک", "کروز", "شلیک", "رهگیری", "حمله", "انفجار", "بمباران", "هرمز", "نفتکش", "پهپاد",
+)
+
+
+def _parse_time(value: str) -> datetime | None:
+    raw = str(value or "").strip()
+    if not raw:
+        return None
     try:
-        dt = datetime.fromisoformat((value or "").replace("Z", "+00:00"))
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        return dt.date().isoformat()
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
     except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def _time_bucket(value: str, *, breaking: bool = False) -> str:
+    dt = _parse_time(value)
+    if dt is None:
         return "unknown"
+    if not breaking:
+        return dt.date().isoformat()
+    minute = 0 if dt.minute < 30 else 30
+    return dt.replace(minute=minute, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%MZ")
+
+
+def _is_breaking(item: NormalizedNewsItem) -> bool:
+    text = str(item.normalized_text or "").lower()
+    return any(term in text for term in _BREAKING_TERMS)
 
 
 def _normalized_objects(item: NormalizedNewsItem) -> list[str]:
@@ -33,7 +58,7 @@ def build_fingerprint(item: NormalizedNewsItem) -> EventFingerprint:
     objects = _normalized_objects(item)
     locations = sorted(set(item.locations))
     facts = sorted(set(item.numeric_facts))
-    bucket = _time_bucket(item.raw.published_at)
+    bucket = _time_bucket(item.raw.published_at, breaking=_is_breaking(item))
     structural = "|".join([
         ",".join(actors),
         ",".join(actions),
@@ -68,8 +93,6 @@ def fingerprint_similarity(a: EventFingerprint, b: EventFingerprint) -> float:
     location_score = _jaccard(a.locations, b.locations)
     fact_score = _jaccard(a.key_facts, b.key_facts)
 
-    # A shared action+object is the structural core of a concrete event.
-    # Locations/actors/facts refine that match; they never override opposite actions.
     score = (
         0.45 * action_score
         + 0.35 * object_score
