@@ -4,7 +4,7 @@ import re
 from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from email.utils import parsedate_to_datetime
-from html import escape
+from html import escape, unescape
 from zoneinfo import ZoneInfo
 
 from .sources import MarketSnapshot, NewsItem, TruthPost
@@ -13,6 +13,7 @@ CHANNEL_URL = "https://t.me/bikhabaar"
 TGJU_URL = "https://www.tgju.org/"
 TEHRAN = ZoneInfo("Asia/Tehran")
 PERSIAN_MONTHS = ("فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند")
+PERSIAN_WEEKDAYS = ("دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه", "شنبه", "یکشنبه")
 SOURCE_FA = {
     "Axios": "اکسیوس", "Al Jazeera": "الجزیره", "Al Arabiya": "العربیه",
     "Channel 14": "کانال ۱۴ اسرائیل", "KAN 11": "کانال ۱۱ اسرائیل", "N12": "کانال ۱۲ اسرائیل",
@@ -28,6 +29,13 @@ SOURCE_FA = {
     "RN Intel / Telegram": "آر‌اِن اینتل / تلگرام",
     "Jerusalem Post / X": "جروزالم پست / ایکس",
     "Middle East Spectator / Telegram": "میدل ایست اسپکتیتور / تلگرام",
+    "Clash Report / Telegram": "کلش ریپورت / تلگرام",
+    "GeoPWatch / Telegram": "ژئوپی‌واچ / تلگرام",
+    "Tabz Live / Telegram": "تبز لایو / تلگرام",
+    "The Cradle / Telegram": "دِ کرِیدل / تلگرام",
+    "War Noir / Telegram": "وار نوآر / تلگرام",
+    "CENTCOM / X": "سنتکام / ایکس",
+    "White House / X": "کاخ سفید / ایکس",
     "TankerTrackers": "تانکرترکرز", "NOTAM / Airspace": "نوتام / حریم هوایی",
 }
 SOURCE_SUFFIXES = (
@@ -72,11 +80,12 @@ def _strip_source_suffix(value: str) -> str:
 
 
 def _clean_persian_output_text(value: str) -> str:
-    text = (value or "").strip()
+    text = unescape(value or "").replace("\r", " ").replace("\n", " ").strip()
     text = re.sub(r"(?i)\bBREAKING\b", "فوری", text)
     text = re.sub(r"(?i)\bURGENT\b", "فوری", text)
     text = re.sub(r"(?i)\bALERT\b", "هشدار", text)
     text = re.sub(r"(?<![\w@])@[A-Za-z0-9_]{2,64}\b", "", text)
+    text = re.sub(r"[\U0001F1E6-\U0001F1FF]{2}", "", text)
     text = re.sub(r"\s+", " ", text)
     text = re.sub(r"\s+([،,:؛.!؟])", r"\1", text)
     return text.strip(" -–—|،,؛;")
@@ -133,7 +142,8 @@ def _datetime_fa(dt: datetime) -> str:
         dt = dt.replace(tzinfo=timezone.utc)
     local = dt.astimezone(TEHRAN)
     jy, jm, jd = _gregorian_to_jalali(local.year, local.month, local.day)
-    return _to_persian_digits(f"{jd} {PERSIAN_MONTHS[jm - 1]} {jy} — {local:%H:%M}")
+    weekday = PERSIAN_WEEKDAYS[local.weekday()]
+    return f"{weekday} " + _to_persian_digits(f"{jd} {PERSIAN_MONTHS[jm - 1]} {jy} — {local:%H:%M}")
 
 
 def _published_fa(value: str) -> str:
@@ -159,9 +169,17 @@ def _is_redundant_summary(title: str, summary: str) -> bool:
     return SequenceMatcher(None, t, s).ratio() >= 0.82
 
 
+def _story_text(item: NewsItem, title_fa: str = "", summary_fa: str = "") -> str:
+    return f"{item.title} {item.summary} {title_fa} {summary_fa}".lower()
+
+
 def _red_story_marker(item: NewsItem) -> str:
-    text = f"{item.title} {item.summary}".lower()
-    if any(x in text for x in ("missile", "drone", "attack", "strike", "explosion", "blast", "bombing", "killed", "seized", "sinking", "موشک", "پهپاد", "حمله", "انفجار", "بمباران", "توقیف", "غرق")):
+    text = _story_text(item)
+    if any(x in text for x in ("explosion", "blast", "انفجار")):
+        return "🟥💥"
+    if any(x in text for x in ("missile", "ballistic", "موشک")):
+        return "🚨🚀"
+    if any(x in text for x in ("drone", "attack", "strike", "bombing", "killed", "seized", "sinking", "پهپاد", "حمله", "بمباران", "توقیف", "غرق")):
         return "🛑"
     if any(x in text for x in ("notam", "airspace closed", "flight ban", "flights cancelled", "نوتام", "حریم هوایی بسته", "لغو پرواز")):
         return "🔺"
@@ -169,8 +187,12 @@ def _red_story_marker(item: NewsItem) -> str:
 
 
 def _story_marker(item: NewsItem) -> str:
-    text = f"{item.title} {item.summary}".lower()
-    if any(x in text for x in ("missile", "drone", "attack", "strike", "explosion", "blast", "bombing", "killed", "seized", "sinking", "موشک", "پهپاد", "حمله", "انفجار", "بمباران", "توقیف", "غرق")):
+    text = _story_text(item)
+    if any(x in text for x in ("explosion", "blast", "انفجار")):
+        return "🟥💥"
+    if any(x in text for x in ("missile", "ballistic", "موشک")):
+        return "🚨🚀"
+    if any(x in text for x in ("drone", "attack", "strike", "bombing", "killed", "seized", "sinking", "پهپاد", "حمله", "بمباران", "توقیف", "غرق")):
         return "🛑"
     if any(x in text for x in ("notam", "airspace closed", "flight ban", "flights cancelled", "نوتام", "حریم هوایی بسته", "لغو پرواز")):
         return "🔺"
@@ -192,13 +214,38 @@ def _source_label(source: str) -> str:
     return label
 
 
+def _hashtags_for(item: NewsItem, title_fa: str, summary_fa: str) -> list[str]:
+    text = _story_text(item, title_fa, summary_fa)
+    rules = (
+        (("missile", "ballistic", "موشک"), "#موشک"),
+        (("explosion", "blast", "انفجار"), "#انفجار"),
+        (("strait of hormuz", "hormuz", "تنگه هرمز", "هرمز", "tanker", "نفتکش"), "#هرمز"),
+        (("drone", "پهپاد"), "#پهپاد"),
+        (("sanction", "تحریم"), "#تحریم"),
+        (("trump", "ترامپ"), "#ترامپ"),
+        (("nuclear", "هسته‌ای", "هسته ای"), "#هسته‌ای"),
+        (("notam", "airspace", "نوتام", "حریم هوایی"), "#حریم_هوایی"),
+        (("oil", "نفت"), "#نفت"),
+        (("dollar", "دلار", "currency", "ارز"), "#دلار"),
+        (("gold", "طلا"), "#طلا"),
+    )
+    tags: list[str] = []
+    for needles, tag in rules:
+        if any(needle in text for needle in needles):
+            tags.append(tag)
+            if len(tags) == 2:
+                break
+    return tags
+
+
 def format_truth(post: TruthPost, persian_text: str) -> str:
-    label = "▫️ بازنشر ترامپ در Truth Social | ایران" if post.is_retruth else "⚪️ ترامپ در Truth Social | ایران"
+    label = "▫️ بازنشر ترامپ در تروث سوشال | ایران" if post.is_retruth else "⚪️ ترامپ در تروث سوشال | ایران"
     parts = [
-        _safe(label), "", f"<b>{_safe(_ensure_period(persian_text))}</b>", "",
-        f'📌 <a href="{_safe(post.url)}">منبع: Truth Social</a>',
+        _safe(label), "", f"<b>{_safe(_ensure_period(_clean_persian_output_text(persian_text)))}</b>", "",
+        f'📌 <a href="{_safe(post.url)}">منبع: تروث سوشال</a>',
     ]
     parts += _brand_footer()
+    parts += ["", "#ترامپ"]
     return "\n".join(parts).strip()
 
 
@@ -217,6 +264,9 @@ def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override:
     if item.link:
         parts += [f'📌 <a href="{_safe(item.link)}">لینک منبع خبر</a>']
     parts += _brand_footer()
+    tags = _hashtags_for(item, title_fa, summary_fa)
+    if tags:
+        parts += ["", " ".join(tags)]
     return "\n".join(parts).strip()
 
 
@@ -228,9 +278,9 @@ def format_market(snapshot: MarketSnapshot, now: datetime | None = None) -> str:
     now = now or datetime.now(timezone.utc)
     lines = ["📊 <b>بازار ایران</b>", ""]
     values = (
-        _money_line("🇺🇸", "دلار آزاد", snapshot.usd_toman), _money_line("🇪🇺", "یورو", snapshot.eur_toman),
-        _money_line("🇬🇧", "پوند", snapshot.gbp_toman), _money_line("🇦🇪", "درهم", snapshot.aed_toman),
-        _money_line("🇹🇷", "لیر", snapshot.try_toman), _money_line("🟡", "طلای ۱۸ عیار", snapshot.gold18_toman, "تومان / گرم"),
+        _money_line("💵", "دلار آزاد", snapshot.usd_toman), _money_line("💶", "یورو", snapshot.eur_toman),
+        _money_line("💷", "پوند", snapshot.gbp_toman), _money_line("💱", "درهم", snapshot.aed_toman),
+        _money_line("💱", "لیر", snapshot.try_toman), _money_line("🟡", "طلای ۱۸ عیار", snapshot.gold18_toman, "تومان / گرم"),
         _money_line("🪙", "سکه امامی", snapshot.emami_toman), _money_line("🪙", "نیم‌سکه", snapshot.half_toman),
         _money_line("🪙", "ربع‌سکه", snapshot.quarter_toman), _money_line("🪙", "سکه گرمی", snapshot.gram_coin_toman),
         None if snapshot.bitcoin_usd is None else f"₿ بیت‌کوین: ${snapshot.bitcoin_usd:,.2f}", _money_line("💵", "تتر", snapshot.tether_toman),
@@ -238,6 +288,7 @@ def format_market(snapshot: MarketSnapshot, now: datetime | None = None) -> str:
     lines.extend(x for x in values if x)
     lines += ["", f"⏰ {_datetime_fa(now)}", f'📌 <a href="{TGJU_URL}">منبع: TGJU</a>']
     lines += _brand_footer()
+    lines += ["", "#دلار #طلا"]
     return "\n".join(lines).strip()
 
 
@@ -258,9 +309,10 @@ def _daily_change(label: str, emoji: str, first: int, last: int, suffix: str = "
 def format_market_daily_summary(first_usd: int, last_usd: int, first_gold: int, last_gold: int, now: datetime | None = None) -> str:
     now = now or datetime.now(timezone.utc)
     lines = ["📊 <b>جمع‌بندی بازار روز</b>", ""]
-    lines += _daily_change("دلار آزاد", "🇺🇸", first_usd, last_usd)
+    lines += _daily_change("دلار آزاد", "💵", first_usd, last_usd)
     lines += [""]
     lines += _daily_change("طلای ۱۸ عیار", "🟡", first_gold, last_gold, "تومان / گرم")
     lines += ["", f"⏰ {_datetime_fa(now)}", f'📌 <a href="{TGJU_URL}">منبع: TGJU</a>']
     lines += _brand_footer()
+    lines += ["", "#دلار #طلا"]
     return "\n".join(lines).strip()
