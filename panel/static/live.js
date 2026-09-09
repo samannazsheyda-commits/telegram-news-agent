@@ -3,6 +3,7 @@
   const toggle = document.getElementById('soundToggle');
   const badge = document.getElementById('newNewsBadge');
   const connection = document.getElementById('liveConnection');
+  const healthLiveState = document.getElementById('healthLiveState');
   const updatedAt = document.getElementById('liveUpdatedAt');
   const liveCount = document.getElementById('liveCount');
   const queueCount = document.getElementById('queueCount');
@@ -40,14 +41,14 @@
       const oscillator = audioContext.createOscillator();
       const gain = audioContext.createGain();
       oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+      oscillator.frequency.setValueAtTime(920, audioContext.currentTime);
       gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.16, audioContext.currentTime + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.18);
+      gain.gain.exponentialRampToValueAtTime(0.14, audioContext.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.2);
       oscillator.connect(gain);
       gain.connect(audioContext.destination);
       oscillator.start();
-      oscillator.stop(audioContext.currentTime + 0.2);
+      oscillator.stop(audioContext.currentTime + 0.22);
     } catch (_) {}
   }
 
@@ -61,6 +62,48 @@
     showBadge.timer = window.setTimeout(() => { badge.hidden = true; }, 5000);
   }
 
+  function paintConnection(isOnline) {
+    const text = isOnline ? 'متصل' : 'در حال اتصال مجدد…';
+    if (connection) {
+      connection.textContent = text;
+      connection.classList.toggle('ok', isOnline);
+      connection.classList.toggle('offline', !isOnline);
+    }
+    if (healthLiveState) {
+      healthLiveState.textContent = isOnline ? 'ONLINE' : 'RECONNECTING';
+      healthLiveState.classList.toggle('ok', isOnline);
+      healthLiveState.classList.toggle('offline', !isOnline);
+    }
+  }
+
+  function applyCapabilities(modules = {}) {
+    document.querySelectorAll('[data-command-module]').forEach(button => {
+      const name = button.dataset.commandModule;
+      const capability = modules[name];
+      if (!capability) return;
+      const card = document.querySelector(`[data-module-card="${name}"]`);
+      const status = card?.querySelector('.module-status');
+      if (capability.available) {
+        button.disabled = false;
+        button.dataset.unavailable = '0';
+        if (status) {
+          status.textContent = 'آماده';
+          status.classList.add('ok');
+          status.classList.remove('warn');
+        }
+      } else {
+        button.disabled = true;
+        button.dataset.unavailable = '1';
+        button.textContent = 'هنوز متصل نشده';
+        if (status) {
+          status.textContent = 'در حال اتصال';
+          status.classList.remove('ok');
+          status.classList.add('warn');
+        }
+      }
+    });
+  }
+
   async function refreshStatus() {
     try {
       const response = await fetch('/api/command-center/status', { credentials: 'same-origin', cache: 'no-store' });
@@ -68,6 +111,7 @@
       const data = await response.json();
       publishingEnabled = Boolean(data.publishing);
       paintPublishing();
+      applyCapabilities(data.modules || {});
       if (queueCount) queueCount.textContent = String(data.queue_count ?? queueCount.textContent);
       if (pollSeconds) pollSeconds.textContent = `${Number(data.poll_seconds || 5).toLocaleString('fa-IR')} ثانیه`;
     } catch (_) {}
@@ -96,20 +140,12 @@
 
       feed.replaceChildren(...Array.from(nextFeed.childNodes).map(node => document.importNode(node, true)));
       if (liveCount) liveCount.textContent = String(feed.querySelectorAll('[data-news-id]').length);
-      if (connection) {
-        connection.textContent = 'متصل';
-        connection.classList.add('ok');
-        connection.classList.remove('offline');
-      }
+      paintConnection(true);
       if (updatedAt) {
-        updatedAt.textContent = `آخرین همگام‌سازی ${new Date().toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit', second:'2-digit'})}`;
+        updatedAt.textContent = `آخرین همگام‌سازی ${new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
       }
     } catch (_) {
-      if (connection) {
-        connection.textContent = 'در حال اتصال مجدد…';
-        connection.classList.remove('ok');
-        connection.classList.add('offline');
-      }
+      paintConnection(false);
     }
   }
 
@@ -152,30 +188,37 @@
     }
   });
 
-  document.querySelectorAll('[data-command-module]').forEach((button) => {
+  document.querySelectorAll('[data-command-module]').forEach(button => {
     button.addEventListener('click', async () => {
+      if (button.dataset.unavailable === '1') return;
       const moduleName = button.dataset.commandModule;
       button.disabled = true;
       const old = button.textContent;
       button.textContent = 'در صف…';
       try {
         await postJson(`/api/command-center/module/${moduleName}`);
-        if (commandResult) commandResult.textContent = 'فرمان ثبت شد؛ ایجنت حداکثر تا چند ثانیه اجرا می‌کند.';
+        if (commandResult) commandResult.textContent = 'فرمان ثبت شد؛ ایجنت VPS طی چند ثانیه آن را اجرا می‌کند.';
       } catch (error) {
-        if (commandResult) commandResult.textContent = `خطا: ${error.message}`;
+        const message = error.message === 'module_unavailable' ? 'این ماژول هنوز به اجرای VPS متصل نشده.' : `خطا: ${error.message}`;
+        if (commandResult) commandResult.textContent = message;
       } finally {
-        window.setTimeout(() => { button.disabled = false; button.textContent = old; }, 1500);
+        window.setTimeout(() => {
+          if (button.dataset.unavailable !== '1') button.disabled = false;
+          button.textContent = old;
+        }, 1200);
       }
     });
   });
 
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) document.title = 'اتاق فرمان | بی‌خبر';
+    if (!document.hidden) document.title = 'اتاق فرمان جنگ | بی‌خبر';
   });
 
   paintToggle();
   paintPublishing();
+  paintConnection(true);
   refreshStatus();
+  refreshLiveFeed();
   window.setInterval(refreshLiveFeed, 3000);
   window.setInterval(refreshStatus, 5000);
 })();
