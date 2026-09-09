@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from typing import Callable
+from zoneinfo import ZoneInfo
 
 from .editorial_store import LocalEditorialStore, ReviewItem
 from .event_ledger import EventLedger
@@ -16,6 +17,7 @@ from .newsroom_normalize import normalize_item
 from .panel_live_feed import LiveFeedStore
 
 
+TEHRAN = ZoneInfo("Asia/Tehran")
 WAR_ALERT_TERMS = (
     "missile", "ballistic", "cruise missile", "rocket", "launch", "intercept", "strike", "attack",
     "explosion", "blast", "bombing", "hormuz", "strait of hormuz", "tanker", "warship", "drone",
@@ -91,6 +93,36 @@ def _stale_before_ingest(raw: RawNewsItem, now: datetime, freshness_hours: int) 
     if age < timedelta(minutes=-10):
         return True
     return age > timedelta(hours=max(1, int(freshness_hours)))
+
+
+def _quiet_minutes(value: object) -> int | None:
+    raw = str(value or "").strip()
+    parts = raw.split(":")
+    if len(parts) != 2:
+        return None
+    try:
+        hour, minute = int(parts[0]), int(parts[1])
+    except ValueError:
+        return None
+    if not 0 <= hour <= 23 or not 0 <= minute <= 59:
+        return None
+    return hour * 60 + minute
+
+
+def _quiet_mode_active(settings: dict, now: datetime) -> bool:
+    if not bool(settings.get("quiet_mode", False)):
+        return False
+    start = _quiet_minutes(settings.get("quiet_start"))
+    end = _quiet_minutes(settings.get("quiet_end"))
+    if start is None or end is None:
+        return False
+    local = now.astimezone(TEHRAN)
+    current = local.hour * 60 + local.minute
+    if start == end:
+        return True
+    if start < end:
+        return start <= current < end
+    return current >= start or current < end
 
 
 def _urgency_score(raw: RawNewsItem) -> tuple[int, str]:
@@ -184,6 +216,7 @@ def run_cycle(
     items, summary.sources_ok, summary.sources_failed = _collect(fetcher)
     summary.items_fetched = len(items)
     freshness_hours = int(settings.get("freshness_hours") or 2)
+    quiet_active = _quiet_mode_active(settings, now)
 
     fresh_items: list[RawNewsItem] = []
     for raw in items:
@@ -275,12 +308,18 @@ def run_cycle(
             live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=eligibility.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status=panel_status, message_id=None, now=now))
             continue
 
-        auto_publish = settings.get("auto_publish") is not False
+        auto_publish = settings.get("auto_publish") is not False and not quiet_active
         needs_review = decision.decision == "needs_editorial_review" or not auto_publish
         if needs_review:
             summary.review_items += 1
-            _queue_item(editorial_store, item, decision.reason if decision.decision == "needs_editorial_review" else "auto_publish_off", now)
-            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="waiting", message_id=None, now=now))
+            if decision.decision == "needs_editorial_review":
+                hold_reason = decision.reason
+            elif quiet_active:
+                hold_reason = "quiet_mode"
+            else:
+                hold_reason = "auto_publish_off"
+            _queue_item(editorial_store, item, hold_reason, now)
+            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=hold_reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="waiting", message_id=None, now=now))
             continue
 
         if shadow:

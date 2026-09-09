@@ -203,7 +203,16 @@
         edit.addEventListener('click', async () => {
           edit.disabled = true; const old = edit.textContent; edit.textContent = 'در حال آماده‌سازی…';
           try {
-            const data = await postJson(`/api/command-center/live/${encodeURIComponent(id)}/review`);
+            let visible = mergeLocalized(item);
+            if (visible.needs_localization) {
+              await localizeMissing([visible]);
+              visible = mergeLocalized(item);
+            }
+            if (visible.needs_localization) throw new Error('ترجمه فارسی هنوز آماده نشده');
+            const data = await postJson(`/api/command-center/live/${encodeURIComponent(id)}/review`, {
+              title_fa: visible.title,
+              body_fa: visible.body || '',
+            });
             if (data.review_url) window.location.assign(data.review_url);
           } catch (error) {
             if (commandResult) commandResult.textContent = `ویرایش خبر: ${error.message}`;
