@@ -39,20 +39,29 @@ def _process_panel_commands() -> int:
         return 0
     processed = 0
     for path in sorted(command_dir.glob("*.json"), key=lambda p: p.stat().st_mtime):
+        command_path = path.resolve()
+        previous_cwd = Path.cwd()
         try:
-            hybrid.apply_panel_command(path)
+            # The command router still uses relative data/ and panel_results/
+            # paths. Executing it from the VPS runtime root keeps every mutable
+            # write outside the Git checkout.
+            os.chdir(runtime_root())
+            hybrid.apply_panel_command(command_path)
             processed += 1
         except Exception as exc:
             print(
                 f"PANEL_COMMAND_FAILED file={path.name} error={type(exc).__name__}:{exc}",
                 flush=True,
             )
+        finally:
+            os.chdir(previous_cwd)
     return processed
 
 
 def install_vps_paths() -> None:
     root = runtime_root()
     (root / "data").mkdir(parents=True, exist_ok=True)
+    (root / "panel_results").mkdir(parents=True, exist_ok=True)
     panel_command_dir().mkdir(parents=True, exist_ok=True)
     v13._NEWSROOM_SETTINGS_PATH = newsroom_settings_path()
     hybrid._process_panel_commands = _process_panel_commands
