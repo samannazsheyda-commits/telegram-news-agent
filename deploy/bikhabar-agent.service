@@ -11,9 +11,15 @@ Group=bikhabar
 WorkingDirectory=/opt/bikhabar/app
 EnvironmentFile=/etc/bikhabar/agent.env
 Environment=PYTHONUNBUFFERED=1
+Environment=BIKHABAR_RUNTIME_ROOT=/var/lib/bikhabar/runtime
+Environment=DATA_DIR=/var/lib/bikhabar/runtime/data
+Environment=STATE_PATH=/var/lib/bikhabar/runtime/state.json
+Environment=CUSTOM_SOURCES_PATH=/var/lib/bikhabar/runtime/data/custom_sources.json
+Environment=NEWSROOM_SETTINGS_PATH=/var/lib/bikhabar/runtime/data/newsroom_settings.json
+Environment=PANEL_COMMAND_DIR=/var/lib/bikhabar/runtime/panel_commands
 Environment=POLL_SECONDS=5
 Environment=SESSION_SECONDS=0
-ExecStart=/opt/bikhabar/venv/bin/python -m src.newsroom_hybrid_runtime --monitor
+ExecStart=/opt/bikhabar/venv/bin/python -m src.vps_runtime
 Restart=always
 RestartSec=2
 TimeoutStopSec=30
