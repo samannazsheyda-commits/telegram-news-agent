@@ -136,6 +136,22 @@ def test_breaking_alert_tokens_and_source_handles_do_not_leak_into_final_persian
     assert "هشدار" in text
 
 
+def test_final_news_drops_question_sentences_from_summary():
+    item = NewsItem(
+        "reuters-q",
+        "Reuters / X",
+        "ECB expected to raise rates as Iran-US war keeps oil high",
+        "",
+        "https://x.com/Reuters/status/2097724210227667017",
+        "Wed, 09 Sep 2026 16:30:00 GMT",
+    )
+    summary = "انتظار می‌رود بانک مرکزی اروپا روز پنجشنبه نرخ‌های بهره را افزایش دهد و جنگ آمریکا و ایران قیمت نفت را بالا نگه دارد. چرا انتظار می رود بانک نرخ ها را افزایش دهد؟"
+    text = format_news(item, "انتظار می‌رود بانک مرکزی اروپا نرخ‌های بهره را افزایش دهد", summary, marker_override="🟥")
+    assert "انتظار می‌رود بانک مرکزی اروپا روز پنجشنبه" in text
+    assert "چرا انتظار می رود بانک نرخ ها را افزایش دهد" not in text
+    assert "؟" not in text
+
+
 def test_market_contains_full_requested_watchlist_timestamp_source_and_footer():
     snap = MarketSnapshot(
         usd_rial=2_210_600, gold18_rial=235_188_000, eur_rial=2_577_900, gbp_rial=2_970_000,
