@@ -1,4 +1,4 @@
-from src.newsroom_models import NormalizedNewsItem, RawNewsItem
+from src.newsroom_models import RawNewsItem
 from src.newsroom_publisher import TelegramNewsroomPublisher
 from src.newsroom_normalize import normalize_item
 
@@ -23,7 +23,7 @@ class Session:
         return Response(self.payload)
 
 
-def item(*, media=None, source="Reuters", title="Iran reopens airspace", summary="Flights resume after restrictions", published="2026-09-07T21:00:00+00:00"):
+def item(*, media=None, source="Reuters", title="Iran launches a missile", summary="Officials confirm the launch", published="2026-09-07T21:00:00+00:00"):
     return normalize_item(RawNewsItem(
         source=source,
         source_url="https://example.com/source",
@@ -37,21 +37,32 @@ def item(*, media=None, source="Reuters", title="Iran reopens airspace", summary
     ))
 
 
+def fa_translator(text):
+    mapping = {
+        "Iran launches a missile": "ایران یک موشک شلیک کرد",
+        "Officials confirm the launch": "مقام‌ها شلیک را تأیید کردند",
+        "Iran Navy image": "تصویر نیروی دریایی ایران",
+        "Iran oil and Hormuz": "نفت ایران و تنگه هرمز",
+    }
+    return mapping.get(text, "خبر فارسی تأییدشده")
+
+
 def test_text_publication_requires_telegram_ok_and_message_id():
     session = Session({"ok": True, "result": {"message_id": 321}})
-    publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=lambda x: f"فا {x}")
+    publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=fa_translator)
     result = publisher(item())
     assert result == {"ok": True, "message_id": 321}
     url, kwargs = session.calls[0]
     assert url.endswith("/sendMessage")
     assert kwargs["data"]["chat_id"] == "@bikhabaar"
     assert "لینک منبع خبر" in kwargs["data"]["text"]
-    assert "فا Iran reopens airspace" in kwargs["data"]["text"]
+    assert "ایران یک موشک شلیک کرد" in kwargs["data"]["text"]
+    assert "Iran" not in kwargs["data"]["text"]
 
 
 def test_ok_false_never_returns_success_even_on_http_200():
     session = Session({"ok": False, "description": "Bad Request"})
-    publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=lambda x: f"فا {x}")
+    publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=fa_translator)
     result = publisher(item())
     assert result["ok"] is False
     assert "message_id" not in result
@@ -59,7 +70,7 @@ def test_ok_false_never_returns_success_even_on_http_200():
 
 def test_truth_photo_uses_sendphoto_and_preserves_media():
     session = Session({"ok": True, "result": {"message_id": 777}})
-    publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=lambda x: f"فا {x}")
+    publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=fa_translator)
     result = publisher(item(
         source="Donald Trump / Truth Social",
         title="Iran Navy image",
@@ -75,7 +86,7 @@ def test_truth_photo_uses_sendphoto_and_preserves_media():
 
 def test_iso_source_time_is_rendered_in_publication_text():
     session = Session({"ok": True, "result": {"message_id": 99}})
-    publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=lambda x: f"فا {x}")
+    publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=fa_translator)
     publisher(item(published="2026-09-07T21:00:00+00:00"))
     text = session.calls[0][1]["data"]["text"]
     assert "⏰" in text
@@ -88,12 +99,7 @@ def test_explosion_post_has_one_clean_persian_breaking_header_without_flags_or_h
             "گزارش‌های تاییدنشده از شنیده شدن ۲ انفجار در جاسک استان هرمزگان ایران 🇮🇷 @GeoPWatch",
         "Reports remain unconfirmed 🇮🇷": "این گزارش‌ها هنوز تایید نشده‌اند 🇮🇷",
     }
-    publisher = TelegramNewsroomPublisher(
-        "token",
-        "@bikhabaar",
-        session=session,
-        translator=lambda text: translations.get(text, text),
-    )
+    publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=lambda text: translations.get(text, text))
     publisher(item(
         source="GeoPWatch / Telegram",
         title="UNCONFIRMED: 2 explosions heard in Jask, Hormozgan province, Iran 🇮🇷 @GeoPWatch",

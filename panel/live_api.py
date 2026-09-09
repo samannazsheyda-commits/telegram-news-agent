@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import re
+
 from flask import Blueprint, current_app, jsonify, session
 
-from src.formatters import _source_label, format_news
+from src.formatters import SOURCE_FA, _source_label, format_news
 from src.sources import NewsItem
 
 from .app import PANEL_STATUS_FA, REASON_FA
@@ -10,6 +12,7 @@ from .app import PANEL_STATUS_FA, REASON_FA
 
 bp = Blueprint("live_api", __name__)
 _TERMINAL_LIVE_STATUSES = {"auto_published", "published_auto", "published_manual"}
+_LATIN_WORD_RE = re.compile(r"\b[A-Za-z]{2,}\b")
 
 
 def _row_id(row: dict) -> str:
@@ -20,6 +23,17 @@ def _has_persian(value: str) -> bool:
     return any("\u0600" <= ch <= "\u06ff" for ch in str(value or ""))
 
 
+def _safe_source(source: str) -> str:
+    raw = str(source or "").strip()
+    if raw in SOURCE_FA or not _LATIN_WORD_RE.search(raw):
+        return _source_label(raw)
+    if re.search(r"/\s*telegram\s*$", raw, re.I):
+        return "منبع خبری / تلگرام"
+    if re.search(r"/\s*x\s*$", raw, re.I):
+        return "منبع خبری / ایکس"
+    return "منبع خبری"
+
+
 def _final_message(row: dict, title_fa: str, body_fa: str) -> str:
     persisted = str(row.get("final_message") or row.get("telegram_message") or "").strip()
     if persisted:
@@ -28,7 +42,7 @@ def _final_message(row: dict, title_fa: str, body_fa: str) -> str:
         return ""
     item = NewsItem(
         key=str(row.get("news_key") or row.get("item_id") or row.get("id") or ""),
-        source=str(row.get("source") or ""),
+        source=_safe_source(str(row.get("source") or "")),
         title=str(row.get("original_title") or row.get("title") or ""),
         summary=str(row.get("original_summary") or row.get("summary") or ""),
         link=str(row.get("source_url") or row.get("link") or ""),
@@ -73,7 +87,7 @@ def _fast_rows(limit: int = 40) -> list[dict]:
             "body": body_fa,
             "original_title": raw_title,
             "original_body": raw_body,
-            "source": _source_label(str(row.get("source") or "")),
+            "source": _safe_source(str(row.get("source") or "")),
             "source_raw": str(row.get("source") or ""),
             "source_url": str(row.get("source_url") or ""),
             "panel_status": status,
@@ -101,11 +115,6 @@ def require_admin():
 @bp.get("/api/live-feed")
 def live_feed():
     items = _fast_rows(40)
-    response = jsonify({
-        "ok": True,
-        "items": items,
-        "count": len(items),
-        "updated_at": items[0]["updated_at"] if items else "",
-    })
+    response = jsonify({"ok": True, "items": items, "count": len(items), "updated_at": items[0]["updated_at"] if items else ""})
     response.headers["Cache-Control"] = "no-store, max-age=0"
     return response

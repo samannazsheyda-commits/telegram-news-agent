@@ -12,14 +12,16 @@ import requests
 from bs4 import BeautifulSoup
 from yt_dlp import YoutubeDL
 
-from .formatters import format_news
+from .formatters import SOURCE_FA, format_news
 from .newsroom_models import NormalizedNewsItem
+from .persian_editor import edit_news_text
 from .services import USER_AGENT, has_persian, translate_to_fa
 from .sources import NewsItem
 
 
 EXPLOSION_TERMS = ("explosion", "exploded", "blast", "detonation", "انفجار", "منفجر")
 TELEGRAM_POST_RE = re.compile(r"^https?://t\.me/(?:s/)?[A-Za-z0-9_]+/\d+", re.I)
+LATIN_WORD_RE = re.compile(r"\b[A-Za-z]{2,}\b")
 LINGVA_INSTANCES = (
     "https://lingva.ml",
     "https://translate.plausibility.cloud",
@@ -28,13 +30,24 @@ LINGVA_INSTANCES = (
 )
 
 
+def _safe_source_for_final(source: str) -> str:
+    raw = str(source or "").strip()
+    if raw in SOURCE_FA or not LATIN_WORD_RE.search(raw):
+        return raw
+    platform = ""
+    if re.search(r"/\s*telegram\s*$", raw, re.I):
+        platform = " / تلگرام"
+    elif re.search(r"/\s*x\s*$", raw, re.I):
+        platform = " / ایکس"
+    return "منبع خبری" + platform
+
+
 def _is_explosion(item: NormalizedNewsItem) -> bool:
     text = f"{item.raw.title} {item.raw.summary}".lower()
     return any(term in text for term in EXPLOSION_TERMS)
 
 
 def _breaking_prefix(item: NormalizedNewsItem) -> str:
-    """Compatibility helper used by presentation tests; publishing now folds this into one headline."""
     return "💥 🔴 <b>خبر فوری</b>\n" if _is_explosion(item) else ""
 
 
@@ -109,19 +122,14 @@ def _lingva_translate(text: str, session=requests) -> str:
     encoded = quote(raw, safe="")
     for base in LINGVA_INSTANCES:
         try:
-            response = session.get(
-                f"{base}/api/v1/en/fa/{encoded}",
-                headers={"User-Agent": USER_AGENT},
-                timeout=12,
-            )
+            response = session.get(f"{base}/api/v1/en/fa/{encoded}", headers={"User-Agent": USER_AGENT}, timeout=12)
             response.raise_for_status()
             payload = response.json()
             translated = str(payload.get("translation") or "").strip() if isinstance(payload, dict) else ""
             if translated and has_persian(translated):
-                print(f"TRANSLATION_LINGVA_OK instance={base}", flush=True)
                 return translated
-        except Exception as exc:
-            print(f"TRANSLATION_LINGVA_FAILED instance={base} type={type(exc).__name__}", flush=True)
+        except Exception:
+            continue
     return ""
 
 
@@ -136,19 +144,27 @@ class TelegramNewsroomPublisher:
         raw = str(text or "").strip()
         if not raw:
             return ""
-        translated = str(self.translator(raw) or "").strip()
-        if translated:
-            return translated
-        return _lingva_translate(raw, session=self.session)
+        try:
+            primary = str(self.translator(raw) or "").strip()
+        except Exception:
+            primary = ""
+        if primary:
+            edited = edit_news_text(raw, primary)
+            if edited:
+                return edited
+        fallback = _lingva_translate(raw, session=self.session)
+        return edit_news_text(raw, fallback) if fallback else ""
 
     def _message(self, item: NormalizedNewsItem) -> str:
         title_fa = self._translate_resilient(item.raw.title)
         if not title_fa:
             return ""
         summary_fa = self._translate_resilient(item.raw.summary) if item.raw.summary else ""
+        if item.raw.summary and not summary_fa:
+            return ""
         legacy = NewsItem(
             key=item.raw.source_item_id,
-            source=item.raw.source,
+            source=_safe_source_for_final(item.raw.source),
             title=item.raw.title,
             summary=item.raw.summary,
             link=item.raw.source_url,
@@ -166,24 +182,12 @@ class TelegramNewsroomPublisher:
         except Exception:
             return False
         soup = BeautifulSoup(response.text, "html.parser")
-        return bool(
-            soup.select_one("video")
-            or soup.select_one(".tgme_widget_message_video_player")
-            or soup.select_one(".tgme_widget_message_video_thumb")
-        )
+        return bool(soup.select_one("video") or soup.select_one(".tgme_widget_message_video_player") or soup.select_one(".tgme_widget_message_video_thumb"))
 
     @staticmethod
     def _download_telegram_video(url: str, directory: str) -> Path | None:
         output = str(Path(directory) / "telegram-video.%(ext)s")
-        options = {
-            "quiet": True,
-            "no_warnings": True,
-            "noplaylist": True,
-            "format": "best[ext=mp4]/best",
-            "outtmpl": output,
-            "socket_timeout": 20,
-            "retries": 1,
-        }
+        options = {"quiet": True, "no_warnings": True, "noplaylist": True, "format": "best[ext=mp4]/best", "outtmpl": output, "socket_timeout": 20, "retries": 1}
         try:
             with YoutubeDL(options) as ydl:
                 ydl.download([str(url).split("?", 1)[0]])
@@ -195,21 +199,14 @@ class TelegramNewsroomPublisher:
     def _raw_post(self, endpoint: str, *, data: dict, files=None, timeout: int = 35) -> dict:
         response = None
         try:
-            response = self.session.post(
-                f"https://api.telegram.org/bot{self.bot_token}/{endpoint}",
-                data=data,
-                files=files,
-                headers={"User-Agent": USER_AGENT},
-                timeout=timeout,
-            )
+            response = self.session.post(f"https://api.telegram.org/bot{self.bot_token}/{endpoint}", data=data, files=files, headers={"User-Agent": USER_AGENT}, timeout=timeout)
             response.raise_for_status()
             payload = response.json()
         except Exception as exc:
             detail = f"telegram_request_failed:{type(exc).__name__}"
             if response is not None:
                 try:
-                    payload = response.json()
-                    description = str(payload.get("description") or "") if isinstance(payload, dict) else ""
+                    payload = response.json(); description = str(payload.get("description") or "") if isinstance(payload, dict) else ""
                 except Exception:
                     description = str(getattr(response, "text", "") or "")[:300]
                 if description:
@@ -228,9 +225,7 @@ class TelegramNewsroomPublisher:
             return result
         error = str(result.get("error") or "")
         if endpoint == "sendMessage" and "parse" in error.lower() and data.get("text"):
-            retry = dict(data)
-            retry.pop("parse_mode", None)
-            retry["text"] = _plain_text(str(data.get("text") or ""))
+            retry = dict(data); retry.pop("parse_mode", None); retry["text"] = _plain_text(str(data.get("text") or ""))
             result = self._raw_post(endpoint, data=retry, files=files, timeout=timeout)
             if result.get("ok") is True:
                 return result
@@ -239,40 +234,23 @@ class TelegramNewsroomPublisher:
         return result
 
     def _text_post(self, message: str) -> dict:
-        return self._post(
-            "sendMessage",
-            data={"chat_id": self.chat_id, "text": message, "parse_mode": "HTML", "disable_web_page_preview": True},
-            timeout=25,
-        )
+        return self._post("sendMessage", data={"chat_id": self.chat_id, "text": message, "parse_mode": "HTML", "disable_web_page_preview": True}, timeout=25)
 
     def _fallback_to_text(self, message: str, failed_endpoint: str, result: dict) -> dict:
-        print(
-            f"TELEGRAM_MEDIA_FALLBACK_TO_TEXT endpoint={failed_endpoint} error={str(result.get('error') or '')!r}",
-            flush=True,
-        )
+        print(f"TELEGRAM_MEDIA_FALLBACK_TO_TEXT endpoint={failed_endpoint} error={str(result.get('error') or '')!r}", flush=True)
         return self._text_post(message)
 
     def __call__(self, item: NormalizedNewsItem) -> dict:
         if not self.bot_token or not self.chat_id:
-            print("TELEGRAM_PUBLISH_FAILED endpoint=none error='missing_telegram_credentials'", flush=True)
             return {"ok": False, "error": "missing_telegram_credentials"}
         message = self._message(item)
         if not message:
-            print(f"TELEGRAM_PUBLISH_FAILED endpoint=none error='translation_or_format_failed' source={item.raw.source!r}", flush=True)
             return {"ok": False, "error": "translation_or_format_failed"}
-
         video = _first_video(item)
         photo = _first_image(item)
         if video:
-            result = self._post(
-                "sendVideo",
-                data={"chat_id": self.chat_id, "video": video, "caption": message[:1024], "parse_mode": "HTML", "supports_streaming": "true"},
-                timeout=40,
-            )
-            if result.get("ok") is True:
-                return result
-            return self._fallback_to_text(message, "sendVideo", result)
-
+            result = self._post("sendVideo", data={"chat_id": self.chat_id, "video": video, "caption": message[:1024], "parse_mode": "HTML", "supports_streaming": "true"}, timeout=40)
+            return result if result.get("ok") is True else self._fallback_to_text(message, "sendVideo", result)
         source_url = str(item.raw.source_url or "").strip()
         if self._telegram_post_has_video(source_url):
             with tempfile.TemporaryDirectory(prefix="bikhabar-video-") as directory:
@@ -280,26 +258,11 @@ class TelegramNewsroomPublisher:
                 if path is not None:
                     try:
                         with path.open("rb") as handle:
-                            result = self._post(
-                                "sendVideo",
-                                data={"chat_id": self.chat_id, "caption": message[:1024], "parse_mode": "HTML", "supports_streaming": "true"},
-                                files={"video": (path.name, handle, "video/mp4")},
-                                timeout=120,
-                            )
-                        if result.get("ok") is True:
-                            return result
-                        return self._fallback_to_text(message, "sendVideo", result)
+                            result = self._post("sendVideo", data={"chat_id": self.chat_id, "caption": message[:1024], "parse_mode": "HTML", "supports_streaming": "true"}, files={"video": (path.name, handle, "video/mp4")}, timeout=120)
+                        return result if result.get("ok") is True else self._fallback_to_text(message, "sendVideo", result)
                     except OSError:
                         pass
-
         if photo:
-            result = self._post(
-                "sendPhoto",
-                data={"chat_id": self.chat_id, "photo": photo, "caption": message[:1024], "parse_mode": "HTML"},
-                timeout=30,
-            )
-            if result.get("ok") is True:
-                return result
-            return self._fallback_to_text(message, "sendPhoto", result)
-
+            result = self._post("sendPhoto", data={"chat_id": self.chat_id, "photo": photo, "caption": message[:1024], "parse_mode": "HTML"}, timeout=30)
+            return result if result.get("ok") is True else self._fallback_to_text(message, "sendPhoto", result)
         return self._text_post(message)

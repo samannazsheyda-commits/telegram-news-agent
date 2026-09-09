@@ -14,28 +14,34 @@ TEHRAN = ZoneInfo("Asia/Tehran")
 MIDNIGHT_GRACE = timedelta(hours=3)
 
 IRAN_TERMS = (
-    "iran", "iranian", "tehran", "irgc", "revolutionary guard", "hormuz", "persian gulf",
-    "ایران", "ایرانی", "تهران", "سپاه", "هرمز", "خلیج فارس",
+    "iran", "iranian", "tehran", "irgc", "revolutionary guard", "persian gulf", "rial", "toman",
+    "ایران", "ایرانی", "تهران", "سپاه", "خلیج فارس", "ریال", "تومان",
 )
-REGIONAL_SECURITY_TERMS = (
-    "jordan", "qatar", "kuwait", "bahrain", "uae", "united arab emirates", "iraq", "saudi arabia",
-    "اردن", "قطر", "کویت", "بحرین", "امارات", "عراق", "عربستان",
+REGIONAL_TERMS = (
+    "israel", "iraq", "jordan", "qatar", "kuwait", "bahrain", "uae", "united arab emirates",
+    "saudi arabia", "oman", "yemen", "lebanon", "syria", "gulf",
+    "اسرائیل", "عراق", "اردن", "قطر", "کویت", "بحرین", "امارات", "عربستان", "عمان", "یمن", "لبنان", "سوریه", "خلیج",
 )
-SECURITY_TERMS = (
-    "attack", "strike", "missile", "drone", "explosion", "intercept", "airspace", "notam",
-    "flight ban", "flight cancellation", "sanction", "tanker", "war", "military", "shipping",
-    "حمله", "موشک", "پهپاد", "انفجار", "رهگیری", "حریم هوایی", "نوتام", "لغو پرواز", "تحریم", "نفتکش",
+WAR_TERMS = (
+    "war", "attack", "strike", "strikes", "struck", "bombing", "military attack", "military strike",
+    "missile", "ballistic", "cruise missile", "rocket", "launch", "launched", "intercept", "intercepted",
+    "explosion", "blast", "detonation", "drone attack", "airstrike", "air strike",
+    "جنگ", "حمله", "حملات", "بمباران", "موشک", "بالستیک", "کروز", "راکت", "شلیک", "رهگیری", "انفجار", "پهپاد",
 )
-COMPANY_TERMS = (
-    "company", "corporate", "ceo", "earnings", "profit", "profits", "revenue", "sales", "shares",
-    "quarterly", "business", "market outlook", "شرکت", "مدیرعامل", "سود", "درآمد", "سهام",
+HORMUZ_TERMS = ("strait of hormuz", "hormuz", "تنگه هرمز", "هرمز")
+SHIP_TERMS = (
+    "ship", "ships", "vessel", "vessels", "tanker", "tankers", "warship", "warships", "shipping",
+    "cargo ship", "merchant vessel", "naval vessel", "navy ship", "seized", "seizure", "sunk", "sinking",
+    "کشتی", "شناور", "نفتکش", "ناو", "ناو جنگی", "کشتیرانی", "توقیف", "غرق",
 )
-OPERATIONAL_OVERRIDE_TERMS = (
-    "resume overflight", "resumes overflight", "resume overflights", "resumes overflights",
-    "iranian airspace", "iran airspace", "airspace", "notam", "flight ban", "flight cancellation",
-    "attack", "strike", "missile", "drone", "sanction", "tanker", "shipping", "war",
-    "ازسرگیری پرواز", "از سرگیری پرواز", "حریم هوایی", "نوتام", "لغو پرواز", "تحریم", "حمله", "موشک", "پهپاد",
+SANCTION_TERMS = ("sanction", "sanctions", "sanctioned", "تحریم", "تحریم‌ها", "تحریم شد")
+FX_TERMS = (
+    "dollar", "usd", "exchange rate", "currency", "forex", "rial", "toman", "free market dollar",
+    "دلار", "ارز", "نرخ ارز", "ریال", "تومان", "بازار ارز",
 )
+GOLD_TERMS = ("gold", "gold price", "18k gold", "طلا", "قیمت طلا", "طلای ۱۸")
+MARKET_IRAN_TERMS = ("iran", "iranian", "rial", "toman", "tehran market", "ایران", "ایرانی", "ریال", "تومان", "بازار ایران")
+
 ARTICLE_PREFIXES = (
     "analysis:", "analysis -", "opinion:", "opinion -", "explainer:", "explainer -",
     "commentary:", "commentary -", "factbox:", "factbox -", "viewpoint:", "viewpoint -",
@@ -138,18 +144,43 @@ def _direct_source_link(url: str) -> bool:
     if parsed.scheme not in {"http", "https"} or not parsed.netloc:
         return False
     host = parsed.netloc.lower().split(":", 1)[0]
-    if host in AGGREGATOR_HOSTS:
-        return False
-    return True
+    return host not in AGGREGATOR_HOSTS
+
+
+def _inside_locked_scope(text: str) -> bool:
+    iran = _contains_any(text, IRAN_TERMS)
+    regional = _contains_any(text, REGIONAL_TERMS)
+    hormuz = _contains_any(text, HORMUZ_TERMS)
+
+    # War/missiles/explosions are relevant when Iran is an actor/target, or when
+    # the event is explicitly in Hormuz. Generic regional conflict is intentionally
+    # not enough: the channel is an Iran developments monitor.
+    if _contains_any(text, WAR_TERMS) and (iran or hormuz):
+        return True
+
+    # Hormuz and Iran-linked maritime incidents are core channel topics.
+    if hormuz and (_contains_any(text, SHIP_TERMS) or _contains_any(text, WAR_TERMS) or "strait" in text or "تنگه" in text):
+        return True
+    if _contains_any(text, SHIP_TERMS) and (iran or hormuz):
+        return True
+
+    # Sanctions must be Iran-related.
+    if _contains_any(text, SANCTION_TERMS) and iran:
+        return True
+
+    # Dollar/currency/gold are allowed only for the Iranian market.
+    if (_contains_any(text, FX_TERMS) or _contains_any(text, GOLD_TERMS)) and _contains_any(text, MARKET_IRAN_TERMS):
+        return True
+
+    return False
 
 
 def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> EligibilityResult:
     published = _parse_published(item.raw.published_at)
     if published is None:
-        return EligibilityResult(False, "invalid_publish_time", review=item.raw.source_priority == "protected")
+        return EligibilityResult(False, "invalid_publish_time")
     if not _fresh_enough(published, now):
         return EligibilityResult(False, "stale")
-
     if _question_or_article(item.raw.title):
         return EligibilityResult(False, "filtered_question_or_article")
     if _incomplete_or_teaser(item.raw.title, item.raw.summary):
@@ -158,19 +189,7 @@ def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> Eligibility
         return EligibilityResult(False, "filtered_non_direct_source")
 
     text = re.sub(r"\s+", " ", f"{item.raw.title} {item.raw.summary}".lower()).strip()
-    protected = item.raw.source_priority == "protected"
-    iran_relevant = _contains_any(text, IRAN_TERMS)
-    regional_security = _contains_any(text, REGIONAL_SECURITY_TERMS) and _contains_any(text, SECURITY_TERMS)
-    if not iran_relevant and not regional_security:
-        if protected:
-            return EligibilityResult(False, "needs_editorial_review", review=True)
-        return EligibilityResult(False, "not_iran_relevant")
-
-    company_like = _contains_any(text, COMPANY_TERMS)
-    operational = _contains_any(text, OPERATIONAL_OVERRIDE_TERMS)
-    if company_like and not operational:
-        if protected:
-            return EligibilityResult(False, "needs_editorial_review", review=True)
-        return EligibilityResult(False, "filtered_low_value")
+    if not _inside_locked_scope(text):
+        return EligibilityResult(False, "filtered_outside_channel_scope")
 
     return EligibilityResult(True, "eligible")
