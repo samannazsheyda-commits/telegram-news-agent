@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import requests
+from bs4 import BeautifulSoup
 
 USER_AGENT = "Mozilla/5.0 (compatible; TelegramNewsAgent/2.0)"
 PERSIAN_RE = re.compile(r"[\u0600-\u06FF]")
@@ -28,71 +29,19 @@ NEWS_GLOSSARY = (
 )
 
 IDIOM_REPAIRS: tuple[tuple[str, tuple[str, ...], str], ...] = (
-    (
-        "small potatoes",
-        ("سیب‌زمینی‌های کوچک", "سیب زمینی‌های کوچک", "سیب‌زمینی کوچک", "سیب زمینی کوچک"),
-        "مسئله‌ای کم‌اهمیت",
-    ),
-    (
-        "all options are on the table",
-        ("همه گزینه‌ها روی میز هستند", "تمام گزینه‌ها روی میز هستند", "همه گزینه ها روی میز هستند"),
-        "همه گزینه‌ها مطرح‌اند",
-    ),
-    (
-        "off the table",
-        ("از روی میز خارج", "خارج از میز", "روی میز نیست"),
-        "از گزینه‌های مطرح خارج",
-    ),
-    (
-        "doubled down",
-        ("دو برابر شد", "دو برابر کرد", "دوبل کرد", "دو برابر کرده است"),
-        "پافشاری کرد",
-    ),
-    (
-        "walked back",
-        ("راه رفت", "به عقب راه رفت", "عقب رفت"),
-        "عقب‌نشینی کرد",
-    ),
-    (
-        "the ball is now in iran's court",
-        ("توپ اکنون در زمین ایران است", "توپ حالا در زمین ایران است"),
-        "اکنون نوبت تصمیم‌گیری ایران است",
-    ),
-    (
-        "the ball is in iran's court",
-        ("توپ در زمین ایران است",),
-        "نوبت تصمیم‌گیری ایران است",
-    ),
-    (
-        "raise the stakes",
-        ("سهام را افزایش", "سهم را بالا", "مخاطرات را بالا"),
-        "سطح تنش و هزینه‌ها را بالا برد",
-    ),
-    (
-        "turn up the heat",
-        ("حرارت را بالا برد", "گرما را زیاد کرد"),
-        "فشار را افزایش داد",
-    ),
-    (
-        "move the goalposts",
-        ("تیرک‌های دروازه را جابه‌جا", "دروازه‌ها را جابه‌جا"),
-        "معیارها را در میانه کار تغییر داد",
-    ),
-    (
-        "draw a line in the sand",
-        ("خطی در شن", "خط روی شن"),
-        "مرز روشنی تعیین کرد",
-    ),
-    (
-        "back channel",
-        ("کانال پشتی", "کانال پشت"),
-        "کانال ارتباطی غیررسمی",
-    ),
-    (
-        "play down",
-        ("کم بازی", "پایین بازی"),
-        "کم‌اهمیت جلوه داد",
-    ),
+    ("small potatoes", ("سیب‌زمینی‌های کوچک", "سیب زمینی‌های کوچک", "سیب‌زمینی کوچک", "سیب زمینی کوچک"), "مسئله‌ای کم‌اهمیت"),
+    ("all options are on the table", ("همه گزینه‌ها روی میز هستند", "تمام گزینه‌ها روی میز هستند", "همه گزینه ها روی میز هستند"), "همه گزینه‌ها مطرح‌اند"),
+    ("off the table", ("از روی میز خارج", "خارج از میز", "روی میز نیست"), "از گزینه‌های مطرح خارج"),
+    ("doubled down", ("دو برابر شد", "دو برابر کرد", "دوبل کرد", "دو برابر کرده است"), "پافشاری کرد"),
+    ("walked back", ("راه رفت", "به عقب راه رفت", "عقب رفت"), "عقب‌نشینی کرد"),
+    ("the ball is now in iran's court", ("توپ اکنون در زمین ایران است", "توپ حالا در زمین ایران است"), "اکنون نوبت تصمیم‌گیری ایران است"),
+    ("the ball is in iran's court", ("توپ در زمین ایران است",), "نوبت تصمیم‌گیری ایران است"),
+    ("raise the stakes", ("سهام را افزایش", "سهم را بالا", "مخاطرات را بالا"), "سطح تنش و هزینه‌ها را بالا برد"),
+    ("turn up the heat", ("حرارت را بالا برد", "گرما را زیاد کرد"), "فشار را افزایش داد"),
+    ("move the goalposts", ("تیرک‌های دروازه را جابه‌جا", "دروازه‌ها را جابه‌جا"), "معیارها را در میانه کار تغییر داد"),
+    ("draw a line in the sand", ("خطی در شن", "خط روی شن"), "مرز روشنی تعیین کرد"),
+    ("back channel", ("کانال پشتی", "کانال پشت"), "کانال ارتباطی غیررسمی"),
+    ("play down", ("کم بازی", "پایین بازی"), "کم‌اهمیت جلوه داد"),
 )
 
 
@@ -109,6 +58,18 @@ def _google_translate(text: str, session=requests) -> str:
     response.raise_for_status()
     payload = response.json()
     return "".join(part[0] for part in payload[0] if part and part[0]).strip()
+
+
+def _google_mobile_translate(text: str, session=requests) -> str:
+    response = session.get(
+        "https://translate.google.com/m",
+        params={"sl": "auto", "tl": "fa", "q": text},
+        headers={"User-Agent": USER_AGENT}, timeout=20,
+    )
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, "html.parser")
+    node = soup.select_one(".result-container")
+    return node.get_text(" ", strip=True) if node is not None else ""
 
 
 def _mymemory_translate(text: str, session=requests) -> str:
@@ -134,37 +95,20 @@ def _polish_fa(text: str) -> str:
 def _repair_news_idioms(source: str, translated: str) -> str:
     source_lower = (source or "").lower()
     value = translated
-
-    if (
-        "may not be a nuclear deal with iran" in source_lower
-        and "ability to build bomb may be destroyed" in source_lower
-    ):
-        return (
-            "یک مقام ارشد آمریکایی: ممکن است توافق هسته‌ای با ایران به‌زودی حاصل نشود، "
-            "اما آمریکا می‌تواند توان ایران برای ساخت سلاح هسته‌ای را از بین ببرد"
-        )
-
+    if "may not be a nuclear deal with iran" in source_lower and "ability to build bomb may be destroyed" in source_lower:
+        return "یک مقام ارشد آمریکایی: ممکن است توافق هسته‌ای با ایران به‌زودی حاصل نشود، اما آمریکا می‌تواند توان ایران برای ساخت سلاح هسته‌ای را از بین ببرد"
     if source_lower == "the administration doubled down on its iran policy":
         return "دولت بر سیاست خود درباره ایران پافشاری کرد"
     if source_lower == "the president walked back his earlier remarks":
         return "رئیس‌جمهور از اظهارات قبلی خود عقب‌نشینی کرد"
-
     if "doubled down" in source_lower:
-        match = re.match(
-            r"^(?P<subject>.+?)\s+(?:روی|بر)\s+(?P<object>.+?)\s+(?:دو برابر شد|دو برابر کرد|دو برابر کرده است|دوبل کرد)$",
-            value,
-        )
+        match = re.match(r"^(?P<subject>.+?)\s+(?:روی|بر)\s+(?P<object>.+?)\s+(?:دو برابر شد|دو برابر کرد|دو برابر کرده است|دوبل کرد)$", value)
         if match:
             return _polish_fa(f"{match.group('subject')} بر {match.group('object')} پافشاری کرد")
-
     if "walked back" in source_lower:
-        match = re.match(
-            r"^(?P<subject>.+?)\s+(?P<object>(?:اظهارات|نظرات|سخنان)[^،.!؟]{0,100}?)\s+را\s+(?:به عقب\s+)?(?:راه رفت|عقب رفت)$",
-            value,
-        )
+        match = re.match(r"^(?P<subject>.+?)\s+(?P<object>(?:اظهارات|نظرات|سخنان)[^،.!؟]{0,100}?)\s+را\s+(?:به عقب\s+)?(?:راه رفت|عقب رفت)$", value)
         if match:
             return _polish_fa(f"{match.group('subject')} از {match.group('object')} عقب‌نشینی کرد")
-
     for idiom, bad_variants, replacement in IDIOM_REPAIRS:
         if idiom not in source_lower:
             continue
@@ -195,9 +139,7 @@ def _translation_quality_ok(source: str, translated: str) -> bool:
     if words and len(latin_words) / len(words) > 0.30:
         return False
     normalized = re.sub(r"\W+", " ", translated).strip()
-    if len(normalized) < 4:
-        return False
-    return True
+    return len(normalized) >= 4
 
 
 def translate_to_fa(text: str, session=requests) -> str:
@@ -206,14 +148,16 @@ def translate_to_fa(text: str, session=requests) -> str:
         return ""
     if has_persian(text):
         return _polish_fa(text)
-    for translator in (_google_translate, _mymemory_translate):
+    for translator in (_google_translate, _google_mobile_translate, _mymemory_translate):
         try:
             translated = _polish_fa(translator(text, session=session))
             translated = _repair_news_idioms(text, translated)
             if _translation_quality_ok(text, translated):
                 return translated
-        except Exception:
+        except Exception as exc:
+            print(f"TRANSLATION_BACKEND_FAILED backend={translator.__name__} type={type(exc).__name__}", flush=True)
             continue
+    print("TRANSLATION_ALL_BACKENDS_FAILED", flush=True)
     return ""
 
 
@@ -251,14 +195,8 @@ def send_telegram(text: str, bot_token: str, chat_id: str, session=requests) -> 
 def send_telegram_photo(photo_url: str, caption: str, bot_token: str, chat_id: str, session=requests) -> None:
     response = session.post(
         f"https://api.telegram.org/bot{bot_token}/sendPhoto",
-        data={
-            "chat_id": chat_id,
-            "photo": photo_url,
-            "caption": caption,
-            "parse_mode": "HTML",
-        },
-        headers={"User-Agent": USER_AGENT},
-        timeout=25,
+        data={"chat_id": chat_id, "photo": photo_url, "caption": caption, "parse_mode": "HTML"},
+        headers={"User-Agent": USER_AGENT}, timeout=25,
     )
     response.raise_for_status()
 
