@@ -6,6 +6,23 @@ import sys
 
 from werkzeug.security import generate_password_hash
 
+import panel.app as panel_app
+
+
+class FakeData:
+    def __init__(self):
+        self.files = {"data/weather_preview.json": {}}
+
+    def read_json(self, path, default):
+        return self.files.get(path, default), "sha"
+
+    def write_json(self, path, value, sha, message):
+        self.files[path] = value
+        return {"content": {"sha": "next"}}
+
+    def mark_news_seen(self, key):
+        return None
+
 
 def _csrf(html: str) -> str:
     match = re.search(r'name="csrf_token"[^>]*value="([^"]+)"', html)
@@ -18,6 +35,7 @@ def _load_production_wsgi(monkeypatch, *, secure: str | None = None):
     monkeypatch.setenv("PANEL_PASSWORD_HASH", generate_password_hash("panel-pass"))
     monkeypatch.setenv("GITHUB_DATA_TOKEN", "test-token")
     monkeypatch.delenv("PANEL_LOCAL_ROOT", raising=False)
+    monkeypatch.setattr(panel_app, "GitHubJsonRepository", lambda *args, **kwargs: FakeData())
     if secure is None:
         monkeypatch.delenv("PANEL_COOKIE_SECURE", raising=False)
     else:
