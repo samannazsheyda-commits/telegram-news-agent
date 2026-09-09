@@ -26,7 +26,7 @@ def stores(tmp_path):
     return EventLedger(tmp_path / "ledger.json"), LiveFeedStore(tmp_path / "live.json"), LocalEditorialStore(tmp_path / "queue.json", tmp_path / "history.json")
 
 
-def test_stale_story_is_visible_but_never_published(tmp_path):
+def test_stale_story_is_dropped_before_realtime_state_and_never_published(tmp_path):
     ledger, live, editorial = stores(tmp_path)
     sent = []
     summary = run_cycle(
@@ -37,8 +37,8 @@ def test_stale_story_is_visible_but_never_published(tmp_path):
     )
     assert sent == []
     assert summary.stale == 1
-    assert live.records()[0].panel_status == "rejected"
-    assert live.records()[0].decision_reason == "stale"
+    assert live.records() == []
+    assert ledger.records() == []
 
 
 def test_low_value_company_story_is_visible_but_never_published(tmp_path):
