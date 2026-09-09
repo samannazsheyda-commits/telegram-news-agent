@@ -100,12 +100,16 @@ def test_live_edit_button_sends_visible_persian_text_to_review_api():
     assert "body_fa: visible.body" in script
 
 
-def test_emergency_lock_blocks_real_module_publication_but_not_preview(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-    Path("data").mkdir()
+def _write_locked_settings() -> None:
+    Path("data").mkdir(exist_ok=True)
     Path("data/newsroom_settings.json").write_text(
         '{"auto_publish": false, "emergency_lock": true}', encoding="utf-8"
     )
+
+
+def test_emergency_lock_blocks_real_module_publication_but_not_preview(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    _write_locked_settings()
 
     with patch("src.panel_modules.publish_market_now", return_value=True) as publish:
         with pytest.raises(RuntimeError, match="publication_paused"):
@@ -116,6 +120,28 @@ def test_emergency_lock_blocks_real_module_publication_but_not_preview(tmp_path,
         result = _apply_module({"action": "market_preview", "command_id": "market-preview"})
     assert result["status"] == "succeeded"
     assert "پیش‌نمایش" in result["message"]
+
+
+def test_emergency_lock_blocks_scheduled_weather_before_fetch_or_send(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    _write_locked_settings()
+    from src import weather_digest
+
+    with patch("src.weather_digest.build_preview") as build:
+        rc = weather_digest.run(force=True)
+    assert rc == 4
+    build.assert_not_called()
+
+
+def test_emergency_lock_blocks_scheduled_air_traffic_before_fetch_or_send(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    _write_locked_settings()
+    from src import air_traffic
+
+    with patch("src.air_traffic.fetch_live_aircraft") as fetch:
+        with pytest.raises(RuntimeError, match="publication_paused"):
+            air_traffic.publish_air_traffic_snapshot()
+    fetch.assert_not_called()
 
 
 def _raw(now: datetime) -> RawNewsItem:
