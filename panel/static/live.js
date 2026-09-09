@@ -14,10 +14,15 @@
   const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
   if (!feed || !toggle) return;
 
+  const FEED_INTERVAL_MS = 1000;
+  const HIDDEN_INTERVAL_MS = 5000;
+  const STATUS_INTERVAL_MS = 5000;
   let soundOn = localStorage.getItem('bikhabar_sound_alert') !== 'off';
   let firstId = feed.querySelector('[data-news-id]')?.dataset.newsId || '';
   let audioContext = null;
   let publishingEnabled = true;
+  let feedInFlight = false;
+  let liveTimer = null;
 
   const bulkBar = document.createElement('div');
   bulkBar.className = 'live-bulk-toolbar';
@@ -88,8 +93,18 @@
     const boxes = Array.from(feed.querySelectorAll('.live-select'));
     const selected = boxes.filter(box => box.checked).length;
     if (bulkDelete) bulkDelete.disabled = selected === 0;
-    if (selectAll) selectAll.checked = boxes.length > 0 && selected === boxes.length;
-    if (bulkState) bulkState.textContent = selected ? `${selected.toLocaleString('fa-IR')} انتخاب شده` : '';
+    if (selectAll) {
+      selectAll.checked = boxes.length > 0 && selected === boxes.length;
+      selectAll.indeterminate = selected > 0 && selected < boxes.length;
+    }
+    if (bulkState) bulkState.textContent = selected ? `${selected.toLocaleString('fa-IR')} خبر انتخاب شده` : '';
+  }
+
+  function ageText(seconds) {
+    const value = Math.max(0, Number(seconds || 0));
+    if (value < 60) return `${Math.floor(value).toLocaleString('fa-IR')} ثانیه پیش`;
+    if (value < 3600) return `${Math.floor(value / 60).toLocaleString('fa-IR')} دقیقه پیش`;
+    return `${Math.floor(value / 3600).toLocaleString('fa-IR')} ساعت پیش`;
   }
 
   function makeText(tag, className, text) {
@@ -99,41 +114,67 @@
     return el;
   }
 
-  function renderFeed(items) {
-    const fragment = document.createDocumentFragment();
-    for (const item of items) {
-      const id = String(item.id || item.item_id || '');
-      const row = document.createElement('article');
-      row.className = `live-news-row status-${item.panel_status || 'new'}`;
+  function ensureRow(item, selected) {
+    const id = String(item.id || item.item_id || '');
+    let row = feed.querySelector(`[data-news-id="${CSS.escape(id)}"]`);
+    if (!row) {
+      row = document.createElement('article');
       row.dataset.newsId = id;
-
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox'; checkbox.className = 'live-select'; checkbox.value = id;
-      checkbox.setAttribute('aria-label', 'انتخاب خبر');
-      checkbox.addEventListener('change', syncBulk);
-      row.appendChild(checkbox);
-
-      const rail = document.createElement('div'); rail.className = 'news-status-rail'; row.appendChild(rail);
-      const copy = document.createElement('div'); copy.className = 'live-news-copy';
-      const line = makeText('div', 'news-title-line', '');
-      line.appendChild(makeText('strong', '', item.title || 'بدون عنوان'));
-      copy.appendChild(line);
-      const meta = [item.source, item.panel_status_fa, item.decision_reason_fa].filter(Boolean).join(' · ');
-      copy.appendChild(makeText('small', '', meta)); row.appendChild(copy);
-
-      const actions = document.createElement('div'); actions.className = 'live-news-actions';
-      if (item.source_url) {
-        const link = makeText('a', 'button source-button', 'منبع');
-        link.href = item.source_url; link.target = '_blank'; link.rel = 'noopener'; actions.appendChild(link);
-      }
-      row.appendChild(actions); fragment.appendChild(row);
+      row.innerHTML = '<input type="checkbox" class="live-select" aria-label="انتخاب خبر"><div class="news-status-rail"></div><div class="live-news-copy"><div class="news-title-line"><strong class="live-title"></strong></div><div class="news-time-line"></div><small class="live-meta"></small><details class="original-news" hidden><summary>نمایش متن اصلی</summary><div class="original-news-text" dir="ltr"></div></details></div><div class="live-news-actions"></div>';
+      row.querySelector('.live-select').addEventListener('change', syncBulk);
     }
+    row.className = `live-news-row status-${item.panel_status || 'new'}`;
+    const checkbox = row.querySelector('.live-select');
+    checkbox.value = id; checkbox.checked = selected.has(id);
+    row.querySelector('.live-title').textContent = item.title_fa || item.title || 'عنوان فارسی در حال آماده‌سازی';
+
+    const timeLine = row.querySelector('.news-time-line');
+    timeLine.replaceChildren();
+    if (item.source_time_fa) timeLine.appendChild(makeText('span', 'time-chip source-time', `زمان منبع: ${item.source_time_fa}`));
+    if (item.arrival_time_fa) timeLine.appendChild(makeText('span', 'time-chip arrival-time', `ورود به پنل: ${item.arrival_time_fa}`));
+    const age = makeText('span', 'time-chip age-time', ageText(item.age_seconds));
+    age.dataset.ageSeconds = String(item.age_seconds || 0); timeLine.appendChild(age);
+
+    row.querySelector('.live-meta').textContent = [item.source, item.panel_status_fa, item.decision_reason_fa].filter(Boolean).join(' · ');
+    const details = row.querySelector('.original-news');
+    if (item.has_original && item.original_title) {
+      details.hidden = false;
+      details.querySelector('.original-news-text').textContent = item.original_title;
+    } else {
+      details.hidden = true; details.open = false;
+    }
+
+    const actions = row.querySelector('.live-news-actions');
+    actions.replaceChildren();
+    if (item.source_url) {
+      const link = makeText('a', 'button source-button', 'منبع');
+      link.href = item.source_url; link.target = '_blank'; link.rel = 'noopener'; actions.appendChild(link);
+    }
+    return row;
+  }
+
+  function renderFeed(items) {
+    const selected = new Set(selectedIds());
+    const wanted = new Set(items.map(item => String(item.id || item.item_id || '')));
+    feed.querySelectorAll('[data-news-id]').forEach(row => {
+      if (!wanted.has(row.dataset.newsId || '')) row.remove();
+    });
     if (!items.length) {
-      const empty = makeText('div', 'empty-state', 'هنوز خبر تازه‌ای در فید ثبت نشده.');
-      fragment.appendChild(empty);
+      if (!feed.querySelector('.empty-state')) feed.replaceChildren(makeText('div', 'empty-state', 'هنوز خبر تازه‌ای در فید ثبت نشده.'));
+      syncBulk(); return;
     }
-    feed.replaceChildren(fragment);
+    feed.querySelector('.empty-state')?.remove();
+    const fragment = document.createDocumentFragment();
+    for (const item of items) fragment.appendChild(ensureRow(item, selected));
+    feed.appendChild(fragment);
     syncBulk();
+  }
+
+  function tickAges() {
+    feed.querySelectorAll('[data-age-seconds]').forEach(el => {
+      const next = Number(el.dataset.ageSeconds || 0) + 1;
+      el.dataset.ageSeconds = String(next); el.textContent = ageText(next);
+    });
   }
 
   function applyCapabilities(modules = {}) {
@@ -147,7 +188,7 @@
         button.disabled = false; button.dataset.unavailable = '0';
         if (status) { status.textContent = 'آماده'; status.classList.add('ok'); status.classList.remove('warn'); }
       } else {
-        button.disabled = true; button.dataset.unavailable = '1'; button.textContent = 'هنوز متصل نشده';
+        button.disabled = true; button.dataset.unavailable = '1';
         if (status) { status.textContent = 'در حال اتصال'; status.classList.remove('ok'); status.classList.add('warn'); }
       }
     });
@@ -164,7 +205,14 @@
     } catch (_) {}
   }
 
+  function scheduleLive() {
+    window.clearTimeout(liveTimer);
+    liveTimer = window.setTimeout(refreshLiveFeed, document.hidden ? HIDDEN_INTERVAL_MS : FEED_INTERVAL_MS);
+  }
+
   async function refreshLiveFeed() {
+    if (feedInFlight) { scheduleLive(); return; }
+    feedInFlight = true;
     try {
       const response = await fetch('/api/live-feed', { credentials: 'same-origin', cache: 'no-store' });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -176,8 +224,9 @@
       renderFeed(items);
       if (liveCount) liveCount.textContent = String(data.count ?? items.length);
       paintConnection(true);
-      if (updatedAt) updatedAt.textContent = `آخرین همگام‌سازی ${new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+      if (updatedAt) updatedAt.textContent = `آخرین همگام‌سازی ${new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })} · هر ۱ ثانیه`;
     } catch (_) { paintConnection(false); }
+    finally { feedInFlight = false; scheduleLive(); }
   }
 
   async function postJson(url, payload = {}) {
@@ -201,8 +250,8 @@
       await postJson('/api/command-center/clear', { scope: 'live', ids });
       const targets = new Set(ids);
       feed.querySelectorAll('[data-news-id]').forEach(row => { if (targets.has(row.dataset.newsId)) row.remove(); });
-      if (bulkState) bulkState.textContent = 'برای پاک‌سازی ارسال شد';
-      window.setTimeout(refreshLiveFeed, 1500);
+      if (bulkState) bulkState.textContent = 'پاک‌سازی ثبت شد';
+      window.setTimeout(refreshLiveFeed, 500);
     } catch (error) { if (bulkState) bulkState.textContent = `خطا: ${error.message}`; }
     finally { syncBulk(); }
   });
@@ -231,11 +280,15 @@
         await postJson(`/api/command-center/module/${moduleName}`);
         if (commandResult) commandResult.textContent = 'فرمان ثبت شد؛ ایجنت VPS طی چند ثانیه آن را اجرا می‌کند.';
       } catch (error) { if (commandResult) commandResult.textContent = `خطا: ${error.message}`; }
-      finally { window.setTimeout(() => { if (button.dataset.unavailable !== '1') button.disabled = false; button.textContent = old; }, 1200); }
+      finally { window.setTimeout(() => { if (button.dataset.unavailable !== '1') button.disabled = false; button.textContent = old; }, 900); }
     });
   });
 
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) document.title = 'اتاق فرمان جنگ | بی‌خبر'; });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) document.title = 'اتاق فرمان جنگ | بی‌خبر';
+    scheduleLive();
+  });
   paintToggle(); paintPublishing(); paintConnection(true); refreshStatus(); refreshLiveFeed();
-  window.setInterval(refreshLiveFeed, 3000); window.setInterval(refreshStatus, 5000);
+  window.setInterval(refreshStatus, STATUS_INTERVAL_MS);
+  window.setInterval(tickAges, 1000);
 })();

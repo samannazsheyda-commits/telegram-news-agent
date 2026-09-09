@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 import requests
 from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
 
-from src.custom_sources import XSource, discover_feed_url, normalize_telegram_channel, validate_website_source
+from src.custom_sources import ThreadsSource, XSource, discover_feed_url, normalize_telegram_channel, validate_website_source
 from src.managed_sources import normalize_truth_handle, system_source_definitions
 
 
@@ -80,14 +80,14 @@ def _rows():
         row.setdefault("active", True)
         if row.get("kind") == "telegram":
             row["identity"] = "@" + str(row.get("channel") or "").lstrip("@")
-        elif row.get("kind") in {"x", "truth"}:
+        elif row.get("kind") in {"x", "threads", "truth"}:
             row["identity"] = str(row.get("handle") or "")
         elif row.get("kind") == "website":
             row["identity"] = str(row.get("feed_url") or row.get("website_url") or "")
         else:
             row["identity"] = ""
         rows.append(row)
-    order = {"telegram": 0, "x": 1, "truth": 2, "website": 3, "system_query": 4}
+    order = {"telegram": 0, "x": 1, "threads": 2, "truth": 3, "website": 4, "system_query": 5}
     rows.sort(key=lambda row: (order.get(str(row.get("kind")), 9), str(row.get("name") or "").lower()))
     return rows
 
@@ -111,32 +111,14 @@ def add_source():
     try:
         if kind == "x":
             record = asdict(XSource.create(identity, name))
+        elif kind == "threads":
+            record = asdict(ThreadsSource.create(identity, name))
         elif kind == "telegram":
             channel = normalize_telegram_channel(identity)
-            record = {
-                "id": _custom_id("telegram", channel),
-                "kind": "telegram",
-                "name": name or channel,
-                "channel": channel,
-                "active": True,
-                "status": "active",
-                "last_checked_at": "",
-                "last_error": "",
-                "updated_at": _now(),
-            }
+            record = {"id": _custom_id("telegram", channel), "kind": "telegram", "name": name or channel, "channel": channel, "active": True, "status": "active", "last_checked_at": "", "last_error": "", "updated_at": _now()}
         elif kind == "truth":
             handle = normalize_truth_handle(identity)
-            record = {
-                "id": _custom_id("truth", handle),
-                "kind": "truth",
-                "name": name or handle.lstrip("@"),
-                "handle": handle,
-                "active": True,
-                "status": "active",
-                "last_checked_at": "",
-                "last_error": "",
-                "updated_at": _now(),
-            }
+            record = {"id": _custom_id("truth", handle), "kind": "truth", "name": name or handle.lstrip("@"), "handle": handle, "active": True, "status": "active", "last_checked_at": "", "last_error": "", "updated_at": _now()}
         elif kind == "website":
             record = asdict(validate_website_source(name or identity, identity, feed_url))
             if not record.get("feed_url"):

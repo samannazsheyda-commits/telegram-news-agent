@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 
 from .custom_sources import (
     CUSTOM_SOURCES_PATH,
+    _fetch_threads_items,
     _fetch_x_items,
     _news_key,
     _read_sources,
@@ -88,12 +89,7 @@ def _fetch_telegram_source(source: dict, session=requests) -> list[NewsItem]:
 
 def fetch_priority_telegram_realtime(path: str | Path = CUSTOM_SOURCES_PATH, session=requests) -> list[NewsItem]:
     rows = managed_source_rows(custom_path=Path(path))
-    sources = [
-        row for row in rows
-        if row.get("active", True)
-        and row.get("kind") == "telegram"
-        and str(row.get("status") or "").lower() != "reference"
-    ]
+    sources = [row for row in rows if row.get("active", True) and row.get("kind") == "telegram" and str(row.get("status") or "").lower() != "reference"]
     merged: dict[str, NewsItem] = {}
     ok = failed = 0
     if not sources:
@@ -127,13 +123,15 @@ def _fetch_nontelegram_source(source: dict, session=requests) -> list[NewsItem]:
         return parse_public_feed(response.content, str(source.get("name") or "Custom Source"))
     if kind == "x":
         return _fetch_x_items(source, session=session)
+    if kind == "threads":
+        return _fetch_threads_items(source, session=session)
     return []
 
 
 def fetch_custom_nontelegram_realtime(path: str | Path = CUSTOM_SOURCES_PATH, session=requests) -> list[NewsItem]:
     sources = [
         row for row in _read_sources(Path(path))
-        if row.get("active", True) and row.get("kind") in {"website", "x"} and str(row.get("status") or "").lower() != "reference"
+        if row.get("active", True) and row.get("kind") in {"website", "x", "threads"} and str(row.get("status") or "").lower() != "reference"
     ]
     merged: dict[str, NewsItem] = {}
     if not sources:

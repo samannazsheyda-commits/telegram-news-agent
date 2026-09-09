@@ -66,13 +66,25 @@ class XSource:
     @classmethod
     def create(cls, handle: str, name: str = "") -> "XSource":
         normalized = normalize_x_handle(handle)
-        return cls(
-            id=_source_id("x", normalized),
-            kind="x",
-            handle=normalized,
-            name=(name or normalized.lstrip("@")),
-            updated_at=_now(),
-        )
+        return cls(id=_source_id("x", normalized), kind="x", handle=normalized, name=(name or normalized.lstrip("@")), updated_at=_now())
+
+
+@dataclass(frozen=True)
+class ThreadsSource:
+    id: str
+    kind: str
+    handle: str
+    name: str
+    active: bool = True
+    status: str = "best_effort"
+    last_checked_at: str = ""
+    last_error: str = ""
+    updated_at: str = ""
+
+    @classmethod
+    def create(cls, handle: str, name: str = "") -> "ThreadsSource":
+        normalized = normalize_threads_handle(handle)
+        return cls(id=_source_id("threads", normalized), kind="threads", handle=normalized, name=(name or normalized.lstrip("@")), updated_at=_now())
 
 
 def normalize_x_handle(value: str) -> str:
@@ -85,6 +97,20 @@ def normalize_x_handle(value: str) -> str:
     text = text.lstrip("@").strip()
     if not re.fullmatch(r"[A-Za-z0-9_]{1,15}", text):
         raise ValueError("invalid_x_handle")
+    return f"@{text}"
+
+
+def normalize_threads_handle(value: str) -> str:
+    text = (value or "").strip()
+    if text.startswith("http://") or text.startswith("https://"):
+        parsed = urlparse(text)
+        if parsed.netloc.lower() not in {"threads.net", "www.threads.net", "threads.com", "www.threads.com"}:
+            raise ValueError("invalid_threads_handle")
+        parts = [p for p in parsed.path.strip("/").split("/") if p]
+        text = parts[0] if parts else ""
+    text = text.lstrip("@").strip()
+    if not re.fullmatch(r"[A-Za-z0-9_.]{1,30}", text):
+        raise ValueError("invalid_threads_handle")
     return f"@{text}"
 
 
@@ -118,15 +144,7 @@ def validate_website_source(name: str, website_url: str, feed_url: str = "") -> 
         if fp.scheme not in {"http", "https"} or not fp.netloc:
             raise ValueError("invalid_feed_url")
     now = _now()
-    return WebsiteSource(
-        id=_source_id("website", normalized_site),
-        kind="website",
-        name=name,
-        website_url=normalized_site,
-        feed_url=normalized_feed,
-        status="active" if normalized_feed else "needs_feed",
-        updated_at=now,
-    )
+    return WebsiteSource(id=_source_id("website", normalized_site), kind="website", name=name, website_url=normalized_site, feed_url=normalized_feed, status="active" if normalized_feed else "needs_feed", updated_at=now)
 
 
 def discover_feed_url(website_url: str, session=requests) -> str:
@@ -179,11 +197,7 @@ def parse_public_feed(content: bytes, source_name: str) -> list[NewsItem]:
 def _direct_iran_telegram_relevance(text: str) -> bool:
     if not is_iran_related(text):
         return False
-    without_provenance = re.sub(
-        r"(?i)(?:#\s*)?iran(?:ian)?\s*[-–—]?\s*made\b",
-        " ",
-        text or "",
-    )
+    without_provenance = re.sub(r"(?i)(?:#\s*)?iran(?:ian)?\s*[-–—]?\s*made\b", " ", text or "")
     return is_iran_related(without_provenance)
 
 
@@ -238,7 +252,7 @@ def _write_sources(records: list[dict[str, Any]], path: Path = CUSTOM_SOURCES_PA
             handle.write("\n")
             handle.flush()
             os.fsync(handle.fileno())
-        os.replace(tmp_name, path)
+        os.replace(tmp_name, self.path if False else path)
     finally:
         if os.path.exists(tmp_name):
             os.unlink(tmp_name)
@@ -251,7 +265,7 @@ class LocalCustomSourceStore:
     def all(self) -> list[dict[str, Any]]:
         return _read_sources(self.path)
 
-    def upsert(self, source: WebsiteSource | XSource) -> dict[str, Any]:
+    def upsert(self, source: WebsiteSource | XSource | ThreadsSource) -> dict[str, Any]:
         record = asdict(source)
         records = [r for r in self.all() if r.get("id") != source.id]
         records.insert(0, record)
@@ -284,12 +298,7 @@ class LocalCustomSourceStore:
 def _fetch_x_items(source: dict[str, Any], session=requests) -> list[NewsItem]:
     handle = normalize_x_handle(str(source.get("handle") or ""))
     query = f'{IRAN_QUERY} site:x.com/{handle.lstrip("@")} '
-    response = session.get(
-        GOOGLE_NEWS_BASE,
-        params={"q": query, "hl": "en-US", "gl": "US", "ceid": "US:en"},
-        headers={"User-Agent": USER_AGENT},
-        timeout=20,
-    )
+    response = session.get(GOOGLE_NEWS_BASE, params={"q": query, "hl": "en-US", "gl": "US", "ceid": "US:en"}, headers={"User-Agent": USER_AGENT}, timeout=20)
     response.raise_for_status()
     root = ET.fromstring(response.content)
     result: list[NewsItem] = []
@@ -305,13 +314,29 @@ def _fetch_x_items(source: dict[str, Any], session=requests) -> list[NewsItem]:
     return result
 
 
+def _fetch_threads_items(source: dict[str, Any], session=requests) -> list[NewsItem]:
+    handle = normalize_threads_handle(str(source.get("handle") or ""))
+    account = handle.lstrip("@")
+    query = f'{IRAN_QUERY} (site:threads.net/@{account} OR site:threads.com/@{account})'
+    response = session.get(GOOGLE_NEWS_BASE, params={"q": query, "hl": "en-US", "gl": "US", "ceid": "US:en"}, headers={"User-Agent": USER_AGENT}, timeout=20)
+    response.raise_for_status()
+    root = ET.fromstring(response.content)
+    display = str(source.get("name") or account) + " / Threads"
+    result: list[NewsItem] = []
+    for node in root.findall(".//item"):
+        title = strip_html(_child_text(node, ("title",)))
+        summary = strip_html(_child_text(node, ("description",)))
+        link = _child_text(node, ("link", "guid"))
+        published = _child_text(node, ("pubdate",))
+        if not title or not is_iran_related(f"{title} {summary}"):
+            continue
+        result.append(NewsItem(_news_key(display, title), display, title, summary, link, published))
+    return result
+
+
 def _fetch_telegram_items(source: dict[str, Any], session=requests) -> list[NewsItem]:
     channel = normalize_telegram_channel(str(source.get("channel") or source.get("url") or ""))
-    response = session.get(
-        f"https://t.me/s/{channel}",
-        headers={"User-Agent": USER_AGENT},
-        timeout=20,
-    )
+    response = session.get(f"https://t.me/s/{channel}", headers={"User-Agent": USER_AGENT}, timeout=20)
     response.raise_for_status()
     return parse_public_telegram_channel(response.text, channel, str(source.get("name") or channel))
 
@@ -336,6 +361,8 @@ def fetch_custom_news_items(path: str | Path = CUSTOM_SOURCES_PATH, session=requ
                 items = parse_public_feed(response.content, str(source.get("name") or "Custom Source"))
             elif kind == "x":
                 items = _fetch_x_items(source, session=session)
+            elif kind == "threads":
+                items = _fetch_threads_items(source, session=session)
             elif kind == "telegram":
                 items = _fetch_telegram_items(source, session=session)
             else:
