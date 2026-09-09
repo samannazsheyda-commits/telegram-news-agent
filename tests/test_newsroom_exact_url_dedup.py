@@ -7,21 +7,24 @@ from src.newsroom_v2 import run_cycle
 from src.panel_live_feed import LiveFeedStore
 
 
-def _raw(item_id: str, fetched_at: str) -> RawNewsItem:
+URL = "https://x.com/Jerusalem_Post/status/2097719548220719534"
+
+
+def _raw(item_id: str, fetched_at: str, *, title: str, summary: str) -> RawNewsItem:
     return RawNewsItem(
         source="Jerusalem Post / X",
-        source_url="https://x.com/Jerusalem_Post/status/2097719548220719534",
+        source_url=URL,
         source_item_id=item_id,
         published_at="2026-09-09T16:11:00+00:00",
         fetched_at=fetched_at,
-        title="Iran missile alert in Israel",
-        summary="Israel reports an Iran-related missile alert",
+        title=title,
+        summary=summary,
         media=[],
         source_priority="normal",
     )
 
 
-def test_same_source_url_is_never_published_twice_even_if_item_id_changes(tmp_path):
+def test_same_source_url_is_never_published_twice_even_if_item_id_and_text_change(tmp_path):
     now = datetime(2026, 9, 9, 16, 12, tzinfo=timezone.utc)
     ledger = EventLedger(tmp_path / "ledger.json")
     live = LiveFeedStore(tmp_path / "live.json")
@@ -33,7 +36,20 @@ def test_same_source_url_is_never_published_twice_even_if_item_id_changes(tmp_pa
         return {"ok": True, "message_id": 1000 + len(calls)}
 
     settings = {"auto_publish": True, "freshness_hours": 2, "panel_max_records": 100}
-    run_cycle(lambda: [_raw("first-id", "2026-09-09T16:11:05+00:00")], ledger, live, editorial, publisher, settings, now)
-    run_cycle(lambda: [_raw("second-id", "2026-09-09T16:11:15+00:00")], ledger, live, editorial, publisher, settings, now)
+    first = _raw(
+        "first-id",
+        "2026-09-09T16:11:05+00:00",
+        title="Iran missile alert in Israel",
+        summary="Israel reports an Iran-related missile alert",
+    )
+    mutated_same_post = _raw(
+        "second-id",
+        "2026-09-09T16:11:15+00:00",
+        title="Former Mossad official discusses defeating Iran under a different Israeli government",
+        summary="A former official gave a political assessment involving Iran and an Israeli political party",
+    )
+
+    run_cycle(lambda: [first], ledger, live, editorial, publisher, settings, now)
+    run_cycle(lambda: [mutated_same_post], ledger, live, editorial, publisher, settings, now)
 
     assert calls == ["first-id"]
