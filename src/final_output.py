@@ -44,6 +44,7 @@ def _normalize_visible_fragment(value: str) -> str:
     text = text.replace("⚡️", "").replace("⚡", "")
     text = re.sub(r"[ \t]+", " ", text)
     text = re.sub(r"\s+([،,:؛.!؟])", r"\1", text)
+    text = re.sub(r":\s*[-–—]+\s*", ": ", text)
     return text
 
 
