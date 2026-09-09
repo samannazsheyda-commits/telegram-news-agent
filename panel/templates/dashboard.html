@@ -49,11 +49,11 @@
 
 <section class="section-head"><div><span class="section-kicker">ماژول‌ها</span><h2>پیش‌نمایش و انتشار</h2></div><small>روی «پیش‌نمایش» بزن؛ دوباره بزن تا بسته شود.</small></section>
 <section class="module-grid newsroom-modules">
-  {% for name, icon, title, desc in [
-    ('weather','🌤️','هواشناسی فردا','هر شب ۲۳:۰۰ تهران'),
-    ('air-traffic','✈️','ترافیک هوایی ایران و منطقه','۱۲:۰۰ و ۰۰:۰۰ تهران'),
-    ('tanker','🚢','نفتکش‌ها و تنگه هرمز','گزارش معتبر؛ بدون عددسازی'),
-    ('market','💵','بازار و دلار','دلار، طلا و بازار')
+  {% for name, preview_id, icon, title, desc in [
+    ('weather','weatherPreview','🌤️','هواشناسی فردا','هر شب ۲۳:۰۰ تهران'),
+    ('air-traffic','airTrafficPreview','✈️','ترافیک هوایی ایران و منطقه','۱۲:۰۰ و ۰۰:۰۰ تهران'),
+    ('tanker','tankerPreview','🚢','نفتکش‌ها و تنگه هرمز','گزارش معتبر؛ بدون عددسازی'),
+    ('market','marketPreview','💵','بازار و دلار','دلار، طلا و بازار')
   ] %}
   <article class="module-card" data-module-card="{{ name }}">
     <div class="module-icon">{{ icon }}</div>
@@ -62,7 +62,7 @@
       <button class="button preview-toggle" data-preview-toggle="{{ name }}" type="button">پیش‌نمایش</button>
       <button class="button command-action" data-command-module="{{ name }}" type="button">انتشار همین حالا</button>
     </div>
-    <div id="{{ 'airTraffic' if name == 'air-traffic' else name|capitalize }}Preview" class="module-preview" data-preview-panel="{{ name }}" hidden>
+    <div id="{{ preview_id }}" class="module-preview" data-preview-panel="{{ name }}" hidden>
       <div class="module-preview-toolbar"><strong>پیش‌نمایش نهایی</strong><button class="link-button preview-toggle" data-preview-toggle="{{ name }}" type="button">بستن</button></div>
       <div class="module-preview-body">در حال دریافت…</div>
     </div>
