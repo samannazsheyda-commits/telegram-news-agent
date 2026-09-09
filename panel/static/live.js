@@ -7,6 +7,9 @@
   const commandResult = document.getElementById('commandResult');
   const liveCount = document.getElementById('liveCount');
   const queueCount = document.getElementById('queueCount');
+  const liveSelectAll = document.getElementById('liveSelectAll');
+  const liveBulkDelete = document.getElementById('liveBulkDelete');
+  const liveBulkState = document.getElementById('liveBulkState');
   const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
   if (!feed || !soundToggle) return;
 
@@ -59,6 +62,18 @@
   function paintPublishing() {
     if (publishingState) publishingState.textContent = publishingEnabled ? 'فعال' : 'متوقف';
     if (panicToggle) panicToggle.textContent = publishingEnabled ? '⛔ توقف کامل انتشار' : '▶️ ازسرگیری انتشار';
+  }
+
+  function selectedIds() {
+    return Array.from(feed.querySelectorAll('.live-select:checked')).map(input => input.value).filter(Boolean);
+  }
+
+  function syncBulkState() {
+    const boxes = Array.from(feed.querySelectorAll('.live-select'));
+    const selected = boxes.filter(box => box.checked).length;
+    if (liveBulkDelete) liveBulkDelete.disabled = selected === 0;
+    if (liveSelectAll) liveSelectAll.checked = boxes.length > 0 && selected === boxes.length;
+    if (liveBulkState) liveBulkState.textContent = selected ? `${selected.toLocaleString('fa-IR')} خبر انتخاب شده` : '';
   }
 
   async function getJson(url) {
@@ -135,6 +150,9 @@
       row.className = `live-news-row status-${item.panel_status || 'new'}`;
       row.dataset.newsId = id;
 
+      const check = document.createElement('input');
+      check.type = 'checkbox'; check.className = 'live-select'; check.value = id; check.setAttribute('aria-label', 'انتخاب خبر');
+      check.addEventListener('change', syncBulkState); row.appendChild(check);
       const rail = document.createElement('div'); rail.className = 'news-status-rail'; row.appendChild(rail);
       const content = document.createElement('div'); content.className = 'live-news-copy';
       const title = document.createElement('strong'); title.textContent = item.title || 'عنوان فارسی در حال آماده‌سازی';
@@ -164,6 +182,7 @@
       const empty = document.createElement('div'); empty.className = 'empty-state'; empty.textContent = 'هنوز خبر تازه‌ای وارد نشده.'; frag.appendChild(empty);
     }
     feed.replaceChildren(frag);
+    syncBulkState();
   }
 
   async function refreshLiveFeed() {
@@ -246,6 +265,26 @@
     });
   });
 
+  liveSelectAll?.addEventListener('change', () => {
+    feed.querySelectorAll('.live-select').forEach(input => { input.checked = liveSelectAll.checked; });
+    syncBulkState();
+  });
+
+  liveBulkDelete?.addEventListener('click', async () => {
+    const ids = selectedIds();
+    if (!ids.length) return;
+    liveBulkDelete.disabled = true;
+    if (liveBulkState) liveBulkState.textContent = 'در حال حذف…';
+    try {
+      const data = await postJson('/api/command-center/clear', { scope: 'live', ids });
+      await watchCommand(data.command_id, 'حذف گروهی');
+    } catch (error) {
+      if (liveBulkState) liveBulkState.textContent = `خطا: ${error.message}`;
+    } finally {
+      syncBulkState();
+    }
+  });
+
   panicToggle?.addEventListener('click', async () => {
     panicToggle.disabled = true;
     try {
@@ -262,7 +301,7 @@
   });
 
   document.addEventListener('visibilitychange', () => { if (!document.hidden) document.title = 'اتاق خبر | بی‌خبر'; });
-  paintSound(); paintPublishing();
+  paintSound(); paintPublishing(); syncBulkState();
   refreshLiveFeed(); refreshStatus(); refreshHealth();
   window.setInterval(refreshLiveFeed, 1000);
   window.setInterval(() => { refreshStatus(); refreshHealth(); }, 2000);
