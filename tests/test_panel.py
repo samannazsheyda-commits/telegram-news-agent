@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 from werkzeug.security import generate_password_hash
 
@@ -14,6 +15,7 @@ class FakeData:
             "data/editorial_history.json": [],
             "data/panel_live_feed.json": [],
             "data/custom_sources.json": [],
+            "data/newsroom_settings.json": {"auto_publish": True, "emergency_lock": False},
             "state.json": {"news_seen": []},
         }
 
@@ -86,9 +88,39 @@ def test_authenticated_dashboard_loads():
     text = response.get_data(as_text=True)
     assert response.status_code == 200
     assert "داشبورد" in text
+    assert "اتاق فرمان جنگ" in text
+    assert "توقف کامل انتشار" in text
+    assert "اسکن فوری" in text
+    assert "هواشناسی فردا" in text
+    assert "ترافیک هوایی ایران و منطقه" in text
+    assert "نفتکش‌ها و تنگه هرمز" in text
+    assert "بازار و دلار" in text
+    assert "سلامت سیستم" in text
     assert "نیازمند بررسی" in text
     assert "ورودی زنده" in text
     assert "منتشرشده" in text
+    assert 'id="liveFeed"' in text
+    assert 'id="soundToggle"' in text
+    assert 'id="panicToggle"' in text
+    assert 'id="liveConnection"' in text
+    assert 'rel="manifest"' in text
+    assert "serviceWorker" in text
+
+
+def test_panel_css_uses_doran_first_without_external_font_dependency():
+    css = Path("panel/static/panel.css").read_text(encoding="utf-8")
+    assert "Doran" in css
+    assert "fonts.googleapis.com" not in css
+    assert "@import" not in css
+
+
+def test_pwa_assets_exist_and_do_not_cache_api_routes():
+    manifest = Path("panel/static/manifest.webmanifest").read_text(encoding="utf-8")
+    worker = Path("panel/static/sw.js").read_text(encoding="utf-8")
+    assert "بی‌خبر" in manifest
+    assert "standalone" in manifest
+    assert "/api/" in worker
+    assert "networkOnly" in worker or "startsWith('/api/')" in worker
 
 
 def test_dashboard_shows_live_items_in_persian_when_pending_queue_is_empty():
