@@ -117,6 +117,7 @@ for pair in \
   "NEWSROOM_SETTINGS_PATH=${RUNTIME_DATA}/newsroom_settings.json" \
   "PANEL_LOCAL_ROOT=${RUNTIME_ROOT}" \
   "PANEL_COMMAND_DIR=${COMMAND_DIR}" \
+  "PANEL_COOKIE_SECURE=0" \
   "POLL_SECONDS=5" \
   "SESSION_SECONDS=0"; do
   key="${pair%%=*}"
