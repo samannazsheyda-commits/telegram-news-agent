@@ -121,3 +121,16 @@ def test_final_publish_guard_blocks_unrelated_israeli_education_story():
     assert result["ok"] is False
     assert result["error"] == "irrelevant_to_bikhabar"
     assert session.calls == []
+
+
+def test_final_publish_guard_blocks_us_campaign_story_with_incidental_iran_line():
+    session = Session({"ok": True, "result": {"message_id": 1000}})
+    publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=lambda x: f"فا {x}")
+    result = publisher(item(
+        source="CBS News / X",
+        title="Democratic candidate James Talarico discusses his chances in the Texas Senate election",
+        summary="He discussed tariffs, a federal gas tax holiday and said he would work to end the war in Iran.",
+    ))
+    assert result["ok"] is False
+    assert result["error"] == "irrelevant_to_bikhabar"
+    assert session.calls == []
