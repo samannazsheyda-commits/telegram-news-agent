@@ -12,7 +12,7 @@ import requests
 from bs4 import BeautifulSoup
 from yt_dlp import YoutubeDL
 
-from .formatters import format_news
+from .formatters import SOURCE_FA, format_news
 from .newsroom_models import NormalizedNewsItem
 from .persian_editor import edit_news_text
 from .services import USER_AGENT, has_persian, translate_to_fa
@@ -21,12 +21,25 @@ from .sources import NewsItem
 
 EXPLOSION_TERMS = ("explosion", "exploded", "blast", "detonation", "انفجار", "منفجر")
 TELEGRAM_POST_RE = re.compile(r"^https?://t\.me/(?:s/)?[A-Za-z0-9_]+/\d+", re.I)
+LATIN_WORD_RE = re.compile(r"\b[A-Za-z]{2,}\b")
 LINGVA_INSTANCES = (
     "https://lingva.ml",
     "https://translate.plausibility.cloud",
     "https://lingva.lunar.icu",
     "https://translate.projectsegfau.lt",
 )
+
+
+def _safe_source_for_final(source: str) -> str:
+    raw = str(source or "").strip()
+    if raw in SOURCE_FA or not LATIN_WORD_RE.search(raw):
+        return raw
+    platform = ""
+    if re.search(r"/\s*telegram\s*$", raw, re.I):
+        platform = " / تلگرام"
+    elif re.search(r"/\s*x\s*$", raw, re.I):
+        platform = " / ایکس"
+    return "منبع خبری" + platform
 
 
 def _is_explosion(item: NormalizedNewsItem) -> bool:
@@ -151,7 +164,7 @@ class TelegramNewsroomPublisher:
             return ""
         legacy = NewsItem(
             key=item.raw.source_item_id,
-            source=item.raw.source,
+            source=_safe_source_for_final(item.raw.source),
             title=item.raw.title,
             summary=item.raw.summary,
             link=item.raw.source_url,
@@ -233,13 +246,11 @@ class TelegramNewsroomPublisher:
         message = self._message(item)
         if not message:
             return {"ok": False, "error": "translation_or_format_failed"}
-
         video = _first_video(item)
         photo = _first_image(item)
         if video:
             result = self._post("sendVideo", data={"chat_id": self.chat_id, "video": video, "caption": message[:1024], "parse_mode": "HTML", "supports_streaming": "true"}, timeout=40)
             return result if result.get("ok") is True else self._fallback_to_text(message, "sendVideo", result)
-
         source_url = str(item.raw.source_url or "").strip()
         if self._telegram_post_has_video(source_url):
             with tempfile.TemporaryDirectory(prefix="bikhabar-video-") as directory:
@@ -251,9 +262,7 @@ class TelegramNewsroomPublisher:
                         return result if result.get("ok") is True else self._fallback_to_text(message, "sendVideo", result)
                     except OSError:
                         pass
-
         if photo:
             result = self._post("sendPhoto", data={"chat_id": self.chat_id, "photo": photo, "caption": message[:1024], "parse_mode": "HTML"}, timeout=30)
             return result if result.get("ok") is True else self._fallback_to_text(message, "sendPhoto", result)
-
         return self._text_post(message)
