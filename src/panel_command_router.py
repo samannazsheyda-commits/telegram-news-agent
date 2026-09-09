@@ -17,6 +17,7 @@ NEWSROOM_ACTIONS = {
     "weather_now", "air_traffic_now", "tanker_now", "market_now",
     "weather_preview", "air_traffic_preview", "tanker_preview", "market_preview",
 }
+PUBLISH_MODULE_ACTIONS = {"weather_now", "air_traffic_now", "tanker_now", "market_now"}
 PUBLISHED_STATUSES = {"published_manual", "published_auto"}
 REJECTED_STATUSES = {"rejected_manual", "superseded"}
 
@@ -197,6 +198,11 @@ def _save_preview(name: str, preview: dict) -> None:
     _atomic_write(Path("data") / f"{name}_preview.json", preview)
 
 
+def _publication_paused() -> bool:
+    settings = _read_json(Path("data/newsroom_settings.json"), {})
+    return isinstance(settings, dict) and bool(settings.get("emergency_lock", False))
+
+
 def _apply_module(payload: dict[str, Any]) -> dict:
     action = payload["action"]
     command_id = payload["command_id"]
@@ -221,6 +227,10 @@ def _apply_module(payload: dict[str, Any]) -> dict:
         preview = build_market_preview()
         _save_preview("market", preview)
         return _write_result(command_id, action, "succeeded", "پیش‌نمایش بازار به‌روز شد؛ چیزی منتشر نشد")
+
+    if action in PUBLISH_MODULE_ACTIONS and _publication_paused():
+        raise RuntimeError("publication_paused")
+
     if action == "weather_now":
         from .weather_digest import run as run_weather
         rc = int(run_weather(force=True) or 0)
