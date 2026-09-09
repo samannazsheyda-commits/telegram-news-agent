@@ -26,7 +26,7 @@ def _raw(item_id: str, published: str) -> RawNewsItem:
     )
 
 
-def test_raw_intake_has_dedicated_direct_x_lane():
+def test_raw_intake_has_dedicated_telegram_and_direct_x_lanes():
     calls = []
 
     def news(label):
@@ -40,6 +40,7 @@ def test_raw_intake_has_dedicated_direct_x_lane():
         return []
 
     fetchers = build_raw_fetchers(
+        telegram_fetch=news("telegram"),
         direct_x_fetch=news("direct_x"),
         base_fetch=news("base"),
         custom_fetch=news("custom"),
@@ -47,9 +48,10 @@ def test_raw_intake_has_dedicated_direct_x_lane():
         truth_fetch=truth,
     )
     batches = [fetcher() for fetcher in fetchers]
-    assert len(fetchers) == 5
-    assert calls[0] == "direct_x"
-    assert batches[0][0].source_item_id == "direct_x"
+    assert len(fetchers) == 6
+    assert calls[:2] == ["telegram", "direct_x"]
+    assert batches[0][0].source_item_id == "telegram"
+    assert batches[1][0].source_item_id == "direct_x"
 
 
 def test_stale_items_never_enter_ledger_or_live_feed(tmp_path: Path):
