@@ -47,11 +47,9 @@ def _collect(fetcher) -> tuple[list[RawNewsItem], int, int]:
             return list(fetcher() or []), 1, 0
         except Exception:
             return [], 0, 1
-
     source_fetchers = list(fetcher or [])
     if not source_fetchers:
         return [], 0, 0
-
     items: list[RawNewsItem] = []
     ok = 0
     failed = 0
@@ -112,6 +110,33 @@ def _item_id(item: NormalizedNewsItem) -> str:
     return item.raw.source_item_id or item.raw.source_url
 
 
+def _first_media(item: NormalizedNewsItem) -> tuple[str, str]:
+    for media in item.raw.media or []:
+        if not isinstance(media, dict):
+            continue
+        url = str(media.get("url") or media.get("preview_url") or "").strip()
+        kind = str(media.get("type") or "").strip()
+        if url:
+            return kind, url
+    return "", ""
+
+
+def _panel_fallback_title(panel_status: str, reason: str) -> str:
+    if panel_status == "duplicate":
+        return "خبر تکراری"
+    if panel_status == "rejected":
+        if reason == "filtered_question_or_article":
+            return "محتوای پرسشی یا مقاله‌ای — رد شد"
+        if reason == "filtered_outside_channel_scope":
+            return "خارج از حوزه خبری بی‌خبر"
+        return "خبر ردشده"
+    if panel_status == "failed":
+        return "خبر فارسی آماده شد؛ انتشار ناموفق بود"
+    if panel_status == "waiting":
+        return "خبر آماده بررسی سردبیری"
+    return "خبر تازه"
+
+
 def _feed_record(
     item: NormalizedNewsItem,
     *,
@@ -122,7 +147,11 @@ def _feed_record(
     panel_status: str,
     message_id: int | None,
     now: datetime,
+    persian_title: str = "",
+    persian_body: str = "",
+    final_message: str = "",
 ) -> LiveFeedRecord:
+    media_type, media_url = _first_media(item)
     return LiveFeedRecord(
         item_id=_item_id(item),
         event_id=event_id,
@@ -137,10 +166,24 @@ def _feed_record(
         telegram_message_id=message_id,
         panel_status=panel_status,
         updated_at=now.isoformat(),
+        original_summary=item.raw.summary,
+        persian_title=persian_title or _panel_fallback_title(panel_status, reason),
+        persian_body=persian_body,
+        final_message=final_message,
+        media_type=media_type,
+        media_url=media_url,
     )
 
 
-def _queue_item(editorial_store: LocalEditorialStore, item: NormalizedNewsItem, reason: str, now: datetime) -> None:
+def _queue_item(
+    editorial_store: LocalEditorialStore,
+    item: NormalizedNewsItem,
+    reason: str,
+    now: datetime,
+    *,
+    persian_title: str = "",
+    persian_body: str = "",
+) -> None:
     editorial_store.upsert_queue(
         ReviewItem.for_news(
             news_key=_item_id(item),
@@ -148,6 +191,8 @@ def _queue_item(editorial_store: LocalEditorialStore, item: NormalizedNewsItem, 
             source_url=item.raw.source_url,
             original_title=item.raw.title,
             original_summary=item.raw.summary,
+            persian_title=persian_title,
+            persian_body=persian_body,
             published_at_source=item.raw.published_at,
             discovered_at=item.raw.fetched_at or now.isoformat(),
             rejection_reason=reason,
@@ -165,6 +210,16 @@ def _publisher_result(payload) -> tuple[bool, int | None]:
     if isinstance(payload, int):
         return True, payload
     return False, None
+
+
+def _publisher_persian(payload) -> tuple[str, str, str]:
+    if not isinstance(payload, dict):
+        return "", "", ""
+    return (
+        str(payload.get("persian_title") or "").strip(),
+        str(payload.get("persian_body") or "").strip(),
+        str(payload.get("final_message") or "").strip(),
+    )
 
 
 def run_cycle(
@@ -200,18 +255,11 @@ def run_cycle(
         exact_source_event = ledger.find_by_source_url(item.raw.source_url)
         if exact_source_event is not None and exact_source_event.published_message_ids:
             summary.exact_duplicates += 1
-            live_feed.upsert(
-                _feed_record(
-                    item,
-                    event_id=exact_source_event.event_id,
-                    decision="duplicate_exact_url",
-                    reason="source_url_already_published",
-                    duplicate_of=exact_source_event.event_id,
-                    panel_status="duplicate",
-                    message_id=None,
-                    now=now,
-                )
-            )
+            live_feed.upsert(_feed_record(
+                item, event_id=exact_source_event.event_id, decision="duplicate_exact_url",
+                reason="source_url_already_published", duplicate_of=exact_source_event.event_id,
+                panel_status="duplicate", message_id=None, now=now,
+            ))
             continue
 
         fingerprint = build_fingerprint(item)
@@ -254,7 +302,14 @@ def run_cycle(
             ledger.update_material_facts(event_id, fingerprint.key_facts, now.isoformat())
             ledger.add_variant(event_id, item.raw.source_url, now.isoformat())
         else:
-            event = ledger.create_event(fingerprint=fingerprint, canonical_title=item.raw.title, primary_source=item.raw.source, source_url=item.raw.source_url, first_seen=item.raw.fetched_at or now.isoformat(), key_facts=fingerprint.key_facts)
+            event = ledger.create_event(
+                fingerprint=fingerprint,
+                canonical_title=item.raw.title,
+                primary_source=item.raw.source,
+                source_url=item.raw.source_url,
+                first_seen=item.raw.fetched_at or now.isoformat(),
+                key_facts=fingerprint.key_facts,
+            )
             event_id = event.event_id
             if decision.decision == "new_event":
                 summary.new_events += 1
@@ -272,36 +327,62 @@ def run_cycle(
                 panel_status = "waiting"
             else:
                 panel_status = "rejected"
-            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=eligibility.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status=panel_status, message_id=None, now=now))
+            live_feed.upsert(_feed_record(
+                item, event_id=event_id, decision=decision.decision, reason=eligibility.reason,
+                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
+                panel_status=panel_status, message_id=None, now=now,
+            ))
             continue
 
         auto_publish = settings.get("auto_publish") is not False
         needs_review = decision.decision == "needs_editorial_review" or not auto_publish
         if needs_review:
             summary.review_items += 1
-            _queue_item(editorial_store, item, decision.reason if decision.decision == "needs_editorial_review" else "auto_publish_off", now)
-            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="waiting", message_id=None, now=now))
+            reason = decision.reason if decision.decision == "needs_editorial_review" else "auto_publish_off"
+            _queue_item(editorial_store, item, reason, now)
+            live_feed.upsert(_feed_record(
+                item, event_id=event_id, decision=decision.decision, reason=reason,
+                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
+                panel_status="waiting", message_id=None, now=now,
+            ))
             continue
 
         if shadow:
-            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="new", message_id=None, now=now))
+            live_feed.upsert(_feed_record(
+                item, event_id=event_id, decision=decision.decision, reason=decision.reason,
+                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
+                panel_status="new", message_id=None, now=now,
+            ))
             continue
 
+        payload = None
         try:
-            ok, message_id = _publisher_result(publisher(item))
+            payload = publisher(item)
+            ok, message_id = _publisher_result(payload)
         except Exception as exc:
             print(f"PUBLISH_EXCEPTION source={item.raw.source!r} type={type(exc).__name__} error={exc}", flush=True)
             ok, message_id = False, None
+        persian_title, persian_body, final_message = _publisher_persian(payload)
 
         if ok and message_id is not None:
             ledger.mark_published(event_id, message_id, fingerprint.key_facts, now.isoformat())
             summary.published += 1
-            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="auto_published", message_id=message_id, now=now))
+            live_feed.upsert(_feed_record(
+                item, event_id=event_id, decision=decision.decision, reason=decision.reason,
+                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
+                panel_status="auto_published", message_id=message_id, now=now,
+                persian_title=persian_title, persian_body=persian_body, final_message=final_message,
+            ))
         else:
             summary.publish_failed += 1
             summary.review_items += 1
-            _queue_item(editorial_store, item, "publish_failed", now)
-            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason="publish_failed", duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="failed", message_id=None, now=now))
+            _queue_item(editorial_store, item, "publish_failed", now, persian_title=persian_title, persian_body=persian_body)
+            live_feed.upsert(_feed_record(
+                item, event_id=event_id, decision=decision.decision, reason="publish_failed",
+                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
+                panel_status="failed", message_id=None, now=now,
+                persian_title=persian_title, persian_body=persian_body, final_message=final_message,
+            ))
 
     max_records = int(settings.get("panel_max_records") or 500)
     live_feed.prune(now, freshness_hours=freshness_hours, max_records=max_records)
