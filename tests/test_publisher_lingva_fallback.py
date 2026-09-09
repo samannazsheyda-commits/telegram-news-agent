@@ -28,7 +28,17 @@ def test_publisher_uses_lingva_when_primary_translator_is_empty():
         media=[],
         source_priority="protected",
     )
-    item = NormalizedNewsItem(raw=raw, normalized_title=raw.title, normalized_summary="", language="en")
+    item = NormalizedNewsItem(
+        raw=raw,
+        actors=["Iran"],
+        locations=[],
+        actions=["launched"],
+        objects=["ballistic missiles"],
+        numeric_facts=[],
+        topic_tags=["missile"],
+        quoted_speaker="",
+        normalized_text=raw.title.lower(),
+    )
     publisher = TelegramNewsroomPublisher("token", "@channel", session=Session(), translator=lambda _text: "")
     message = publisher._message(item)
     assert "ایران موشک‌های بالستیک شلیک کرد" in message
