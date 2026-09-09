@@ -41,6 +41,10 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _has_persian(value: str) -> bool:
+    return bool(re.search(r"[\u0600-\u06ff]", str(value or "")))
+
+
 def _settings() -> tuple[dict, str | None]:
     value, sha = _data().read_json("data/newsroom_settings.json", {})
     value = value if isinstance(value, dict) else {}
@@ -124,9 +128,17 @@ def _live_row_id(row: dict) -> str:
     return str(row.get("item_id") or row.get("id") or row.get("news_key") or "").strip()
 
 
-def _review_record_from_live(row: dict, item_id: str) -> dict:
+def _review_record_from_live(row: dict, item_id: str, *, title_fa: str = "", body_fa: str = "") -> dict:
     now = _now_iso()
     record = dict(row)
+    saved_title = str(row.get("final_persian_title") or row.get("persian_title") or row.get("display_title") or "").strip()
+    saved_body = str(row.get("final_persian_body") or row.get("persian_body") or "").strip()
+    clean_title = str(title_fa or "").strip()
+    clean_body = str(body_fa or "").strip()
+    if not _has_persian(clean_title):
+        clean_title = saved_title
+    if clean_body and not _has_persian(clean_body):
+        clean_body = saved_body
     record.update(
         {
             "id": item_id,
@@ -136,8 +148,8 @@ def _review_record_from_live(row: dict, item_id: str) -> dict:
             "source_url": str(row.get("source_url") or row.get("link") or ""),
             "original_title": str(row.get("original_title") or row.get("title") or ""),
             "original_summary": str(row.get("original_summary") or row.get("summary") or row.get("body") or ""),
-            "persian_title": str(row.get("final_persian_title") or row.get("persian_title") or row.get("display_title") or ""),
-            "persian_body": str(row.get("final_persian_body") or row.get("persian_body") or ""),
+            "persian_title": clean_title,
+            "persian_body": clean_body,
             "published_at_source": str(row.get("published_at_source") or row.get("published") or ""),
             "status": "pending",
             "created_at": str(row.get("created_at") or row.get("discovered_at") or now),
@@ -294,7 +306,10 @@ def promote_live_to_review(item_id: str):
     if str(row.get("panel_status") or "") in _TERMINAL_LIVE_STATUSES:
         return jsonify({"ok": False, "error": "already_published"}), 409
 
-    record = _review_record_from_live(row, item_id)
+    payload = request.get_json(silent=True) or {}
+    title_fa = str(payload.get("title_fa") or "").strip()[:600]
+    body_fa = str(payload.get("body_fa") or "").strip()[:5000]
+    record = _review_record_from_live(row, item_id, title_fa=title_fa, body_fa=body_fa)
 
     def transform(queue: list[dict]) -> list[dict]:
         return [record] + [existing for existing in queue if str(existing.get("id") or existing.get("item_id") or "") != item_id]
