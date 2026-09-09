@@ -11,6 +11,7 @@ from typing import Any
 import requests
 
 from .editorial_rules import priority_search_queries
+from .fresh_x import fetch_profile_timeline, monitored_x_sources
 from .newsroom_models import RawNewsItem
 from .sources import (
     NEWS_QUERIES,
@@ -74,7 +75,7 @@ def system_source_definitions() -> list[dict[str, Any]]:
                 "lang": lang,
                 "group": group,
                 "system": True,
-                "status": "active",
+                "status": "fallback",
             })
     for name, query in priority_search_queries():
         identity = f"priority:{name}:{query}:en"
@@ -86,7 +87,24 @@ def system_source_definitions() -> list[dict[str, Any]]:
             "lang": "en",
             "group": "priority",
             "system": True,
-            "status": "active",
+            "status": "fallback",
+        })
+    # Canonical direct X lanes are first-class system sources so every account
+    # being monitored can be toggled/removed from the panel, rather than living
+    # as an invisible hard-coded fetch path.
+    for source in monitored_x_sources():
+        handle = str(source.get("handle") or "").strip()
+        if not handle:
+            continue
+        identity = f"direct_x:{handle.lower()}"
+        rows.append({
+            "id": _source_id("directx", identity),
+            "kind": "x",
+            "name": str(source.get("name") or handle.lstrip("@")),
+            "handle": handle,
+            "group": "direct_x",
+            "system": True,
+            "status": "realtime",
         })
     rows.append({
         "id": "system-truth-realdonaldtrump",
@@ -94,7 +112,7 @@ def system_source_definitions() -> list[dict[str, Any]]:
         "name": "Donald Trump",
         "handle": "@realDonaldTrump",
         "system": True,
-        "status": "active",
+        "status": "realtime",
     })
     return rows
 
@@ -166,6 +184,26 @@ def fetch_managed_base_news_items(session=requests) -> list[NewsItem]:
 
 def fetch_managed_priority_news_items(session=requests) -> list[NewsItem]:
     return _fetch_managed_query_group("priority", session=session)
+
+
+def fetch_managed_fresh_x_news_items(session=requests) -> list[NewsItem]:
+    merged: dict[str, NewsItem] = {}
+    for row in managed_source_rows():
+        if row.get("kind") != "x" or not row.get("active", True):
+            continue
+        handle = str(row.get("handle") or "").strip()
+        if not handle:
+            continue
+        source = {"name": str(row.get("name") or handle.lstrip("@")), "handle": handle}
+        try:
+            items = fetch_profile_timeline(source, session=session)
+        except Exception as exc:
+            print(f"DIRECT_X_FAILED handle={handle!r} error={type(exc).__name__}:{exc}", flush=True)
+            continue
+        for item in items:
+            merged.setdefault(item.key, item)
+    print(f"DIRECT_X_MANAGED items={len(merged)}", flush=True)
+    return list(merged.values())
 
 
 def _fetch_truth_account(handle: str, name: str, session=requests, limit: int = 40) -> list[RawNewsItem]:

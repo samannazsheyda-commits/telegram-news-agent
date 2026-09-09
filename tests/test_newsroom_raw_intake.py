@@ -21,8 +21,12 @@ def test_news_item_to_raw_preserves_source_identity_and_text():
     assert raw.summary == item.summary
 
 
-def test_build_raw_fetchers_keeps_sources_isolated_and_adds_truth_lane():
+def test_build_raw_fetchers_keeps_sources_isolated_and_adds_direct_x_and_truth_lanes():
     calls = []
+
+    def direct_x():
+        calls.append("direct_x")
+        return [NewsItem("x", "CENTCOM / X", "X", "", "https://x.com/CENTCOM/status/1", "Mon, 07 Sep 2026 18:00:00 +0000")]
 
     def base():
         calls.append("base")
@@ -34,14 +38,23 @@ def test_build_raw_fetchers_keeps_sources_isolated_and_adds_truth_lane():
 
     def priority():
         calls.append("priority")
-        return [NewsItem("c", "CENTCOM / X", "C", "", "https://c", "Mon, 07 Sep 2026 18:00:00 +0000")]
+        return [NewsItem("c", "Priority", "C", "", "https://c", "Mon, 07 Sep 2026 18:00:00 +0000")]
 
     def truth():
         calls.append("truth")
         return []
 
-    fetchers = build_raw_fetchers(base_fetch=base, custom_fetch=custom, priority_fetch=priority, truth_fetch=truth)
-    assert len(fetchers) == 4
+    fetchers = build_raw_fetchers(
+        direct_x_fetch=direct_x,
+        base_fetch=base,
+        custom_fetch=custom,
+        priority_fetch=priority,
+        truth_fetch=truth,
+    )
+    assert len(fetchers) == 5
     batches = [fn() for fn in fetchers]
-    assert calls == ["base", "custom", "priority", "truth"]
-    assert [batch[0].source_item_id for batch in batches[:3]] == ["a", "b", "c"]
+    assert calls == ["direct_x", "custom", "truth", "priority", "base"]
+    assert batches[0][0].source_item_id == "x"
+    assert batches[1][0].source_item_id == "b"
+    assert batches[3][0].source_item_id == "c"
+    assert batches[4][0].source_item_id == "a"
