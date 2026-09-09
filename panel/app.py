@@ -15,7 +15,7 @@ from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import check_password_hash
 
 from src.custom_sources import XSource, discover_feed_url, validate_website_source
-from src.formatters import format_news
+from src.formatters import _source_label, format_news
 from src.github_data import GitHubJsonRepository
 from src.services import send_telegram, translate_to_fa
 from src.sources import NewsItem
@@ -137,6 +137,7 @@ def _live_feed(data, translator=translate_to_fa) -> list[dict]:
                 translated = ""
             title = translated if _has_persian(translated) else "عنوان فارسی در حال آماده‌سازی"
         item["display_title"] = title or "بدون عنوان"
+        item["source_display"] = _source_label(str(item.get("source") or ""))
         item["panel_status_fa"] = PANEL_STATUS_FA.get(str(item.get("panel_status") or ""), "در حال پردازش")
         item["decision_reason_fa"] = REASON_FA.get(str(item.get("decision_reason") or ""), "")
         localized.append(item)
@@ -174,22 +175,14 @@ def _upsert_record(data, path: str, record: dict, message: str) -> list[dict]:
 
 
 def _remove_record(data, path: str, record_id: str, message: str) -> list[dict]:
-    return _write_latest_list(
-        data,
-        path,
-        lambda records: [r for r in records if r.get("id") != record_id],
-        message,
-    )
+    return _write_latest_list(data, path, lambda records: [r for r in records if r.get("id") != record_id], message)
 
 
 def _build_message(record: dict, title_fa: str, body_fa: str) -> str:
     item = NewsItem(
-        key=str(record.get("news_key") or ""),
-        source=str(record.get("source") or ""),
-        title=str(record.get("original_title") or ""),
-        summary=str(record.get("original_summary") or ""),
-        link=str(record.get("source_url") or ""),
-        published=str(record.get("published_at_source") or ""),
+        key=str(record.get("news_key") or ""), source=str(record.get("source") or ""),
+        title=str(record.get("original_title") or ""), summary=str(record.get("original_summary") or ""),
+        link=str(record.get("source_url") or ""), published=str(record.get("published_at_source") or ""),
     )
     return format_news(item, title_fa, body_fa, marker_override="⚪️")
 
@@ -197,214 +190,123 @@ def _build_message(record: dict, title_fa: str, body_fa: str) -> str:
 def create_app(config: dict | None = None):
     app = Flask(__name__)
     app.config.from_mapping(
-        SECRET_KEY=os.environ.get("PANEL_SECRET_KEY", ""),
-        PANEL_PASSWORD_HASH=os.environ.get("PANEL_PASSWORD_HASH", ""),
-        TELEGRAM_BOT_TOKEN=os.environ.get("TELEGRAM_BOT_TOKEN", ""),
-        TELEGRAM_CHAT_ID=os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"),
-        GITHUB_DATA_TOKEN=os.environ.get("GITHUB_DATA_TOKEN", ""),
-        GITHUB_REPOSITORY=os.environ.get("GITHUB_REPOSITORY", "samannazsheyda-commits/telegram-news-agent"),
-        GITHUB_BRANCH=os.environ.get("GITHUB_BRANCH", "main"),
-        LIVE_FEED_TRANSLATOR=translate_to_fa,
-        SESSION_COOKIE_HTTPONLY=True,
-        SESSION_COOKIE_SAMESITE="Lax",
-        SESSION_COOKIE_SECURE=True,
-        MAX_CONTENT_LENGTH=64 * 1024,
+        SECRET_KEY=os.environ.get("PANEL_SECRET_KEY", ""), PANEL_PASSWORD_HASH=os.environ.get("PANEL_PASSWORD_HASH", ""),
+        TELEGRAM_BOT_TOKEN=os.environ.get("TELEGRAM_BOT_TOKEN", ""), TELEGRAM_CHAT_ID=os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"),
+        GITHUB_DATA_TOKEN=os.environ.get("GITHUB_DATA_TOKEN", ""), GITHUB_REPOSITORY=os.environ.get("GITHUB_REPOSITORY", "samannazsheyda-commits/telegram-news-agent"),
+        GITHUB_BRANCH=os.environ.get("GITHUB_BRANCH", "main"), LIVE_FEED_TRANSLATOR=translate_to_fa,
+        SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax", SESSION_COOKIE_SECURE=True, MAX_CONTENT_LENGTH=64 * 1024,
     )
-    if config:
-        app.config.update(config)
-    if app.config.get("TESTING"):
-        app.config["SESSION_COOKIE_SECURE"] = False
-    if not app.config.get("SECRET_KEY"):
-        raise RuntimeError("PANEL_SECRET_KEY is required")
-
+    if config: app.config.update(config)
+    if app.config.get("TESTING"): app.config["SESSION_COOKIE_SECURE"] = False
+    if not app.config.get("SECRET_KEY"): raise RuntimeError("PANEL_SECRET_KEY is required")
     csrf.init_app(app)
     data = app.config.get("DATA_BACKEND")
     if data is None:
-        data = GitHubJsonRepository(
-            app.config["GITHUB_REPOSITORY"],
-            app.config["GITHUB_DATA_TOKEN"],
-            branch=app.config.get("GITHUB_BRANCH", "main"),
-        )
+        data = GitHubJsonRepository(app.config["GITHUB_REPOSITORY"], app.config["GITHUB_DATA_TOKEN"], branch=app.config.get("GITHUB_BRANCH", "main"))
     app.extensions["editorial_data"] = data
 
     @app.context_processor
-    def globals_for_templates():
-        return {"reason_fa": REASON_FA}
+    def globals_for_templates(): return {"reason_fa": REASON_FA}
 
     @app.route("/login", methods=["GET", "POST"])
     def login():
-        if _authenticated():
-            return redirect(url_for("dashboard"))
-        form = LoginForm()
-        ip = request.remote_addr or "unknown"
+        if _authenticated(): return redirect(url_for("dashboard"))
+        form = LoginForm(); ip = request.remote_addr or "unknown"
         if form.validate_on_submit():
             if _rate_limited(ip):
-                flash("تعداد تلاش‌ها زیاد بوده. چند دقیقه بعد دوباره امتحان کن.", "error")
-                return render_template("login.html", form=form), 429
+                flash("تعداد تلاش‌ها زیاد بوده. چند دقیقه بعد دوباره امتحان کن.", "error"); return render_template("login.html", form=form), 429
             password_hash = app.config.get("PANEL_PASSWORD_HASH", "")
             if not password_hash or not check_password_hash(password_hash, form.password.data):
-                _record_login_failure(ip)
-                flash("رمز ورود درست نیست.", "error")
+                _record_login_failure(ip); flash("رمز ورود درست نیست.", "error")
             else:
-                _login_attempts.pop(ip, None)
-                session.clear()
-                session["admin"] = True
-                session.permanent = True
+                _login_attempts.pop(ip, None); session.clear(); session["admin"] = True; session.permanent = True
                 return redirect(request.args.get("next") or url_for("dashboard"))
         return render_template("login.html", form=form)
 
     @app.post("/logout")
     @login_required
-    def logout():
-        session.clear()
-        return redirect(url_for("login"))
+    def logout(): session.clear(); return redirect(url_for("login"))
 
     @app.get("/")
     @login_required
     def dashboard():
-        queue = _effective_queue(data)
-        live = _live_feed(data, app.config["LIVE_FEED_TRANSLATOR"])
-        published = _published_history(data)
-        history = _read_list(data, "data/editorial_history.json")
+        queue = _effective_queue(data); live = _live_feed(data, app.config["LIVE_FEED_TRANSLATOR"]); published = _published_history(data); history = _read_list(data, "data/editorial_history.json")
         published_today = sum(1 for r in published if _same_tehran_day(str(r.get("decision_at") or r.get("updated_at") or "")))
         rejected_today = sum(1 for r in history if r.get("status") in {"rejected_manual", "superseded"} and _same_tehran_day(str(r.get("decision_at") or r.get("updated_at") or "")))
-        state, _ = data.read_json("state.json", {})
-        last_publication = next((r.get("decision_at") or r.get("updated_at") for r in published), "")
-        return render_template(
-            "dashboard.html",
-            live=live,
-            pending=queue,
-            published=published,
-            live_count=len(live),
-            queue_count=len(queue),
-            published_today=published_today,
-            rejected_today=rejected_today,
-            last_publication=last_publication,
-            bot_active=True,
-            state=state if isinstance(state, dict) else {},
-        )
+        state, _ = data.read_json("state.json", {}); last_publication = next((r.get("decision_at") or r.get("updated_at") for r in published), "")
+        return render_template("dashboard.html", live=live, pending=queue, published=published, live_count=len(live), queue_count=len(queue), published_today=published_today, rejected_today=rejected_today, last_publication=last_publication, bot_active=True, state=state if isinstance(state, dict) else {})
 
     @app.get("/review")
     @login_required
-    def review_queue():
-        return render_template("review_queue.html", items=_effective_queue(data))
+    def review_queue(): return render_template("review_queue.html", items=_effective_queue(data))
 
     @app.route("/review/<item_id>", methods=["GET", "POST"])
     @login_required
     def review_edit(item_id: str):
         history = _read_list(data, "data/editorial_history.json")
         if any(r.get("id") == item_id and r.get("status") in TERMINAL_STATUSES for r in history):
-            flash("این خبر قبلاً تعیین تکلیف شده.", "info")
-            return redirect(url_for("review_queue"))
+            flash("این خبر قبلاً تعیین تکلیف شده.", "info"); return redirect(url_for("review_queue"))
         record = next((r for r in _effective_queue(data) if r.get("id") == item_id), None)
-        if record is None:
-            abort(404)
+        if record is None: abort(404)
         form = ReviewEditForm()
-        if request.method == "GET":
-            form.title_fa.data = str(record.get("persian_title") or "")
-            form.body_fa.data = str(record.get("persian_body") or "")
+        if request.method == "GET": form.title_fa.data = str(record.get("persian_title") or ""); form.body_fa.data = str(record.get("persian_body") or "")
         if form.validate_on_submit():
             if form.reject.data:
-                now = _now_iso()
-                final = dict(record)
-                final.update(status="rejected_manual", decision_at=now, updated_at=now)
-                _upsert_record(data, "data/editorial_history.json", final, "chore: manually reject editorial item")
-                _remove_record(data, "data/editorial_queue.json", item_id, "chore: remove rejected editorial item")
-                flash("خبر رد نهایی شد.", "success")
-                return redirect(url_for("review_queue"))
-
-            title_fa = (form.title_fa.data or "").strip()
-            body_fa = (form.body_fa.data or "").strip()
-            if not record.get("source") or not record.get("source_url"):
-                flash("این خبر منبع یا لینک معتبر ندارد و قابل انتشار نیست.", "error")
+                now = _now_iso(); final = dict(record); final.update(status="rejected_manual", decision_at=now, updated_at=now)
+                _upsert_record(data, "data/editorial_history.json", final, "chore: manually reject editorial item"); _remove_record(data, "data/editorial_queue.json", item_id, "chore: remove rejected editorial item")
+                flash("خبر رد نهایی شد.", "success"); return redirect(url_for("review_queue"))
+            title_fa = (form.title_fa.data or "").strip(); body_fa = (form.body_fa.data or "").strip()
+            if not record.get("source") or not record.get("source_url"): flash("این خبر منبع یا لینک معتبر ندارد و قابل انتشار نیست.", "error")
             else:
                 message = _build_message(record, title_fa, body_fa)
-                if not message:
-                    flash("متن خبر برای انتشار معتبر نیست.", "error")
+                if not message: flash("متن خبر برای انتشار معتبر نیست.", "error")
                 else:
-                    try:
-                        send_telegram(message, app.config["TELEGRAM_BOT_TOKEN"], app.config["TELEGRAM_CHAT_ID"])
-                    except Exception as exc:
-                        flash(f"ارسال تلگرام ناموفق بود: {exc}", "error")
+                    try: send_telegram(message, app.config["TELEGRAM_BOT_TOKEN"], app.config["TELEGRAM_CHAT_ID"])
+                    except Exception as exc: flash(f"ارسال تلگرام ناموفق بود: {exc}", "error")
                     else:
-                        now = _now_iso()
-                        final = dict(record)
-                        final.update(
-                            status="published_manual",
-                            final_persian_title=title_fa,
-                            final_persian_body=body_fa,
-                            decision_at=now,
-                            updated_at=now,
-                        )
+                        now = _now_iso(); final = dict(record); final.update(status="published_manual", final_persian_title=title_fa, final_persian_body=body_fa, final_message=message, decision_at=now, updated_at=now)
                         _upsert_record(data, "data/editorial_history.json", final, "chore: record manual telegram publication")
-                        try:
-                            data.mark_news_seen(str(record.get("news_key") or ""))
-                        finally:
-                            _remove_record(data, "data/editorial_queue.json", item_id, "chore: remove manually published editorial item")
-                        flash("خبر با موفقیت در تلگرام منتشر شد.", "success")
-                        return redirect(url_for("review_queue"))
+                        try: data.mark_news_seen(str(record.get("news_key") or ""))
+                        finally: _remove_record(data, "data/editorial_queue.json", item_id, "chore: remove manually published editorial item")
+                        flash("خبر با موفقیت در تلگرام منتشر شد.", "success"); return redirect(url_for("review_queue"))
         return render_template("review_edit.html", item=record, form=form)
 
     @app.get("/history")
     @login_required
     def history():
-        records = _read_list(data, "data/editorial_history.json")
-        status = request.args.get("status", "")
-        if status:
-            records = [r for r in records if r.get("status") == status]
+        records = _read_list(data, "data/editorial_history.json"); status = request.args.get("status", "")
+        if status: records = [r for r in records if r.get("status") == status]
         return render_template("history.html", items=records, status=status)
 
     @app.route("/sources", methods=["GET"])
     @login_required
     def sources():
         records = _read_list(data, "data/custom_sources.json")
-        return render_template(
-            "sources.html",
-            sources=records,
-            website_form=WebsiteSourceForm(prefix="web"),
-            x_form=XSourceForm(prefix="x"),
-        )
+        return render_template("sources.html", sources=records, website_form=WebsiteSourceForm(prefix="web"), x_form=XSourceForm(prefix="x"))
 
     @app.post("/sources/website")
     @login_required
     def add_website_source():
         form = WebsiteSourceForm(prefix="web")
-        if not form.validate_on_submit():
-            flash("اطلاعات سایت کامل یا معتبر نیست.", "error")
-            return redirect(url_for("sources"))
+        if not form.validate_on_submit(): flash("اطلاعات سایت کامل یا معتبر نیست.", "error"); return redirect(url_for("sources"))
         try:
-            source = validate_website_source(form.name.data, form.website_url.data, form.feed_url.data or "")
-            record = asdict(source)
+            source = validate_website_source(form.name.data, form.website_url.data, form.feed_url.data or ""); record = asdict(source)
             if not record.get("feed_url"):
-                try:
-                    feed = discover_feed_url(record["website_url"])
-                except Exception as exc:
-                    record["last_error"] = str(exc)[:240]
-                    feed = ""
-                if feed:
-                    record["feed_url"] = feed
-                    record["status"] = "active"
-                else:
-                    record["status"] = "needs_feed"
-            _upsert_record(data, "data/custom_sources.json", record, "chore: add custom website source")
-            flash("منبع سایت ذخیره شد.", "success")
-        except ValueError:
-            flash("آدرس سایت یا RSS معتبر نیست.", "error")
+                try: feed = discover_feed_url(record["website_url"])
+                except Exception as exc: record["last_error"] = str(exc)[:240]; feed = ""
+                if feed: record["feed_url"] = feed; record["status"] = "active"
+                else: record["status"] = "needs_feed"
+            _upsert_record(data, "data/custom_sources.json", record, "chore: add custom website source"); flash("منبع سایت ذخیره شد.", "success")
+        except ValueError: flash("آدرس سایت یا RSS معتبر نیست.", "error")
         return redirect(url_for("sources"))
 
     @app.post("/sources/x")
     @login_required
     def add_x_source():
         form = XSourceForm(prefix="x")
-        if not form.validate_on_submit():
-            flash("آی‌دی X معتبر نیست.", "error")
-            return redirect(url_for("sources"))
-        try:
-            record = asdict(XSource.create(form.handle.data, form.name.data or ""))
-            _upsert_record(data, "data/custom_sources.json", record, "chore: add custom x source")
-            flash("حساب X به لیست بررسی اضافه شد.", "success")
-        except ValueError:
-            flash("آی‌دی X معتبر نیست.", "error")
+        if not form.validate_on_submit(): flash("آی‌دی X معتبر نیست.", "error"); return redirect(url_for("sources"))
+        try: record = asdict(XSource.create(form.handle.data, form.name.data or "")); _upsert_record(data, "data/custom_sources.json", record, "chore: add custom x source"); flash("حساب X به لیست بررسی اضافه شد.", "success")
+        except ValueError: flash("آی‌دی X معتبر نیست.", "error")
         return redirect(url_for("sources"))
 
     @app.post("/sources/<source_id>/toggle")
@@ -413,22 +315,14 @@ def create_app(config: dict | None = None):
         def transform(records):
             found = False
             for record in records:
-                if record.get("id") == source_id:
-                    record["active"] = not bool(record.get("active", True))
-                    record["updated_at"] = _now_iso()
-                    found = True
-                    break
-            if not found:
-                abort(404)
+                if record.get("id") == source_id: record["active"] = not bool(record.get("active", True)); record["updated_at"] = _now_iso(); found = True; break
+            if not found: abort(404)
             return records
-        _write_latest_list(data, "data/custom_sources.json", transform, "chore: toggle custom source")
-        return redirect(url_for("sources"))
+        _write_latest_list(data, "data/custom_sources.json", transform, "chore: toggle custom source"); return redirect(url_for("sources"))
 
     @app.post("/sources/<source_id>/delete")
     @login_required
     def delete_source(source_id: str):
-        _remove_record(data, "data/custom_sources.json", source_id, "chore: delete custom source")
-        flash("منبع حذف شد.", "success")
-        return redirect(url_for("sources"))
+        _remove_record(data, "data/custom_sources.json", source_id, "chore: delete custom source"); flash("منبع حذف شد.", "success"); return redirect(url_for("sources"))
 
     return app
