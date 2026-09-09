@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from src.newsroom_eligibility import evaluate_eligibility
@@ -23,7 +23,7 @@ def _decision(raw, now="2026-09-07T21:30:00+00:00"):
     return evaluate_eligibility(normalize_item(raw), datetime.fromisoformat(now))
 
 
-def test_current_centcom_operational_update_is_publishable():
+def test_current_centcom_operational_ship_update_is_publishable():
     d = _decision(_raw(
         source="CENTCOM / X",
         title="CENTCOM says US forces redirected 92 commercial vessels, disabled 3 and boarded 2 near Iran",
@@ -36,39 +36,40 @@ def test_current_centcom_operational_update_is_publishable():
 
 def test_old_story_is_stale_and_not_publishable():
     d = _decision(_raw(
-        title="Iran announces a new restricted maritime zone in the Gulf",
+        title="Iran announces tanker restrictions near the Strait of Hormuz",
         published_at="2026-09-06T08:00:00+00:00",
     ))
     assert d.eligible is False
     assert d.reason == "stale"
 
 
-def test_midnight_grace_allows_very_recent_previous_tehran_day():
+def test_midnight_grace_allows_very_recent_previous_tehran_day_for_allowed_story():
     tehran = ZoneInfo("Asia/Tehran")
     now = datetime(2026, 9, 8, 0, 30, tzinfo=tehran)
     d = evaluate_eligibility(normalize_item(_raw(
-        title="Iran partially reopens its airspace after a security closure",
+        title="Iran launches missiles toward a military target outside Iran",
         published_at="2026-09-07T20:15:00+00:00",
     )), now)
     assert d.eligible is True
 
 
-def test_ordinary_company_earnings_story_is_filtered_low_value():
+def test_ordinary_company_earnings_story_is_outside_scope():
     d = _decision(_raw(
         title="Regional airline reports quarterly profit growth while monitoring Iran market",
         summary="The company raised its revenue outlook and discussed sales.",
         published_at="2026-09-07T20:45:00+00:00",
     ))
     assert d.eligible is False
-    assert d.reason == "filtered_low_value"
+    assert d.reason == "filtered_outside_channel_scope"
 
 
-def test_airline_resuming_iranian_overflights_is_operational_and_publishable():
+def test_airspace_story_is_module_data_not_news_feed_content():
     d = _decision(_raw(
         title="UAE airline resumes overflights through Iranian airspace after restrictions eased",
         published_at="2026-09-07T20:45:00+00:00",
     ))
-    assert d.eligible is True
+    assert d.eligible is False
+    assert d.reason == "filtered_outside_channel_scope"
 
 
 def test_current_irrelevant_story_is_not_publishable():
@@ -77,25 +78,25 @@ def test_current_irrelevant_story_is_not_publishable():
         published_at="2026-09-07T20:45:00+00:00",
     ))
     assert d.eligible is False
-    assert d.reason == "not_iran_relevant"
+    assert d.reason == "filtered_outside_channel_scope"
 
 
-def test_ambiguous_protected_story_goes_to_review_instead_of_silent_filter():
+def test_ambiguous_protected_story_is_hard_filtered_not_sent_to_review():
     d = _decision(_raw(
         source="White House",
-        title="White House issues a new statement",
+        title="White House issues a new statement about Iran",
         summary="Officials said more details would follow.",
         published_at="2026-09-07T20:45:00+00:00",
         priority="protected",
     ))
     assert d.eligible is False
-    assert d.reason == "needs_editorial_review"
-    assert d.review is True
+    assert d.reason == "filtered_outside_channel_scope"
+    assert d.review is False
 
 
 def test_invalid_publish_time_never_auto_publishes():
     d = _decision(_raw(
-        title="Iran announces new airspace restrictions",
+        title="Iran launches missiles toward Israel",
         published_at="not-a-date",
     ))
     assert d.eligible is False
@@ -118,8 +119,8 @@ def test_analysis_explainer_and_opinion_are_hard_filtered():
     for title in (
         "Analysis: What Iran's new missile posture means for the region",
         "Explainer: How sanctions could affect Iran's oil exports",
-        "Opinion: Why Tehran may change its strategy",
-        "What we know about Iran's latest military moves",
+        "Opinion: Why Tehran may change its war strategy",
+        "What we know about Iran's latest missile moves",
     ):
         d = _decision(_raw(title=title, published_at="2026-09-07T20:45:00+00:00"))
         assert d.eligible is False
@@ -137,8 +138,8 @@ def test_factual_breaking_headline_is_not_filtered_as_article():
 def test_malformed_domain_tail_summary_is_hard_filtered():
     d = _decision(_raw(
         source="Bloomberg",
-        title="Iran seized an underwater drone that US forces say malfunctioned",
-        summary="Iran seized an underwater drone that US forces say malfunctioned in Bloomberg.com.",
+        title="Iran seized an underwater drone near the Strait of Hormuz",
+        summary="Iran seized an underwater drone in Bloomberg.com.",
         published_at="2026-09-07T20:45:00+00:00",
         source_url="https://www.bloomberg.com/news/articles/example",
     ))
@@ -150,11 +151,11 @@ def test_teaser_and_truncated_content_never_auto_publishes():
     for summary in (
         "Read more at the original source",
         "Continue reading on Reuters.com",
-        "Officials said the operation was ongoing…",
-        "Officials said the operation was ongoing...",
+        "Officials said the missile operation was ongoing…",
+        "Officials said the missile operation was ongoing...",
     ):
         d = _decision(_raw(
-            title="Iran announces a new maritime security operation in the Gulf",
+            title="Iran launches missiles toward a military target",
             summary=summary,
             published_at="2026-09-07T20:45:00+00:00",
         ))
@@ -164,7 +165,7 @@ def test_teaser_and_truncated_content_never_auto_publishes():
 
 def test_aggregator_link_is_not_accepted_as_direct_source():
     d = _decision(_raw(
-        title="Iran announces a new maritime security operation in the Gulf",
+        title="Iran launches missiles toward a military target",
         summary="Officials said the operation began on Monday.",
         published_at="2026-09-07T20:45:00+00:00",
         source_url="https://news.google.com/rss/articles/example",
