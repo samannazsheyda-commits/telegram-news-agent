@@ -175,6 +175,7 @@ class TelegramNewsroomPublisher:
         return candidates[0] if candidates and candidates[0].stat().st_size > 0 else None
 
     def _raw_post(self, endpoint: str, *, data: dict, files=None, timeout: int = 35) -> dict:
+        response = None
         try:
             response = self.session.post(
                 f"https://api.telegram.org/bot{self.bot_token}/{endpoint}",
@@ -186,7 +187,16 @@ class TelegramNewsroomPublisher:
             response.raise_for_status()
             payload = response.json()
         except Exception as exc:
-            return {"ok": False, "error": f"telegram_request_failed:{type(exc).__name__}"}
+            detail = f"telegram_request_failed:{type(exc).__name__}"
+            if response is not None:
+                try:
+                    payload = response.json()
+                    description = str(payload.get("description") or "") if isinstance(payload, dict) else ""
+                except Exception:
+                    description = str(getattr(response, "text", "") or "")[:300]
+                if description:
+                    detail = f"{detail}:{description}"
+            return {"ok": False, "error": detail}
         result = payload.get("result") if isinstance(payload, dict) else None
         message_id = result.get("message_id") if isinstance(result, dict) else None
         if not isinstance(payload, dict) or payload.get("ok") is not True or not isinstance(message_id, int):
@@ -210,6 +220,20 @@ class TelegramNewsroomPublisher:
         print(f"TELEGRAM_PUBLISH_FAILED endpoint={endpoint} error={error!r}", flush=True)
         return result
 
+    def _text_post(self, message: str) -> dict:
+        return self._post(
+            "sendMessage",
+            data={"chat_id": self.chat_id, "text": message, "parse_mode": "HTML", "disable_web_page_preview": True},
+            timeout=25,
+        )
+
+    def _fallback_to_text(self, message: str, failed_endpoint: str, result: dict) -> dict:
+        print(
+            f"TELEGRAM_MEDIA_FALLBACK_TO_TEXT endpoint={failed_endpoint} error={str(result.get('error') or '')!r}",
+            flush=True,
+        )
+        return self._text_post(message)
+
     def __call__(self, item: NormalizedNewsItem) -> dict:
         if not self.bot_token or not self.chat_id:
             print("TELEGRAM_PUBLISH_FAILED endpoint=none error='missing_telegram_credentials'", flush=True)
@@ -222,11 +246,14 @@ class TelegramNewsroomPublisher:
         video = _first_video(item)
         photo = _first_image(item)
         if video:
-            return self._post(
+            result = self._post(
                 "sendVideo",
                 data={"chat_id": self.chat_id, "video": video, "caption": message[:1024], "parse_mode": "HTML", "supports_streaming": "true"},
                 timeout=40,
             )
+            if result.get("ok") is True:
+                return result
+            return self._fallback_to_text(message, "sendVideo", result)
 
         source_url = str(item.raw.source_url or "").strip()
         if self._telegram_post_has_video(source_url):
@@ -235,24 +262,26 @@ class TelegramNewsroomPublisher:
                 if path is not None:
                     try:
                         with path.open("rb") as handle:
-                            return self._post(
+                            result = self._post(
                                 "sendVideo",
                                 data={"chat_id": self.chat_id, "caption": message[:1024], "parse_mode": "HTML", "supports_streaming": "true"},
                                 files={"video": (path.name, handle, "video/mp4")},
                                 timeout=120,
                             )
+                        if result.get("ok") is True:
+                            return result
+                        return self._fallback_to_text(message, "sendVideo", result)
                     except OSError:
                         pass
 
         if photo:
-            return self._post(
+            result = self._post(
                 "sendPhoto",
                 data={"chat_id": self.chat_id, "photo": photo, "caption": message[:1024], "parse_mode": "HTML"},
                 timeout=30,
             )
+            if result.get("ok") is True:
+                return result
+            return self._fallback_to_text(message, "sendPhoto", result)
 
-        return self._post(
-            "sendMessage",
-            data={"chat_id": self.chat_id, "text": message, "parse_mode": "HTML", "disable_web_page_preview": True},
-            timeout=25,
-        )
+        return self._text_post(message)
