@@ -12,6 +12,7 @@
   <title>{% block title %}بی‌خبر{% endblock %}</title>
   <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='panel.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='settings.css') }}">
 </head>
 <body>
   <div class="ambient-grid" aria-hidden="true"></div>
@@ -49,6 +50,7 @@
     {% block content %}{% endblock %}
   </main>
 
+  <script src="{{ url_for('static', filename='settings.js') }}" defer></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('{{ url_for('static', filename='sw.js') }}').catch(() => {}));
