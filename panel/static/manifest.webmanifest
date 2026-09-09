@@ -1,0 +1,12 @@
+{
+  "name": "بی‌خبر — اتاق فرمان",
+  "short_name": "بی‌خبر",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b0d10",
+  "theme_color": "#0b0d10",
+  "description": "اتاق فرمان زنده بی‌خبر برای رصد و مدیریت خبرهای فوری ایران و منطقه"
+}
