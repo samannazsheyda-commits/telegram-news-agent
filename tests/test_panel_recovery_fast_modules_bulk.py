@@ -60,7 +60,7 @@ def test_live_feed_api_is_fast_json_and_never_calls_translator():
     assert payload["ok"] is True
     assert len(payload["items"]) <= 40
     assert calls == []
-    assert payload["items"][0]["title"].startswith("Title")
+    assert payload["items"][0]["title"] == "عنوان فارسی در حال آماده‌سازی"
 
 
 def test_live_refresh_uses_json_endpoint_not_full_dashboard_html():

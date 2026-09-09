@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -26,6 +27,34 @@ def _process_panel_commands() -> int:
     return processed
 
 
+def _record_runtime_heartbeat(result: dict, *, now: datetime | None = None, state_path: str | Path = "state.json") -> None:
+    path = Path(state_path)
+    try:
+        current = json.loads(path.read_text(encoding="utf-8"))
+        state = current if isinstance(current, dict) else {}
+    except (FileNotFoundError, OSError, json.JSONDecodeError):
+        state = {}
+    stamp = (now or datetime.now(timezone.utc)).astimezone(timezone.utc).isoformat()
+    state["last_cycle_at"] = stamp
+    state["last_cycle_rc"] = int(result.get("rc") or 0)
+    state["last_cycle_published"] = int(result.get("published") or 0)
+    state["last_cycle_telegram_writes"] = int(result.get("telegram_writes") or 0)
+    if state["last_cycle_published"] > 0 or state["last_cycle_telegram_writes"] > 0:
+        state["last_publication_at"] = stamp
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=str(path.parent))
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            json.dump(state, handle, ensure_ascii=False, indent=2)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_name, path)
+    finally:
+        if os.path.exists(tmp_name):
+            os.unlink(tmp_name)
+
+
 def run_ancillary_cycle(now: datetime) -> int:
     """Run legacy non-news features while preventing legacy news/Truth publication."""
     v13.install_production_policies()
@@ -47,13 +76,16 @@ def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
     commands_processed = 0 if shadow else _process_panel_commands()
     ancillary_rc = run_ancillary_cycle(resolved_now)
     if ancillary_rc != 0:
-        return {
+        result = {
             "rc": ancillary_rc,
             "mode": "shadow" if shadow else "production",
             "published": 0,
             "telegram_writes": 0,
             "panel_commands": commands_processed,
         }
+        if not shadow:
+            _record_runtime_heartbeat(result, now=resolved_now)
+        return result
     newsroom_settings = v13.load_newsroom_settings()
     result = run_v2_once(
         shadow=shadow,
@@ -61,7 +93,10 @@ def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
         data_dir=os.environ.get("DATA_DIR", "data"),
         settings=newsroom_settings,
     )
-    return {"rc": 0, "panel_commands": commands_processed, **result}
+    combined = {"rc": 0, "panel_commands": commands_processed, **result}
+    if not shadow:
+        _record_runtime_heartbeat(combined, now=resolved_now)
+    return combined
 
 
 def monitor(*, shadow: bool, poll_seconds: int, session_seconds: int) -> int:

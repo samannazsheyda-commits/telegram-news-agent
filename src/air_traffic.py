@@ -27,23 +27,11 @@ PROVIDERS = (
     "https://api.adsb.lol/v2/point/{lat}/{lon}/{radius}",
     "https://api.airplanes.live/v2/point/{lat}/{lon}/{radius}",
 )
-# Only a fallback when the single full-frame OpenSky request is unavailable.
 QUERY_CENTERS = (
-    (48.0, 38.0),   # Caucasus / south Russia
-    (43.0, 50.0),   # Caspian north
-    (38.0, 46.0),   # NW Iran / Azerbaijan
-    (36.0, 58.0),   # NE Iran / Turkmenistan
-    (33.3, 44.4),   # Iraq
-    (35.7, 51.4),   # Tehran
-    (32.0, 64.0),   # Afghanistan
-    (29.0, 48.0),   # Kuwait / SW Iran
-    (28.5, 56.0),   # south/east Iran
-    (26.0, 51.0),   # Bahrain / Qatar
-    (25.2, 55.3),   # UAE
-    (23.6, 58.4),   # Oman
-    (21.0, 45.0),   # Saudi Arabia
-    (15.4, 44.2),   # Yemen
-    (10.0, 51.0),   # Gulf of Aden / Somalia
+    (48.0, 38.0), (43.0, 50.0), (38.0, 46.0), (36.0, 58.0),
+    (33.3, 44.4), (35.7, 51.4), (32.0, 64.0), (29.0, 48.0),
+    (28.5, 56.0), (26.0, 51.0), (25.2, 55.3), (23.6, 58.4),
+    (21.0, 45.0), (15.4, 44.2), (10.0, 51.0),
 )
 USER_AGENT = "bikhabaar-air-traffic/1.3"
 
@@ -92,9 +80,7 @@ def viewport_bounds() -> dict[str, float]:
     return {"min_lat": min_lat, "max_lat": max_lat, "min_lon": min_lon, "max_lon": max_lon}
 
 
-def filter_middle_east_aircraft(
-    rows: Iterable[dict], *, max_seen_seconds: float = 120, bounds: dict[str, float] | None = None
-) -> list[dict]:
+def filter_middle_east_aircraft(rows: Iterable[dict], *, max_seen_seconds: float = 120, bounds: dict[str, float] | None = None) -> list[dict]:
     bounds = bounds or viewport_bounds()
     kept: list[dict] = []
     for row in rows:
@@ -117,14 +103,8 @@ def _fetch_opensky_bbox(*, session=requests) -> list[dict]:
     bounds = viewport_bounds()
     response = session.get(
         OPENSKY_URL,
-        params={
-            "lamin": round(bounds["min_lat"], 4),
-            "lomin": round(bounds["min_lon"], 4),
-            "lamax": round(bounds["max_lat"], 4),
-            "lomax": round(bounds["max_lon"], 4),
-        },
-        headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
-        timeout=30,
+        params={"lamin": round(bounds["min_lat"], 4), "lomin": round(bounds["min_lon"], 4), "lamax": round(bounds["max_lat"], 4), "lomax": round(bounds["max_lon"], 4)},
+        headers={"User-Agent": USER_AGENT, "Accept": "application/json"}, timeout=30,
     )
     response.raise_for_status()
     payload = response.json()
@@ -136,8 +116,7 @@ def _fetch_opensky_bbox(*, session=requests) -> list[dict]:
     for state in states:
         if not isinstance(state, list) or len(state) < 11:
             continue
-        lon = state[5]
-        lat = state[6]
+        lon, lat = state[5], state[6]
         if lat is None or lon is None:
             continue
         time_position = state[3] or state[4] or now_epoch
@@ -145,14 +124,7 @@ def _fetch_opensky_bbox(*, session=requests) -> list[dict]:
             seen_pos = max(0.0, now_epoch - float(time_position))
         except (TypeError, ValueError):
             seen_pos = 9999.0
-        rows.append({
-            "hex": str(state[0] or ""),
-            "flight": str(state[1] or "").strip(),
-            "lat": lat,
-            "lon": lon,
-            "seen_pos": seen_pos,
-            "track": state[10] or 0.0,
-        })
+        rows.append({"hex": str(state[0] or ""), "flight": str(state[1] or "").strip(), "lat": lat, "lon": lon, "seen_pos": seen_pos, "track": state[10] or 0.0})
     return filter_middle_east_aircraft(rows, max_seen_seconds=120, bounds=bounds)
 
 
@@ -161,11 +133,7 @@ def _fetch_center(lat: float, lon: float, *, session=requests) -> list[dict]:
     for template in PROVIDERS:
         url = template.format(lat=lat, lon=lon, radius=QUERY_RADIUS_NM)
         try:
-            response = session.get(
-                url,
-                headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
-                timeout=20,
-            )
+            response = session.get(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"}, timeout=20)
             response.raise_for_status()
             payload = response.json()
             rows = payload.get("ac") if isinstance(payload, dict) else None
@@ -217,31 +185,21 @@ def _screen_pixel(lon: float, lat: float) -> tuple[float, float]:
 
 
 def _plane_polygon(px: float, py: float, heading: float) -> list[tuple[float, float]]:
-    shape = [
-        (0, -10), (2.3, -4), (3.3, -1), (8.5, 1.8), (8.5, 3.8), (3.0, 3.2),
-        (1.7, 7.0), (4.2, 9.0), (4.2, 10.5), (0, 9.0), (-4.2, 10.5), (-4.2, 9.0),
-        (-1.7, 7.0), (-3.0, 3.2), (-8.5, 3.8), (-8.5, 1.8), (-3.3, -1), (-2.3, -4),
-    ]
+    shape = [(0, -10), (2.3, -4), (3.3, -1), (8.5, 1.8), (8.5, 3.8), (3.0, 3.2), (1.7, 7.0), (4.2, 9.0), (4.2, 10.5), (0, 9.0), (-4.2, 10.5), (-4.2, 9.0), (-1.7, 7.0), (-3.0, 3.2), (-8.5, 3.8), (-8.5, 1.8), (-3.3, -1), (-2.3, -4)]
     angle = math.radians(heading % 360.0)
     cos_a, sin_a = math.cos(angle), math.sin(angle)
     return [(px + x * cos_a - y * sin_a, py + x * sin_a + y * cos_a) for x, y in shape]
 
 
 def render_air_traffic_map(aircraft: Iterable[dict], output_path: str | Path) -> Path:
-    canvas = StaticMap(
-        MAP_WIDTH,
-        MAP_HEIGHT,
-        url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    )
+    canvas = StaticMap(MAP_WIDTH, MAP_HEIGHT, url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png")
     rows = filter_middle_east_aircraft(aircraft, max_seen_seconds=120)
     if not rows:
         raise ValueError("no aircraft positions to render")
-
     image = canvas.render(zoom=MAP_ZOOM, center=(CENTER_LON, CENTER_LAT)).convert("RGB")
     draw = ImageDraw.Draw(image)
     for row in rows:
-        lat = float(row["lat"])
-        lon = float(row["lon"])
+        lat, lon = float(row["lat"]), float(row["lon"])
         px, py = _screen_pixel(lon, lat)
         if not (-20 <= px <= MAP_WIDTH + 20 and -20 <= py <= MAP_HEIGHT + 20):
             continue
@@ -250,50 +208,41 @@ def render_air_traffic_map(aircraft: Iterable[dict], output_path: str | Path) ->
         except (TypeError, ValueError):
             heading = 0.0
         draw.polygon(_plane_polygon(px, py, heading), fill="#ffc400", outline="#6f5800")
-
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
     image.save(path, "PNG")
     return path
 
 
-def send_telegram_photo(
-    image_path: str | Path,
-    caption: str,
-    bot_token: str,
-    chat_id: str,
-    *,
-    session=requests,
-) -> None:
+def send_telegram_photo(image_path: str | Path, caption: str, bot_token: str, chat_id: str, *, session=requests) -> None:
     if not bot_token or not chat_id:
         raise RuntimeError("Telegram credentials are required")
     url = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
     with Path(image_path).open("rb") as image_file:
-        response = session.post(
-            url,
-            data={"chat_id": chat_id, "caption": caption},
-            files={"photo": ("middle-east-air-traffic.png", image_file, "image/png")},
-            timeout=45,
-        )
+        response = session.post(url, data={"chat_id": chat_id, "caption": caption}, files={"photo": ("middle-east-air-traffic.png", image_file, "image/png")}, timeout=45)
     response.raise_for_status()
     payload = response.json()
     if not isinstance(payload, dict) or not payload.get("ok"):
         raise RuntimeError(f"Telegram rejected air traffic post: {payload}")
 
 
-def publish_air_traffic_snapshot(
-    *,
-    now: datetime | None = None,
-    output_path: str | Path = "/tmp/middle-east-air-traffic.png",
-) -> Path:
+def build_air_traffic_preview(*, now: datetime | None = None, output_path: str | Path = "data/air_traffic_preview.png") -> dict:
+    """Build the real air-traffic snapshot for panel preview without publishing to Telegram."""
     aircraft = fetch_live_aircraft()
     path = render_air_traffic_map(aircraft, output_path)
-    send_telegram_photo(
-        path,
-        build_caption(now),
-        os.environ.get("TELEGRAM_BOT_TOKEN", ""),
-        os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"),
-    )
+    return {
+        "message": build_caption(now),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "aircraft_count": len(aircraft),
+        "image_path": str(path),
+        "source": "OpenSky / ADS-B",
+    }
+
+
+def publish_air_traffic_snapshot(*, now: datetime | None = None, output_path: str | Path = "/tmp/middle-east-air-traffic.png") -> Path:
+    aircraft = fetch_live_aircraft()
+    path = render_air_traffic_map(aircraft, output_path)
+    send_telegram_photo(path, build_caption(now), os.environ.get("TELEGRAM_BOT_TOKEN", ""), os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"))
     return path
 
 

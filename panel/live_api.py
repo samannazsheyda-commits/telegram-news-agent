@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from flask import Blueprint, current_app, jsonify, session
 
+from src.formatters import _source_label, format_news
+from src.sources import NewsItem
+
 from .app import PANEL_STATUS_FA, REASON_FA
 
 
@@ -10,6 +13,30 @@ bp = Blueprint("live_api", __name__)
 
 def _row_id(row: dict) -> str:
     return str(row.get("item_id") or row.get("id") or row.get("news_key") or "").strip()
+
+
+def _has_persian(value: str) -> bool:
+    return any("\u0600" <= ch <= "\u06ff" for ch in str(value or ""))
+
+
+def _final_message(row: dict, title_fa: str, body_fa: str) -> str:
+    persisted = str(row.get("final_message") or row.get("telegram_message") or "").strip()
+    if persisted:
+        return persisted
+    if not title_fa or not _has_persian(title_fa):
+        return ""
+    item = NewsItem(
+        key=str(row.get("news_key") or row.get("item_id") or row.get("id") or ""),
+        source=str(row.get("source") or ""),
+        title=str(row.get("original_title") or row.get("title") or ""),
+        summary=str(row.get("original_summary") or row.get("summary") or ""),
+        link=str(row.get("source_url") or row.get("link") or ""),
+        published=str(row.get("published_at_source") or row.get("published") or ""),
+    )
+    try:
+        return format_news(item, title_fa, body_fa, marker_override=None)
+    except Exception:
+        return ""
 
 
 def _fast_rows(limit: int = 40) -> list[dict]:
@@ -21,16 +48,32 @@ def _fast_rows(limit: int = 40) -> list[dict]:
         key=lambda row: str(row.get("updated_at") or row.get("discovered_at") or ""),
         reverse=True,
     )[: max(1, min(100, int(limit)))]
+    queue, _ = data.read_json("data/editorial_queue.json", [])
+    queued_ids = {
+        str(r.get("id") or r.get("item_id") or "")
+        for r in (queue if isinstance(queue, list) else [])
+        if isinstance(r, dict)
+    }
     result: list[dict] = []
     for row in rows:
-        title = str(row.get("persian_title") or row.get("display_title") or row.get("title") or "بدون عنوان").strip()
+        row_id = _row_id(row)
+        raw_title = str(row.get("original_title") or row.get("title") or "").strip()
+        raw_body = str(row.get("original_summary") or row.get("summary") or row.get("body") or "").strip()
+        title_fa = str(row.get("final_persian_title") or row.get("persian_title") or row.get("display_title") or "").strip()
+        if not _has_persian(title_fa):
+            title_fa = "عنوان فارسی در حال آماده‌سازی"
+        body_fa = str(row.get("final_persian_body") or row.get("persian_body") or "").strip()
         status = str(row.get("panel_status") or "new")
         reason = str(row.get("decision_reason") or "")
         result.append({
-            "id": _row_id(row),
-            "item_id": _row_id(row),
-            "title": title or "بدون عنوان",
-            "source": str(row.get("source") or ""),
+            "id": row_id,
+            "item_id": row_id,
+            "title": title_fa,
+            "body": body_fa,
+            "original_title": raw_title,
+            "original_body": raw_body,
+            "source": _source_label(str(row.get("source") or "")),
+            "source_raw": str(row.get("source") or ""),
             "source_url": str(row.get("source_url") or ""),
             "panel_status": status,
             "panel_status_fa": PANEL_STATUS_FA.get(status, "در حال پردازش"),
@@ -38,6 +81,10 @@ def _fast_rows(limit: int = 40) -> list[dict]:
             "decision_reason_fa": REASON_FA.get(reason, ""),
             "published_at_source": str(row.get("published_at_source") or ""),
             "updated_at": str(row.get("updated_at") or row.get("discovered_at") or ""),
+            "media_type": str(row.get("media_type") or ""),
+            "media_url": str(row.get("video_url") or row.get("media_url") or ""),
+            "review_url": f"/review/{row_id}" if row_id in queued_ids else "",
+            "final_message": _final_message(row, title_fa, body_fa),
         })
     return result
 

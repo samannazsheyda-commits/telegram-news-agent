@@ -16,6 +16,12 @@ MODULES = {
     "tanker": {"available": True, "action": "tanker_now", "label": "نفتکش‌ها و هرمز"},
     "market": {"available": True, "action": "market_now", "label": "بازار و دلار"},
 }
+PREVIEW_PATHS = {
+    "weather": "data/weather_preview.json",
+    "air-traffic": "data/air_traffic_preview.json",
+    "tanker": "data/tanker_preview.json",
+    "market": "data/market_preview.json",
+}
 _TIME_RE = re.compile(r"^(?:[01]\d|2[0-3]):[0-5]\d$")
 _CLEAR_SCOPES = {"live", "pending", "published", "rejected"}
 
@@ -63,10 +69,7 @@ def _enqueue(action: str, **extra) -> str:
 
 
 def _module_public_state() -> dict:
-    return {
-        name: {"available": bool(meta["available"]), "label": str(meta["label"])}
-        for name, meta in MODULES.items()
-    }
+    return {name: {"available": bool(meta["available"]), "label": str(meta["label"])} for name, meta in MODULES.items()}
 
 
 def _public_settings(settings: dict) -> dict:
@@ -82,6 +85,19 @@ def _public_settings(settings: dict) -> dict:
     }
 
 
+def _age_state(value: str, active_seconds: int = 45) -> str:
+    if not value:
+        return "unknown"
+    try:
+        dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        age = (datetime.now(timezone.utc) - dt.astimezone(timezone.utc)).total_seconds()
+        return "active" if age <= active_seconds else "stale"
+    except Exception:
+        return "unknown"
+
+
 @bp.before_request
 def require_admin():
     if not session.get("admin"):
@@ -94,31 +110,70 @@ def status():
     settings, _ = _settings()
     live, _ = _data().read_json("data/panel_live_feed.json", [])
     queue, _ = _data().read_json("data/editorial_queue.json", [])
-    return jsonify(
-        {
-            "ok": True,
-            "publishing": bool(settings.get("auto_publish", True)) and not bool(settings.get("emergency_lock", False)),
-            "emergency_lock": bool(settings.get("emergency_lock", False)),
-            "live_count": len(live) if isinstance(live, list) else 0,
-            "queue_count": len(queue) if isinstance(queue, list) else 0,
-            "poll_seconds": 5,
-            "updated_at": settings.get("updated_at", ""),
-            "modules": _module_public_state(),
-            "settings": _public_settings(settings),
-        }
-    )
+    return jsonify({
+        "ok": True,
+        "publishing": bool(settings.get("auto_publish", True)) and not bool(settings.get("emergency_lock", False)),
+        "emergency_lock": bool(settings.get("emergency_lock", False)),
+        "live_count": len(live) if isinstance(live, list) else 0,
+        "queue_count": len(queue) if isinstance(queue, list) else 0,
+        "poll_seconds": 5,
+        "updated_at": settings.get("updated_at", ""),
+        "modules": _module_public_state(),
+        "settings": _public_settings(settings),
+    })
+
+
+@bp.get("/api/command-center/command/<command_id>")
+def command_result(command_id: str):
+    safe_id = re.sub(r"[^a-zA-Z0-9_-]", "", command_id)[:96]
+    if not safe_id:
+        return jsonify({"ok": False, "error": "invalid_command_id"}), 400
+    result, _ = _data().read_json(f"panel_results/{safe_id}.json", {})
+    if isinstance(result, dict) and result:
+        return jsonify({"ok": True, **result})
+    return jsonify({"ok": True, "command_id": safe_id, "status": "queued", "message": "در صف اجرا"})
+
+
+@bp.get("/api/command-center/health")
+def health():
+    state, _ = _data().read_json("state.json", {})
+    state = state if isinstance(state, dict) else {}
+    last_cycle = str(state.get("last_cycle_at") or state.get("last_scan_at") or state.get("updated_at") or "")
+    last_publication = str(state.get("last_publication_at") or state.get("last_publish_at") or "")
+    last_error = str(state.get("last_error") or "")
+    telegram_state = str(state.get("telegram_state") or "unknown")
+    if telegram_state not in {"ok", "error", "unknown"}:
+        telegram_state = "unknown"
+    return jsonify({
+        "ok": True,
+        "agent_state": _age_state(last_cycle),
+        "last_cycle_at": last_cycle,
+        "last_publication_at": last_publication,
+        "last_error": last_error,
+        "telegram_state": telegram_state,
+    })
+
+
+@bp.get("/api/command-center/module/<module_name>/preview")
+def module_preview(module_name: str):
+    path = PREVIEW_PATHS.get(module_name)
+    if not path:
+        return jsonify({"ok": False, "error": "unknown_module"}), 404
+    preview, _ = _data().read_json(path, {})
+    if not isinstance(preview, dict) or not preview:
+        return jsonify({"ok": True, "available": False, "message": "", "generated_at": ""})
+    message = str(preview.get("message") or preview.get("text") or preview.get("caption") or "")
+    return jsonify({"ok": True, "available": bool(message or preview), "message": message, **preview})
 
 
 @bp.post("/api/command-center/publishing")
 def publishing():
     payload = request.get_json(silent=True) or {}
     enabled = bool(payload.get("enabled"))
-
     def transform(settings: dict) -> dict:
         settings["auto_publish"] = enabled
         settings["emergency_lock"] = not enabled
         return settings
-
     settings = _write_settings(transform)
     return jsonify({"ok": True, "publishing": bool(settings.get("auto_publish")) and not bool(settings.get("emergency_lock"))})
 
@@ -135,14 +190,12 @@ def update_settings():
     if not 1 <= freshness <= 48 or not _TIME_RE.fullmatch(quiet_start) or not _TIME_RE.fullmatch(quiet_end):
         return jsonify({"ok": False, "error": "invalid_settings"}), 400
     quiet_mode = bool(payload.get("quiet_mode"))
-
     def transform(settings: dict) -> dict:
         settings["freshness_hours"] = freshness
         settings["quiet_mode"] = quiet_mode
         settings["quiet_start"] = quiet_start
         settings["quiet_end"] = quiet_end
         return settings
-
     settings = _write_settings(transform)
     return jsonify({"ok": True, "settings": _public_settings(settings)})
 
@@ -154,13 +207,11 @@ def clear_items():
     ids_value = payload.get("ids")
     if scope not in _CLEAR_SCOPES or not isinstance(ids_value, list):
         return jsonify({"ok": False, "error": "invalid_clear_request"}), 400
-    ids: list[str] = []
-    seen: set[str] = set()
+    ids, seen = [], set()
     for value in ids_value:
         item_id = str(value or "").strip()
         if item_id and item_id not in seen:
-            seen.add(item_id)
-            ids.append(item_id)
+            seen.add(item_id); ids.append(item_id)
     if not ids or len(ids) > 5000:
         return jsonify({"ok": False, "error": "invalid_clear_request"}), 400
     command_id = _enqueue("clear", scope=scope, ids=ids)

@@ -18,22 +18,28 @@ def _credentials() -> tuple[str, str]:
     return token, chat_id
 
 
-def publish_hormuz_now() -> bool:
+def build_hormuz_preview() -> dict:
+    """Build the real Hormuz/tanker report for panel preview without publishing."""
     report_date = datetime.now(timezone.utc).astimezone(TEHRAN).date()
     report = fetch_hormuz_traffic_report(report_date)
-    # Never manufacture tanker counts. If no measurable count exists, fail the
-    # manual command instead of sending a misleading empty statistics post.
     if report.observed_count is None:
         raise RuntimeError("hormuz_measurable_count_unavailable")
-    message = format_hormuz_report(report)
+    return {
+        "message": format_hormuz_report(report),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "observed_count": report.observed_count,
+        "source": "Hormuz live traffic data",
+    }
+
+
+def publish_hormuz_now() -> bool:
+    preview = build_hormuz_preview()
     token, chat_id = _credentials()
-    send_telegram(message, token, chat_id)
+    send_telegram(preview["message"], token, chat_id)
     return True
 
 
-def publish_market_now() -> bool:
-    # Reuse the live market fetch/format stack rather than the historical
-    # one-off hard-coded market post.
+def _market_message() -> str:
     from . import runtime_v9 as v9
 
     v9.install_persian_only_output()
@@ -42,6 +48,20 @@ def publish_market_now() -> bool:
     message = v9.v7.v2.base.agent.format_market(snapshot, now)
     if not str(message or "").strip():
         raise RuntimeError("market_message_empty")
+    return str(message)
+
+
+def build_market_preview() -> dict:
+    """Build the live market message for panel preview without publishing."""
+    return {
+        "message": _market_message(),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "source": "live market feed",
+    }
+
+
+def publish_market_now() -> bool:
+    message = _market_message()
     token, chat_id = _credentials()
     send_telegram(message, token, chat_id)
     return True

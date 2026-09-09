@@ -45,7 +45,8 @@ def test_dashboard_has_realtime_feed_and_sound_toggle(tmp_path):
 def test_live_js_updates_feed_without_page_reload_and_keeps_sound_preference(tmp_path):
     client = _client(tmp_path)
     js = client.get("/static/live.js").get_data(as_text=True)
-    assert "setInterval(refreshLiveFeed, 3000)" in js
+    assert "setInterval(refreshLiveFeed, 1000)" in js
+    assert "refreshStatus(); refreshHealth(); }, 2000" in js
     assert "AudioContext" in js
     assert "localStorage" in js
     assert "/api/live-feed" in js

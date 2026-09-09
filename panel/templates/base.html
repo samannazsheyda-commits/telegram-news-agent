@@ -15,17 +15,17 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='settings.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='source_manager.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='light-newsroom.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom.css') }}">
 </head>
 <body>
-  <div class="ambient-grid" aria-hidden="true"></div>
-  <header class="topbar">
+  <header class="topbar newsroom-topbar">
     <a href="{{ url_for('dashboard') if session.get('admin') else url_for('login') }}" class="brand-lockup">
       <span class="brand-mark">ب</span>
-      <span class="brand-copy"><strong>بی‌خبر</strong><small>COMMAND CENTER</small></span>
+      <span class="brand-copy"><strong>بی‌خبر</strong><small>اتاق خبر زنده</small></span>
     </a>
     {% if session.get('admin') %}
     <div class="topbar-actions">
-      <span class="secure-pill"><i></i> اتصال امن پنل</span>
+      <span class="secure-pill"><i></i> پنل خصوصی</span>
       <form method="post" action="{{ url_for('logout') }}" class="inline-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button class="link-button" type="submit">خروج</button>
@@ -35,11 +35,11 @@
   </header>
 
   {% if session.get('admin') %}
-  <nav class="nav">
-    <a href="{{ url_for('dashboard') }}">داشبورد / اتاق فرمان جنگ</a>
-    <a href="{{ url_for('review_queue') }}">نیاز به بررسی</a>
-    <a href="{{ url_for('history') }}">تاریخچه</a>
-    <a href="/source-manager">مدیریت منابع</a>
+  <nav class="nav newsroom-nav">
+    <a href="{{ url_for('dashboard') }}">اتاق خبر</a>
+    <a href="{{ url_for('review_queue') }}">بررسی خبرها</a>
+    <a href="{{ url_for('history') }}">منتشرشده‌ها</a>
+    <a href="/source-manager">منابع</a>
   </nav>
   {% endif %}
 

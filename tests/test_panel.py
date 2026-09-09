@@ -81,32 +81,47 @@ def test_invalid_password_is_rejected():
     assert "رمز ورود درست نیست" in response.get_data(as_text=True)
 
 
-def test_authenticated_dashboard_loads():
+def test_authenticated_dashboard_is_a_real_persian_newsroom():
     app = _app()
     client = app.test_client()
     response = _login(client)
     text = response.get_data(as_text=True)
     assert response.status_code == 200
-    assert "داشبورد" in text
-    assert "اتاق فرمان جنگ" in text
+    assert "اتاق خبر بی‌خبر" in text
+    assert "اتاق فرمان" not in text
     assert "توقف کامل انتشار" in text
     assert "اسکن فوری" in text
+    assert "اولویت قرمز ۲۴/۷" in text
     assert "هواشناسی فردا" in text
     assert "ترافیک هوایی ایران و منطقه" in text
     assert "نفتکش‌ها و تنگه هرمز" in text
     assert "بازار و دلار" in text
     assert "سلامت سیستم" in text
-    assert "نیازمند بررسی" in text
     assert "ورودی زنده" in text
-    assert "منتشرشده" in text
     assert 'id="liveFeed"' in text
     assert 'id="soundToggle"' in text
-    assert 'id="panicToggle"' in text
-    assert 'id="liveConnection"' in text
+    assert 'data-preview-toggle="weather"' in text
+    assert 'data-preview-toggle="air-traffic"' in text
+    assert 'data-preview-toggle="tanker"' in text
+    assert 'data-preview-toggle="market"' in text
+    assert 'id="weatherPreview"' in text
+    assert 'hidden' in text
+    assert "پیش‌نمایش دقیق هواشناسی" not in text
     assert 'rel="manifest"' in text
     assert "settings.css" in text
     assert "settings.js" in text
     assert "serviceWorker" in text
+
+
+def test_live_js_is_fast_and_supports_ding_final_output_and_collapsible_previews():
+    script = Path("panel/static/live.js").read_text(encoding="utf-8")
+    assert "1000" in script
+    assert "2000" in script
+    assert "beep" in script
+    assert "final_message" in script
+    assert "data-preview-toggle" in script
+    assert "/api/command-center/command/" in script
+    assert "/api/command-center/health" in script
 
 
 def test_panel_css_uses_doran_first_without_external_font_dependency():
