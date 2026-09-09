@@ -96,8 +96,8 @@ def test_promote_live_to_review_keeps_the_visible_persian_edit_text():
 
 def test_live_edit_button_sends_visible_persian_text_to_review_api():
     script = Path("panel/static/live.js").read_text(encoding="utf-8")
-    assert "title_fa: item.title" in script
-    assert "body_fa: item.body" in script
+    assert "title_fa: visible.title" in script
+    assert "body_fa: visible.body" in script
 
 
 def test_emergency_lock_blocks_real_module_publication_but_not_preview(tmp_path, monkeypatch):
