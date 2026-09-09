@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime, timezone
 
 from werkzeug.security import generate_password_hash
 
@@ -11,6 +12,7 @@ from panel.live_api import bp as live_api_bp
 
 class FakeData:
     def __init__(self):
+        now = datetime.now(timezone.utc).isoformat()
         self.files = {
             "data/newsroom_settings.json": {"auto_publish": True, "emergency_lock": False, "freshness_hours": 3},
             "data/panel_live_feed.json": [
@@ -20,8 +22,8 @@ class FakeData:
                     "source_url": "https://example.com/n1",
                     "title": "Iran launches a missile",
                     "summary": "The missile was launched toward a military target.",
-                    "published_at_source": "2026-09-09T21:00:00+00:00",
-                    "updated_at": "2026-09-09T21:00:01+00:00",
+                    "published_at_source": now,
+                    "updated_at": now,
                     "panel_status": "new",
                 }
             ],
