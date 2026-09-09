@@ -85,6 +85,7 @@ def _clean_persian_output_text(value: str) -> str:
     text = re.sub(r"(?i)\bURGENT\b", "فوری", text)
     text = re.sub(r"(?i)\bALERT\b", "هشدار", text)
     text = re.sub(r"(?i)\bTelegram\b", "تلگرام", text)
+    text = re.sub(r"\bخب\b", "خوب", text)
     text = re.sub(r"(?<![\w@])@[A-Za-z0-9_]{2,64}\b", "", text)
     text = re.sub(r"[\U0001F1E6-\U0001F1FF]{2}", "", text)
     text = re.sub(r"\s+", " ", text)
