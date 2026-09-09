@@ -23,8 +23,8 @@ SOURCE_FA = {
     "Financial Times": "فایننشال تایمز", "The New York Times": "نیویورک تایمز",
     "France 24": "فرانس ۲۴", "DW": "دویچه‌وله", "Times of Israel": "تایمز اسرائیل",
     "Haaretz": "هاآرتص", "Donald Trump / Truth Social": "ترامپ / تروث سوشال",
-    "Barak Ravid / X": "باراک راوید / ایکس", "Abbas Araghchi / X": "عباس عراقچی / ایکس",
-    "Mohsen Rezaei / X": "محسن رضایی / ایکس", "Sepah News / X": "سپاه نیوز / ایکس",
+    "Barak Ravid / X": "باراک راوید", "Abbas Araghchi / X": "عباس عراقچی",
+    "Mohsen Rezaei / X": "محسن رضایی", "Sepah News / X": "سپاه نیوز",
     "RN Intel / Telegram": "آر‌اِن اینتل / تلگرام",
     "Jerusalem Post / X": "جروزالم پست / ایکس",
     "Middle East Spectator / Telegram": "میدل ایست اسپکتیتور / تلگرام",
@@ -53,15 +53,6 @@ GOOGLE_NEWS_BOILERPLATE = (
     "aggregated from sources all over the world by google news",
 )
 FLAG_RE = re.compile(r"[\U0001F1E6-\U0001F1FF]{2}")
-COUNTRY_FLAGS = (
-    (("iran", "ایران"), "🇮🇷"), (("israel", "اسرائیل"), "🇮🇱"),
-    (("saudi arabia", "saudi", "عربستان", "سعودی"), "🇸🇦"), (("yemen", "یمن"), "🇾🇪"),
-    (("uae", "united arab emirates", "امارات"), "🇦🇪"), (("qatar", "قطر"), "🇶🇦"),
-    (("bahrain", "بحرین"), "🇧🇭"), (("oman", "عمان"), "🇴🇲"), (("jordan", "اردن"), "🇯🇴"),
-    (("iraq", "عراق"), "🇮🇶"), (("lebanon", "لبنان"), "🇱🇧"), (("syria", "سوریه"), "🇸🇾"),
-    (("united states", "u.s.", "usa", "آمریکا", "ایالات متحده"), "🇺🇸"),
-    (("uk", "britain", "united kingdom", "بریتانیا", "انگلیس"), "🇬🇧"),
-)
 
 
 def _safe(value: str) -> str:
@@ -99,7 +90,7 @@ def _clean_persian_output_text(value: str) -> str:
     text = re.sub(r"(?i)\bTelegram\b", "تلگرام", text)
     text = re.sub(r"(?i)\bTruth\s+Social\b", "تروث سوشال", text)
     text = re.sub(r"(?<![\w@])@[A-Za-z0-9_]{2,64}\b", "", text)
-    text = re.sub(r"(?<!\S)خب\s+خب(?!\S)", "خوب خوب", text)
+    text = re.sub(r"خب\s+خب", "خوب خوب", text)
     text = text.replace("ي", "ی").replace("ك", "ک")
     text = re.sub(r"\s+", " ", text)
     text = re.sub(r"\s+([،,:؛.!؟])", r"\1", text)
@@ -224,48 +215,31 @@ def _source_label(source: str) -> str:
     return raw + platform
 
 
-def _country_flags(*values: str) -> list[str]:
-    raw = " ".join(str(v or "") for v in values)
-    low = raw.lower()
-    flags: list[str] = []
-    for flag in FLAG_RE.findall(raw):
-        if flag not in flags:
-            flags.append(flag)
-    for aliases, flag in COUNTRY_FLAGS:
-        if any(alias.lower() in low for alias in aliases) and flag not in flags:
-            flags.append(flag)
-    return flags[:4]
-
-
 def format_truth(post: TruthPost, persian_text: str) -> str:
-    label = "▫️ بازنشر ترامپ در تروث سوشال | ایران" if post.is_retruth else "⚪️ ترامپ در تروث سوشال | ایران"
+    label = "▫️ بازنشر ترامپ در Truth Social | ایران" if post.is_retruth else "⚪️ ترامپ در Truth Social | ایران"
     parts = [
-        _safe(label), "", f"<b>{_safe(_ensure_period(_clean_persian_output_text(persian_text)))}</b>", "",
-        f'📌 <a href="{_safe(post.url)}">منبع: تروث سوشال</a>',
+        _safe(label), "", f"<b>{_safe(_ensure_period(persian_text))}</b>", "",
+        f'📌 <a href="{_safe(post.url)}">منبع: Truth Social</a>',
     ]
     parts += _brand_footer()
     return "\n".join(parts).strip()
 
 
 def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override: str | None = None) -> str:
-    flags = _country_flags(item.title, item.summary, title_fa, summary_fa)
     title_fa = _ensure_period(_clean_persian_output_text(_strip_source_suffix(title_fa)))
     summary_fa = _ensure_period(_up_to_two_sentences(_clean_persian_output_text(_strip_source_suffix(summary_fa))))
     if _unnamed_activist_headline(title_fa) and not _detail_names_activist(summary_fa):
         return ""
     marker = marker_override or _story_marker(item)
-    parts = [f"{marker} <b>{_safe(title_fa)}</b>"]
+    parts = [f"{marker} <b>{_safe(_source_label(item.source))}: {_safe(title_fa)}</b>"]
     if summary_fa and not _is_redundant_summary(title_fa, summary_fa):
         parts += ["", f"{_detail_marker(marker)} <b>{_safe(summary_fa)}</b>"]
-    parts += ["", f"📰 منبع: <b>{_safe(_source_label(item.source))}</b>"]
     published = _published_fa(item.published)
     if published:
-        parts += [f"⏰ {_safe(published)}"]
+        parts += ["", f"⏰ {_safe(published)}"]
     if item.link:
         parts += [f'📌 <a href="{_safe(item.link)}">لینک منبع خبر</a>']
     parts += _brand_footer()
-    if flags:
-        parts += ["", " ".join(flags)]
     return "\n".join(parts).strip()
 
 
@@ -285,7 +259,7 @@ def format_market(snapshot: MarketSnapshot, now: datetime | None = None) -> str:
         None if snapshot.bitcoin_usd is None else f"₿ بیت‌کوین: ${snapshot.bitcoin_usd:,.2f}", _money_line("💵", "تتر", snapshot.tether_toman),
     )
     lines.extend(x for x in values if x)
-    lines += ["", f"⏰ {_datetime_fa(now)}", f'📌 <a href="{TGJU_URL}">منبع: تی‌جی‌جی‌یو</a>']
+    lines += ["", f"⏰ {_datetime_fa(now)}", f'📌 <a href="{TGJU_URL}">منبع: TGJU</a>']
     lines += _brand_footer()
     return "\n".join(lines).strip()
 
@@ -310,6 +284,6 @@ def format_market_daily_summary(first_usd: int, last_usd: int, first_gold: int, 
     lines += _daily_change("دلار آزاد", "🇺🇸", first_usd, last_usd)
     lines += [""]
     lines += _daily_change("طلای ۱۸ عیار", "🟡", first_gold, last_gold, "تومان / گرم")
-    lines += ["", f"⏰ {_datetime_fa(now)}", f'📌 <a href="{TGJU_URL}">منبع: تی‌جی‌جی‌یو</a>']
+    lines += ["", f"⏰ {_datetime_fa(now)}", f'📌 <a href="{TGJU_URL}">منبع: TGJU</a>']
     lines += _brand_footer()
     return "\n".join(lines).strip()
