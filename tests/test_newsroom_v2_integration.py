@@ -39,7 +39,6 @@ def test_cycle_keeps_independent_hormuz_events_and_dedupes_true_duplicate(tmp_pa
         raw("Reuters", "tank-r", "U.S. military struck three Iranian oil tankers after attacks on Navy warships"),
         raw("AP", "tank-ap", "US forces strike 3 Iranian crude oil tankers after Iran targets Navy ships"),
     ]
-
     sent = []
     summary = run_cycle(
         fetcher=lambda: items,
@@ -50,7 +49,6 @@ def test_cycle_keeps_independent_hormuz_events_and_dedupes_true_duplicate(tmp_pa
         settings={"auto_publish": True, "freshness_hours": 3},
         now=NOW,
     )
-
     assert summary.items_fetched == 5
     assert summary.new_events == 4
     assert summary.exact_duplicates + summary.same_claim_duplicates == 1
@@ -61,7 +59,7 @@ def test_cycle_keeps_independent_hormuz_events_and_dedupes_true_duplicate(tmp_pa
 def test_auto_publish_true_still_populates_live_feed(tmp_path):
     ledger, live, editorial = stores(tmp_path)
     summary = run_cycle(
-        fetcher=lambda: [raw("Reuters", "one", "Iran partially reopens airspace to international flights")],
+        fetcher=lambda: [raw("Reuters", "one", "Iran launches ballistic missiles toward Israel")],
         ledger=ledger,
         live_feed=live,
         editorial_store=editorial,
@@ -93,13 +91,10 @@ def test_auto_publish_off_queues_item_and_live_feed_remains_visible(tmp_path):
 
 def test_one_source_failure_does_not_abort_other_sources(tmp_path):
     ledger, live, editorial = stores(tmp_path)
-
     def broken():
         raise RuntimeError("source down")
-
     def healthy():
-        return [raw("Reuters", "healthy", "Iran announces new restricted zone in Gulf")]
-
+        return [raw("Reuters", "healthy", "Iran launches a missile toward Israel")]
     summary = run_cycle(
         fetcher=[broken, healthy],
         ledger=ledger,
@@ -134,7 +129,7 @@ def test_shadow_mode_never_publishes_but_records_decisions(tmp_path):
 
 def test_http_success_with_telegram_ok_false_stays_retryable(tmp_path):
     ledger, live, editorial = stores(tmp_path)
-    item = raw("Reuters", "tg-fail", "Iran partially reopens airspace to international flights")
+    item = raw("Reuters", "tg-fail", "Iran launches ballistic missiles toward Israel")
     summary = run_cycle(
         fetcher=lambda: [item],
         ledger=ledger,
@@ -157,13 +152,8 @@ def test_verified_telegram_message_id_is_persisted(tmp_path):
     ledger, live, editorial = stores(tmp_path)
     item = raw("Reuters", "tg-ok", "Jordan intercepts Iranian missiles over its airspace")
     summary = run_cycle(
-        fetcher=lambda: [item],
-        ledger=ledger,
-        live_feed=live,
-        editorial_store=editorial,
-        publisher=lambda item: {"ok": True, "result": {"message_id": 777}},
-        settings={"auto_publish": True},
-        now=NOW,
+        fetcher=lambda: [item], ledger=ledger, live_feed=live, editorial_store=editorial,
+        publisher=lambda item: {"ok": True, "result": {"message_id": 777}}, settings={"auto_publish": True}, now=NOW,
     )
     assert summary.published == 1
     assert ledger.records()[0].published_message_ids == [777]
@@ -174,26 +164,15 @@ def test_restart_does_not_republish_same_source_event(tmp_path):
     ledger, live, editorial = stores(tmp_path)
     item = raw("Reuters", "restart", "Iran announces new restricted zone outside Strait of Hormuz")
     sent = []
-
     first = run_cycle(
-        fetcher=lambda: [item],
-        ledger=ledger,
-        live_feed=live,
-        editorial_store=editorial,
-        publisher=lambda item: sent.append(item.raw.source_item_id) or {"ok": True, "message_id": 501},
-        settings={"auto_publish": True},
-        now=NOW,
+        fetcher=lambda: [item], ledger=ledger, live_feed=live, editorial_store=editorial,
+        publisher=lambda item: sent.append(item.raw.source_item_id) or {"ok": True, "message_id": 501}, settings={"auto_publish": True}, now=NOW,
     )
     second = run_cycle(
-        fetcher=lambda: [item],
-        ledger=EventLedger(tmp_path / "ledger.json"),
-        live_feed=LiveFeedStore(tmp_path / "live.json"),
+        fetcher=lambda: [item], ledger=EventLedger(tmp_path / "ledger.json"), live_feed=LiveFeedStore(tmp_path / "live.json"),
         editorial_store=LocalEditorialStore(tmp_path / "queue.json", tmp_path / "history.json"),
-        publisher=lambda item: sent.append("DUPLICATE") or {"ok": True, "message_id": 502},
-        settings={"auto_publish": True},
-        now=NOW,
+        publisher=lambda item: sent.append("DUPLICATE") or {"ok": True, "message_id": 502}, settings={"auto_publish": True}, now=NOW,
     )
-
     assert first.published == 1
     assert second.exact_duplicates == 1
     assert sent == ["restart"]
@@ -203,26 +182,15 @@ def test_unpublished_exact_duplicate_is_retried_instead_of_suppressed(tmp_path):
     ledger, live, editorial = stores(tmp_path)
     item = raw("Reuters", "retry", "Iran announces a new maritime restriction in the Strait of Hormuz")
     sent = []
-
     first = run_cycle(
-        fetcher=lambda: [item],
-        ledger=ledger,
-        live_feed=live,
-        editorial_store=editorial,
-        publisher=lambda item: {"ok": False},
-        settings={"auto_publish": True},
-        now=NOW,
+        fetcher=lambda: [item], ledger=ledger, live_feed=live, editorial_store=editorial,
+        publisher=lambda item: {"ok": False}, settings={"auto_publish": True}, now=NOW,
     )
     second = run_cycle(
-        fetcher=lambda: [item],
-        ledger=EventLedger(tmp_path / "ledger.json"),
-        live_feed=LiveFeedStore(tmp_path / "live.json"),
+        fetcher=lambda: [item], ledger=EventLedger(tmp_path / "ledger.json"), live_feed=LiveFeedStore(tmp_path / "live.json"),
         editorial_store=LocalEditorialStore(tmp_path / "queue.json", tmp_path / "history.json"),
-        publisher=lambda item: sent.append(item.raw.source_item_id) or {"ok": True, "message_id": 902},
-        settings={"auto_publish": True},
-        now=NOW,
+        publisher=lambda item: sent.append(item.raw.source_item_id) or {"ok": True, "message_id": 902}, settings={"auto_publish": True}, now=NOW,
     )
-
     assert first.publish_failed == 1
     assert second.published == 1
     assert sent == ["retry"]
