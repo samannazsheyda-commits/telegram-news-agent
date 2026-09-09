@@ -18,6 +18,18 @@ LOCATION_ALIASES = {
     "Iran": ("iran", "iranian", "ایران", "ایرانی"),
     "Spain": ("spain", "spanish", "اسپانیا"),
     "Jordan": ("jordan", "jordanian", "اردن"),
+    "Qeshm": ("qeshm", "قشم"),
+    "Sirik": ("sirik", "سیریک"),
+    "Bandar Abbas": ("bandar abbas", "bandarabbas", "بندرعباس", "بندر عباس"),
+    "Bushehr": ("bushehr", "بوشهر"),
+    "Jask": ("jask", "جاسک"),
+    "Assaluyeh": ("assaluyeh", "asalouyeh", "عسلویه"),
+    "Bandar Deyr": ("bandar deyr", "deyr", "بندر دیر", "دیر"),
+    "Tehran": ("tehran", "تهران"),
+    "Isfahan": ("isfahan", "esfahan", "اصفهان"),
+    "Shiraz": ("shiraz", "شیراز"),
+    "Natanz": ("natanz", "نطنز"),
+    "Fordow": ("fordow", "fordo", "فردو"),
 }
 
 ACTION_PATTERNS = (
@@ -27,6 +39,7 @@ ACTION_PATTERNS = (
     ("intercept", r"\bintercept(?:s|ed|ing)?\b|رهگیر|رهگیری"),
     ("redirect_vessels", r"\bredirect(?:s|ed|ing)?\b[^.]{0,60}\b(?:vessels?|ships?)\b|تغییر مسیر"),
     ("strike", r"\b(?:strike|strikes|struck|attack|attacks|attacked)\b|حمله"),
+    ("explosion", r"\b(?:explosion|explosions|blast|blasts|detonation|detonations)\b|انفجار|انفجارها|انفجارهایی"),
 )
 
 
@@ -67,6 +80,8 @@ def _extract_objects(text: str) -> list[str]:
         objects.append("tankers")
     if "restricted zone" in text or "exclusion zone" in text or "منطقه محدود" in text or "منطقه ممنوع" in text:
         objects.append("restricted zone")
+    if any(term in text for term in ("explosion", "explosions", "blast", "blasts", "detonation", "انفجار")):
+        objects.append("explosions")
     return objects
 
 
@@ -74,7 +89,7 @@ def _extract_topics(text: str) -> list[str]:
     topics: list[str] = []
     if "hormuz" in text or "هرمز" in text:
         topics.append("hormuz")
-    if any(term in text for term in ("missile", "strike", "attack", "centcom", "warship", "موشک", "حمله")):
+    if any(term in text for term in ("missile", "strike", "attack", "centcom", "warship", "explosion", "blast", "موشک", "حمله", "انفجار")):
         topics.append("security")
     if "airspace" in text or "حریم هوایی" in text:
         topics.append("airspace")
