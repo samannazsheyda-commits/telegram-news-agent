@@ -48,8 +48,8 @@ if [[ -d "${APP_DIR}/panel_commands" ]]; then
 fi
 
 runuser -u bikhabar -- git -C "${APP_DIR}" fetch origin "${BRANCH}:refs/remotes/origin/${BRANCH}"
-CURRENT_SHA="$(git -C "${APP_DIR}" rev-parse HEAD)"
-TARGET_SHA="$(git -C "${APP_DIR}" rev-parse "origin/${BRANCH}")"
+CURRENT_SHA="$(runuser -u bikhabar -- git -C "${APP_DIR}" rev-parse HEAD)"
+TARGET_SHA="$(runuser -u bikhabar -- git -C "${APP_DIR}" rev-parse "origin/${BRANCH}")"
 
 if [[ "${CURRENT_SHA}" == "${TARGET_SHA}" ]]; then
   echo "Already up to date at ${CURRENT_SHA}"
