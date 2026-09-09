@@ -29,6 +29,16 @@ _DATA_DIR = Path(os.environ.get("DATA_DIR", "data"))
 SOURCE_OVERRIDES_PATH = Path(os.environ.get("SOURCE_OVERRIDES_PATH", str(_DATA_DIR / "source_overrides.json")))
 CUSTOM_SOURCES_PATH = Path(os.environ.get("CUSTOM_SOURCES_PATH", str(_DATA_DIR / "custom_sources.json")))
 
+TIER1_TELEGRAM_SOURCES = (
+    ("middle-east-spectator-telegram", "Middle East Spectator", "Middle_East_Spectator"),
+    ("clashreport-telegram", "ClashReport", "ClashReport"),
+    ("geopwatch-telegram", "GeoPWatch", "GeoPWatch"),
+    ("tabzlive-telegram", "Tabz Live", "tabzlive"),
+    ("thecradle-telegram", "The Cradle", "thecradlemedia"),
+    ("warnoir-telegram", "War Noir", "war_noir"),
+    ("rnintel-telegram", "RN Intel", "rnintel"),
+)
+
 
 def _source_id(prefix: str, identity: str) -> str:
     digest = hashlib.sha1(identity.encode("utf-8")).hexdigest()[:16]
@@ -89,9 +99,6 @@ def system_source_definitions() -> list[dict[str, Any]]:
             "system": True,
             "status": "fallback",
         })
-    # Canonical direct X lanes are first-class system sources so every account
-    # being monitored can be toggled/removed from the panel, rather than living
-    # as an invisible hard-coded fetch path.
     for source in monitored_x_sources():
         handle = str(source.get("handle") or "").strip()
         if not handle:
@@ -103,6 +110,20 @@ def system_source_definitions() -> list[dict[str, Any]]:
             "name": str(source.get("name") or handle.lstrip("@")),
             "handle": handle,
             "group": "direct_x",
+            "system": True,
+            "status": "realtime",
+        })
+    # These are production-critical direct lanes. Keeping them as system
+    # definitions prevents an old/missing mutable custom_sources.json on the VPS
+    # from silently disabling Telegram realtime intake. Panel overrides can still
+    # disable/hide each source individually.
+    for source_id, name, channel in TIER1_TELEGRAM_SOURCES:
+        rows.append({
+            "id": source_id,
+            "kind": "telegram",
+            "name": name,
+            "channel": channel,
+            "group": "direct_telegram",
             "system": True,
             "status": "realtime",
         })
@@ -123,6 +144,7 @@ def managed_source_rows(
 ) -> list[dict[str, Any]]:
     overrides = source_overrides(overrides_path)
     rows: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
     for base in system_source_definitions():
         row = dict(base)
         override = overrides.get(row["id"], {})
@@ -130,13 +152,20 @@ def managed_source_rows(
             continue
         row["active"] = bool(override.get("active", True))
         rows.append(row)
+        identity = str(row.get("handle") or row.get("channel") or row.get("website_url") or row.get("id") or "").lower()
+        seen.add((str(row.get("kind") or ""), identity))
     for raw in custom_sources(custom_path):
         if raw.get("deleted"):
             continue
         row = dict(raw)
+        identity = str(row.get("handle") or row.get("channel") or row.get("website_url") or row.get("id") or "").lower()
+        key = (str(row.get("kind") or ""), identity)
+        if key in seen:
+            continue
         row["system"] = False
         row.setdefault("active", True)
         rows.append(row)
+        seen.add(key)
     return rows
 
 
