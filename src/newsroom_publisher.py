@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from email.utils import format_datetime, parsedate_to_datetime
 from html import unescape
 from pathlib import Path
+from urllib.parse import quote
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,12 +14,18 @@ from yt_dlp import YoutubeDL
 
 from .formatters import format_news
 from .newsroom_models import NormalizedNewsItem
-from .services import USER_AGENT, translate_to_fa
+from .services import USER_AGENT, has_persian, translate_to_fa
 from .sources import NewsItem
 
 
 EXPLOSION_TERMS = ("explosion", "exploded", "blast", "detonation", "انفجار", "منفجر")
 TELEGRAM_POST_RE = re.compile(r"^https?://t\.me/(?:s/)?[A-Za-z0-9_]+/\d+", re.I)
+LINGVA_INSTANCES = (
+    "https://lingva.ml",
+    "https://translate.plausibility.cloud",
+    "https://lingva.lunar.icu",
+    "https://translate.projectsegfau.lt",
+)
 
 
 def _breaking_prefix(item: NormalizedNewsItem) -> str:
@@ -78,6 +85,29 @@ def _plain_text(html_text: str) -> str:
     return unescape(text).strip()
 
 
+def _lingva_translate(text: str, session=requests) -> str:
+    raw = str(text or "").strip()
+    if not raw:
+        return ""
+    encoded = quote(raw, safe="")
+    for base in LINGVA_INSTANCES:
+        try:
+            response = session.get(
+                f"{base}/api/v1/en/fa/{encoded}",
+                headers={"User-Agent": USER_AGENT},
+                timeout=12,
+            )
+            response.raise_for_status()
+            payload = response.json()
+            translated = str(payload.get("translation") or "").strip() if isinstance(payload, dict) else ""
+            if translated and has_persian(translated):
+                print(f"TRANSLATION_LINGVA_OK instance={base}", flush=True)
+                return translated
+        except Exception as exc:
+            print(f"TRANSLATION_LINGVA_FAILED instance={base} type={type(exc).__name__}", flush=True)
+    return ""
+
+
 class TelegramNewsroomPublisher:
     def __init__(self, bot_token: str, chat_id: str, *, session=requests, translator=translate_to_fa):
         self.bot_token = str(bot_token or "").strip()
@@ -85,11 +115,20 @@ class TelegramNewsroomPublisher:
         self.session = session
         self.translator = translator
 
+    def _translate_resilient(self, text: str) -> str:
+        raw = str(text or "").strip()
+        if not raw:
+            return ""
+        translated = str(self.translator(raw) or "").strip()
+        if translated:
+            return translated
+        return _lingva_translate(raw, session=self.session)
+
     def _message(self, item: NormalizedNewsItem) -> str:
-        title_fa = str(self.translator(item.raw.title) or "").strip()
+        title_fa = self._translate_resilient(item.raw.title)
         if not title_fa:
             return ""
-        summary_fa = str(self.translator(item.raw.summary) or "").strip() if item.raw.summary else ""
+        summary_fa = self._translate_resilient(item.raw.summary) if item.raw.summary else ""
         legacy = NewsItem(
             key=item.raw.source_item_id,
             source=item.raw.source,
@@ -160,8 +199,6 @@ class TelegramNewsroomPublisher:
         if result.get("ok") is True:
             return result
         error = str(result.get("error") or "")
-        # Telegram rejects a whole message when one HTML entity is malformed.
-        # Retry text-only sends without parse_mode instead of silently losing news.
         if endpoint == "sendMessage" and "parse" in error.lower() and data.get("text"):
             retry = dict(data)
             retry.pop("parse_mode", None)
