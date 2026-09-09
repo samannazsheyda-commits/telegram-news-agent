@@ -1,0 +1,25 @@
+[Unit]
+Description=Bikhabar Telegram Newsroom Editor
+After=network-online.target bikhabar-agent.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=bikhabar
+Group=bikhabar
+WorkingDirectory=/opt/bikhabar/app
+EnvironmentFile=/etc/bikhabar/agent.env
+Environment=PYTHONUNBUFFERED=1
+Environment=BIKHABAR_RUNTIME_ROOT=/var/lib/bikhabar/runtime
+Environment=EDITORIAL_QUEUE_PATH=/var/lib/bikhabar/runtime/data/editorial_queue.json
+Environment=EDITORIAL_HISTORY_PATH=/var/lib/bikhabar/runtime/data/editorial_history.json
+Environment=PANEL_COMMAND_DIR=/var/lib/bikhabar/runtime/panel_commands
+ExecStart=/opt/bikhabar/venv/bin/python -m src.telegram_editor_bot
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
