@@ -1,6 +1,7 @@
-const CACHE = 'bikhabar-command-center-v2';
+const CACHE = 'bikhabar-newsroom-v3';
 const SHELL = [
   '/static/panel.css',
+  '/static/newsroom.css',
   '/static/live.js',
   '/static/settings.css',
   '/static/settings.js',
@@ -32,13 +33,13 @@ self.addEventListener('fetch', event => {
   }
   if (url.pathname.startsWith('/static/')) {
     event.respondWith(
-      caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+      fetch(event.request, { cache: 'no-store' }).then(response => {
         if (response.ok) {
           const clone = response.clone();
           caches.open(CACHE).then(cache => cache.put(event.request, clone));
         }
         return response;
-      }))
+      }).catch(() => caches.match(event.request))
     );
   }
 });
