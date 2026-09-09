@@ -19,20 +19,6 @@ def _has_persian(value: str) -> bool:
     return any("\u0600" <= ch <= "\u06ff" for ch in str(value or ""))
 
 
-def _translate_title(value: str) -> str:
-    text = str(value or "").strip()
-    if not text or _has_persian(text):
-        return text
-    translator = current_app.config.get("LIVE_FEED_TRANSLATOR")
-    if not translator:
-        return "عنوان فارسی در حال آماده‌سازی"
-    try:
-        translated = str(translator(text) or "").strip()
-    except Exception:
-        translated = ""
-    return translated if _has_persian(translated) else "عنوان فارسی در حال آماده‌سازی"
-
-
 def _final_message(row: dict, title_fa: str, body_fa: str) -> str:
     persisted = str(row.get("final_message") or row.get("telegram_message") or "").strip()
     if persisted:
@@ -74,14 +60,15 @@ def _fast_rows(limit: int = 40) -> list[dict]:
         raw_title = str(row.get("original_title") or row.get("title") or "").strip()
         raw_body = str(row.get("original_summary") or row.get("summary") or row.get("body") or "").strip()
         title_fa = str(row.get("final_persian_title") or row.get("persian_title") or row.get("display_title") or "").strip()
-        title_fa = title_fa if _has_persian(title_fa) else _translate_title(raw_title or title_fa)
+        if not _has_persian(title_fa):
+            title_fa = "عنوان فارسی در حال آماده‌سازی"
         body_fa = str(row.get("final_persian_body") or row.get("persian_body") or "").strip()
         status = str(row.get("panel_status") or "new")
         reason = str(row.get("decision_reason") or "")
         result.append({
             "id": row_id,
             "item_id": row_id,
-            "title": title_fa or "عنوان فارسی در حال آماده‌سازی",
+            "title": title_fa,
             "body": body_fa,
             "original_title": raw_title,
             "original_body": raw_body,
