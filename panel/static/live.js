@@ -17,7 +17,10 @@
   let firstId = feed.querySelector('[data-news-id]')?.dataset.newsId || '';
   let audioContext = null;
   let publishingEnabled = true;
+  let latestItems = [];
   const commandWatchers = new Map();
+  const localizedCache = new Map();
+  const localizationInFlight = new Set();
 
   function faTime(value) {
     if (!value) return '—';
@@ -114,6 +117,38 @@
     if (commandResult) commandResult.textContent = `${label}: نتیجه هنوز از ایجنت نرسیده`;
   }
 
+  function mergeLocalized(item) {
+    const id = String(item.id || item.item_id || '');
+    const localized = localizedCache.get(id);
+    return localized ? { ...item, ...localized, needs_localization: false } : item;
+  }
+
+  function renderLatest() {
+    renderFeed(latestItems.map(mergeLocalized));
+  }
+
+  async function localizeMissing(items) {
+    const ids = items
+      .filter(item => item.needs_localization)
+      .map(item => String(item.id || item.item_id || ''))
+      .filter(id => id && !localizedCache.has(id) && !localizationInFlight.has(id))
+      .slice(0, 8);
+    if (!ids.length) return;
+    ids.forEach(id => localizationInFlight.add(id));
+    try {
+      const data = await postJson('/api/live-feed/localize', { ids });
+      for (const item of Array.isArray(data.items) ? data.items : []) {
+        const id = String(item.id || item.item_id || '');
+        if (id) localizedCache.set(id, item);
+      }
+      renderLatest();
+    } catch (_) {
+      // The 1-second live feed keeps running; a later cycle can retry localization.
+    } finally {
+      ids.forEach(id => localizationInFlight.delete(id));
+    }
+  }
+
   function detailsBlock(item) {
     const details = document.createElement('details');
     details.className = 'news-details';
@@ -205,7 +240,9 @@
       const nextFirst = String(items[0]?.id || '');
       if (nextFirst && firstId && nextFirst !== firstId) { beep(); showBadge(); document.title = '🔴 خبر جدید | بی‌خبر'; }
       if (nextFirst) firstId = nextFirst;
-      renderFeed(items);
+      latestItems = items;
+      renderLatest();
+      void localizeMissing(items);
       if (liveCount) liveCount.textContent = String(data.count ?? items.length);
     } catch (_) {}
   }
@@ -237,21 +274,40 @@
     }
   }
 
+  function renderPreview(body, data) {
+    body.replaceChildren();
+    const pre = document.createElement('pre'); pre.textContent = data.message; body.appendChild(pre);
+    if (data.generated_at) {
+      const small = document.createElement('small');
+      small.textContent = `ساخته‌شده: ${faTime(data.generated_at)}`;
+      body.appendChild(small);
+    }
+  }
+
   async function loadPreview(name, panel) {
     const body = panel.querySelector('.module-preview-body');
-    if (body) body.textContent = 'در حال دریافت پیش‌نمایش…';
+    if (!body) return;
+    body.textContent = 'در حال دریافت پیش‌نمایش…';
     try {
-      const data = await getJson(`/api/command-center/module/${name}/preview`);
+      let data = await getJson(`/api/command-center/module/${name}/preview`);
       if (!data.available || !data.message) {
-        if (body) body.textContent = 'پیش‌نمایش موجود نیست. هنوز داده واقعی این ماژول ثبت نشده.';
+        body.textContent = 'در حال ساخت پیش‌نمایش واقعی…';
+        const queued = await postJson(`/api/command-center/module/${name}/preview`);
+        const result = await watchCommand(queued.command_id, 'ساخت پیش‌نمایش');
+        if (!result || result.status === 'failed') {
+          body.textContent = result?.message ? `ساخت پیش‌نمایش ناموفق بود: ${result.message}` : 'نتیجه ساخت پیش‌نمایش از ایجنت نرسید.';
+          return;
+        }
+        data = await getJson(`/api/command-center/module/${name}/preview`);
+      }
+      if (!data.available || !data.message) {
+        body.textContent = 'داده واقعی کافی برای پیش‌نمایش موجود نیست.';
         return;
       }
-      if (body) {
-        body.replaceChildren();
-        const pre = document.createElement('pre'); pre.textContent = data.message; body.appendChild(pre);
-        if (data.generated_at) { const small = document.createElement('small'); small.textContent = `ساخته‌شده: ${faTime(data.generated_at)}`; body.appendChild(small); }
-      }
-    } catch (error) { if (body) body.textContent = `خطا در دریافت پیش‌نمایش: ${error.message}`; }
+      renderPreview(body, data);
+    } catch (error) {
+      body.textContent = `خطا در دریافت پیش‌نمایش: ${error.message}`;
+    }
   }
 
   document.querySelectorAll('[data-preview-toggle]').forEach(button => {
