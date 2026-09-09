@@ -54,6 +54,10 @@ jobs:
         run: |
           bash -n deploy/install-vps.sh
           bash -n deploy/update-vps.sh
+          test "$(git ls-files -s deploy/install-vps.sh | awk '{print $1}')" = "100755"
+          test "$(git ls-files -s deploy/update-vps.sh | awk '{print $1}')" = "100755"
+          test -x deploy/install-vps.sh
+          test -x deploy/update-vps.sh
 
       - name: Promote tested main to production
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
