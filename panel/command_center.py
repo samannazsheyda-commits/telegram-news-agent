@@ -137,7 +137,7 @@ def _review_record_from_live(row: dict, item_id: str, *, title_fa: str = "", bod
     clean_body = str(body_fa or "").strip()
     if not _has_persian(clean_title):
         clean_title = saved_title
-    if clean_body and not _has_persian(clean_body):
+    if not clean_body or not _has_persian(clean_body):
         clean_body = saved_body
     record.update(
         {
