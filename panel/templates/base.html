@@ -4,21 +4,30 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <meta name="theme-color" content="#111317">
+  <meta name="theme-color" content="#0b0d10">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="بی‌خبر">
+  <meta name="color-scheme" content="dark">
   <title>{% block title %}بی‌خبر{% endblock %}</title>
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='panel.css') }}">
 </head>
 <body>
+  <div class="ambient-grid" aria-hidden="true"></div>
   <header class="topbar">
-    <div>
-      <strong>بی‌خبر</strong>
-      <span>اتاق فرمان</span>
-    </div>
+    <a href="{{ url_for('dashboard') if session.get('admin') else url_for('login') }}" class="brand-lockup">
+      <span class="brand-mark">ب</span>
+      <span class="brand-copy"><strong>بی‌خبر</strong><small>COMMAND CENTER</small></span>
+    </a>
     {% if session.get('admin') %}
-    <form method="post" action="{{ url_for('logout') }}" class="inline-form">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <button class="link-button" type="submit">خروج</button>
-    </form>
+    <div class="topbar-actions">
+      <span class="secure-pill"><i></i> اتصال امن پنل</span>
+      <form method="post" action="{{ url_for('logout') }}" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="link-button" type="submit">خروج</button>
+      </form>
+    </div>
     {% endif %}
   </header>
 
@@ -39,5 +48,11 @@
     {% endwith %}
     {% block content %}{% endblock %}
   </main>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('{{ url_for('static', filename='sw.js') }}').catch(() => {}));
+    }
+  </script>
 </body>
 </html>
