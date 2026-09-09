@@ -100,6 +100,42 @@ def test_news_time_has_only_date_and_time_without_tehran_phrase():
     assert "به وقت ایران" not in text
 
 
+def test_realtime_telegram_and_x_source_labels_are_fully_persian():
+    expected = {
+        "RN Intel / Telegram": "آر‌اِن اینتل / تلگرام",
+        "Jerusalem Post / X": "جروزالم پست / ایکس",
+        "Middle East Spectator / Telegram": "میدل ایست اسپکتیتور / تلگرام",
+    }
+    for source, fa in expected.items():
+        item = NewsItem("k", source, "Breaking alert", "", "https://example.com", "Fri, 04 Sep 2026 10:00:00 GMT")
+        text = format_news(item, "هشدار فوری درباره تحولات منطقه", "", marker_override="🟥")
+        first_line = text.splitlines()[0]
+        assert first_line.startswith(f"🟥 <b>{fa}: ")
+        assert source not in first_line
+
+
+def test_breaking_alert_tokens_and_source_handles_do_not_leak_into_final_persian_text():
+    item = NewsItem(
+        "k",
+        "Middle East Spectator / Telegram",
+        "BREAKING alert",
+        "",
+        "https://example.com",
+        "Fri, 04 Sep 2026 10:00:00 GMT",
+    )
+    text = format_news(
+        item,
+        "BREAKING: هشدار در عربستان سعودی",
+        "ALERT: پدافندهای یمنی فعال شدند @Middle_East_Spectator",
+        marker_override="🟥",
+    )
+    assert "BREAKING" not in text
+    assert "ALERT" not in text
+    assert "@Middle_East_Spectator" not in text
+    assert "فوری" in text
+    assert "هشدار" in text
+
+
 def test_market_contains_full_requested_watchlist_timestamp_source_and_footer():
     snap = MarketSnapshot(
         usd_rial=2_210_600, gold18_rial=235_188_000, eur_rial=2_577_900, gbp_rial=2_970_000,
