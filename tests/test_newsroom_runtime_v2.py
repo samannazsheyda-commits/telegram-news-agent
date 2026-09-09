@@ -11,7 +11,7 @@ def _fresh():
         source_item_id="fresh-1",
         published_at="2026-09-07T21:00:00+00:00",
         fetched_at="2026-09-07T21:01:00+00:00",
-        title="Iran partially reopens airspace after security restrictions",
+        title="Iran launches ballistic missiles toward Israel",
     )
 
 
