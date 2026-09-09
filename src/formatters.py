@@ -25,6 +25,9 @@ SOURCE_FA = {
     "Haaretz": "هاآرتص", "Donald Trump / Truth Social": "ترامپ / تروث سوشال",
     "Barak Ravid / X": "باراک راوید", "Abbas Araghchi / X": "عباس عراقچی",
     "Mohsen Rezaei / X": "محسن رضایی", "Sepah News / X": "سپاه نیوز",
+    "RN Intel / Telegram": "آر‌اِن اینتل / تلگرام",
+    "Jerusalem Post / X": "جروزالم پست / ایکس",
+    "Middle East Spectator / Telegram": "میدل ایست اسپکتیتور / تلگرام",
     "TankerTrackers": "تانکرترکرز", "NOTAM / Airspace": "نوتام / حریم هوایی",
 }
 SOURCE_SUFFIXES = (
@@ -66,6 +69,17 @@ def _strip_source_suffix(value: str) -> str:
     text = re.sub(r"[.،,؛;]+$", "", text).strip()
     suffixes = "|".join(re.escape(x) for x in sorted(SOURCE_SUFFIXES, key=len, reverse=True))
     return re.sub(rf"\s*[-–—|:]\s*(?:{suffixes})\s*$", "", text, flags=re.IGNORECASE).strip()
+
+
+def _clean_persian_output_text(value: str) -> str:
+    text = (value or "").strip()
+    text = re.sub(r"(?i)\bBREAKING\b", "فوری", text)
+    text = re.sub(r"(?i)\bURGENT\b", "فوری", text)
+    text = re.sub(r"(?i)\bALERT\b", "هشدار", text)
+    text = re.sub(r"(?<![\w@])@[A-Za-z0-9_]{2,64}\b", "", text)
+    text = re.sub(r"\s+", " ", text)
+    text = re.sub(r"\s+([،,:؛.!؟])", r"\1", text)
+    return text.strip(" -–—|،,؛;")
 
 
 def _up_to_two_sentences(value: str, max_chars: int = 650) -> str:
@@ -170,7 +184,12 @@ def _detail_marker(marker: str) -> str:
 
 
 def _source_label(source: str) -> str:
-    return SOURCE_FA.get(source, source)
+    label = SOURCE_FA.get(source)
+    if label:
+        return label
+    label = re.sub(r"\s*/\s*Telegram\s*$", " / تلگرام", source or "", flags=re.IGNORECASE)
+    label = re.sub(r"\s*/\s*X\s*$", " / ایکس", label, flags=re.IGNORECASE)
+    return label
 
 
 def format_truth(post: TruthPost, persian_text: str) -> str:
@@ -184,8 +203,8 @@ def format_truth(post: TruthPost, persian_text: str) -> str:
 
 
 def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override: str | None = None) -> str:
-    title_fa = _ensure_period(_strip_source_suffix(title_fa))
-    summary_fa = _ensure_period(_up_to_two_sentences(_strip_source_suffix(summary_fa)))
+    title_fa = _ensure_period(_clean_persian_output_text(_strip_source_suffix(title_fa)))
+    summary_fa = _ensure_period(_up_to_two_sentences(_clean_persian_output_text(_strip_source_suffix(summary_fa))))
     if _unnamed_activist_headline(title_fa) and not _detail_names_activist(summary_fa):
         return ""
     marker = marker_override or _story_marker(item)
