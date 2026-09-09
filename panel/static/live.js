@@ -163,6 +163,19 @@
       const actions = document.createElement('div'); actions.className = 'live-news-actions';
       if (item.review_url) {
         const edit = document.createElement('a'); edit.className = 'button'; edit.href = item.review_url; edit.textContent = 'ویرایش / بررسی'; actions.appendChild(edit);
+      } else if (item.can_review && id) {
+        const edit = document.createElement('button'); edit.className = 'button'; edit.type = 'button'; edit.textContent = 'ویرایش';
+        edit.addEventListener('click', async () => {
+          edit.disabled = true; const old = edit.textContent; edit.textContent = 'در حال آماده‌سازی…';
+          try {
+            const data = await postJson(`/api/command-center/live/${encodeURIComponent(id)}/review`);
+            if (data.review_url) window.location.assign(data.review_url);
+          } catch (error) {
+            if (commandResult) commandResult.textContent = `ویرایش خبر: ${error.message}`;
+            edit.disabled = false; edit.textContent = old;
+          }
+        });
+        actions.appendChild(edit);
       }
       if (item.source_url) {
         const source = document.createElement('a'); source.className = 'button source-button'; source.href = item.source_url; source.target = '_blank'; source.rel = 'noopener'; source.textContent = 'منبع'; actions.appendChild(source);

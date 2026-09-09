@@ -24,6 +24,7 @@ PREVIEW_PATHS = {
 }
 _TIME_RE = re.compile(r"^(?:[01]\d|2[0-3]):[0-5]\d$")
 _CLEAR_SCOPES = {"live", "pending", "published", "rejected"}
+_TERMINAL_LIVE_STATUSES = {"auto_published", "published_auto", "published_manual"}
 
 
 def _data():
@@ -61,6 +62,21 @@ def _write_settings(transform) -> dict:
     raise RuntimeError("settings_write_conflict")
 
 
+def _write_list(path: str, transform, message: str) -> list[dict]:
+    for _ in range(3):
+        value, sha = _data().read_json(path, [])
+        rows = [dict(row) for row in value if isinstance(row, dict)] if isinstance(value, list) else []
+        updated = transform(rows)
+        try:
+            _data().write_json(path, updated, sha, message)
+            return updated
+        except Exception as exc:
+            status = getattr(getattr(exc, "response", None), "status_code", None)
+            if status != 409:
+                raise
+    raise RuntimeError("list_write_conflict")
+
+
 def _enqueue(action: str, **extra) -> str:
     command_id = uuid4().hex
     payload = {"command_id": command_id, "action": action, "created_at": _now_iso(), **extra}
@@ -96,6 +112,33 @@ def _age_state(value: str, active_seconds: int = 45) -> str:
         return "active" if age <= active_seconds else "stale"
     except Exception:
         return "unknown"
+
+
+def _live_row_id(row: dict) -> str:
+    return str(row.get("item_id") or row.get("id") or row.get("news_key") or "").strip()
+
+
+def _review_record_from_live(row: dict, item_id: str) -> dict:
+    now = _now_iso()
+    record = dict(row)
+    record.update(
+        {
+            "id": item_id,
+            "item_id": item_id,
+            "news_key": str(row.get("news_key") or item_id),
+            "source": str(row.get("source") or ""),
+            "source_url": str(row.get("source_url") or row.get("link") or ""),
+            "original_title": str(row.get("original_title") or row.get("title") or ""),
+            "original_summary": str(row.get("original_summary") or row.get("summary") or row.get("body") or ""),
+            "persian_title": str(row.get("final_persian_title") or row.get("persian_title") or row.get("display_title") or ""),
+            "persian_body": str(row.get("final_persian_body") or row.get("persian_body") or ""),
+            "published_at_source": str(row.get("published_at_source") or row.get("published") or ""),
+            "status": "pending",
+            "created_at": str(row.get("created_at") or row.get("discovered_at") or now),
+            "updated_at": now,
+        }
+    )
+    return record
 
 
 @bp.before_request
@@ -170,10 +213,12 @@ def module_preview(module_name: str):
 def publishing():
     payload = request.get_json(silent=True) or {}
     enabled = bool(payload.get("enabled"))
+
     def transform(settings: dict) -> dict:
         settings["auto_publish"] = enabled
         settings["emergency_lock"] = not enabled
         return settings
+
     settings = _write_settings(transform)
     return jsonify({"ok": True, "publishing": bool(settings.get("auto_publish")) and not bool(settings.get("emergency_lock"))})
 
@@ -190,12 +235,14 @@ def update_settings():
     if not 1 <= freshness <= 48 or not _TIME_RE.fullmatch(quiet_start) or not _TIME_RE.fullmatch(quiet_end):
         return jsonify({"ok": False, "error": "invalid_settings"}), 400
     quiet_mode = bool(payload.get("quiet_mode"))
+
     def transform(settings: dict) -> dict:
         settings["freshness_hours"] = freshness
         settings["quiet_mode"] = quiet_mode
         settings["quiet_start"] = quiet_start
         settings["quiet_end"] = quiet_end
         return settings
+
     settings = _write_settings(transform)
     return jsonify({"ok": True, "settings": _public_settings(settings)})
 
@@ -211,11 +258,31 @@ def clear_items():
     for value in ids_value:
         item_id = str(value or "").strip()
         if item_id and item_id not in seen:
-            seen.add(item_id); ids.append(item_id)
+            seen.add(item_id)
+            ids.append(item_id)
     if not ids or len(ids) > 5000:
         return jsonify({"ok": False, "error": "invalid_clear_request"}), 400
     command_id = _enqueue("clear", scope=scope, ids=ids)
     return jsonify({"ok": True, "command_id": command_id, "status": "queued", "count": len(ids)}), 202
+
+
+@bp.post("/api/command-center/live/<item_id>/review")
+def promote_live_to_review(item_id: str):
+    live, _ = _data().read_json("data/panel_live_feed.json", [])
+    rows = live if isinstance(live, list) else []
+    row = next((dict(value) for value in rows if isinstance(value, dict) and _live_row_id(value) == item_id), None)
+    if row is None:
+        return jsonify({"ok": False, "error": "live_item_not_found"}), 404
+    if str(row.get("panel_status") or "") in _TERMINAL_LIVE_STATUSES:
+        return jsonify({"ok": False, "error": "already_published"}), 409
+
+    record = _review_record_from_live(row, item_id)
+
+    def transform(queue: list[dict]) -> list[dict]:
+        return [record] + [existing for existing in queue if str(existing.get("id") or existing.get("item_id") or "") != item_id]
+
+    _write_list("data/editorial_queue.json", transform, "panel: promote live item to review")
+    return jsonify({"ok": True, "review_url": f"/review/{item_id}"})
 
 
 @bp.post("/api/command-center/module/<module_name>")
