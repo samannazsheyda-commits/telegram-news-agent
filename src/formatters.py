@@ -104,7 +104,8 @@ def _up_to_two_sentences(value: str, max_chars: int = 650) -> str:
     if any(pattern in text.lower() for pattern in GOOGLE_NEWS_BOILERPLATE):
         return ""
     parts = re.split(r"(?<=[.!؟?])\s+", text)
-    result = " ".join(parts[:2]).strip()
+    declarative = [part.strip() for part in parts if part.strip() and not part.strip().endswith(("?", "؟"))]
+    result = " ".join(declarative[:2]).strip()
     if len(result) > max_chars:
         cut = result[:max_chars].rsplit(" ", 1)[0].strip()
         return cut + "…"
