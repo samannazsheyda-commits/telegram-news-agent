@@ -83,10 +83,16 @@ class EventLedger:
     def find_candidates(self, fingerprint: EventFingerprint, min_similarity: float = 0.70) -> list[EventRecord]:
         matches: list[EventRecord] = []
         for record in self._read():
+            stored = self._record_fingerprint(record)
+            # Event similarity is only meaningful inside the source event day.
+            # Without this guard, recurring operational claims months apart
+            # (e.g. CENTCOM strike/tanker reports) poison the ledger and suppress
+            # genuinely new breaking news as duplicate_same_claim.
+            if stored is not None and stored.time_bucket != fingerprint.time_bucket:
+                continue
             if record.fingerprint == fingerprint.key:
                 matches.append(record)
                 continue
-            stored = self._record_fingerprint(record)
             if stored is not None and fingerprint_similarity(stored, fingerprint) >= min_similarity:
                 matches.append(record)
         return matches
