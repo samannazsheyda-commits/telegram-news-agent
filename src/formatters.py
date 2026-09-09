@@ -84,6 +84,7 @@ def _clean_persian_output_text(value: str) -> str:
     text = re.sub(r"(?i)\bBREAKING\b", "فوری", text)
     text = re.sub(r"(?i)\bURGENT\b", "فوری", text)
     text = re.sub(r"(?i)\bALERT\b", "هشدار", text)
+    text = re.sub(r"(?i)\bTelegram\b", "تلگرام", text)
     text = re.sub(r"(?<![\w@])@[A-Za-z0-9_]{2,64}\b", "", text)
     text = re.sub(r"[\U0001F1E6-\U0001F1FF]{2}", "", text)
     text = re.sub(r"\s+", " ", text)
@@ -242,7 +243,7 @@ def format_truth(post: TruthPost, persian_text: str) -> str:
     label = "▫️ بازنشر ترامپ در تروث سوشال | ایران" if post.is_retruth else "⚪️ ترامپ در تروث سوشال | ایران"
     parts = [
         _safe(label), "", f"<b>{_safe(_ensure_period(_clean_persian_output_text(persian_text)))}</b>", "",
-        f'📌 <a href="{_safe(post.url)}">منبع: تروث سوشال</a>',
+        f'📌 <a href="{_safe(post.url)}">منبع: Truth Social</a>',
     ]
     parts += _brand_footer()
     parts += ["", "#ترامپ"]
