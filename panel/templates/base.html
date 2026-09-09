@@ -13,6 +13,7 @@
   <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='panel.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='settings.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='source_manager.css') }}">
 </head>
 <body>
   <div class="ambient-grid" aria-hidden="true"></div>
@@ -37,7 +38,7 @@
     <a href="{{ url_for('dashboard') }}">داشبورد / اتاق فرمان</a>
     <a href="{{ url_for('review_queue') }}">نیاز به بررسی</a>
     <a href="{{ url_for('history') }}">تاریخچه</a>
-    <a href="{{ url_for('sources') }}">منابع</a>
+    <a href="/source-manager">مدیریت منابع</a>
   </nav>
   {% endif %}
 

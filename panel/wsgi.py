@@ -4,6 +4,7 @@ from src.local_json_repository import LocalJsonRepository
 
 from .app import create_app
 from .command_center import bp as command_center_bp
+from .source_manager import bp as source_manager_bp
 
 
 config = {}
@@ -14,3 +15,4 @@ if local_root:
 
 app = create_app(config)
 app.register_blueprint(command_center_bp)
+app.register_blueprint(source_manager_bp)
