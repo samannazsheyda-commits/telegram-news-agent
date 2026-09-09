@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from panel.app import create_app
+from panel.source_manager import bp as source_manager_bp
 from src.local_json_repository import LocalJsonRepository
 
 
@@ -21,6 +22,7 @@ def app(tmp_path, monkeypatch):
         "WTF_CSRF_ENABLED": False,
         "DATA_BACKEND": LocalJsonRepository(tmp_path),
     })
+    app.register_blueprint(source_manager_bp)
     return app
 
 
@@ -40,20 +42,23 @@ def _records(app):
     return json.loads((_root(app) / "data" / "custom_sources.json").read_text(encoding="utf-8"))
 
 
-def test_sources_page_exposes_all_supported_source_types(client):
-    response = client.get("/sources")
+def test_sources_page_exposes_all_supported_source_types_and_system_feeds(client):
+    response = client.get("/source-manager")
     text = response.get_data(as_text=True)
     assert response.status_code == 200
     assert "X / Twitter" in text
     assert "Telegram" in text
     assert "Truth Social" in text
     assert "Website / RSS" in text
+    assert "Reuters" in text
+    assert "Associated Press" in text
+    assert "فیدهای خبری سیستم" in text
 
 
 def test_add_telegram_source_persists_to_live_source_registry(client, app):
     response = client.post(
-        "/sources/telegram",
-        data={"tg-channel": "@rnintel", "tg-name": "RN Intel"},
+        "/source-manager/add",
+        data={"kind": "telegram", "identity": "@rnintel", "name": "RN Intel"},
         follow_redirects=True,
     )
     assert response.status_code == 200
@@ -64,8 +69,8 @@ def test_add_telegram_source_persists_to_live_source_registry(client, app):
 
 def test_add_truth_source_persists_to_live_source_registry(client, app):
     response = client.post(
-        "/sources/truth",
-        data={"truth-handle": "@realDonaldTrump", "truth-name": "Donald Trump"},
+        "/source-manager/add",
+        data={"kind": "truth", "identity": "@realDonaldTrump", "name": "Donald Trump"},
         follow_redirects=True,
     )
     assert response.status_code == 200
@@ -77,10 +82,21 @@ def test_add_truth_source_persists_to_live_source_registry(client, app):
 def test_source_cards_render_identity_for_telegram_and_truth(client, app):
     (_root(app) / "data" / "custom_sources.json").write_text(json.dumps([
         {"id":"tg1","kind":"telegram","name":"Tabz","channel":"tabzlive","active":True,"status":"active"},
-        {"id":"tr1","kind":"truth","name":"Donald Trump","handle":"@realDonaldTrump","active":True,"status":"active"},
+        {"id":"tr1","kind":"truth","name":"Donald Trump 2","handle":"@realDonaldTrump2","active":True,"status":"active"},
     ]), encoding="utf-8")
-    text = client.get("/sources").get_data(as_text=True)
+    text = client.get("/source-manager").get_data(as_text=True)
     assert "@tabzlive" in text
-    assert "@realDonaldTrump" in text
+    assert "@realDonaldTrump2" in text
     assert "حذف" in text
     assert "خاموش" in text
+
+
+def test_system_source_can_be_disabled_without_code_deploy(client, app):
+    text = client.get("/source-manager").get_data(as_text=True)
+    assert "Reuters" in text
+    from src.managed_sources import system_source_definitions
+    reuters = next(row for row in system_source_definitions() if row.get("name") == "Reuters")
+    response = client.post(f"/source-manager/{reuters['id']}/toggle", follow_redirects=True)
+    assert response.status_code == 200
+    overrides = json.loads((_root(app) / "data" / "source_overrides.json").read_text(encoding="utf-8"))
+    assert overrides[reuters["id"]]["active"] is False
