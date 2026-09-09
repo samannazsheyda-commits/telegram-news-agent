@@ -5,11 +5,10 @@ from pathlib import Path
 
 import src.newsroom_hybrid_runtime as hybrid
 import src.newsroom_publisher as publisher_module
-from src.formatters import _source_label
 from src.newsroom_eligibility import evaluate_eligibility
-from src.newsroom_models import NormalizedNewsItem, RawNewsItem
 from src.newsroom_normalize import normalize_item
 from src.newsroom_publisher import TelegramNewsroomPublisher
+from src.newsroom_models import RawNewsItem
 
 NOW = datetime.fromisoformat("2026-09-09T19:30:00+00:00")
 
@@ -78,25 +77,24 @@ def test_questions_analysis_opinion_and_explainers_never_publish_even_on_allowed
 
 
 def test_publisher_fails_closed_when_translation_contains_visible_english(monkeypatch):
-    raw = _raw("BREAKING Iran launches missile toward Israel")
-    item = normalize_item(raw)
+    item = normalize_item(_raw("BREAKING Iran launches missile toward Israel"))
     monkeypatch.setattr(publisher_module, "_lingva_translate", lambda text, session=None: "")
     publisher = TelegramNewsroomPublisher("token", "@channel", translator=lambda text: "حمله Iran با missile تایید شد")
     assert publisher._message(item) == ""
 
 
-def test_unknown_source_label_never_leaks_latin_words_to_final_post():
-    label = _source_label("Some New Intel Desk / Telegram")
-    assert "Some" not in label
-    assert "Intel" not in label
-    assert "Telegram" not in label
-    assert "تلگرام" in label
+def test_unknown_source_never_leaks_latin_words_to_final_post():
+    item = normalize_item(_raw("Iran launches a missile toward Israel", source="Some New Intel Desk / Telegram"))
+    publisher = TelegramNewsroomPublisher("token", "@channel", translator=lambda text: "ایران یک موشک به سمت اسرائیل شلیک کرد")
+    message = publisher._message(item)
+    assert "Some" not in message
+    assert "Intel" not in message
+    assert "Telegram" not in message
+    assert "منبع خبری / تلگرام" in message
 
 
-def test_urgent_broadcast_is_not_an_automatic_second_publisher():
-    workflow = Path(".github/workflows/urgent-broadcast.yml").read_text(encoding="utf-8")
-    assert "paths:" not in workflow or "data/urgent_broadcast.json" not in workflow
-    assert "workflow_dispatch" in workflow
+def test_no_automatic_urgent_second_publisher_workflow_exists():
+    assert not Path(".github/workflows/urgent-broadcast.yml").exists()
 
 
 def test_runtime_has_singleton_guard_against_two_simultaneous_agents():
