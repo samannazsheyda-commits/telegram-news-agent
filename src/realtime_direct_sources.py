@@ -18,6 +18,7 @@ from .custom_sources import (
     normalize_telegram_channel,
     parse_public_feed,
 )
+from .managed_sources import managed_source_rows
 from .persian_editor import trim_to_complete_sentences
 from .sources import NewsItem, USER_AGENT, is_iran_related, strip_html
 
@@ -86,9 +87,12 @@ def _fetch_telegram_source(source: dict, session=requests) -> list[NewsItem]:
 
 
 def fetch_priority_telegram_realtime(path: str | Path = CUSTOM_SOURCES_PATH, session=requests) -> list[NewsItem]:
+    rows = managed_source_rows(custom_path=Path(path))
     sources = [
-        row for row in _read_sources(Path(path))
-        if row.get("active", True) and row.get("kind") == "telegram" and str(row.get("status") or "").lower() != "reference"
+        row for row in rows
+        if row.get("active", True)
+        and row.get("kind") == "telegram"
+        and str(row.get("status") or "").lower() != "reference"
     ]
     merged: dict[str, NewsItem] = {}
     ok = failed = 0

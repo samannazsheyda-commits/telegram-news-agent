@@ -185,9 +185,6 @@ def run_cycle(
     summary.items_fetched = len(items)
     freshness_hours = int(settings.get("freshness_hours") or 2)
 
-    # Old search-engine discoveries used to create events and fill the panel even
-    # though eligibility later rejected them. Drop them before fingerprinting so
-    # realtime state contains only actionable/fresh candidates.
     fresh_items: list[RawNewsItem] = []
     for raw in items:
         if _stale_before_ingest(raw, now, freshness_hours):
@@ -217,10 +214,7 @@ def run_cycle(
             except KeyError:
                 pass
             if not retry_unpublished_duplicate:
-                live_feed.upsert(_feed_record(
-                    item, event_id=event_id, decision=decision.decision, reason=decision.reason,
-                    duplicate_of=decision.duplicate_of, panel_status="duplicate", message_id=None, now=now,
-                ))
+                live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of, panel_status="duplicate", message_id=None, now=now))
                 continue
 
         if decision.decision == "duplicate_same_claim":
@@ -231,10 +225,7 @@ def run_cycle(
             except KeyError:
                 pass
             if not retry_unpublished_duplicate:
-                live_feed.upsert(_feed_record(
-                    item, event_id=event_id, decision=decision.decision, reason=decision.reason,
-                    duplicate_of=decision.duplicate_of, panel_status="duplicate", message_id=None, now=now,
-                ))
+                live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of, panel_status="duplicate", message_id=None, now=now))
                 continue
 
         if retry_unpublished_duplicate:
@@ -245,14 +236,7 @@ def run_cycle(
             ledger.update_material_facts(event_id, fingerprint.key_facts, now.isoformat())
             ledger.add_variant(event_id, item.raw.source_url, now.isoformat())
         else:
-            event = ledger.create_event(
-                fingerprint=fingerprint,
-                canonical_title=item.raw.title,
-                primary_source=item.raw.source,
-                source_url=item.raw.source_url,
-                first_seen=item.raw.fetched_at or now.isoformat(),
-                key_facts=fingerprint.key_facts,
-            )
+            event = ledger.create_event(fingerprint=fingerprint, canonical_title=item.raw.title, primary_source=item.raw.source, source_url=item.raw.source_url, first_seen=item.raw.fetched_at or now.isoformat(), key_facts=fingerprint.key_facts)
             event_id = event.event_id
             if decision.decision == "new_event":
                 summary.new_events += 1
@@ -265,88 +249,41 @@ def run_cycle(
                 summary.review_items += 1
             else:
                 summary.filtered += 1
-
             if eligibility.review:
                 _queue_item(editorial_store, item, eligibility.reason, now)
                 panel_status = "waiting"
             else:
                 panel_status = "rejected"
-
-            live_feed.upsert(_feed_record(
-                item,
-                event_id=event_id,
-                decision=decision.decision,
-                reason=eligibility.reason,
-                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
-                panel_status=panel_status,
-                message_id=None,
-                now=now,
-            ))
+            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=eligibility.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status=panel_status, message_id=None, now=now))
             continue
 
         auto_publish = settings.get("auto_publish") is not False
         needs_review = decision.decision == "needs_editorial_review" or not auto_publish
-
         if needs_review:
             summary.review_items += 1
             _queue_item(editorial_store, item, decision.reason if decision.decision == "needs_editorial_review" else "auto_publish_off", now)
-            live_feed.upsert(_feed_record(
-                item,
-                event_id=event_id,
-                decision=decision.decision,
-                reason=decision.reason,
-                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
-                panel_status="waiting",
-                message_id=None,
-                now=now,
-            ))
+            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="waiting", message_id=None, now=now))
             continue
 
         if shadow:
-            live_feed.upsert(_feed_record(
-                item,
-                event_id=event_id,
-                decision=decision.decision,
-                reason=decision.reason,
-                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
-                panel_status="new",
-                message_id=None,
-                now=now,
-            ))
+            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="new", message_id=None, now=now))
             continue
 
         try:
             ok, message_id = _publisher_result(publisher(item))
-        except Exception:
+        except Exception as exc:
+            print(f"PUBLISH_EXCEPTION source={item.raw.source!r} type={type(exc).__name__} error={exc}", flush=True)
             ok, message_id = False, None
 
         if ok and message_id is not None:
             ledger.mark_published(event_id, message_id, fingerprint.key_facts, now.isoformat())
             summary.published += 1
-            live_feed.upsert(_feed_record(
-                item,
-                event_id=event_id,
-                decision=decision.decision,
-                reason=decision.reason,
-                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
-                panel_status="auto_published",
-                message_id=message_id,
-                now=now,
-            ))
+            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="auto_published", message_id=message_id, now=now))
         else:
             summary.publish_failed += 1
             summary.review_items += 1
             _queue_item(editorial_store, item, "publish_failed", now)
-            live_feed.upsert(_feed_record(
-                item,
-                event_id=event_id,
-                decision=decision.decision,
-                reason="publish_failed",
-                duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
-                panel_status="failed",
-                message_id=None,
-                now=now,
-            ))
+            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason="publish_failed", duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="failed", message_id=None, now=now))
 
     max_records = int(settings.get("panel_max_records") or 500)
     live_feed.prune(now, freshness_hours=freshness_hours, max_records=max_records)
