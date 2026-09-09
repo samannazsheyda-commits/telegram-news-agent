@@ -196,6 +196,24 @@ def run_cycle(
 
     for raw in fresh_items:
         item = normalize_item(raw)
+
+        exact_source_event = ledger.find_by_source_url(item.raw.source_url)
+        if exact_source_event is not None and exact_source_event.published_message_ids:
+            summary.exact_duplicates += 1
+            live_feed.upsert(
+                _feed_record(
+                    item,
+                    event_id=exact_source_event.event_id,
+                    decision="duplicate_exact_url",
+                    reason="source_url_already_published",
+                    duplicate_of=exact_source_event.event_id,
+                    panel_status="duplicate",
+                    message_id=None,
+                    now=now,
+                )
+            )
+            continue
+
         fingerprint = build_fingerprint(item)
         candidates = ledger.find_candidates(fingerprint)
         decision = decide_item(item, fingerprint, candidates)
