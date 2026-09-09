@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 from yt_dlp import YoutubeDL
 
 from .formatters import format_news
+from .newsroom_eligibility import IRAN_TERMS, REGIONAL_SECURITY_TERMS, SECURITY_TERMS
 from .newsroom_models import NormalizedNewsItem
 from .services import USER_AGENT, has_persian, translate_to_fa
 from .sources import NewsItem
@@ -26,6 +27,26 @@ LINGVA_INSTANCES = (
     "https://lingva.lunar.icu",
     "https://translate.projectsegfau.lt",
 )
+
+
+def _contains_any(text: str, terms) -> bool:
+    return any(term in text for term in terms)
+
+
+def _relevant_to_bikhabar(item: NormalizedNewsItem) -> bool:
+    """Final fail-closed guard before Telegram.
+
+    Upstream eligibility remains the main filter. This second gate prevents an
+    unrelated story from reaching Telegram if another code path bypasses that
+    filter. It intentionally mirrors the newsroom's Iran/regional-security
+    relevance policy instead of trusting source reputation alone.
+    """
+    text = re.sub(r"\s+", " ", f"{item.raw.title} {item.raw.summary}".lower()).strip()
+    if not text:
+        return False
+    if _contains_any(text, IRAN_TERMS):
+        return True
+    return _contains_any(text, REGIONAL_SECURITY_TERMS) and _contains_any(text, SECURITY_TERMS)
 
 
 def _is_explosion(item: NormalizedNewsItem) -> bool:
@@ -256,6 +277,9 @@ class TelegramNewsroomPublisher:
         if not self.bot_token or not self.chat_id:
             print("TELEGRAM_PUBLISH_FAILED endpoint=none error='missing_telegram_credentials'", flush=True)
             return {"ok": False, "error": "missing_telegram_credentials"}
+        if not _relevant_to_bikhabar(item):
+            print(f"TELEGRAM_PUBLISH_BLOCKED reason=irrelevant_to_bikhabar source={item.raw.source!r}", flush=True)
+            return {"ok": False, "error": "irrelevant_to_bikhabar"}
         message = self._message(item)
         if not message:
             print(f"TELEGRAM_PUBLISH_FAILED endpoint=none error='translation_or_format_failed' source={item.raw.source!r}", flush=True)
