@@ -28,9 +28,21 @@ LINGVA_INSTANCES = (
 )
 
 
-def _breaking_prefix(item: NormalizedNewsItem) -> str:
+def _is_explosion(item: NormalizedNewsItem) -> bool:
     text = f"{item.raw.title} {item.raw.summary}".lower()
-    return "💥 🔴 <b>خبر فوری</b>\n" if any(term in text for term in EXPLOSION_TERMS) else ""
+    return any(term in text for term in EXPLOSION_TERMS)
+
+
+def _collapse_breaking_header(message: str) -> str:
+    lines = str(message or "").splitlines()
+    if not lines:
+        return message
+    first = lines[0].strip()
+    match = re.match(r"^[^<]*<b>(.*?)</b>$", first)
+    if not match:
+        return message
+    lines[0] = f"💥 🔴 <b>خبر فوری | {match.group(1)}</b>"
+    return "\n".join(lines)
 
 
 def _published_rfc2822(value: str) -> str:
@@ -137,7 +149,8 @@ class TelegramNewsroomPublisher:
             link=item.raw.source_url,
             published=_published_rfc2822(item.raw.published_at),
         )
-        return _breaking_prefix(item) + format_news(legacy, title_fa, summary_fa)
+        message = format_news(legacy, title_fa, summary_fa)
+        return _collapse_breaking_header(message) if _is_explosion(item) else message
 
     def _telegram_post_has_video(self, url: str) -> bool:
         if not TELEGRAM_POST_RE.match(str(url or "")):
