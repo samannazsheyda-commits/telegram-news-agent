@@ -12,6 +12,7 @@ import requests
 from bs4 import BeautifulSoup
 from yt_dlp import YoutubeDL
 
+from .final_output import finalize_telegram_message
 from .formatters import format_news
 from .newsroom_models import NormalizedNewsItem
 from .services import USER_AGENT, has_persian, translate_to_fa
@@ -155,7 +156,9 @@ class TelegramNewsroomPublisher:
             published=_published_rfc2822(item.raw.published_at),
         )
         message = format_news(legacy, title_fa, summary_fa)
-        return _collapse_breaking_header(message) if _is_explosion(item) else message
+        if _is_explosion(item):
+            message = _collapse_breaking_header(message)
+        return finalize_telegram_message(message)
 
     def _telegram_post_has_video(self, url: str) -> bool:
         if not TELEGRAM_POST_RE.match(str(url or "")):
