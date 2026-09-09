@@ -48,6 +48,7 @@ def test_live_js_updates_feed_without_page_reload_and_keeps_sound_preference(tmp
     assert "setInterval(refreshLiveFeed, 3000)" in js
     assert "AudioContext" in js
     assert "localStorage" in js
-    assert "DOMParser" in js
+    assert "/api/live-feed" in js
+    assert "DOMParser" not in js
     assert "replaceChildren" in js
     assert "location.reload" not in js

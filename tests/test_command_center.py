@@ -82,10 +82,8 @@ def test_status_reports_safe_operational_capabilities():
     assert payload["live_count"] == 2
     assert payload["queue_count"] == 1
     assert payload["poll_seconds"] == 5
-    assert payload["modules"]["weather"]["available"] is True
-    assert payload["modules"]["air-traffic"]["available"] is True
-    assert payload["modules"]["tanker"]["available"] is False
-    assert payload["modules"]["market"]["available"] is False
+    for name in ("weather", "air-traffic", "tanker", "market"):
+        assert payload["modules"][name]["available"] is True
     assert payload["settings"]["freshness_hours"] == 3
     assert payload["settings"]["quiet_mode"] is False
     serialized = str(payload).lower()
@@ -97,39 +95,19 @@ def test_panic_stop_and_resume_are_persisted():
     data = FakeData()
     client = _app(data).test_client()
     csrf = _login(client)
-    stopped = client.post(
-        "/api/command-center/publishing",
-        json={"enabled": False},
-        headers={"X-CSRFToken": csrf},
-    )
+    stopped = client.post("/api/command-center/publishing", json={"enabled": False}, headers={"X-CSRFToken": csrf})
     assert stopped.status_code == 200
     assert stopped.get_json()["publishing"] is False
     assert data.files["data/newsroom_settings.json"]["emergency_lock"] is True
-
-    resumed = client.post(
-        "/api/command-center/publishing",
-        json={"enabled": True},
-        headers={"X-CSRFToken": csrf},
-    )
+    resumed = client.post("/api/command-center/publishing", json={"enabled": True}, headers={"X-CSRFToken": csrf})
     assert resumed.status_code == 200
     assert resumed.get_json()["publishing"] is True
     assert data.files["data/newsroom_settings.json"]["emergency_lock"] is False
 
 
 def test_live_settings_update_runtime_supported_fields():
-    data = FakeData()
-    client = _app(data).test_client()
-    csrf = _login(client)
-    response = client.post(
-        "/api/command-center/settings",
-        json={
-            "freshness_hours": 1,
-            "quiet_mode": True,
-            "quiet_start": "01:30",
-            "quiet_end": "06:15",
-        },
-        headers={"X-CSRFToken": csrf},
-    )
+    data = FakeData(); client = _app(data).test_client(); csrf = _login(client)
+    response = client.post("/api/command-center/settings", json={"freshness_hours": 1, "quiet_mode": True, "quiet_start": "01:30", "quiet_end": "06:15"}, headers={"X-CSRFToken": csrf})
     assert response.status_code == 200
     payload = response.get_json()
     assert payload["settings"]["freshness_hours"] == 1
@@ -141,45 +119,31 @@ def test_live_settings_update_runtime_supported_fields():
 
 
 def test_live_settings_are_validated_and_clamped():
-    data = FakeData()
-    client = _app(data).test_client()
-    csrf = _login(client)
-    response = client.post(
-        "/api/command-center/settings",
-        json={"freshness_hours": 99, "quiet_mode": True, "quiet_start": "88:10", "quiet_end": "bad"},
-        headers={"X-CSRFToken": csrf},
-    )
+    data = FakeData(); client = _app(data).test_client(); csrf = _login(client)
+    response = client.post("/api/command-center/settings", json={"freshness_hours": 99, "quiet_mode": True, "quiet_start": "88:10", "quiet_end": "bad"}, headers={"X-CSRFToken": csrf})
     assert response.status_code == 400
     assert response.get_json()["error"] == "invalid_settings"
 
 
 def test_supported_modules_enqueue_real_commands():
-    data = FakeData()
-    client = _app(data).test_client()
-    csrf = _login(client)
-    expected = {"scan": "refresh", "weather": "weather_now", "air-traffic": "air_traffic_now"}
+    data = FakeData(); client = _app(data).test_client(); csrf = _login(client)
+    expected = {"scan": "refresh", "weather": "weather_now", "air-traffic": "air_traffic_now", "tanker": "tanker_now", "market": "market_now"}
     for module_name, action in expected.items():
-        response = client.post(
-            f"/api/command-center/module/{module_name}",
-            headers={"X-CSRFToken": csrf},
-        )
+        response = client.post(f"/api/command-center/module/{module_name}", headers={"X-CSRFToken": csrf})
         assert response.status_code == 202
         assert data.commands[-1]["action"] == action
 
 
-def test_known_unwired_modules_are_explicitly_unavailable():
-    data = FakeData()
-    client = _app(data).test_client()
-    csrf = _login(client)
-    for module_name in ("tanker", "market"):
-        response = client.post(
-            f"/api/command-center/module/{module_name}",
-            headers={"X-CSRFToken": csrf},
-        )
-        assert response.status_code == 409
-        assert response.get_json()["error"] == "module_unavailable"
-    unknown = client.post(
-        "/api/command-center/module/nope",
-        headers={"X-CSRFToken": csrf},
-    )
+def test_bulk_clear_enqueues_selected_scope_and_ids():
+    data = FakeData(); client = _app(data).test_client(); csrf = _login(client)
+    response = client.post("/api/command-center/clear", json={"scope": "live", "ids": ["a", "b"]}, headers={"X-CSRFToken": csrf})
+    assert response.status_code == 202
+    assert data.commands[-1]["action"] == "clear"
+    assert data.commands[-1]["scope"] == "live"
+    assert data.commands[-1]["ids"] == ["a", "b"]
+
+
+def test_unknown_module_is_404():
+    data = FakeData(); client = _app(data).test_client(); csrf = _login(client)
+    unknown = client.post("/api/command-center/module/nope", headers={"X-CSRFToken": csrf})
     assert unknown.status_code == 404

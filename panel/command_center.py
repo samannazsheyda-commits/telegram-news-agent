@@ -13,10 +13,11 @@ MODULES = {
     "scan": {"available": True, "action": "refresh", "label": "اسکن فوری"},
     "weather": {"available": True, "action": "weather_now", "label": "هواشناسی فردا"},
     "air-traffic": {"available": True, "action": "air_traffic_now", "label": "ترافیک هوایی"},
-    "tanker": {"available": False, "action": None, "label": "نفتکش‌ها و هرمز"},
-    "market": {"available": False, "action": None, "label": "بازار و دلار"},
+    "tanker": {"available": True, "action": "tanker_now", "label": "نفتکش‌ها و هرمز"},
+    "market": {"available": True, "action": "market_now", "label": "بازار و دلار"},
 }
 _TIME_RE = re.compile(r"^(?:[01]\d|2[0-3]):[0-5]\d$")
+_CLEAR_SCOPES = {"live", "pending", "published", "rejected"}
 
 
 def _data():
@@ -144,6 +145,26 @@ def update_settings():
 
     settings = _write_settings(transform)
     return jsonify({"ok": True, "settings": _public_settings(settings)})
+
+
+@bp.post("/api/command-center/clear")
+def clear_items():
+    payload = request.get_json(silent=True) or {}
+    scope = str(payload.get("scope") or "").strip()
+    ids_value = payload.get("ids")
+    if scope not in _CLEAR_SCOPES or not isinstance(ids_value, list):
+        return jsonify({"ok": False, "error": "invalid_clear_request"}), 400
+    ids: list[str] = []
+    seen: set[str] = set()
+    for value in ids_value:
+        item_id = str(value or "").strip()
+        if item_id and item_id not in seen:
+            seen.add(item_id)
+            ids.append(item_id)
+    if not ids or len(ids) > 5000:
+        return jsonify({"ok": False, "error": "invalid_clear_request"}), 400
+    command_id = _enqueue("clear", scope=scope, ids=ids)
+    return jsonify({"ok": True, "command_id": command_id, "status": "queued", "count": len(ids)}), 202
 
 
 @bp.post("/api/command-center/module/<module_name>")

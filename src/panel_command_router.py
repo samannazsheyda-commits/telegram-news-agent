@@ -12,7 +12,7 @@ from .editorial_store import LocalEditorialStore
 from .panel_command_file import apply_command as apply_legacy_command
 
 TERMINAL = {"succeeded", "failed", "reconciled"}
-NEWSROOM_ACTIONS = {"clear", "settings_save", "weather_now", "air_traffic_now"}
+NEWSROOM_ACTIONS = {"clear", "settings_save", "weather_now", "air_traffic_now", "tanker_now", "market_now"}
 PUBLISHED_STATUSES = {"published_manual", "published_auto"}
 REJECTED_STATUSES = {"rejected_manual", "superseded"}
 
@@ -120,14 +120,34 @@ def _clear_history(store: LocalEditorialStore, ids: list[str], statuses: set[str
     return removed
 
 
+def _clear_live(ids: list[str]) -> int:
+    path = Path("data/panel_live_feed.json")
+    targets = set(ids)
+    before = _read_json(path, [])
+    if not isinstance(before, list):
+        before = []
+    def identity(row: Any) -> str:
+        if not isinstance(row, dict):
+            return ""
+        return str(row.get("item_id") or row.get("id") or row.get("news_key") or "")
+    after = [row for row in before if identity(row) not in targets]
+    removed = len(before) - len(after)
+    if removed:
+        _atomic_write(path, after)
+    return removed
+
+
 def _apply_clear(payload: dict[str, Any]) -> dict:
     command_id = payload["command_id"]
     scope = str(payload.get("scope") or "").strip()
     ids = _validated_ids(payload.get("ids"))
-    if scope not in {"pending", "published", "rejected"}:
+    if scope not in {"live", "pending", "published", "rejected"}:
         raise ValueError("invalid_clear_scope")
     store = LocalEditorialStore("data/editorial_queue.json", "data/editorial_history.json")
-    if scope == "pending":
+    if scope == "live":
+        count = _clear_live(ids)
+        message = f"{count} خبر از فید زنده پاک شد"
+    elif scope == "pending":
         count = _clear_pending(store, ids)
         message = f"{count} خبر از صف انتظار پاک شد"
     elif scope == "published":
@@ -180,6 +200,14 @@ def _apply_module(payload: dict[str, Any]) -> dict:
         from .air_traffic import publish_air_traffic_snapshot
         publish_air_traffic_snapshot()
         return _write_result(command_id, action, "succeeded", "نقشه ترافیک هوایی همین حالا منتشر شد")
+    if action == "tanker_now":
+        from .panel_modules import publish_hormuz_now
+        publish_hormuz_now()
+        return _write_result(command_id, action, "succeeded", "گزارش نفتکش‌ها و تنگه هرمز منتشر شد")
+    if action == "market_now":
+        from .panel_modules import publish_market_now
+        publish_market_now()
+        return _write_result(command_id, action, "succeeded", "گزارش بازار همین حالا منتشر شد")
     raise ValueError("unsupported_module_action")
 
 
