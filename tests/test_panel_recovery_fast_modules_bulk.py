@@ -15,7 +15,17 @@ class FakeData:
     def __init__(self):
         self.files = {
             "data/panel_live_feed.json": [
-                {"item_id": f"n{i}", "title": f"Title {i}", "source": "Reuters", "updated_at": f"2026-09-09T11:{i:02d}:00+00:00", "panel_status": "new"}
+                {
+                    "item_id": f"n{i}",
+                    "title": f"Iran issued a new operational notice number {i}",
+                    "persian_title": f"ایران اطلاعیه عملیاتی شماره {i} را صادر کرد",
+                    "source": "Reuters",
+                    "source_url": f"https://example.com/{i}",
+                    "published_at_source": f"2026-09-09T11:{i % 60:02d}:00+00:00",
+                    "discovered_at": f"2026-09-09T11:{i % 60:02d}:02+00:00",
+                    "updated_at": f"2026-09-09T11:{i % 60:02d}:03+00:00",
+                    "panel_status": "new",
+                }
                 for i in range(60)
             ],
             "data/newsroom_settings.json": {"auto_publish": True, "emergency_lock": False},
@@ -58,9 +68,10 @@ def test_live_feed_api_is_fast_json_and_never_calls_translator():
     assert response.status_code == 200
     payload = response.get_json()
     assert payload["ok"] is True
-    assert len(payload["items"]) <= 40
+    assert len(payload["items"]) <= 80
     assert calls == []
-    assert payload["items"][0]["title"].startswith("Title")
+    assert payload["items"][0]["title_fa"].startswith("ایران")
+    assert payload["items"][0]["original_title"].startswith("Iran")
 
 
 def test_live_refresh_uses_json_endpoint_not_full_dashboard_html():
