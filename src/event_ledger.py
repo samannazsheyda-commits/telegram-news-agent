@@ -6,6 +6,7 @@ import os
 import tempfile
 from dataclasses import replace
 from pathlib import Path
+from urllib.parse import urlparse
 
 from .newsroom_fingerprint import fingerprint_similarity
 from .newsroom_models import EventFingerprint, EventRecord
@@ -99,12 +100,34 @@ class EventLedger:
                 matches.append(record)
         return matches
 
-    def create_event(self, *, fingerprint: EventFingerprint, canonical_title: str, primary_source: str, source_url: str, first_seen: str, key_facts: list[str] | None = None) -> EventRecord:
+    @staticmethod
+    def _source_item_id_from_url(source_url: str) -> str:
+        raw = str(source_url or "").strip()
+        if not raw:
+            return ""
+        try:
+            path = urlparse(raw).path.rstrip("/")
+        except ValueError:
+            return ""
+        return path.rsplit("/", 1)[-1] if path else ""
+
+    def create_event(
+        self,
+        *,
+        fingerprint: EventFingerprint,
+        canonical_title: str,
+        primary_source: str,
+        source_url: str,
+        first_seen: str,
+        key_facts: list[str] | None = None,
+        source_item_id: str = "",
+    ) -> EventRecord:
         seed = f"{fingerprint.key}|{first_seen}|{source_url}"
         event_id = hashlib.sha1(seed.encode("utf-8")).hexdigest()
         existing = self.get(event_id)
         if existing is not None:
             return existing
+        resolved_source_item_id = str(source_item_id or "").strip() or self._source_item_id_from_url(source_url)
         event = EventRecord(
             event_id=event_id,
             fingerprint=fingerprint.key,
@@ -123,6 +146,7 @@ class EventLedger:
                 "locations": list(fingerprint.locations),
                 "key_facts": list(fingerprint.key_facts),
                 "time_bucket": fingerprint.time_bucket,
+                "source_item_id": resolved_source_item_id,
             },
         )
         records = self._read()
