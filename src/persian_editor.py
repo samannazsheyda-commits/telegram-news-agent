@@ -29,6 +29,11 @@ _PERSIAN_REPAIRS = (
     ("بالای تنگه هرمز", "در محدوده تنگه هرمز"),
     ("ایالات متحده", "آمریکا"),
     ("اسرائيل", "اسرائیل"),
+    ("BREAKING", "فوری"),
+    ("URGENT", "فوری"),
+    ("ALERT", "هشدار"),
+    ("Telegram", "تلگرام"),
+    ("خب خب", "خوب خوب"),
     ("ي", "ی"),
     ("ك", "ک"),
 )
@@ -76,6 +81,7 @@ def _normalize_persian(text: str) -> str:
     value = _replace_known_latin((text or "").strip())
     for old, new in _PERSIAN_REPAIRS:
         value = value.replace(old, new)
+    value = re.sub(r"(?<![\w@])@[A-Za-z0-9_]{2,64}\b", "", value)
     value = re.sub(r"\s+([،؛:.!?؟])", r"\1", value)
     value = re.sub(r"([،؛])([^\s])", r"\1 \2", value)
     value = re.sub(r"\s+", " ", value).strip()
