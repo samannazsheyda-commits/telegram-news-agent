@@ -12,7 +12,11 @@ from .editorial_store import LocalEditorialStore
 from .panel_command_file import apply_command as apply_legacy_command
 
 TERMINAL = {"succeeded", "failed", "reconciled"}
-NEWSROOM_ACTIONS = {"clear", "settings_save", "weather_now", "air_traffic_now", "tanker_now", "market_now"}
+NEWSROOM_ACTIONS = {
+    "clear", "settings_save",
+    "weather_now", "air_traffic_now", "tanker_now", "market_now",
+    "weather_preview", "air_traffic_preview", "tanker_preview", "market_preview",
+}
 PUBLISHED_STATUSES = {"published_manual", "published_auto"}
 REJECTED_STATUSES = {"rejected_manual", "superseded"}
 
@@ -187,9 +191,36 @@ def _apply_settings(payload: dict[str, Any]) -> dict:
     return _write_result(payload["command_id"], "settings_save", "succeeded", "تنظیمات اتاق خبر ذخیره شد")
 
 
+def _save_preview(name: str, preview: dict) -> None:
+    if not isinstance(preview, dict):
+        raise ValueError("invalid_preview")
+    _atomic_write(Path("data") / f"{name}_preview.json", preview)
+
+
 def _apply_module(payload: dict[str, Any]) -> dict:
     action = payload["action"]
     command_id = payload["command_id"]
+    if action == "weather_preview":
+        from .weather_digest import build_preview, save_preview
+        preview = build_preview()
+        save_preview(preview)
+        _save_preview("weather", preview)
+        return _write_result(command_id, action, "succeeded", "پیش‌نمایش هواشناسی به‌روز شد؛ چیزی منتشر نشد")
+    if action == "air_traffic_preview":
+        from .air_traffic import build_air_traffic_preview
+        preview = build_air_traffic_preview()
+        _save_preview("air_traffic", preview)
+        return _write_result(command_id, action, "succeeded", "پیش‌نمایش ترافیک هوایی به‌روز شد؛ چیزی منتشر نشد")
+    if action == "tanker_preview":
+        from .panel_modules import build_hormuz_preview
+        preview = build_hormuz_preview()
+        _save_preview("tanker", preview)
+        return _write_result(command_id, action, "succeeded", "پیش‌نمایش هرمز به‌روز شد؛ چیزی منتشر نشد")
+    if action == "market_preview":
+        from .panel_modules import build_market_preview
+        preview = build_market_preview()
+        _save_preview("market", preview)
+        return _write_result(command_id, action, "succeeded", "پیش‌نمایش بازار به‌روز شد؛ چیزی منتشر نشد")
     if action == "weather_now":
         from .weather_digest import run as run_weather
         rc = int(run_weather(force=True) or 0)
