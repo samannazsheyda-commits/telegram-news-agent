@@ -108,3 +108,29 @@ def test_explosion_post_has_one_clean_persian_breaking_header_without_flags_or_h
     assert "🇮🇱" not in text
     assert "🛑" not in text
     assert text.count("خبر فوری") == 1
+
+
+def test_final_publish_guard_blocks_unrelated_israeli_education_story():
+    session = Session({"ok": True, "result": {"message_id": 999}})
+    publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=lambda x: f"فا {x}")
+    result = publisher(item(
+        source="KAN 11 / X",
+        title="Mitzav exam scores in ultra-Orthodox education: Bnei Yosef network scores high in English",
+        summary="Girls in the ultra-Orthodox sector approach national mathematics scores @lirankog with details @TaliMoreno_",
+    ))
+    assert result["ok"] is False
+    assert result["error"] == "irrelevant_to_bikhabar"
+    assert session.calls == []
+
+
+def test_final_publish_guard_blocks_us_campaign_story_with_incidental_iran_line():
+    session = Session({"ok": True, "result": {"message_id": 1000}})
+    publisher = TelegramNewsroomPublisher("token", "@bikhabaar", session=session, translator=lambda x: f"فا {x}")
+    result = publisher(item(
+        source="CBS News / X",
+        title="Democratic candidate James Talarico discusses his chances in the Texas Senate election",
+        summary="He discussed tariffs, a federal gas tax holiday and said he would work to end the war in Iran.",
+    ))
+    assert result["ok"] is False
+    assert result["error"] == "irrelevant_to_bikhabar"
+    assert session.calls == []
