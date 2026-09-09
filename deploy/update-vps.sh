@@ -3,34 +3,48 @@ set -euo pipefail
 
 APP_DIR="/opt/bikhabar/app"
 VENV_DIR="/opt/bikhabar/venv"
-SNAPSHOT_DIR="/var/lib/bikhabar/runtime-snapshot"
+RUNTIME_ROOT="/var/lib/bikhabar/runtime"
+RUNTIME_DATA="${RUNTIME_ROOT}/data"
+COMMAND_DIR="${RUNTIME_ROOT}/panel_commands"
 ENV_FILE="/etc/bikhabar/agent.env"
 PANEL_PASSWORD_FILE="/var/lib/bikhabar/panel_password.txt"
 BRANCH="${BRANCH:-production}"
 
 if [[ -f "${ENV_FILE}" ]]; then
   ENV_BRANCH="$(grep -m1 '^DEPLOY_BRANCH=' "${ENV_FILE}" | cut -d= -f2- || true)"
-  if [[ -n "${ENV_BRANCH}" ]]; then
-    BRANCH="${ENV_BRANCH}"
-  fi
+  [[ -n "${ENV_BRANCH}" ]] && BRANCH="${ENV_BRANCH}"
 fi
-
-RUNTIME_FILES=(
-  "state.json"
-  "data/editorial_queue.json"
-  "data/editorial_history.json"
-  "data/event_ledger.json"
-  "data/panel_live_feed.json"
-)
 
 if [[ "${EUID}" -ne 0 ]]; then
   echo "Run this updater as root." >&2
   exit 1
 fi
-
 if [[ ! -d "${APP_DIR}/.git" ]]; then
   echo "Missing git checkout at ${APP_DIR}" >&2
   exit 1
+fi
+
+install -d -o bikhabar -g bikhabar -m 700 "${RUNTIME_ROOT}" "${RUNTIME_DATA}" "${COMMAND_DIR}"
+
+# One-time migration from the legacy checkout-owned runtime. Never overwrite
+# an existing VPS runtime file: the VPS is the source of truth for live state.
+migrate_once() {
+  local src="$1"
+  local dst="$2"
+  if [[ ! -e "${dst}" && -e "${src}" ]]; then
+    install -D -o bikhabar -g bikhabar -m 600 "${src}" "${dst}"
+  fi
+}
+
+migrate_once "${APP_DIR}/state.json" "${RUNTIME_ROOT}/state.json"
+migrate_once "${APP_DIR}/data/newsroom_settings.json" "${RUNTIME_DATA}/newsroom_settings.json"
+migrate_once "${APP_DIR}/data/custom_sources.json" "${RUNTIME_DATA}/custom_sources.json"
+migrate_once "${APP_DIR}/data/editorial_queue.json" "${RUNTIME_DATA}/editorial_queue.json"
+migrate_once "${APP_DIR}/data/editorial_history.json" "${RUNTIME_DATA}/editorial_history.json"
+migrate_once "${APP_DIR}/data/event_ledger.json" "${RUNTIME_DATA}/event_ledger.json"
+migrate_once "${APP_DIR}/data/panel_live_feed.json" "${RUNTIME_DATA}/panel_live_feed.json"
+if [[ -d "${APP_DIR}/panel_commands" ]]; then
+  find "${APP_DIR}/panel_commands" -maxdepth 1 -type f -name '*.json' -exec cp -n {} "${COMMAND_DIR}/" \; || true
 fi
 
 runuser -u bikhabar -- git -C "${APP_DIR}" fetch origin "${BRANCH}:refs/remotes/origin/${BRANCH}"
@@ -39,64 +53,48 @@ TARGET_SHA="$(git -C "${APP_DIR}" rev-parse "origin/${BRANCH}")"
 
 if [[ "${CURRENT_SHA}" == "${TARGET_SHA}" ]]; then
   echo "Already up to date at ${CURRENT_SHA}"
-  exit 0
-fi
-
-mkdir -p "${SNAPSHOT_DIR}/data"
-for path in "${RUNTIME_FILES[@]}"; do
-  if [[ -f "${APP_DIR}/${path}" ]]; then
-    mkdir -p "${SNAPSHOT_DIR}/$(dirname "${path}")"
-    cp -a "${APP_DIR}/${path}" "${SNAPSHOT_DIR}/${path}"
-  fi
-done
-
-rollback() {
-  echo "Deploy failed; rolling back to ${CURRENT_SHA}" >&2
-  runuser -u bikhabar -- git -C "${APP_DIR}" reset --hard "${CURRENT_SHA}" || true
-  if command -v uv >/dev/null 2>&1; then
-    uv pip install --python "${VENV_DIR}/bin/python" -r "${APP_DIR}/requirements.txt" || true
-  fi
-  for path in "${RUNTIME_FILES[@]}"; do
-    if [[ -f "${SNAPSHOT_DIR}/${path}" ]]; then
-      mkdir -p "${APP_DIR}/$(dirname "${path}")"
-      cp -a "${SNAPSHOT_DIR}/${path}" "${APP_DIR}/${path}"
-    fi
-  done
-  chown -R bikhabar:bikhabar "${APP_DIR}" "${SNAPSHOT_DIR}" || true
-  install -m 644 "${APP_DIR}/deploy/bikhabar-agent.service" /etc/systemd/system/bikhabar-agent.service || true
-  [[ -f "${APP_DIR}/deploy/bikhabar-panel.service" ]] && install -m 644 "${APP_DIR}/deploy/bikhabar-panel.service" /etc/systemd/system/bikhabar-panel.service || true
-  [[ -f "${APP_DIR}/deploy/bikhabar-weather.service" ]] && install -m 644 "${APP_DIR}/deploy/bikhabar-weather.service" /etc/systemd/system/bikhabar-weather.service || true
-  [[ -f "${APP_DIR}/deploy/bikhabar-weather.timer" ]] && install -m 644 "${APP_DIR}/deploy/bikhabar-weather.timer" /etc/systemd/system/bikhabar-weather.timer || true
-  [[ -f "${APP_DIR}/deploy/bikhabar-air-traffic.service" ]] && install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.service" /etc/systemd/system/bikhabar-air-traffic.service || true
-  [[ -f "${APP_DIR}/deploy/bikhabar-air-traffic.timer" ]] && install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.timer" /etc/systemd/system/bikhabar-air-traffic.timer || true
-  systemctl daemon-reload || true
-  systemctl restart bikhabar-agent || true
-  systemctl restart bikhabar-panel || true
-  systemctl enable --now bikhabar-weather.timer bikhabar-air-traffic.timer >/dev/null 2>&1 || true
-}
-trap rollback ERR
-
-systemctl stop bikhabar-agent || true
-systemctl stop bikhabar-panel || true
-runuser -u bikhabar -- git -C "${APP_DIR}" reset --hard "origin/${BRANCH}"
-
-if command -v uv >/dev/null 2>&1; then
-  uv pip install --python "${VENV_DIR}/bin/python" -r "${APP_DIR}/requirements.txt"
 else
-  "${VENV_DIR}/bin/pip" install -r "${APP_DIR}/requirements.txt"
+  rollback() {
+    echo "Deploy failed; rolling code back to ${CURRENT_SHA}" >&2
+    runuser -u bikhabar -- git -C "${APP_DIR}" reset --hard "${CURRENT_SHA}" || true
+    if command -v uv >/dev/null 2>&1; then
+      uv pip install --python "${VENV_DIR}/bin/python" -r "${APP_DIR}/requirements.txt" || true
+    else
+      "${VENV_DIR}/bin/pip" install -r "${APP_DIR}/requirements.txt" || true
+    fi
+    install -m 644 "${APP_DIR}/deploy/bikhabar-agent.service" /etc/systemd/system/bikhabar-agent.service || true
+    [[ -f "${APP_DIR}/deploy/bikhabar-panel.service" ]] && install -m 644 "${APP_DIR}/deploy/bikhabar-panel.service" /etc/systemd/system/bikhabar-panel.service || true
+    systemctl daemon-reload || true
+    systemctl restart bikhabar-agent || true
+    systemctl restart bikhabar-panel || true
+  }
+  trap rollback ERR
+
+  systemctl stop bikhabar-agent || true
+  systemctl stop bikhabar-panel || true
+  runuser -u bikhabar -- git -C "${APP_DIR}" reset --hard "origin/${BRANCH}"
+
+  if command -v uv >/dev/null 2>&1; then
+    uv pip install --python "${VENV_DIR}/bin/python" -r "${APP_DIR}/requirements.txt"
+  else
+    "${VENV_DIR}/bin/pip" install -r "${APP_DIR}/requirements.txt"
+  fi
 fi
 
-for path in "${RUNTIME_FILES[@]}"; do
-  if [[ -f "${SNAPSHOT_DIR}/${path}" ]]; then
-    mkdir -p "${APP_DIR}/$(dirname "${path}")"
-    cp -a "${SNAPSHOT_DIR}/${path}" "${APP_DIR}/${path}"
+# Seed repository defaults only when the VPS has no corresponding live file.
+seed_once() {
+  local src="$1"
+  local dst="$2"
+  if [[ ! -e "${dst}" && -e "${src}" ]]; then
+    install -D -o bikhabar -g bikhabar -m 600 "${src}" "${dst}"
   fi
-done
+}
+seed_once "${APP_DIR}/data/custom_sources.json" "${RUNTIME_DATA}/custom_sources.json"
+seed_once "${APP_DIR}/data/newsroom_settings.json" "${RUNTIME_DATA}/newsroom_settings.json"
 
 install -d -o bikhabar -g bikhabar -m 700 /var/lib/bikhabar
 if ! grep -q '^PANEL_SECRET_KEY=' "${ENV_FILE}"; then
-  PANEL_SECRET_KEY_VALUE="$(openssl rand -hex 32)"
-  echo "PANEL_SECRET_KEY=${PANEL_SECRET_KEY_VALUE}" >> "${ENV_FILE}"
+  echo "PANEL_SECRET_KEY=$(openssl rand -hex 32)" >> "${ENV_FILE}"
 fi
 if ! grep -q '^PANEL_PASSWORD_HASH=' "${ENV_FILE}"; then
   PANEL_PASSWORD_VALUE="$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | head -c 18)"
@@ -105,11 +103,29 @@ if ! grep -q '^PANEL_PASSWORD_HASH=' "${ENV_FILE}"; then
   printf '%s\n' "${PANEL_PASSWORD_VALUE}" > "${PANEL_PASSWORD_FILE}"
   chmod 600 "${PANEL_PASSWORD_FILE}"
 fi
-if ! grep -q '^PANEL_LOCAL_ROOT=' "${ENV_FILE}"; then
-  echo "PANEL_LOCAL_ROOT=${APP_DIR}" >> "${ENV_FILE}"
-fi
 
-chown -R bikhabar:bikhabar "${APP_DIR}" "${SNAPSHOT_DIR}"
+for pair in \
+  "BIKHABAR_RUNTIME_ROOT=${RUNTIME_ROOT}" \
+  "STATE_PATH=${RUNTIME_ROOT}/state.json" \
+  "DATA_DIR=${RUNTIME_DATA}" \
+  "CUSTOM_SOURCES_PATH=${RUNTIME_DATA}/custom_sources.json" \
+  "NEWSROOM_SETTINGS_PATH=${RUNTIME_DATA}/newsroom_settings.json" \
+  "PANEL_LOCAL_ROOT=${RUNTIME_ROOT}" \
+  "PANEL_COMMAND_DIR=${COMMAND_DIR}" \
+  "POLL_SECONDS=5" \
+  "SESSION_SECONDS=0"; do
+  key="${pair%%=*}"
+  value="${pair#*=}"
+  if grep -q "^${key}=" "${ENV_FILE}"; then
+    sed -i "s#^${key}=.*#${key}=${value}#" "${ENV_FILE}"
+  else
+    echo "${key}=${value}" >> "${ENV_FILE}"
+  fi
+done
+
+chown -R bikhabar:bikhabar "${RUNTIME_ROOT}" "${APP_DIR}"
+chmod 700 "${RUNTIME_ROOT}" "${RUNTIME_DATA}" "${COMMAND_DIR}"
+
 install -m 644 "${APP_DIR}/deploy/bikhabar-agent.service" /etc/systemd/system/bikhabar-agent.service
 install -m 644 "${APP_DIR}/deploy/bikhabar-panel.service" /etc/systemd/system/bikhabar-panel.service
 install -m 644 "${APP_DIR}/deploy/bikhabar-weather.service" /etc/systemd/system/bikhabar-weather.service
@@ -121,7 +137,7 @@ systemctl enable bikhabar-agent bikhabar-panel bikhabar-weather.timer bikhabar-a
 systemctl restart bikhabar-agent
 systemctl restart bikhabar-panel
 systemctl enable --now bikhabar-weather.timer bikhabar-air-traffic.timer >/dev/null
-sleep 8
+sleep 6
 systemctl is-active --quiet bikhabar-agent
 systemctl is-active --quiet bikhabar-panel
 systemctl is-active --quiet bikhabar-weather.timer
