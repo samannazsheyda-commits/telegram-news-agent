@@ -4,8 +4,12 @@ from datetime import datetime, timezone
 from typing import Callable
 
 from .custom_sources import fetch_custom_news_items
-from .fresh_x import fetch_fresh_x_news_items
-from .managed_sources import fetch_managed_base_news_items, fetch_managed_priority_news_items, fetch_managed_truth_items
+from .managed_sources import (
+    fetch_managed_base_news_items,
+    fetch_managed_fresh_x_news_items,
+    fetch_managed_priority_news_items,
+    fetch_managed_truth_items,
+)
 from .newsroom_models import RawNewsItem
 from .sources import NewsItem
 
@@ -45,18 +49,13 @@ def _wrap_news_fetcher(fetcher: Callable[[], list[NewsItem]], *, source_priority
 
 def build_raw_fetchers(
     *,
-    direct_x_fetch=fetch_fresh_x_news_items,
+    direct_x_fetch=fetch_managed_fresh_x_news_items,
     base_fetch=fetch_managed_base_news_items,
     custom_fetch=fetch_custom_news_items,
     priority_fetch=fetch_managed_priority_news_items,
     truth_fetch=fetch_managed_truth_items,
 ):
-    """Build independent realtime lanes, with direct sources ahead of search fallbacks.
-
-    FxTwitter returns canonical X post URLs/timestamps and is therefore a true
-    realtime source. Google/system query lanes remain available as discovery
-    fallbacks, but they can no longer be the only path for monitored X accounts.
-    """
+    """Build independent realtime lanes, with direct sources ahead of search fallbacks."""
     return [
         _wrap_news_fetcher(direct_x_fetch, source_priority="protected"),
         _wrap_news_fetcher(custom_fetch, source_priority="normal"),
