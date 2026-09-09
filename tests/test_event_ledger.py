@@ -119,3 +119,19 @@ def test_find_candidates_returns_similar_structural_event(tmp_path):
     )
     matches = ledger.find_candidates(similar)
     assert [record.event_id for record in matches] == [created.event_id]
+
+
+def test_find_by_source_url_returns_published_event(tmp_path):
+    ledger = EventLedger(tmp_path / "ledger.json")
+    created = ledger.create_event(
+        fingerprint=fp(),
+        canonical_title="Jerusalem Post item",
+        primary_source="Jerusalem Post / X",
+        source_url="https://x.com/Jerusalem_Post/status/2097719548220719534",
+        first_seen="2026-09-09T16:11:00+00:00",
+    )
+    ledger.mark_published(created.event_id, 9001, [], "2026-09-09T16:12:00+00:00")
+    found = ledger.find_by_source_url("https://x.com/Jerusalem_Post/status/2097719548220719534")
+    assert found is not None
+    assert found.event_id == created.event_id
+    assert found.published_message_ids == [9001]
