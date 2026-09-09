@@ -4,6 +4,7 @@ import re
 import tempfile
 from datetime import datetime, timezone
 from email.utils import format_datetime, parsedate_to_datetime
+from html import unescape
 from pathlib import Path
 
 import requests
@@ -71,6 +72,12 @@ def _telegram_preview_url(url: str) -> str:
     return clean + "?single"
 
 
+def _plain_text(html_text: str) -> str:
+    text = re.sub(r"<br\s*/?>", "\n", str(html_text or ""), flags=re.I)
+    text = re.sub(r"</?(?:b|i|u|s|code|pre|a)(?:\s+[^>]*)?>", "", text, flags=re.I)
+    return unescape(text).strip()
+
+
 class TelegramNewsroomPublisher:
     def __init__(self, bot_token: str, chat_id: str, *, session=requests, translator=translate_to_fa):
         self.bot_token = str(bot_token or "").strip()
@@ -128,7 +135,7 @@ class TelegramNewsroomPublisher:
         candidates = sorted(Path(directory).glob("telegram-video.*"), key=lambda p: p.stat().st_size, reverse=True)
         return candidates[0] if candidates and candidates[0].stat().st_size > 0 else None
 
-    def _post(self, endpoint: str, *, data: dict, files=None, timeout: int = 35) -> dict:
+    def _raw_post(self, endpoint: str, *, data: dict, files=None, timeout: int = 35) -> dict:
         try:
             response = self.session.post(
                 f"https://api.telegram.org/bot{self.bot_token}/{endpoint}",
@@ -148,11 +155,31 @@ class TelegramNewsroomPublisher:
             return {"ok": False, "error": description}
         return {"ok": True, "message_id": message_id}
 
+    def _post(self, endpoint: str, *, data: dict, files=None, timeout: int = 35) -> dict:
+        result = self._raw_post(endpoint, data=data, files=files, timeout=timeout)
+        if result.get("ok") is True:
+            return result
+        error = str(result.get("error") or "")
+        # Telegram rejects a whole message when one HTML entity is malformed.
+        # Retry text-only sends without parse_mode instead of silently losing news.
+        if endpoint == "sendMessage" and "parse" in error.lower() and data.get("text"):
+            retry = dict(data)
+            retry.pop("parse_mode", None)
+            retry["text"] = _plain_text(str(data.get("text") or ""))
+            result = self._raw_post(endpoint, data=retry, files=files, timeout=timeout)
+            if result.get("ok") is True:
+                return result
+            error = str(result.get("error") or error)
+        print(f"TELEGRAM_PUBLISH_FAILED endpoint={endpoint} error={error!r}", flush=True)
+        return result
+
     def __call__(self, item: NormalizedNewsItem) -> dict:
         if not self.bot_token or not self.chat_id:
+            print("TELEGRAM_PUBLISH_FAILED endpoint=none error='missing_telegram_credentials'", flush=True)
             return {"ok": False, "error": "missing_telegram_credentials"}
         message = self._message(item)
         if not message:
+            print(f"TELEGRAM_PUBLISH_FAILED endpoint=none error='translation_or_format_failed' source={item.raw.source!r}", flush=True)
             return {"ok": False, "error": "translation_or_format_failed"}
 
         video = _first_video(item)
@@ -164,9 +191,6 @@ class TelegramNewsroomPublisher:
                 timeout=40,
             )
 
-        # Public Telegram OSINT channels often expose the post but not a direct
-        # mp4 URL in our feed model. Detect the video first, then download only
-        # those posts and upload the actual file to Bikhabar.
         source_url = str(item.raw.source_url or "").strip()
         if self._telegram_post_has_video(source_url):
             with tempfile.TemporaryDirectory(prefix="bikhabar-video-") as directory:
