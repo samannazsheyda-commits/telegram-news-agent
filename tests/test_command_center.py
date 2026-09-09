@@ -21,6 +21,13 @@ class FakeData:
             },
             "data/panel_live_feed.json": [{"id": "a"}, {"id": "b"}],
             "data/editorial_queue.json": [{"id": "q"}],
+            "data/editorial_history.json": [],
+            "data/weather_preview.json": {"message": "🌤️ هوای فردا", "generated_at": "2026-09-09T12:00:00+00:00"},
+            "data/air_traffic_preview.json": {"message": "✈️ ترافیک هوایی منطقه"},
+            "data/tanker_preview.json": {"message": "🚢 گزارش هرمز"},
+            "data/market_preview.json": {"message": "💵 بازار ایران"},
+            "state.json": {"last_cycle_at": "2026-09-09T12:00:00+00:00", "last_publication_at": "2026-09-09T11:59:00+00:00"},
+            "panel_results/cmd-ok.json": {"command_id": "cmd-ok", "status": "succeeded", "message": "انجام شد", "updated_at": "2026-09-09T12:00:01+00:00"},
         }
         self.commands = []
 
@@ -89,6 +96,49 @@ def test_status_reports_safe_operational_capabilities():
     serialized = str(payload).lower()
     assert "token" not in serialized
     assert "password" not in serialized
+
+
+def test_command_result_endpoint_reports_terminal_result():
+    data = FakeData(); client = _app(data).test_client(); _login(client)
+    response = client.get("/api/command-center/command/cmd-ok")
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["status"] == "succeeded"
+    assert payload["message"] == "انجام شد"
+
+
+def test_command_result_endpoint_reports_queued_when_no_result_exists():
+    data = FakeData(); client = _app(data).test_client(); _login(client)
+    response = client.get("/api/command-center/command/unknown")
+    assert response.status_code == 200
+    assert response.get_json()["status"] == "queued"
+
+
+def test_health_uses_persisted_state_and_never_claims_fake_online():
+    data = FakeData(); client = _app(data).test_client(); _login(client)
+    response = client.get("/api/command-center/health")
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["last_cycle_at"] == "2026-09-09T12:00:00+00:00"
+    assert payload["last_publication_at"] == "2026-09-09T11:59:00+00:00"
+    assert payload["agent_state"] in {"active", "stale", "unknown"}
+    assert payload["telegram_state"] in {"ok", "error", "unknown"}
+
+
+def test_module_preview_endpoint_reads_latest_persisted_preview_without_publishing():
+    data = FakeData(); client = _app(data).test_client(); _login(client)
+    expected = {
+        "weather": "🌤️ هوای فردا",
+        "air-traffic": "✈️ ترافیک هوایی منطقه",
+        "tanker": "🚢 گزارش هرمز",
+        "market": "💵 بازار ایران",
+    }
+    for module, message in expected.items():
+        response = client.get(f"/api/command-center/module/{module}/preview")
+        assert response.status_code == 200
+        payload = response.get_json()
+        assert payload["message"] == message
+        assert data.commands == []
 
 
 def test_panic_stop_and_resume_are_persisted():
