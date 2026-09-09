@@ -90,6 +90,28 @@ def decide_item(
                 event_id="",
             )
 
+    # The hash is already a canonical structural claim. Previously sparse
+    # stories (notably political quotes and explosion alerts) could have the
+    # exact same hash yet receive a low weighted similarity score because most
+    # structural arrays were empty. That let the same claim publish repeatedly.
+    for record in candidates:
+        if record.fingerprint == fingerprint.key:
+            new_facts = _new_material_facts(fingerprint, record)
+            if new_facts:
+                return DecisionResult(
+                    decision="material_update",
+                    reason="exact_structural_claim_with_new_material_facts:" + ",".join(sorted(new_facts)),
+                    confidence=1.0,
+                    event_id=record.event_id,
+                )
+            return DecisionResult(
+                decision="duplicate_same_claim",
+                reason="exact_structural_claim_already_seen",
+                confidence=1.0,
+                event_id=record.event_id,
+                duplicate_of=record.event_id,
+            )
+
     scored: list[tuple[float, EventRecord]] = []
     for record in candidates:
         stored = _stored_fingerprint(record)
