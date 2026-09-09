@@ -6,7 +6,8 @@ from unittest.mock import patch
 from werkzeug.security import generate_password_hash
 
 from panel.app import create_app
-from panel.command_center import bp as command_center_bp, MODULES
+from panel.command_center import MODULES
+from panel.live_api import bp as live_api_bp
 from src.panel_command_router import _apply_clear, _apply_module
 
 
@@ -50,6 +51,7 @@ def test_live_feed_api_is_fast_json_and_never_calls_translator():
         "DATA_BACKEND": data,
         "LIVE_FEED_TRANSLATOR": lambda text: calls.append(text) or "ترجمه",
     })
+    app.register_blueprint(live_api_bp)
     client = app.test_client()
     _login(client)
     response = client.get("/api/live-feed")
@@ -75,7 +77,8 @@ def test_tanker_and_market_modules_are_real_and_available():
     assert MODULES["market"]["action"] == "market_now"
 
 
-def test_runtime_dispatches_tanker_and_market_modules():
+def test_runtime_dispatches_tanker_and_market_modules(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     with patch("src.panel_modules.publish_hormuz_now", return_value=True) as tanker:
         result = _apply_module({"action": "tanker_now", "command_id": "t1"})
         assert result["status"] == "succeeded"
@@ -92,11 +95,12 @@ def test_bulk_clear_supports_live_feed(tmp_path, monkeypatch):
     Path("data/panel_live_feed.json").write_text('[{"item_id":"a"},{"item_id":"b"},{"item_id":"c"}]', encoding="utf-8")
     result = _apply_clear({"command_id": "c1", "scope": "live", "ids": ["a", "c"]})
     assert result["status"] == "succeeded"
-    assert '"b"' in Path("data/panel_live_feed.json").read_text(encoding="utf-8")
-    assert '"a"' not in Path("data/panel_live_feed.json").read_text(encoding="utf-8")
+    text = Path("data/panel_live_feed.json").read_text(encoding="utf-8")
+    assert '"b"' in text
+    assert '"a"' not in text
 
 
 def test_dashboard_has_bulk_live_controls():
-    html = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
-    assert 'id="liveSelectAll"' in html
-    assert 'id="liveBulkDelete"' in html
+    combined = Path("panel/templates/dashboard.html").read_text(encoding="utf-8") + Path("panel/static/live.js").read_text(encoding="utf-8")
+    assert 'id="liveSelectAll"' in combined
+    assert 'id="liveBulkDelete"' in combined
