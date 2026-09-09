@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% block title %}اتاق فرمان جنگ | بی‌خبر{% endblock %}
+{% block title %}اتاق فرمان | بی‌خبر{% endblock %}
 {% block content %}
 <section class="war-hero">
   <div class="hero-copy">
-    <div class="eyebrow"><span class="red-dot"></span> اتاق فرمان جنگ</div>
+    <div class="eyebrow"><span class="red-dot"></span> اتاق فرمان زنده</div>
     <h1>اتاق فرمان بی‌خبر</h1>
     <p>رصد زنده جنگ، موشک، انفجار و تنگه هرمز؛ کنترل انتشار، منابع و ماژول‌های عملیاتی در یک صفحه.</p>
   </div>
@@ -62,7 +62,7 @@
 <section class="module-grid premium-modules">
   <article class="module-card available" data-module-card="weather">
     <div class="module-icon">🌤️</div>
-    <div class="module-copy"><h3>هواشناسی فردا</h3><p>هر شب ۲۳:۰۰ تهران · تاریخ شمسی و روز هفته</p><span class="module-status ok">آماده</span></div>
+    <div class="module-copy"><h3>هواشناسی فردا</h3><p>هر شب ۲۳:۰۰ تهران · پیش‌نمایش قبل از انتشار</p><span class="module-status ok">آماده</span></div>
     <button class="button command-action" data-command-module="weather" type="button">انتشار همین حالا</button>
   </article>
   <article class="module-card available" data-module-card="air-traffic">
@@ -80,6 +80,34 @@
     <div class="module-copy"><h3>بازار و دلار</h3><p>دلار، طلا و داده‌های بازار با انتشار دستی</p><span class="module-status warn">در حال اتصال</span></div>
     <button class="button command-action" data-command-module="market" type="button">انتشار همین حالا</button>
   </article>
+</section>
+
+<section class="weather-preview-card">
+  <div class="weather-preview-head">
+    <div>
+      <span class="section-kicker">WEATHER PREVIEW</span>
+      <h2>پیش‌نمایش دقیق هواشناسی</h2>
+      <p class="muted">همان متنی که در تلگرام منتشر می‌شود؛ بروزرسانی پیش‌نمایش هیچ پیامی ارسال نمی‌کند.</p>
+    </div>
+    <div class="weather-preview-actions">
+      <form method="post" action="{{ url_for('weather_preview.refresh') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="button primary-action" type="submit">↻ بروزرسانی پیش‌نمایش</button>
+      </form>
+      <button class="button command-action" data-command-module="weather" type="button">انتشار همین حالا</button>
+    </div>
+  </div>
+  {% if weather_preview and weather_preview.message %}
+    <div class="weather-preview-message">{{ weather_preview.message|safe }}</div>
+    <div class="weather-preview-meta">
+      <span>ساخته‌شده: {{ weather_preview.generated_at or '—' }}</span>
+      <span>تاریخ هدف: {{ weather_preview.target_date or '—' }}</span>
+      <span>شهرها: {{ weather_preview.city_count or '—' }}</span>
+      {% if weather_preview.source_url %}<a href="{{ weather_preview.source_url }}" target="_blank" rel="noopener">منبع: {{ weather_preview.source or 'Open-Meteo' }}</a>{% endif %}
+    </div>
+  {% else %}
+    <div class="weather-empty">هنوز پیش‌نمایش ساخته نشده. «بروزرسانی پیش‌نمایش» را بزن تا متن دقیق بدون انتشار ساخته شود.</div>
+  {% endif %}
 </section>
 
 <section class="section-head">
@@ -159,7 +187,7 @@
 </div>
 
 <section class="quick-links">
-  <a class="button" href="{{ url_for('sources') }}">مدیریت منابع</a>
+  <a class="button" href="/source-manager">مدیریت منابع</a>
   <a class="button" href="{{ url_for('review_queue') }}">صف سردبیری</a>
   <a class="button" href="{{ url_for('history') }}">تاریخچه انتشار</a>
 </section>
