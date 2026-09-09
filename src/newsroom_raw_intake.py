@@ -4,9 +4,10 @@ from datetime import datetime, timezone
 from typing import Callable
 
 from .custom_sources import fetch_custom_news_items
-from .managed_sources import fetch_managed_base_news_items, fetch_managed_priority_news_items, fetch_managed_truth_items
+from .managed_sources import fetch_managed_truth_items
 from .managed_x_realtime import fetch_managed_x_realtime
 from .newsroom_models import RawNewsItem
+from .realtime_search import fetch_fresh_base_news_items, fetch_fresh_priority_news_items
 from .sources import NewsItem
 
 
@@ -46,12 +47,12 @@ def _wrap_news_fetcher(fetcher: Callable[[], list[NewsItem]], *, source_priority
 def build_raw_fetchers(
     *,
     direct_x_fetch=fetch_managed_x_realtime,
-    base_fetch=fetch_managed_base_news_items,
+    base_fetch=fetch_fresh_base_news_items,
     custom_fetch=fetch_custom_news_items,
-    priority_fetch=fetch_managed_priority_news_items,
+    priority_fetch=fetch_fresh_priority_news_items,
     truth_fetch=fetch_managed_truth_items,
 ):
-    """Build independent realtime lanes, with direct sources ahead of search fallbacks."""
+    """Build realtime lanes; direct sources lead and search fallbacks are constrained to one hour."""
     return [
         _wrap_news_fetcher(direct_x_fetch, source_priority="protected"),
         _wrap_news_fetcher(custom_fetch, source_priority="normal"),
