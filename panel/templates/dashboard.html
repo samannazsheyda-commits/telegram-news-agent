@@ -90,7 +90,7 @@
       <p class="muted">همان متنی که در تلگرام منتشر می‌شود؛ بروزرسانی پیش‌نمایش هیچ پیامی ارسال نمی‌کند.</p>
     </div>
     <div class="weather-preview-actions">
-      <form method="post" action="{{ url_for('weather_preview.refresh') }}">
+      <form method="post" action="/weather-preview/refresh">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button class="button primary-action" type="submit">↻ بروزرسانی پیش‌نمایش</button>
       </form>
