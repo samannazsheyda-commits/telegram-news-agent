@@ -80,6 +80,17 @@ def test_current_irrelevant_story_is_not_publishable():
     assert d.reason == "not_iran_relevant"
 
 
+def test_handle_containing_iran_letters_does_not_make_story_iran_relevant():
+    d = _decision(_raw(
+        source="KAN 11 / X",
+        title="Mitzav exam scores in ultra-Orthodox education: Bnei Yosef network scores high in English",
+        summary="Girls approach national mathematics scores @lirankog with details @TaliMoreno_",
+        published_at="2026-09-07T20:45:00+00:00",
+    ))
+    assert d.eligible is False
+    assert d.reason == "not_iran_relevant"
+
+
 def test_ambiguous_protected_story_goes_to_review_instead_of_silent_filter():
     d = _decision(_raw(
         source="White House",
