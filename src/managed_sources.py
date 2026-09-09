@@ -23,8 +23,9 @@ from .sources import (
 from .truth_social import fetch_trump_truth_items, parse_truth_status
 
 
-SOURCE_OVERRIDES_PATH = Path(os.environ.get("SOURCE_OVERRIDES_PATH", "data/source_overrides.json"))
-CUSTOM_SOURCES_PATH = Path(os.environ.get("CUSTOM_SOURCES_PATH", "data/custom_sources.json"))
+_DATA_DIR = Path(os.environ.get("DATA_DIR", "data"))
+SOURCE_OVERRIDES_PATH = Path(os.environ.get("SOURCE_OVERRIDES_PATH", str(_DATA_DIR / "source_overrides.json")))
+CUSTOM_SOURCES_PATH = Path(os.environ.get("CUSTOM_SOURCES_PATH", str(_DATA_DIR / "custom_sources.json")))
 
 
 def _source_id(prefix: str, identity: str) -> str:
