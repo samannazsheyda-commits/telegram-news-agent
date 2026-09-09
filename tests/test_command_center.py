@@ -19,7 +19,24 @@ class FakeData:
                 "quiet_end": "07:00",
                 "freshness_hours": 3,
             },
-            "data/panel_live_feed.json": [{"id": "a"}, {"id": "b"}],
+            "data/panel_live_feed.json": [
+                {
+                    "id": "a",
+                    "item_id": "a",
+                    "news_key": "news-a",
+                    "source": "Reuters",
+                    "source_url": "https://example.com/a",
+                    "title": "Original live title",
+                    "original_title": "Original live title",
+                    "summary": "Original live summary",
+                    "original_summary": "Original live summary",
+                    "persian_title": "تیتر فارسی زنده",
+                    "persian_body": "متن فارسی زنده",
+                    "published_at_source": "2026-09-09T12:00:00+00:00",
+                    "panel_status": "new",
+                },
+                {"id": "b"},
+            ],
             "data/editorial_queue.json": [{"id": "q"}],
             "data/editorial_history.json": [],
             "data/weather_preview.json": {"message": "🌤️ هوای فردا", "generated_at": "2026-09-09T12:00:00+00:00"},
@@ -191,6 +208,23 @@ def test_bulk_clear_enqueues_selected_scope_and_ids():
     assert data.commands[-1]["action"] == "clear"
     assert data.commands[-1]["scope"] == "live"
     assert data.commands[-1]["ids"] == ["a", "b"]
+
+
+def test_any_live_item_can_be_promoted_to_review_for_editing():
+    data = FakeData(); client = _app(data).test_client(); csrf = _login(client)
+    response = client.post("/api/command-center/live/a/review", headers={"X-CSRFToken": csrf})
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["ok"] is True
+    assert payload["review_url"] == "/review/a"
+    queued = next(row for row in data.files["data/editorial_queue.json"] if row.get("id") == "a")
+    assert queued["status"] == "pending"
+    assert queued["persian_title"] == "تیتر فارسی زنده"
+    assert queued["persian_body"] == "متن فارسی زنده"
+    assert queued["original_title"] == "Original live title"
+    assert queued["original_summary"] == "Original live summary"
+    assert queued["source"] == "Reuters"
+    assert queued["source_url"] == "https://example.com/a"
 
 
 def test_unknown_module_is_404():
