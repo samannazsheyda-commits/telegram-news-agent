@@ -15,7 +15,9 @@ def test_flags_and_topic_icons_are_last_line_after_brand_footer():
     text = v7._format_news_with_footer_icons(item, "حمله موشکی ایران به نفتکش نزدیک خارک", "پس از حمله دود مشاهده شد")
     lines = [line for line in text.splitlines() if line.strip()]
 
-    assert "مانیتور تحولات ایران" in lines[-2]
+    footer_index = next(i for i, line in enumerate(lines) if "مانیتور تحولات ایران" in line)
+    assert footer_index < len(lines) - 1
+    assert "#موشک" in " ".join(lines[footer_index + 1:])
     assert "🇮🇷" in lines[-1]
     assert "🚀" in lines[-1]
     assert "🚢" in lines[-1]
