@@ -30,10 +30,14 @@ COMPANY_TERMS = (
     "company", "corporate", "ceo", "earnings", "profit", "profits", "revenue", "sales", "shares",
     "quarterly", "business", "market outlook", "شرکت", "مدیرعامل", "سود", "درآمد", "سهام",
 )
+CAMPAIGN_TERMS = (
+    "candidate", "campaign", "election", "senate race", "polling", "voters", "vote for",
+    "نامزد", "کمپین", "انتخابات", "رقابت سنا", "نظرسنجی", "رأی‌دهندگان", "رای‌دهندگان",
+)
 OPERATIONAL_OVERRIDE_TERMS = (
     "resume overflight", "resumes overflight", "resume overflights", "resumes overflights",
     "iranian airspace", "iran airspace", "airspace", "notam", "flight ban", "flight cancellation",
-    "attack", "strike", "missile", "drone", "sanction", "tanker", "shipping", "war",
+    "attack", "strike", "missile", "drone", "sanction", "tanker", "shipping",
     "ازسرگیری پرواز", "از سرگیری پرواز", "حریم هوایی", "نوتام", "لغو پرواز", "تحریم", "حمله", "موشک", "پهپاد",
 )
 ARTICLE_PREFIXES = (
@@ -97,8 +101,14 @@ def _fresh_enough(published: datetime, now: datetime) -> bool:
     return False
 
 
+def _term_present(text: str, term: str) -> bool:
+    if re.search(r"[a-z0-9]", term, flags=re.I):
+        return re.search(rf"(?<![a-z0-9_]){re.escape(term)}(?![a-z0-9_])", text, flags=re.I) is not None
+    return term in text
+
+
 def _contains_any(text: str, terms) -> bool:
-    return any(term in text for term in terms)
+    return any(_term_present(text, term) for term in terms)
 
 
 def _question_or_article(title: str) -> bool:
@@ -166,8 +176,12 @@ def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> Eligibility
             return EligibilityResult(False, "needs_editorial_review", review=True)
         return EligibilityResult(False, "not_iran_relevant")
 
-    company_like = _contains_any(text, COMPANY_TERMS)
+    campaign_like = _contains_any(text, CAMPAIGN_TERMS)
     operational = _contains_any(text, OPERATIONAL_OVERRIDE_TERMS)
+    if campaign_like and not operational:
+        return EligibilityResult(False, "filtered_incidental_iran_mention")
+
+    company_like = _contains_any(text, COMPANY_TERMS)
     if company_like and not operational:
         if protected:
             return EligibilityResult(False, "needs_editorial_review", review=True)
