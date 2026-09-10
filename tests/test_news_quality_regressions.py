@@ -8,6 +8,7 @@ from src.newsroom_eligibility import evaluate_eligibility
 from src.newsroom_fingerprint import build_fingerprint
 from src.newsroom_models import EventRecord, RawNewsItem
 from src.newsroom_normalize import normalize_item
+from src.newsroom_publisher import TelegramNewsroomPublisher
 from src.sources import NewsItem
 
 
@@ -144,7 +145,7 @@ def test_final_formatter_refuses_question_headline_even_after_translation():
     assert text == ""
 
 
-def test_clash_report_is_not_presented_as_a_telegram_source():
+def test_clash_report_keeps_fully_persian_platform_suffix():
     item = NewsItem(
         "clash",
         "Clash Report / Telegram",
@@ -154,8 +155,8 @@ def test_clash_report_is_not_presented_as_a_telegram_source():
         "Thu, 10 Sep 2026 16:15:00 GMT",
     )
     text = format_news(item, "خبر تازه درباره ایران", "", marker_override="⚪️")
-    assert text.splitlines()[0].startswith("⚪️ <b>کلش ریپورت: ")
-    assert "/ تلگرام" not in text.splitlines()[0]
+    assert text.splitlines()[0].startswith("⚪️ <b>کلش ریپورت / تلگرام: ")
+    assert "Telegram" not in text.splitlines()[0]
 
 
 def test_final_news_has_relevant_flags_at_very_bottom():
@@ -173,3 +174,60 @@ def test_final_news_has_relevant_flags_at_very_bottom():
     last_line = text.splitlines()[-1]
     assert "🇮🇷" in last_line
     assert "🇺🇸" in last_line
+
+
+def test_routine_iran_diplomacy_does_not_auto_publish():
+    raw = _raw(
+        "Iranian foreign minister meets Omani counterpart to discuss bilateral relations",
+        url="https://example.com/routine-meeting",
+        item_id="routine-meeting",
+        source="Reuters",
+    )
+    result = evaluate_eligibility(normalize_item(raw), datetime.fromisoformat("2026-09-10T16:20:00+00:00"))
+    assert result.eligible is False
+    assert result.review is True
+    assert result.reason == "outside_selected_topics"
+
+
+def test_selected_high_value_missile_story_remains_eligible():
+    raw = _raw(
+        "Iran launches ballistic missiles toward Israel",
+        summary="Air defenses activated after launch from Iran",
+        url="https://example.com/missile",
+        item_id="missile",
+        source="Reuters",
+    )
+    result = evaluate_eligibility(normalize_item(raw), datetime.fromisoformat("2026-09-10T16:20:00+00:00"))
+    assert result.eligible is True
+
+
+def test_publisher_refuses_translation_that_loses_core_event_meaning():
+    raw = _raw(
+        "Iran launches ballistic missiles toward Israel",
+        summary="Missile launch confirmed by officials",
+        url="https://example.com/bad-translation",
+        item_id="bad-translation",
+        source="Reuters",
+    )
+    publisher = TelegramNewsroomPublisher(
+        "token",
+        "@bikhabaar",
+        translator=lambda _text: "ایران درباره رویداد تازه‌ای گزارش داد",
+    )
+    assert publisher._message(normalize_item(raw)) == ""
+
+
+def test_publisher_refuses_translation_that_drops_numeric_fact():
+    raw = _raw(
+        "Iran launches 12 ballistic missiles toward Israel",
+        summary="Officials say 12 missiles were launched",
+        url="https://example.com/missing-number",
+        item_id="missing-number",
+        source="Reuters",
+    )
+    publisher = TelegramNewsroomPublisher(
+        "token",
+        "@bikhabaar",
+        translator=lambda _text: "ایران از شلیک موشک‌های بالستیک به سمت اسرائیل خبر داد",
+    )
+    assert publisher._message(normalize_item(raw)) == ""
