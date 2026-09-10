@@ -40,12 +40,14 @@ def test_every_breaking_path_uses_one_final_formatter_guard():
     assert final == normalize_urgent_message(legacy)
     assert "RN Intel" not in final
     assert "Telegram" not in final
-    assert "🇮🇷" not in final
     assert "آر‌اِن اینتل / تلگرام" in final
     assert final.startswith("💥 🔴 <b>خبر فوری | آر‌اِن اینتل / تلگرام:")
     assert "\n\n⏰ " in final
     assert "\n📌 " in final
     assert "\n\n📡 " in final
+    # Flags are removed from headline/body and attached once, at the bottom.
+    assert "🇮🇷" not in final.splitlines()[0]
+    assert final.splitlines()[-1] == "🇮🇷"
 
 
 def test_sparse_identical_fingerprint_is_same_claim_duplicate():
