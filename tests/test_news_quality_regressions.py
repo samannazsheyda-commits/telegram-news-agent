@@ -9,9 +9,9 @@ from src.newsroom_normalize import normalize_item
 from src.sources import NewsItem
 
 
-def _raw(title: str, *, url: str, item_id: str, summary: str = "") -> RawNewsItem:
+def _raw(title: str, *, url: str, item_id: str, summary: str = "", source: str = "CENTCOM / X") -> RawNewsItem:
     return RawNewsItem(
-        source="CENTCOM / X",
+        source=source,
         source_url=url,
         source_item_id=item_id,
         published_at="2026-09-10T16:15:00+00:00",
@@ -58,6 +58,7 @@ def test_minor_vessel_count_drift_is_duplicate_not_material_update():
         "CENTCOM says US forces redirected 97 commercial vessels near Iran and allowed 50 humanitarian ships to pass",
         url="https://example.com/current",
         item_id="current",
+        source="Clash Report / Telegram",
     )
     item = normalize_item(current)
     result = decide_item(item, build_fingerprint(item), [_published_event(prior)])
@@ -97,6 +98,20 @@ def test_final_formatter_refuses_question_headline_even_after_translation():
     )
     text = format_news(item, "آیا ایران مسیر کشتی‌ها را تغییر می‌دهد؟", "", marker_override="⚪️")
     assert text == ""
+
+
+def test_clash_report_is_not_presented_as_a_telegram_source():
+    item = NewsItem(
+        "clash",
+        "Clash Report / Telegram",
+        "Iran update",
+        "",
+        "https://t.me/clashreport/1",
+        "Thu, 10 Sep 2026 16:15:00 GMT",
+    )
+    text = format_news(item, "خبر تازه درباره ایران", "", marker_override="⚪️")
+    assert text.splitlines()[0].startswith("⚪️ <b>کلش ریپورت: ")
+    assert "/ تلگرام" not in text.splitlines()[0]
 
 
 def test_final_news_has_relevant_flags_at_very_bottom():
