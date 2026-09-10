@@ -1,8 +1,9 @@
 from datetime import datetime
 from pathlib import Path
 
+from src import services
 from src.newsroom_eligibility import evaluate_eligibility
-from src.newsroom_models import NormalizedNewsItem, RawNewsItem
+from src.newsroom_models import RawNewsItem
 from src.newsroom_normalize import normalize_item
 from src.newsroom_publisher import TelegramNewsroomPublisher
 
@@ -72,8 +73,7 @@ class _LingvaSession:
 
 
 def test_auto_publisher_does_not_fall_back_to_unverified_lingva_translation():
-    raw = _raw("Iran launched ballistic missiles")
-    item = normalize_item(raw)
+    item = normalize_item(_raw("Iran launched ballistic missiles"))
     publisher = TelegramNewsroomPublisher(
         "token",
         "@bikhabaar",
@@ -81,6 +81,27 @@ def test_auto_publisher_does_not_fall_back_to_unverified_lingva_translation():
         translator=lambda _text: "",
     )
     assert publisher._message(item) == ""
+
+
+def test_strict_translation_never_calls_mymemory_after_google_failures():
+    calls = []
+
+    class Response:
+        text = "<html></html>"
+        def raise_for_status(self):
+            return None
+        def json(self):
+            return {"responseData": {"translatedText": "ترجمه نامعتبر"}}
+
+    class Session:
+        def get(self, url, **kwargs):
+            calls.append(url)
+            if "googleapis" in url:
+                raise RuntimeError("google api unavailable")
+            return Response()
+
+    assert services.translate_to_fa_strict("Iran launched a missile", session=Session()) == ""
+    assert all("mymemory" not in url for url in calls)
 
 
 def test_scheduled_air_traffic_job_does_not_publish_wrong_map_automatically():
