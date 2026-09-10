@@ -238,6 +238,22 @@ def _has_hashtag_needle(text: str, needle: str) -> bool:
     return needle in text
 
 
+def _strip_promotional_tail(value: str) -> str:
+    text = re.sub(r"\s+", " ", str(value or "")).strip()
+    if not text:
+        return ""
+    parts = re.split(r"(?<=[.!؟?])\s+", text)
+    kept: list[str] = []
+    for part in parts:
+        low = part.lower()
+        english_promo = "podcast" in low and any(marker in low for marker in ("learn more", "listen", "afternoon update", "morning update"))
+        persian_promo = "پادکست" in part and any(marker in part for marker in ("اطلاعات بیشتر", "بیشتر بدان", "گوش دهید", "گوش کنید", "به‌روزرسانی", "بروزرسانی"))
+        if kept and (english_promo or persian_promo):
+            break
+        kept.append(part)
+    return " ".join(kept).strip()
+
+
 def _hashtags_for(item: NewsItem, title_fa: str, summary_fa: str) -> list[str]:
     text = _story_text(item, title_fa, summary_fa)
     rules = (
@@ -274,11 +290,11 @@ def format_truth(post: TruthPost, persian_text: str) -> str:
 
 
 def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override: str | None = None) -> str:
-    title_fa = _clean_persian_output_text(_strip_source_suffix(title_fa))
+    title_fa = _strip_promotional_tail(_clean_persian_output_text(_strip_source_suffix(title_fa)))
     if _blocked_final_title(title_fa):
         return ""
     title_fa = _ensure_period(title_fa)
-    summary_fa = _ensure_period(_up_to_two_sentences(_clean_persian_output_text(_strip_source_suffix(summary_fa))))
+    summary_fa = _ensure_period(_up_to_two_sentences(_strip_promotional_tail(_clean_persian_output_text(_strip_source_suffix(summary_fa)))))
     if _unnamed_activist_headline(title_fa) and not _detail_names_activist(summary_fa):
         return ""
     marker = marker_override or _story_marker(item)
