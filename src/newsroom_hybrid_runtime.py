@@ -27,20 +27,64 @@ def _process_panel_commands() -> int:
     return processed
 
 
-def _record_runtime_heartbeat(result: dict, *, now: datetime | None = None, state_path: str | Path = "state.json") -> None:
-    path = Path(state_path)
+def _runtime_state_path(state_path: str | Path | None = None) -> Path:
+    if state_path is not None:
+        return Path(state_path)
+    return Path(os.environ.get("STATE_PATH", "state.json"))
+
+
+def _record_runtime_heartbeat(
+    result: dict,
+    *,
+    now: datetime | None = None,
+    state_path: str | Path | None = None,
+) -> None:
+    path = _runtime_state_path(state_path)
     try:
         current = json.loads(path.read_text(encoding="utf-8"))
         state = current if isinstance(current, dict) else {}
     except (FileNotFoundError, OSError, json.JSONDecodeError):
         state = {}
+
     stamp = (now or datetime.now(timezone.utc)).astimezone(timezone.utc).isoformat()
-    state["last_cycle_at"] = stamp
-    state["last_cycle_rc"] = int(result.get("rc") or 0)
-    state["last_cycle_published"] = int(result.get("published") or 0)
-    state["last_cycle_telegram_writes"] = int(result.get("telegram_writes") or 0)
-    if state["last_cycle_published"] > 0 or state["last_cycle_telegram_writes"] > 0:
+    rc = int(result.get("rc") or 0)
+    published = int(result.get("published") or 0)
+    telegram_writes = int(result.get("telegram_writes") or 0)
+    publish_failed = int(result.get("publish_failed") or 0)
+    sources_ok = int(result.get("sources_ok") or 0)
+    sources_failed = int(result.get("sources_failed") or 0)
+    items_fetched = int(result.get("items_fetched") or 0)
+    panel_commands = int(result.get("panel_commands") or 0)
+
+    state.update(
+        {
+            "last_cycle_at": stamp,
+            "last_cycle_rc": rc,
+            "last_cycle_published": published,
+            "last_cycle_telegram_writes": telegram_writes,
+            "last_publish_failed": publish_failed,
+            "last_sources_ok": sources_ok,
+            "last_sources_failed": sources_failed,
+            "last_items_fetched": items_fetched,
+            "last_panel_commands": panel_commands,
+        }
+    )
+
+    if published > 0 or telegram_writes > 0:
         state["last_publication_at"] = stamp
+        state["telegram_state"] = "ok"
+        state["last_telegram_check_at"] = stamp
+    if publish_failed > 0:
+        state["telegram_state"] = "error"
+        state["last_telegram_check_at"] = stamp
+        state["last_error"] = f"{publish_failed} خطای انتشار در چرخه اخیر"
+    elif rc != 0:
+        state["last_error"] = f"چرخه ایجنت با کد {rc} متوقف شد"
+    elif sources_failed > 0:
+        state["last_error"] = f"{sources_failed} منبع در چرخه اخیر خطا داشت"
+    else:
+        state["last_error"] = ""
+
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=str(path.parent))
     try:
@@ -86,7 +130,14 @@ def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
         if not shadow:
             _record_runtime_heartbeat(result, now=resolved_now)
         return result
-    newsroom_settings = v13.load_newsroom_settings()
+
+    newsroom_settings = dict(v13.load_newsroom_settings())
+    # The V2 newsroom consumes auto_publish directly. Convert emergency lock and
+    # quiet-mode policy into that flag so controls from the panel affect the
+    # actual production publisher rather than only the legacy runtime.
+    if v13.newsroom_publish_paused(newsroom_settings, resolved_now):
+        newsroom_settings["auto_publish"] = False
+
     result = run_v2_once(
         shadow=shadow,
         now=resolved_now,
