@@ -7,6 +7,15 @@
   "quiet_end": "07:00",
   "freshness_hours": 2,
   "dedup_mode": "balanced",
+  "priority_terms": [
+    "موشک از ایران",
+    "موشک به ایران",
+    "انفجار",
+    "تنگه هرمز",
+    "حمله مستقیم",
+    "پهپاد",
+    "نفتکش"
+  ],
   "earthquake_min": 2.0,
   "earthquake_breaking": 4.0,
   "notam_sensitivity": "high",
