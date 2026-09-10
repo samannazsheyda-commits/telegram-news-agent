@@ -1,7 +1,8 @@
 (() => {
+  const mount = document.getElementById('agentSettingsMount');
   const modules = document.querySelector('.newsroom-modules, .premium-modules');
   const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
-  if (!modules || !csrf) return;
+  if ((!mount && !modules) || !csrf) return;
 
   const wrapper = document.createElement('section');
   wrapper.className = 'agent-settings-wrap';
@@ -34,21 +35,23 @@
       </label>
       <div class="setting-field readonly-setting">
         <span>فاصله رصد ایجنت</span>
-        <strong>۲ ثانیه</strong>
-        <small>برای سرعت و پایداری سرویس از این صفحه قابل تغییر نیست.</small>
+        <strong id="agentPollSeconds">در حال دریافت…</strong>
+        <small>از تنظیم واقعی سرویس خوانده می‌شود و برای پایداری از این صفحه تغییر نمی‌کند.</small>
       </div>
       <div class="settings-actions">
         <span id="settingsResult">در حال دریافت تنظیمات…</span>
         <button id="saveAgentSettings" class="button primary-action" type="submit" disabled>ذخیره تغییرات</button>
       </div>
     </form>`;
-  modules.insertAdjacentElement('afterend', wrapper);
+  if (mount) mount.replaceChildren(wrapper);
+  else modules.insertAdjacentElement('afterend', wrapper);
 
   const form = wrapper.querySelector('#agentSettingsForm');
   const freshness = wrapper.querySelector('#freshnessHours');
   const quietMode = wrapper.querySelector('#quietMode');
   const quietStart = wrapper.querySelector('#quietStart');
   const quietEnd = wrapper.querySelector('#quietEnd');
+  const poll = wrapper.querySelector('#agentPollSeconds');
   const result = wrapper.querySelector('#settingsResult');
   const save = wrapper.querySelector('#saveAgentSettings');
   let baseline = '';
@@ -83,12 +86,14 @@
       quietMode.checked = Boolean(settings.quiet_mode);
       quietStart.value = settings.quiet_start || '00:00';
       quietEnd.value = settings.quiet_end || '07:00';
+      poll.textContent = `${Number(data.poll_seconds || 2).toLocaleString('fa-IR')} ثانیه`;
       baseline = snapshot();
       save.disabled = true;
       result.textContent = 'تنظیمات همگام است.';
       result.classList.remove('settings-error');
     } catch (_) {
       result.textContent = 'دریافت تنظیمات ناموفق بود.';
+      poll.textContent = 'نامشخص';
       result.classList.add('settings-error');
     }
   }
