@@ -27,6 +27,12 @@ NEWS_GLOSSARY = (
     ("موفق صلتی", "موفق السلطی"),
     ("Muwaffaq Salti", "موفق السلطی"),
     ("Saildrone Explorer", "سیل‌درون اکسپلورر"),
+    ("CENTCOM", "سنتکام"),
+    ("IRGC", "سپاه پاسداران"),
+    ("IDF", "ارتش اسرائیل"),
+    ("IAEA", "آژانس بین‌المللی انرژی اتمی"),
+    ("UAE", "امارات"),
+    ("THAAD", "تاد"),
 )
 
 IDIOM_REPAIRS: tuple[tuple[str, tuple[str, ...], str], ...] = (
@@ -44,6 +50,30 @@ IDIOM_REPAIRS: tuple[tuple[str, tuple[str, ...], str], ...] = (
     ("back channel", ("کانال پشتی", "کانال پشت"), "کانال ارتباطی غیررسمی"),
     ("play down", ("کم بازی", "پایین بازی"), "کم‌اهمیت جلوه داد"),
 )
+
+# If a source contains one of these event concepts, the Persian translation
+# must preserve that concept. This prevents fluent-looking but materially wrong
+# machine translations from reaching Telegram.
+SEMANTIC_PRESERVATION_RULES: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
+    (("missile", "ballistic", "cruise missile", "rocket"), ("موشک", "بالستیک", "کروز", "راکت")),
+    (("explosion", "exploded", "blast", "detonation"), ("انفجار", "منفجر", "انفجاری")),
+    (("drone", "uav"), ("پهپاد", "بدون سرنشین")),
+    (("intercept", "intercepted"), ("رهگیری", "سرنگون", "منهدم")),
+    (("attack", "attacked", "strike", "struck", "bombing"), ("حمله", "هدف قرار", "بمباران", "ضربه")),
+    (("airspace", "notam", "flight ban"), ("حریم هوایی", "فضای هوایی", "نوتام", "ممنوعیت پرواز")),
+    (("tanker",), ("نفتکش",)),
+    (("strait of hormuz", "hormuz"), ("هرمز",)),
+    (("shipping", "commercial vessel", "merchant vessel"), ("کشتیرانی", "کشتی", "شناور")),
+    (("seized", "seizure"), ("توقیف", "ضبط")),
+    (("sinking", "sank", "sunk"), ("غرق",)),
+    (("sanction", "sanctions"), ("تحریم",)),
+    (("nuclear",), ("هسته‌ای", "هسته ای", "اتمی")),
+    (("uranium",), ("اورانیوم",)),
+    (("enrichment", "enriched"), ("غنی‌سازی", "غنی سازی", "غنی‌شده", "غنی شده")),
+    (("warship", "destroyer", "aircraft carrier"), ("ناو", "ناوشکن", "ناو هواپیمابر")),
+)
+
+_PERSIAN_TO_ASCII_DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
 
 
 def has_persian(text: str) -> bool:
@@ -142,17 +172,54 @@ def _repair_news_idioms(source: str, translated: str) -> str:
     return _polish_fa(value)
 
 
+def _numbers(value: str) -> set[str]:
+    normalized = str(value or "").translate(_PERSIAN_TO_ASCII_DIGITS)
+    normalized = normalized.replace(",", "").replace("٬", "")
+    return set(re.findall(r"(?<!\w)\d+(?:\.\d+)?", normalized))
+
+
+def _source_has_term(source_lower: str, term: str) -> bool:
+    if re.fullmatch(r"[a-z0-9 ]+", term):
+        return bool(re.search(rf"(?<![a-z]){re.escape(term)}(?![a-z])", source_lower))
+    return term in source_lower
+
+
+def translation_is_publishable(source: str, translated: str) -> bool:
+    source_text = str(source or "").strip()
+    value = _polish_fa(str(translated or "").strip())
+    if not value or not has_persian(value):
+        return False
+    if value.lower() == source_text.lower():
+        return False
+    if re.search(r"@[A-Za-z0-9_]{2,}", value) or re.search(r"https?://", value, re.I):
+        return False
+
+    latin_words = LATIN_WORD_RE.findall(value)
+    words = re.findall(r"[A-Za-z\u0600-\u06FF]+", value)
+    if words and len(latin_words) / len(words) > 0.20:
+        return False
+
+    source_words = re.findall(r"[A-Za-z\u0600-\u06FF]+", source_text)
+    if source_words and len(words) < max(2, int(len(source_words) * 0.30)):
+        return False
+    if source_words and len(words) > len(source_words) * 3 + 12:
+        return False
+
+    source_numbers = _numbers(source_text)
+    translated_numbers = _numbers(value)
+    if source_numbers and not source_numbers.issubset(translated_numbers):
+        return False
+
+    source_lower = source_text.lower()
+    for source_terms, persian_terms in SEMANTIC_PRESERVATION_RULES:
+        if any(_source_has_term(source_lower, term) for term in source_terms):
+            if not any(term in value for term in persian_terms):
+                return False
+    return len(re.sub(r"\W+", " ", value).strip()) >= 4
+
+
 def _translation_quality_ok(source: str, translated: str) -> bool:
-    if not translated or not has_persian(translated):
-        return False
-    if translated.strip().lower() == (source or "").strip().lower():
-        return False
-    latin_words = LATIN_WORD_RE.findall(translated)
-    words = re.findall(r"[A-Za-z\u0600-\u06FF]+", translated)
-    if words and len(latin_words) / len(words) > 0.30:
-        return False
-    normalized = re.sub(r"\W+", " ", translated).strip()
-    return len(normalized) >= 4
+    return translation_is_publishable(source, translated)
 
 
 def translate_to_fa(text: str, session=requests) -> str:
