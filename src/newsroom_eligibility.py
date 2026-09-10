@@ -17,10 +17,6 @@ IRAN_TERMS = (
     "iran", "iranian", "tehran", "irgc", "revolutionary guard", "hormuz", "persian gulf",
     "ایران", "ایرانی", "تهران", "سپاه", "هرمز", "خلیج فارس",
 )
-REGIONAL_SECURITY_TERMS = (
-    "jordan", "qatar", "kuwait", "bahrain", "uae", "united arab emirates", "iraq", "saudi arabia",
-    "اردن", "قطر", "کویت", "بحرین", "امارات", "عراق", "عربستان",
-)
 SECURITY_TERMS = (
     "attack", "strike", "missile", "drone", "explosion", "intercept", "airspace", "notam",
     "flight ban", "flight cancellation", "sanction", "tanker", "war", "military", "shipping",
@@ -160,8 +156,11 @@ def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> Eligibility
     text = re.sub(r"\s+", " ", f"{item.raw.title} {item.raw.summary}".lower()).strip()
     protected = item.raw.source_priority == "protected"
     iran_relevant = _contains_any(text, IRAN_TERMS)
-    regional_security = _contains_any(text, REGIONAL_SECURITY_TERMS) and _contains_any(text, SECURITY_TERMS)
-    if not iran_relevant and not regional_security:
+
+    # This channel is Iran/Hormuz focused. Generic regional war alerts (for
+    # example Houthi/Yemen attacks on Saudi Arabia) must never auto-publish
+    # merely because they contain a missile/drone/security keyword.
+    if not iran_relevant:
         if protected:
             return EligibilityResult(False, "needs_editorial_review", review=True)
         return EligibilityResult(False, "not_iran_relevant")

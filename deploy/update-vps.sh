@@ -26,13 +26,8 @@ fi
 
 install -d -o bikhabar -g bikhabar -m 700 "${RUNTIME_ROOT}" "${RUNTIME_DATA}" "${COMMAND_DIR}"
 
-# Repair checkout ownership before any git operation. Previous root-run deploys
-# can leave .git/objects owned by root, which prevents the bikhabar user from
-# fetching the next tested production revision.
 chown -R bikhabar:bikhabar "${APP_DIR}"
 
-# One-time migration from the legacy checkout-owned runtime. Never overwrite
-# an existing VPS runtime file: the VPS is the source of truth for live state.
 migrate_once() {
   local src="$1"
   local dst="$2"
@@ -86,7 +81,6 @@ else
   fi
 fi
 
-# Seed repository defaults only when the VPS has no corresponding live file.
 seed_once() {
   local src="$1"
   local dst="$2"
@@ -118,7 +112,7 @@ for pair in \
   "PANEL_LOCAL_ROOT=${RUNTIME_ROOT}" \
   "PANEL_COMMAND_DIR=${COMMAND_DIR}" \
   "PANEL_COOKIE_SECURE=0" \
-  "POLL_SECONDS=5" \
+  "POLL_SECONDS=2" \
   "SESSION_SECONDS=0"; do
   key="${pair%%=*}"
   value="${pair#*=}"

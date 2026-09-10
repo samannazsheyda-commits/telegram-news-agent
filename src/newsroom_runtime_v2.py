@@ -9,10 +9,10 @@ from pathlib import Path
 
 from .editorial_store import LocalEditorialStore
 from .event_ledger import EventLedger
-from .newsroom_publisher import TelegramNewsroomPublisher
 from .newsroom_raw_intake import build_raw_fetchers
 from .newsroom_v2 import run_cycle
 from .panel_live_feed import LiveFeedStore
+from .strict_translation import StrictTelegramNewsroomPublisher
 
 
 def run_once(
@@ -31,7 +31,7 @@ def run_once(
     editorial = LocalEditorialStore(data_dir / "editorial_queue.json", data_dir / "editorial_history.json")
     fetchers = fetchers if fetchers is not None else build_raw_fetchers()
     if publisher is None:
-        publisher = TelegramNewsroomPublisher(
+        publisher = StrictTelegramNewsroomPublisher(
             os.environ.get("TELEGRAM_BOT_TOKEN", ""),
             os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"),
         )
@@ -81,7 +81,7 @@ def main() -> int:
     if args.monitor:
         return monitor(
             shadow=args.shadow,
-            poll_seconds=max(1, int(os.environ.get("POLL_SECONDS", "60"))),
+            poll_seconds=max(1, int(os.environ.get("POLL_SECONDS", "2"))),
             session_seconds=max(0, int(os.environ.get("SESSION_SECONDS", "270"))),
         )
     print(json.dumps(run_once(shadow=args.shadow), ensure_ascii=False, sort_keys=True))
