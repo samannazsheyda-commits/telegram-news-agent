@@ -47,7 +47,7 @@ def test_cycle_keeps_independent_hormuz_events_and_dedupes_true_duplicate(tmp_pa
         live_feed=live,
         editorial_store=editorial,
         publisher=lambda item: sent.append(item.raw.source_item_id) or {"ok": True, "message_id": 700 + len(sent)},
-        settings={"auto_publish": True, "freshness_hours": 3},
+        settings={"auto_publish": True, "freshness_hours": 3, "hourly_news_limit": 10},
         now=NOW,
     )
 

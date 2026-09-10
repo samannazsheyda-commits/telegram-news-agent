@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -22,6 +23,34 @@ WAR_ALERT_TERMS = (
     "موشک", "بالستیک", "کروز", "شلیک", "رهگیری", "حمله", "انفجار", "بمباران", "هرمز", "نفتکش", "پهپاد",
 )
 IRAN_ALERT_TERMS = ("iran", "iranian", "tehran", "irgc", "ایران", "ایرانی", "تهران", "سپاه")
+DEFAULT_HOURLY_NEWS_LIMIT = 3
+
+# The hourly-cap escape hatch is deliberately narrower than WAR_ALERT_TERMS.
+# It is for a real, already-happening kinetic/operational event, not a warning,
+# threat, forecast or generic security story that merely mentions missiles.
+_SPECULATIVE_TERMS = (
+    " could ", " may ", " might ", " possible ", " potentially ", " potential ",
+    " warning ", " warns ", " warned ", " warn ", " threat ", " threatens ", " threatened ",
+    " expected to ", " expects to ", " plan to ", " plans to ", " preparing to ", " prepare to ",
+    "ممکن", "احتمال", "احتمالی", "هشدار", "تهدید", "قصد دارد", "برنامه دارد", "آماده می‌شود",
+)
+_MISSILE_TERMS = ("missile", "missiles", "rocket", "rockets", "موشک", "راکت")
+_LAUNCH_ACTIONS = (
+    " launch", "launched", "launches", "fired", "fires", " impact", "impacted", " hit ", "hits ", "struck",
+    "شلیک", "پرتاب", "اصابت", "برخورد",
+)
+_EXPLOSION_TERMS = ("explosion", "explosions", "blast", "blasts", "detonation", "detonations", "انفجار")
+_DIRECT_ATTACK_TERMS = (
+    "airstrike", "air strike", "bombing", "bombardment", "attacked", "direct attack", "strike on", "strikes on",
+    "بمباران", "حمله مستقیم", "حمله هوایی", "هدف قرار داد", "هدف قرار گرفت",
+)
+_DRONE_TERMS = ("drone", "drones", "uav", "uavs", "پهپاد")
+_DRONE_ACTIONS = (" launch", "launched", "attack", "strike", "intercepted", "shot down", "شلیک", "پرتاب", "حمله", "رهگیری", "سرنگون")
+_HORMUZ_TERMS = ("strait of hormuz", "hormuz", "تنگه هرمز", "هرمز")
+_HORMUZ_CRITICAL_ACTIONS = (
+    "attack", "seized", "seizure", "sinking", "sank", "closed", "blockade", "blocked",
+    "حمله", "توقیف", "غرق", "بسته شد", "مسدود", "محاصره",
+)
 
 
 @dataclass
@@ -38,6 +67,8 @@ class CycleSummary:
     review_items: int = 0
     published: int = 0
     publish_failed: int = 0
+    rate_limited: int = 0
+    critical_bypasses: int = 0
     panel_feed_count: int = 0
 
 
@@ -113,6 +144,47 @@ def _urgency_score(raw: RawNewsItem, priority_terms: list[str] | tuple[str, ...]
     else:
         fallback_rank = 0
     return max(custom_rank, fallback_rank), str(raw.published_at or raw.fetched_at or "")
+
+
+def _contains_any(text: str, terms: tuple[str, ...]) -> bool:
+    return any(term in text for term in terms)
+
+
+def _critical_breaking_event(item: NormalizedNewsItem) -> bool:
+    """Return True only for an actual high-impact event, never a forecast/warning.
+
+    Deduplication runs before this predicate. The caller additionally requires a
+    `new_event` decision, so a second source repeating the same launch/explosion
+    cannot consume the emergency bypass.
+    """
+    text = re.sub(r"\s+", " ", f" {item.normalized_text or item.raw.title} ".lower())
+    if _contains_any(text, _SPECULATIVE_TERMS):
+        return False
+
+    if _contains_any(text, _EXPLOSION_TERMS):
+        return True
+
+    if _contains_any(text, _MISSILE_TERMS) and _contains_any(text, _LAUNCH_ACTIONS):
+        return True
+
+    if _contains_any(text, _DIRECT_ATTACK_TERMS):
+        return True
+
+    if _contains_any(text, _DRONE_TERMS) and _contains_any(text, _DRONE_ACTIONS):
+        return True
+
+    if _contains_any(text, _HORMUZ_TERMS) and _contains_any(text, _HORMUZ_CRITICAL_ACTIONS):
+        return True
+
+    return False
+
+
+def _hourly_news_limit(settings: dict) -> int:
+    try:
+        value = int(settings.get("hourly_news_limit") or DEFAULT_HOURLY_NEWS_LIMIT)
+    except (TypeError, ValueError):
+        value = DEFAULT_HOURLY_NEWS_LIMIT
+    return max(1, min(20, value))
 
 
 def _item_id(item: NormalizedNewsItem) -> str:
@@ -317,6 +389,29 @@ def run_cycle(
         if shadow:
             live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="new", message_id=None, now=now))
             continue
+
+        hourly_limit = _hourly_news_limit(settings)
+        recent_publications = ledger.publication_count_since(now - timedelta(hours=1))
+        critical_unique = decision.decision == "new_event" and _critical_breaking_event(item)
+        if recent_publications >= hourly_limit and not critical_unique:
+            summary.rate_limited += 1
+            summary.review_items += 1
+            _queue_item(editorial_store, item, "hourly_publish_limit", now)
+            live_feed.upsert(
+                _feed_record(
+                    item,
+                    event_id=event_id,
+                    decision=decision.decision,
+                    reason="hourly_publish_limit",
+                    duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
+                    panel_status="waiting",
+                    message_id=None,
+                    now=now,
+                )
+            )
+            continue
+        if recent_publications >= hourly_limit and critical_unique:
+            summary.critical_bypasses += 1
 
         try:
             ok, message_id = _publisher_result(publisher(item))
