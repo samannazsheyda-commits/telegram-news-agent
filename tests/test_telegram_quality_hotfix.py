@@ -4,8 +4,7 @@ from pathlib import Path
 from src.newsroom_eligibility import evaluate_eligibility
 from src.newsroom_models import RawNewsItem
 from src.newsroom_normalize import normalize_item
-from src.newsroom_publisher import TelegramNewsroomPublisher
-from src.strict_translation import translate_to_fa_strict
+from src.strict_translation import StrictTelegramNewsroomPublisher, translate_to_fa_strict
 
 
 NOW = datetime.fromisoformat("2026-09-10T08:30:00+00:00")
@@ -74,7 +73,7 @@ class _LingvaSession:
 
 def test_auto_publisher_does_not_fall_back_to_unverified_lingva_translation():
     item = normalize_item(_raw("Iran launched ballistic missiles"))
-    publisher = TelegramNewsroomPublisher(
+    publisher = StrictTelegramNewsroomPublisher(
         "token",
         "@bikhabaar",
         session=_LingvaSession(),
