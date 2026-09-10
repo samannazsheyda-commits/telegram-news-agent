@@ -15,7 +15,7 @@ from yt_dlp import YoutubeDL
 from .final_output import finalize_telegram_message
 from .formatters import format_news
 from .newsroom_models import NormalizedNewsItem
-from .services import USER_AGENT, has_persian, translate_to_fa
+from .services import USER_AGENT, has_persian, translate_to_fa, translation_is_publishable
 from .sources import NewsItem
 
 
@@ -35,7 +35,6 @@ def _is_explosion(item: NormalizedNewsItem) -> bool:
 
 
 def _breaking_prefix(item: NormalizedNewsItem) -> str:
-    """Compatibility helper used by presentation tests; publishing now folds this into one headline."""
     return "💥 🔴 <b>خبر فوری</b>\n" if _is_explosion(item) else ""
 
 
@@ -137,16 +136,27 @@ class TelegramNewsroomPublisher:
         raw = str(text or "").strip()
         if not raw:
             return ""
-        translated = str(self.translator(raw) or "").strip()
-        if translated:
+        try:
+            translated = str(self.translator(raw) or "").strip()
+        except Exception:
+            translated = ""
+        if translated and translation_is_publishable(raw, translated):
             return translated
-        return _lingva_translate(raw, session=self.session)
+        fallback = _lingva_translate(raw, session=self.session)
+        if fallback and translation_is_publishable(raw, fallback):
+            return fallback
+        print("TRANSLATION_REJECTED_BY_EDITORIAL_GATE", flush=True)
+        return ""
 
     def _message(self, item: NormalizedNewsItem) -> str:
         title_fa = self._translate_resilient(item.raw.title)
         if not title_fa:
             return ""
         summary_fa = self._translate_resilient(item.raw.summary) if item.raw.summary else ""
+        if item.raw.summary and not summary_fa:
+            # A broken summary can alter the meaning of a breaking story. Do not
+            # silently publish only the title when the source supplied material detail.
+            return ""
         legacy = NewsItem(
             key=item.raw.source_item_id,
             source=item.raw.source,
@@ -156,6 +166,8 @@ class TelegramNewsroomPublisher:
             published=_published_rfc2822(item.raw.published_at),
         )
         message = format_news(legacy, title_fa, summary_fa)
+        if not message:
+            return ""
         if _is_explosion(item):
             message = _collapse_breaking_header(message)
         return finalize_telegram_message(message)
