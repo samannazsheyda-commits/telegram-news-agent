@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from datetime import datetime, timedelta, timezone
 
 from flask import Blueprint, current_app, jsonify, request, session
@@ -76,12 +78,7 @@ def _cache_get(row: dict) -> dict | None:
 
 def _cache_put(row: dict, *, title: str, body: str, final_message: str) -> dict:
     row_id = _row_id(row)
-    value = {
-        "signature": _cache_signature(row),
-        "title": title,
-        "body": body,
-        "final_message": final_message,
-    }
+    value = {"signature": _cache_signature(row), "title": title, "body": body, "final_message": final_message}
     _LOCALIZATION_CACHE[row_id] = value
     while len(_LOCALIZATION_CACHE) > _LOCALIZATION_CACHE_LIMIT:
         oldest = next(iter(_LOCALIZATION_CACHE), None)
@@ -212,10 +209,7 @@ def _raw_rows(limit: int = 40) -> tuple[list[dict], set[str]]:
     rows = value if isinstance(value, list) else []
     now = datetime.now(timezone.utc)
     fresh_rows = [dict(row) for row in rows if isinstance(row, dict) and _is_fresh_for_live_panel(row, now)]
-    fresh_rows.sort(
-        key=lambda row: (_source_time(row) or datetime.min.replace(tzinfo=timezone.utc)).timestamp(),
-        reverse=True,
-    )
+    fresh_rows.sort(key=lambda row: (_source_time(row) or datetime.min.replace(tzinfo=timezone.utc)).timestamp(), reverse=True)
     rows = fresh_rows[: max(1, min(100, int(limit)))]
     queue, _ = data.read_json("data/editorial_queue.json", [])
     queued_ids = {
@@ -229,6 +223,11 @@ def _raw_rows(limit: int = 40) -> tuple[list[dict], set[str]]:
 def _fast_rows(limit: int = 40) -> list[dict]:
     rows, queued_ids = _raw_rows(limit)
     return [_public_row(row, queued_ids) for row in rows]
+
+
+def _revision(items: list[dict]) -> str:
+    payload = json.dumps(items, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha1(payload.encode("utf-8")).hexdigest()
 
 
 @bp.before_request
@@ -246,6 +245,7 @@ def live_feed():
         "items": items,
         "count": len(items),
         "updated_at": items[0]["updated_at"] if items else "",
+        "revision": _revision(items),
     })
     response.headers["Cache-Control"] = "no-store, max-age=0"
     return response
