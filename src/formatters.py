@@ -230,6 +230,14 @@ def _blocked_final_title(title: str) -> bool:
     return clean.startswith(EDITORIAL_TITLE_PREFIXES)
 
 
+def _has_hashtag_needle(text: str, needle: str) -> bool:
+    if needle == "طلا":
+        return bool(re.search(r"(?<![\w\u200c])طلا(?:ی)?(?![\w\u200c])", text))
+    if needle == "ارز":
+        return bool(re.search(r"(?<![\w\u200c])ارز(?:ی|ها|های)?(?![\w\u200c])", text))
+    return needle in text
+
+
 def _hashtags_for(item: NewsItem, title_fa: str, summary_fa: str) -> list[str]:
     text = _story_text(item, title_fa, summary_fa)
     rules = (
@@ -247,7 +255,7 @@ def _hashtags_for(item: NewsItem, title_fa: str, summary_fa: str) -> list[str]:
     )
     tags: list[str] = []
     for needles, tag in rules:
-        if any(needle in text for needle in needles):
+        if any(_has_hashtag_needle(text, needle) for needle in needles):
             tags.append(tag)
             if len(tags) == 2:
                 break
