@@ -22,26 +22,20 @@ SECURITY_TERMS = (
     "flight ban", "flight cancellation", "sanction", "tanker", "war", "military", "shipping",
     "حمله", "موشک", "پهپاد", "انفجار", "رهگیری", "حریم هوایی", "نوتام", "لغو پرواز", "تحریم", "نفتکش",
 )
-# Automatic publication is deliberately narrow. Iran relevance alone is not
-# enough; the story must also belong to one of the newsroom's selected beats.
 SELECTED_TOPIC_TERMS = (
-    # kinetic / military
     "missile", "ballistic", "cruise missile", "rocket", "drone", "uav", "attack", "strike",
     "explosion", "blast", "bombing", "intercept", "air defense", "air defence", "air raid",
     "warship", "destroyer", "carrier", "military exercise", "military drill", "naval exercise",
     "weapon", "weapons", "munition", "موشک", "بالستیک", "کروز", "راکت", "پهپاد", "حمله",
     "انفجار", "بمباران", "رهگیری", "پدافند", "آژیر", "ناو", "ناوشکن", "رزمایش", "تسلیحات",
-    # Hormuz / maritime
     "strait of hormuz", "hormuz", "persian gulf", "tanker", "shipping", "commercial vessel",
     "merchant vessel", "ship seized", "vessel seized", "seizure", "sinking", "خلیج فارس", "تنگه هرمز",
     "هرمز", "نفتکش", "کشتی تجاری", "شناور", "توقیف", "غرق",
-    # airspace
+    "restricted zone", "exclusion zone", "منطقه محدود", "منطقه ممنوع",
     "airspace", "notam", "flight ban", "flight cancellation", "flights cancelled", "حریم هوایی",
     "نوتام", "لغو پرواز", "ممنوعیت پرواز",
-    # nuclear / sanctions / high-value Iran policy
     "nuclear", "uranium", "enrichment", "iaea", "atomic", "sanction", "sanctions", "هسته‌ای",
     "هسته ای", "اورانیوم", "غنی‌سازی", "آژانس بین‌المللی انرژی اتمی", "تحریم",
-    # explicitly selected public figures / security institutions
     "trump", "white house", "pentagon", "centcom", "ترامپ", "کاخ سفید", "پنتاگون", "سنتکام",
 )
 COMPANY_TERMS = (
@@ -51,8 +45,9 @@ COMPANY_TERMS = (
 OPERATIONAL_OVERRIDE_TERMS = (
     "resume overflight", "resumes overflight", "resume overflights", "resumes overflights",
     "iranian airspace", "iran airspace", "airspace", "notam", "flight ban", "flight cancellation",
-    "attack", "strike", "missile", "drone", "sanction", "tanker", "shipping", "war",
-    "ازسرگیری پرواز", "از سرگیری پرواز", "حریم هوایی", "نوتام", "لغو پرواز", "تحریم", "حمله", "موشک", "پهپاد",
+    "restricted zone", "exclusion zone", "attack", "strike", "missile", "drone", "sanction", "tanker", "shipping", "war",
+    "ازسرگیری پرواز", "از سرگیری پرواز", "حریم هوایی", "نوتام", "لغو پرواز", "منطقه محدود", "منطقه ممنوع",
+    "تحریم", "حمله", "موشک", "پهپاد",
 )
 ARTICLE_PREFIXES = (
     "analysis:", "analysis -", "opinion:", "opinion -", "explainer:", "explainer -",
@@ -187,17 +182,14 @@ def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> Eligibility
             return EligibilityResult(False, "needs_editorial_review", review=True)
         return EligibilityResult(False, "not_iran_relevant")
 
-    # Routine Iran mentions, meetings and general politics are not enough for
-    # automatic publication. Protected sources remain visible for human review;
-    # lower-priority sources are rejected outright.
-    if not _contains_any(text, SELECTED_TOPIC_TERMS):
-        return EligibilityResult(False, "outside_selected_topics", review=protected)
-
     company_like = _contains_any(text, COMPANY_TERMS)
     operational = _contains_any(text, OPERATIONAL_OVERRIDE_TERMS)
     if company_like and not operational:
         if protected:
             return EligibilityResult(False, "needs_editorial_review", review=True)
         return EligibilityResult(False, "filtered_low_value")
+
+    if not _contains_any(text, SELECTED_TOPIC_TERMS):
+        return EligibilityResult(False, "outside_selected_topics", review=protected)
 
     return EligibilityResult(True, "eligible")
