@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -40,6 +41,13 @@ def _data():
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _poll_seconds() -> int:
+    try:
+        return max(1, int(os.environ.get("POLL_SECONDS", "2")))
+    except (TypeError, ValueError):
+        return 2
 
 
 def _settings() -> tuple[dict, str | None]:
@@ -210,7 +218,7 @@ def status():
         "emergency_lock": bool(settings.get("emergency_lock", False)),
         "live_count": len(live) if isinstance(live, list) else 0,
         "queue_count": len(queue) if isinstance(queue, list) else 0,
-        "poll_seconds": 5,
+        "poll_seconds": _poll_seconds(),
         "updated_at": settings.get("updated_at", ""),
         "modules": _module_public_state(),
         "settings": _public_settings(settings),
@@ -245,6 +253,11 @@ def health():
         "last_publication_at": last_publication,
         "last_error": last_error,
         "telegram_state": telegram_state,
+        "sources_ok": int(state.get("last_sources_ok") or 0),
+        "sources_failed": int(state.get("last_sources_failed") or 0),
+        "items_fetched": int(state.get("last_items_fetched") or 0),
+        "panel_commands": int(state.get("last_panel_commands") or 0),
+        "cycle_rc": int(state.get("last_cycle_rc") or 0),
     })
 
 

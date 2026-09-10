@@ -29,6 +29,11 @@
     return date.toLocaleString('fa-IR', { hour: '2-digit', minute: '2-digit', second: '2-digit', year: 'numeric', month: 'short', day: 'numeric' });
   }
 
+  function faNumber(value) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number.toLocaleString('fa-IR') : '—';
+  }
+
   function setText(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value;
@@ -348,8 +353,12 @@
       setText('agentState', agentFa); setText('lastCycleAt', faTime(data.last_cycle_at)); setText('telegramState', tgFa);
       setText('healthCycle', faTime(data.last_cycle_at)); setText('healthCycleState', agentFa);
       setText('healthPublication', faTime(data.last_publication_at)); setText('healthTelegram', tgFa); setText('healthError', data.last_error || '—');
+      setText('healthSources', `${faNumber(data.sources_ok)} سالم / ${faNumber(data.sources_failed)} خطادار`);
+      setText('healthFetched', faNumber(data.items_fetched));
+      setText('healthCommands', faNumber(data.panel_commands));
     } catch (_) {
       setText('agentState', 'نامشخص'); setText('telegramState', 'نامشخص');
+      setText('healthSources', '—'); setText('healthFetched', '—'); setText('healthCommands', '—');
     }
   }
 
