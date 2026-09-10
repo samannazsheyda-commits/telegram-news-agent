@@ -11,6 +11,7 @@ from pathlib import Path
 from . import runtime_v13 as v13
 from .newsroom_runtime_v2 import run_once as run_v2_once
 from .panel_command_router import apply_command as apply_panel_command
+from .runtime_health import record_cycle
 
 
 def _process_panel_commands() -> int:
@@ -53,6 +54,10 @@ def _record_runtime_heartbeat(result: dict, *, now: datetime | None = None, stat
     finally:
         if os.path.exists(tmp_name):
             os.unlink(tmp_name)
+
+    # Dedicated panel contract. It lives beside the runtime data, not in the
+    # source checkout, and contains operational facts only (never secrets).
+    record_cycle(result, started_at=stamp, finished_at=stamp)
 
 
 def run_ancillary_cycle(now: datetime) -> int:
