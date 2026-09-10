@@ -22,7 +22,7 @@ def test_news_footer_has_clickable_bikhabar_and_tagline_after_link():
 def test_truth_has_explicit_source_and_footer():
     post = TruthPost("1", "", "Iran", "https://truthsocial.com/post/1")
     text = format_truth(post, "متن فارسی")
-    assert "منبع: Truth Social" in text
+    assert "منبع: تروث سوشال" in text
     assert '<a href="https://t.me/bikhabaar">بی‌خبر</a>' in text
     assert "مانیتور تحولات ایران" in text
 
@@ -51,7 +51,7 @@ def test_new_major_sources_are_shown_in_persian():
         "KAN 11": "کانال ۱۱ اسرائیل", "N12": "کانال ۱۲ اسرائیل", "Channel 13": "کانال ۱۳ اسرائیل",
         "Fox News": "فاکس نیوز", "NBC News": "ان‌بی‌سی نیوز", "CBS News": "سی‌بی‌اس نیوز",
         "ABC News": "ای‌بی‌سی نیوز", "Sky News": "اسکای نیوز", "Bloomberg": "بلومبرگ", "CNBC": "سی‌ان‌بی‌سی",
-        "Sepah News / X": "سپاه نیوز", "Times of Israel": "تایمز اسرائیل",
+        "Sepah News / X": "سپاه نیوز / ایکس", "Times of Israel": "تایمز اسرائیل",
     }
     for source, fa in expected.items():
         item = NewsItem("k", source, "Iran", "", "https://example.com", "Fri, 04 Sep 2026 10:00:00 GMT")
