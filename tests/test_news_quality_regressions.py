@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from src.event_ledger import EventLedger
+from src.final_output import finalize_telegram_message
 from src.formatters import format_news
 from src.newsroom_decision import decide_item
 from src.newsroom_eligibility import evaluate_eligibility
@@ -166,7 +167,9 @@ def test_final_news_has_relevant_flags_at_very_bottom():
         "https://example.com/story",
         "Thu, 10 Sep 2026 16:15:00 GMT",
     )
-    text = format_news(item, "نیروهای آمریکایی یک شناور ایرانی را نزدیک تنگه هرمز رهگیری کردند", "", marker_override="🛑")
+    text = finalize_telegram_message(
+        format_news(item, "نیروهای آمریکایی یک شناور ایرانی را نزدیک تنگه هرمز رهگیری کردند", "", marker_override="🛑")
+    )
     last_line = text.splitlines()[-1]
     assert "🇮🇷" in last_line
     assert "🇺🇸" in last_line
