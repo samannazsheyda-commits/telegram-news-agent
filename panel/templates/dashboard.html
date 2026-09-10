@@ -33,7 +33,7 @@
 </section>
 
 <section class="priority-banner static-priority-banner">
-  <div class="priority-title"><span>اولویت قرمز ۲۴/۷</span><small>بنر ثابت اولویت سردبیری</small></div>
+  <div class="priority-title"><span>اولویت قرمز ۲۴/۷</span><small>اولویت ثابت سردبیری</small></div>
   <div class="priority-tags">
     <span>🚀 موشک از ایران</span><span>🛡️ موشک به ایران</span><span>💥 انفجار</span>
     <span>🚢 تنگه هرمز</span><span>⚔️ حمله مستقیم</span><span>🛩️ پهپاد</span><span>🛢️ نفتکش</span>
@@ -73,8 +73,8 @@
 <section class="section-head"><div><span class="section-kicker">سلامت سیستم</span><h2>داده واقعی</h2></div><small>اگر داده‌ای نداریم، «نامشخص» می‌بینی؛ نه سبز ساختگی.</small></section>
 <section class="health-grid newsroom-health-grid">
   <article class="health-card"><span>آخرین چرخه ایجنت</span><strong id="healthCycle">—</strong><small id="healthCycleState">نامشخص</small></article>
-  <article class="health-card"><span>آخرین انتشار</span><strong id="healthPublication">—</strong><small>ثبت‌شده در state</small></article>
-  <article class="health-card"><span>وضعیت تلگرام</span><strong id="healthTelegram">نامشخص</strong><small>بدون حدس</small></article>
+  <article class="health-card"><span>آخرین انتشار</span><strong id="healthPublication">—</strong><small>ثبت‌شده در وضعیت واقعی ایجنت</small></article>
+  <article class="health-card"><span>وضعیت تلگرام</span><strong id="healthTelegram">نامشخص</strong><small>از نتیجه واقعی انتشار</small></article>
   <article class="health-card"><span>آخرین خطا</span><strong id="healthError">—</strong><small>آخرین خطای ثبت‌شده</small></article>
 </section>
 
@@ -96,7 +96,7 @@
         <div class="news-status-rail"></div>
         <div class="live-news-copy">
           <div class="news-title-line"><strong>{{ item.display_title }}</strong></div>
-          <small>{{ item.source_display or item.source }} · {{ item.panel_status_fa }}</small>
+          <small>{{ item.panel_status_fa }}{% if item.decision_reason_fa %} · {{ item.decision_reason_fa }}{% endif %}</small>
         </div>
         <div class="live-news-actions">
           {% if item.source_url %}<a class="button source-button" href="{{ item.source_url }}" target="_blank" rel="noopener">منبع</a>{% endif %}
@@ -112,12 +112,12 @@
 <div class="lower-grid">
   <section class="card compact-list-card">
     <div class="card-heading"><h2>نیازمند بررسی دستی</h2><a href="{{ url_for('review_queue') }}">مشاهده همه</a></div>
-    {% if pending %}{% for item in pending[:6] %}<div class="row compact-row"><span><strong>{{ item.persian_title or item.original_title }}</strong><br><small>{{ item.source }}</small></span><a class="button" href="{{ url_for('review_edit', item_id=item.id) }}">ویرایش / بررسی</a></div>{% endfor %}
+    {% if pending %}{% for item in pending[:6] %}<div class="row compact-row"><span><strong>{{ item.persian_title or 'عنوان فارسی در حال آماده‌سازی' }}</strong><br><small>در صف سردبیری</small></span><a class="button" href="{{ url_for('review_edit', item_id=item.id) }}">ویرایش / بررسی</a></div>{% endfor %}
     {% else %}<p class="empty-copy">نیاز به تصمیم دستی نیست؛ فعلاً موردی برای بررسی وجود ندارد.</p>{% endif %}
   </section>
   <section class="card compact-list-card">
     <div class="card-heading"><h2>منتشرشده</h2><a href="{{ url_for('history') }}">تاریخچه کامل</a></div>
-    {% if published %}{% for item in published[:6] %}<div class="row compact-row"><span><strong>{{ item.final_persian_title or item.persian_title or item.original_title }}</strong><br><small>{{ item.source }}</small></span></div>{% endfor %}
+    {% if published %}{% for item in published[:6] %}<div class="row compact-row"><span><strong>{{ item.final_persian_title or item.persian_title or 'خبر منتشرشده' }}</strong><br><small>انتشار ثبت‌شده</small></span></div>{% endfor %}
     {% else %}<p class="empty-copy">هنوز سابقه انتشار ثبت نشده.</p>{% endif %}
   </section>
 </div>
