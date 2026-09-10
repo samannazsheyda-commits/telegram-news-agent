@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <meta name="theme-color" content="#f3f5f7">
+  <meta name="theme-color" content="#0b0d10">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="بی‌خبر">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="dark">
   <title>{% block title %}بی‌خبر{% endblock %}</title>
   <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='panel.css') }}">
@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='source_manager.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='light-newsroom.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='newsroom.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-nav-v2.css') }}">
 </head>
 <body>
   <header class="topbar newsroom-topbar">
@@ -35,11 +36,19 @@
   </header>
 
   {% if session.get('admin') %}
-  <nav class="nav newsroom-nav">
-    <a href="{{ url_for('dashboard') }}">اتاق خبر</a>
-    <a href="{{ url_for('review_queue') }}">بررسی خبرها</a>
-    <a href="{{ url_for('history') }}">منتشرشده‌ها</a>
-    <a href="/source-manager">منابع</a>
+  <nav class="nav newsroom-nav" aria-label="منوی اصلی اتاق خبر">
+    <a class="newsroom-nav-item{% if request.path == '/' %} is-active{% endif %}" href="{{ url_for('dashboard') }}">
+      <span class="nav-icon" aria-hidden="true">◉</span><span class="nav-label">اتاق خبر</span>
+    </a>
+    <a class="newsroom-nav-item{% if request.path.startswith('/review') %} is-active{% endif %}" href="{{ url_for('review_queue') }}">
+      <span class="nav-icon" aria-hidden="true">✓</span><span class="nav-label">بررسی خبرها</span>
+    </a>
+    <a class="newsroom-nav-item{% if request.path.startswith('/history') %} is-active{% endif %}" href="{{ url_for('history') }}">
+      <span class="nav-icon" aria-hidden="true">↗</span><span class="nav-label">منتشرشده‌ها</span>
+    </a>
+    <a class="newsroom-nav-item{% if request.path.startswith('/source-manager') or request.path.startswith('/sources') %} is-active{% endif %}" href="/source-manager">
+      <span class="nav-icon" aria-hidden="true">⌁</span><span class="nav-label">منابع</span>
+    </a>
   </nav>
   {% endif %}
 
