@@ -24,18 +24,18 @@ SOURCE_FA = {
     "Financial Times": "فایننشال تایمز", "The New York Times": "نیویورک تایمز",
     "France 24": "فرانس ۲۴", "DW": "دویچه‌وله", "Times of Israel": "تایمز اسرائیل",
     "Haaretz": "هاآرتص", "Donald Trump / Truth Social": "ترامپ / تروث سوشال",
-    "Barak Ravid / X": "باراک راوید", "Abbas Araghchi / X": "عباس عراقچی",
-    "Mohsen Rezaei / X": "محسن رضایی", "Sepah News / X": "سپاه نیوز",
-    "RN Intel / Telegram": "آر‌اِن اینتل",
-    "Jerusalem Post / X": "جروزالم پست",
-    "Middle East Spectator / Telegram": "میدل ایست اسپکتیتور",
-    "Clash Report / Telegram": "کلش ریپورت",
-    "GeoPWatch / Telegram": "ژئوپی‌واچ",
-    "Tabz Live / Telegram": "تبز لایو",
-    "The Cradle / Telegram": "دِ کرِیدل",
-    "War Noir / Telegram": "وار نوآر",
-    "CENTCOM / X": "سنتکام",
-    "White House / X": "کاخ سفید",
+    "Barak Ravid / X": "باراک راوید / ایکس", "Abbas Araghchi / X": "عباس عراقچی / ایکس",
+    "Mohsen Rezaei / X": "محسن رضایی / ایکس", "Sepah News / X": "سپاه نیوز / ایکس",
+    "RN Intel / Telegram": "آر‌اِن اینتل / تلگرام",
+    "Jerusalem Post / X": "جروزالم پست / ایکس",
+    "Middle East Spectator / Telegram": "میدل ایست اسپکتیتور / تلگرام",
+    "Clash Report / Telegram": "کلش ریپورت / تلگرام",
+    "GeoPWatch / Telegram": "ژئوپی‌واچ / تلگرام",
+    "Tabz Live / Telegram": "تبز لایو / تلگرام",
+    "The Cradle / Telegram": "دِ کرِیدل / تلگرام",
+    "War Noir / Telegram": "وار نوآر / تلگرام",
+    "CENTCOM / X": "سنتکام / ایکس",
+    "White House / X": "کاخ سفید / ایکس",
     "TankerTrackers": "تانکرترکرز", "NOTAM / Airspace": "نوتام / حریم هوایی",
 }
 SOURCE_SUFFIXES = (
@@ -49,10 +49,8 @@ SOURCE_SUFFIXES = (
     "ABC News", "ای‌بی‌سی نیوز", "Sky News", "اسکای نیوز", "Bloomberg", "بلومبرگ", "CNBC", "سی‌ان‌بی‌سی",
 )
 GOOGLE_NEWS_BOILERPLATE = (
-    "پوشش جامع و به‌روز اخبار",
-    "جمع‌آوری‌شده از منابع مختلف در سراسر جهان توسط گوگل نیوز",
-    "comprehensive up-to-date news coverage",
-    "aggregated from sources all over the world by google news",
+    "پوشش جامع و به‌روز اخبار", "جمع‌آوری‌شده از منابع مختلف در سراسر جهان توسط گوگل نیوز",
+    "comprehensive up-to-date news coverage", "aggregated from sources all over the world by google news",
 )
 EDITORIAL_TITLE_PREFIXES = (
     "analysis:", "opinion:", "explainer:", "commentary:", "factbox:", "viewpoint:",
@@ -218,8 +216,8 @@ def _source_label(source: str) -> str:
     label = SOURCE_FA.get(source)
     if label:
         return label
-    label = re.sub(r"\s*/\s*Telegram\s*$", "", source or "", flags=re.IGNORECASE)
-    label = re.sub(r"\s*/\s*X\s*$", "", label, flags=re.IGNORECASE)
+    label = re.sub(r"\s*/\s*Telegram\s*$", " / تلگرام", source or "", flags=re.IGNORECASE)
+    label = re.sub(r"\s*/\s*X\s*$", " / ایکس", label, flags=re.IGNORECASE)
     return label.strip()
 
 
