@@ -105,7 +105,7 @@ def test_status_reports_safe_operational_capabilities():
     assert payload["publishing"] is True
     assert payload["live_count"] == 2
     assert payload["queue_count"] == 1
-    assert payload["poll_seconds"] == 5
+    assert payload["poll_seconds"] == 2
     for name in ("weather", "air-traffic", "tanker", "market"):
         assert payload["modules"][name]["available"] is True
     assert payload["settings"]["freshness_hours"] == 3
@@ -206,6 +206,7 @@ def test_bulk_clear_removes_live_items_immediately():
     response = client.post("/api/command-center/clear", json={"scope": "live", "ids": ["a", "b"]}, headers={"X-CSRFToken": csrf})
     assert response.status_code == 200
     assert response.get_json()["status"] == "succeeded"
+    assert response.get_json()["telegram_untouched"] is True
     assert data.files["data/panel_live_feed.json"] == []
     assert data.commands == []
 

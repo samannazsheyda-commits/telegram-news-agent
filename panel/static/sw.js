@@ -1,7 +1,9 @@
-const CACHE = 'bikhabar-newsroom-v3';
+const CACHE = 'bikhabar-newsroom-v4';
 const SHELL = [
   '/static/panel.css',
   '/static/newsroom.css',
+  '/static/newsroom-nav-v2.css',
+  '/static/newsroom-compact.css',
   '/static/live.js',
   '/static/settings.css',
   '/static/settings.js',

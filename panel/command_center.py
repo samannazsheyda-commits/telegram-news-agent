@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -29,8 +30,17 @@ PREVIEW_ACTIONS = {
     "tanker": "tanker_preview",
     "market": "market_preview",
 }
+DEFAULT_PRIORITY_TERMS = [
+    "موشک از ایران",
+    "موشک به ایران",
+    "انفجار",
+    "تنگه هرمز",
+    "حمله مستقیم",
+    "پهپاد",
+    "نفتکش",
+]
 _TIME_RE = re.compile(r"^(?:[01]\d|2[0-3]):[0-5]\d$")
-_CLEAR_SCOPES = {"live", "pending", "published", "rejected"}
+_CLEAR_SCOPES = {"live"}
 _TERMINAL_LIVE_STATUSES = {"auto_published", "published_auto", "published_manual"}
 
 
@@ -42,6 +52,29 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _normalise_priorities(value) -> list[str]:
+    if not isinstance(value, list):
+        raise ValueError("priority_terms_must_be_list")
+    result: list[str] = []
+    seen: set[str] = set()
+    for raw in value:
+        term = re.sub(r"\s+", " ", str(raw or "")).strip()
+        if not term:
+            continue
+        if len(term) < 2 or len(term) > 80:
+            raise ValueError("invalid_priority_term")
+        key = term.casefold()
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(term)
+        if len(result) > 20:
+            raise ValueError("too_many_priority_terms")
+    if not result:
+        raise ValueError("priority_terms_empty")
+    return result
+
+
 def _settings() -> tuple[dict, str | None]:
     value, sha = _data().read_json("data/newsroom_settings.json", {})
     value = value if isinstance(value, dict) else {}
@@ -51,6 +84,8 @@ def _settings() -> tuple[dict, str | None]:
     value.setdefault("quiet_start", "00:00")
     value.setdefault("quiet_end", "07:00")
     value.setdefault("freshness_hours", 3)
+    if not isinstance(value.get("priority_terms"), list) or not value.get("priority_terms"):
+        value["priority_terms"] = list(DEFAULT_PRIORITY_TERMS)
     return value, sha
 
 
@@ -92,7 +127,10 @@ def _enqueue(action: str, **extra) -> str:
 
 
 def _module_public_state() -> dict:
-    return {name: {"available": bool(meta["available"]), "label": str(meta["label"])} for name, meta in MODULES.items()}
+    return {
+        name: {"available": bool(meta["available"]), "label": str(meta["label"])}
+        for name, meta in MODULES.items()
+    }
 
 
 def _public_settings(settings: dict) -> dict:
@@ -100,11 +138,16 @@ def _public_settings(settings: dict) -> dict:
         freshness = max(1, min(48, int(settings.get("freshness_hours") or 3)))
     except (TypeError, ValueError):
         freshness = 3
+    try:
+        priorities = _normalise_priorities(settings.get("priority_terms") or DEFAULT_PRIORITY_TERMS)
+    except ValueError:
+        priorities = list(DEFAULT_PRIORITY_TERMS)
     return {
         "quiet_mode": bool(settings.get("quiet_mode", False)),
         "quiet_start": str(settings.get("quiet_start") or "00:00"),
         "quiet_end": str(settings.get("quiet_end") or "07:00"),
         "freshness_hours": freshness,
+        "priority_terms": priorities,
     }
 
 
@@ -162,7 +205,7 @@ def _remove_live_ids(ids: list[str], *, mark_seen: bool = True) -> int:
     _write_list(
         "data/panel_live_feed.json",
         lambda current: [row for row in current if _live_row_id(row) not in targets],
-        "panel: remove live feed items",
+        "panel: dismiss live feed items only",
     )
     if mark_seen:
         for row in matched:
@@ -204,17 +247,49 @@ def status():
     settings, _ = _settings()
     live, _ = _data().read_json("data/panel_live_feed.json", [])
     queue, _ = _data().read_json("data/editorial_queue.json", [])
-    return jsonify({
-        "ok": True,
-        "publishing": bool(settings.get("auto_publish", True)) and not bool(settings.get("emergency_lock", False)),
-        "emergency_lock": bool(settings.get("emergency_lock", False)),
-        "live_count": len(live) if isinstance(live, list) else 0,
-        "queue_count": len(queue) if isinstance(queue, list) else 0,
-        "poll_seconds": 5,
-        "updated_at": settings.get("updated_at", ""),
-        "modules": _module_public_state(),
-        "settings": _public_settings(settings),
-    })
+    try:
+        poll_seconds = max(1, int(os.environ.get("POLL_SECONDS", "2")))
+    except ValueError:
+        poll_seconds = 2
+    return jsonify(
+        {
+            "ok": True,
+            "publishing": bool(settings.get("auto_publish", True)) and not bool(settings.get("emergency_lock", False)),
+            "emergency_lock": bool(settings.get("emergency_lock", False)),
+            "live_count": len(live) if isinstance(live, list) else 0,
+            "queue_count": len(queue) if isinstance(queue, list) else 0,
+            "poll_seconds": poll_seconds,
+            "updated_at": settings.get("updated_at", ""),
+            "modules": _module_public_state(),
+            "settings": _public_settings(settings),
+        }
+    )
+
+
+@bp.get("/api/command-center/priorities")
+def priorities():
+    settings, _ = _settings()
+    try:
+        terms = _normalise_priorities(settings.get("priority_terms") or DEFAULT_PRIORITY_TERMS)
+    except ValueError:
+        terms = list(DEFAULT_PRIORITY_TERMS)
+    return jsonify({"ok": True, "priority_terms": terms})
+
+
+@bp.post("/api/command-center/priorities")
+def update_priorities():
+    payload = request.get_json(silent=True) or {}
+    try:
+        terms = _normalise_priorities(payload.get("priority_terms"))
+    except ValueError as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 400
+
+    def transform(settings: dict) -> dict:
+        settings["priority_terms"] = terms
+        return settings
+
+    settings = _write_settings(transform)
+    return jsonify({"ok": True, "priority_terms": list(settings.get("priority_terms") or [])})
 
 
 @bp.get("/api/command-center/command/<command_id>")
@@ -233,19 +308,30 @@ def health():
     state, _ = _data().read_json("state.json", {})
     state = state if isinstance(state, dict) else {}
     last_cycle = str(state.get("last_cycle_at") or state.get("last_scan_at") or state.get("updated_at") or "")
+    last_scan = str(state.get("last_scan_at") or last_cycle)
     last_publication = str(state.get("last_publication_at") or state.get("last_publish_at") or "")
     last_error = str(state.get("last_error") or "")
     telegram_state = str(state.get("telegram_state") or "unknown")
     if telegram_state not in {"ok", "error", "unknown"}:
         telegram_state = "unknown"
-    return jsonify({
-        "ok": True,
-        "agent_state": _age_state(last_cycle),
-        "last_cycle_at": last_cycle,
-        "last_publication_at": last_publication,
-        "last_error": last_error,
-        "telegram_state": telegram_state,
-    })
+    return jsonify(
+        {
+            "ok": True,
+            "agent_state": _age_state(last_cycle),
+            "last_cycle_at": last_cycle,
+            "last_scan_at": last_scan,
+            "last_publication_at": last_publication,
+            "last_error": last_error,
+            "telegram_state": telegram_state,
+            "sources_ok": int(state.get("last_sources_ok") or 0),
+            "sources_failed": int(state.get("last_sources_failed") or 0),
+            "items_fetched": int(state.get("last_items_fetched") or 0),
+            "published_last_cycle": int(state.get("last_cycle_published") or 0),
+            "publish_failed": int(state.get("last_publish_failed") or 0),
+            "panel_commands": int(state.get("last_panel_commands") or 0),
+            "cycle_rc": int(state.get("last_cycle_rc") or 0),
+        }
+    )
 
 
 @bp.get("/api/command-center/module/<module_name>/preview")
@@ -306,7 +392,12 @@ def publishing():
         return settings
 
     settings = _write_settings(transform)
-    return jsonify({"ok": True, "publishing": bool(settings.get("auto_publish")) and not bool(settings.get("emergency_lock"))})
+    return jsonify(
+        {
+            "ok": True,
+            "publishing": bool(settings.get("auto_publish")) and not bool(settings.get("emergency_lock")),
+        }
+    )
 
 
 @bp.post("/api/command-center/settings")
@@ -340,7 +431,8 @@ def clear_items():
     ids_value = payload.get("ids")
     if scope not in _CLEAR_SCOPES or not isinstance(ids_value, list):
         return jsonify({"ok": False, "error": "invalid_clear_request"}), 400
-    ids, seen = [], set()
+    ids: list[str] = []
+    seen: set[str] = set()
     for value in ids_value:
         item_id = str(value or "").strip()
         if item_id and item_id not in seen:
@@ -348,11 +440,16 @@ def clear_items():
             ids.append(item_id)
     if not ids or len(ids) > 5000:
         return jsonify({"ok": False, "error": "invalid_clear_request"}), 400
-    if scope == "live":
-        count = _remove_live_ids(ids, mark_seen=True)
-        return jsonify({"ok": True, "status": "succeeded", "count": count, "message": f"{count} خبر از ورودی زنده حذف شد"})
-    command_id = _enqueue("clear", scope=scope, ids=ids)
-    return jsonify({"ok": True, "command_id": command_id, "status": "queued", "count": len(ids)}), 202
+    count = _remove_live_ids(ids, mark_seen=True)
+    return jsonify(
+        {
+            "ok": True,
+            "status": "succeeded",
+            "count": count,
+            "telegram_untouched": True,
+            "message": f"{count} خبر فقط از پنل پاک شد؛ تلگرام دست‌نخورده ماند",
+        }
+    )
 
 
 @bp.post("/api/command-center/live/<item_id>/review")
@@ -384,7 +481,7 @@ def reject_live_item(item_id: str):
     _upsert_history(record)
     _remove_from_queue(item_id)
     _remove_live_ids([item_id], mark_seen=True)
-    return jsonify({"ok": True, "status": "rejected", "message": "خبر رد و از ورودی زنده حذف شد"})
+    return jsonify({"ok": True, "status": "rejected", "message": "خبر رد شد و فقط از ورودی پنل کنار رفت"})
 
 
 @bp.post("/api/command-center/live/<item_id>/publish")
@@ -407,7 +504,9 @@ def publish_live_item(item_id: str):
 
     _write_list("data/editorial_queue.json", transform, "panel: queue live item for publication")
     command_id = _enqueue("publish", item_id=item_id, title=title, body=body)
-    return jsonify({"ok": True, "command_id": command_id, "status": "queued", "message": "خبر برای انتشار ارسال شد"}), 202
+    return jsonify(
+        {"ok": True, "command_id": command_id, "status": "queued", "message": "خبر برای انتشار ارسال شد"}
+    ), 202
 
 
 @bp.post("/api/command-center/module/<module_name>")

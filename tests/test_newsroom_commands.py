@@ -28,39 +28,55 @@ def _write_command(tmp_path: Path, name: str, payload: dict) -> Path:
     return path
 
 
-def test_clear_pending_moves_selected_items_to_superseded(tmp_path, monkeypatch):
+def test_clear_live_only_removes_current_panel_rows(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     store = _seed_store(tmp_path)
-    one = _item("one")
-    two = _item("two")
-    store.upsert_queue(one)
-    store.upsert_queue(two)
-    command = _write_command(tmp_path, "clear-pending", {"action": "clear", "scope": "pending", "ids": [one.id, two.id]})
+    published = _item("published", status="published_manual")
+    store.upsert_history(published)
+    (tmp_path / "data/panel_live_feed.json").write_text(
+        '[{"item_id":"one"},{"item_id":"two"}]', encoding="utf-8"
+    )
+    command = _write_command(tmp_path, "clear-live", {"action": "clear", "scope": "live", "ids": ["one"]})
 
     result = apply_command(command)
 
     assert result["status"] == "succeeded"
-    assert store.queue() == []
-    history = store.history()
-    assert {row["id"] for row in history} == {one.id, two.id}
-    assert {row["status"] for row in history} == {"superseded"}
+    assert "تلگرام دست‌نخورده" in result["message"]
+    assert '"one"' not in (tmp_path / "data/panel_live_feed.json").read_text(encoding="utf-8")
+    assert '"two"' in (tmp_path / "data/panel_live_feed.json").read_text(encoding="utf-8")
+    assert [row["id"] for row in store.history()] == [published.id]
     assert not command.exists()
 
 
-def test_clear_published_only_removes_selected_published_rows(tmp_path, monkeypatch):
+def test_clear_pending_is_rejected_and_queue_is_preserved(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    store = _seed_store(tmp_path)
+    item = _item("pending")
+    store.upsert_queue(item)
+    command = _write_command(tmp_path, "clear-pending", {"action": "clear", "scope": "pending", "ids": [item.id]})
+
+    result = apply_command(command)
+
+    assert result["status"] == "failed"
+    assert result["message"] == "invalid_clear_scope"
+    assert [row["id"] for row in store.queue()] == [item.id]
+
+
+def test_clear_published_is_rejected_and_history_is_preserved(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     store = _seed_store(tmp_path)
     published = _item("published", status="published_manual")
     rejected = _item("rejected", status="rejected_manual")
     store.upsert_history(published)
     store.upsert_history(rejected)
-    command = _write_command(tmp_path, "clear-published", {"action": "clear", "scope": "published", "ids": [published.id, rejected.id]})
+    before = store.history()
+    command = _write_command(tmp_path, "clear-published", {"action": "clear", "scope": "published", "ids": [published.id]})
 
     result = apply_command(command)
 
-    assert result["status"] == "succeeded"
-    remaining = store.history()
-    assert [row["id"] for row in remaining] == [rejected.id]
+    assert result["status"] == "failed"
+    assert result["message"] == "invalid_clear_scope"
+    assert store.history() == before
 
 
 def test_settings_save_round_trip_and_validates_thresholds(tmp_path, monkeypatch):
@@ -77,6 +93,7 @@ def test_settings_save_round_trip_and_validates_thresholds(tmp_path, monkeypatch
                 "auto_publish": False,
                 "freshness_hours": 3,
                 "dedup_mode": "strict",
+                "priority_terms": ["موشک", "انفجار"],
                 "earthquake_min": 2.0,
                 "earthquake_breaking": 4.0,
                 "notam_sensitivity": "high",
@@ -94,6 +111,7 @@ def test_settings_save_round_trip_and_validates_thresholds(tmp_path, monkeypatch
     saved = json.loads((tmp_path / "data/newsroom_settings.json").read_text(encoding="utf-8"))
     assert saved["emergency_lock"] is True
     assert saved["auto_publish"] is False
+    assert saved["priority_terms"] == ["موشک", "انفجار"]
     assert saved["earthquake_min"] == 2.0
     assert saved["earthquake_breaking"] == 4.0
     assert saved["ui"]["density"] == "compact"

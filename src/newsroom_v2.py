@@ -93,19 +93,26 @@ def _stale_before_ingest(raw: RawNewsItem, now: datetime, freshness_hours: int) 
     return age > timedelta(hours=max(1, int(freshness_hours)))
 
 
-def _urgency_score(raw: RawNewsItem) -> tuple[int, str]:
+def _urgency_score(raw: RawNewsItem, priority_terms: list[str] | tuple[str, ...] | None = None) -> tuple[int, str]:
     text = f"{raw.title} {raw.summary}".lower()
+    ordered_terms = [str(term or "").strip().lower() for term in (priority_terms or []) if str(term or "").strip()]
+    custom_rank = 0
+    for index, term in enumerate(ordered_terms[:20]):
+        if term in text:
+            # User-managed rules outrank fallback categories; earlier terms win.
+            custom_rank = max(custom_rank, 1000 + (20 - index) * 10)
+
     war_hits = sum(1 for term in WAR_ALERT_TERMS if term in text)
     iran_hit = any(term in text for term in IRAN_ALERT_TERMS)
     if war_hits and iran_hit:
-        rank = 300 + min(war_hits, 20)
+        fallback_rank = 300 + min(war_hits, 20)
     elif war_hits:
-        rank = 200 + min(war_hits, 20)
+        fallback_rank = 200 + min(war_hits, 20)
     elif iran_hit:
-        rank = 100
+        fallback_rank = 100
     else:
-        rank = 0
-    return rank, str(raw.published_at or raw.fetched_at or "")
+        fallback_rank = 0
+    return max(custom_rank, fallback_rank), str(raw.published_at or raw.fetched_at or "")
 
 
 def _item_id(item: NormalizedNewsItem) -> str:
@@ -204,7 +211,8 @@ def run_cycle(
             continue
         fresh_items.append(raw)
 
-    fresh_items.sort(key=_urgency_score, reverse=True)
+    priority_terms = settings.get("priority_terms") if isinstance(settings.get("priority_terms"), (list, tuple)) else []
+    fresh_items.sort(key=lambda raw: _urgency_score(raw, priority_terms), reverse=True)
 
     for raw in fresh_items:
         item = normalize_item(raw)

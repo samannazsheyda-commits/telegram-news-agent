@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from datetime import datetime, timedelta, timezone
 
 from flask import Blueprint, current_app, jsonify, request, session
@@ -231,6 +233,11 @@ def _fast_rows(limit: int = 40) -> list[dict]:
     return [_public_row(row, queued_ids) for row in rows]
 
 
+def _feed_revision(items: list[dict]) -> str:
+    payload = json.dumps(items, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha1(payload.encode("utf-8")).hexdigest()[:16]
+
+
 @bp.before_request
 def require_admin():
     if not session.get("admin"):
@@ -241,12 +248,15 @@ def require_admin():
 @bp.get("/api/live-feed")
 def live_feed():
     items = _fast_rows(40)
-    response = jsonify({
-        "ok": True,
-        "items": items,
-        "count": len(items),
-        "updated_at": items[0]["updated_at"] if items else "",
-    })
+    response = jsonify(
+        {
+            "ok": True,
+            "items": items,
+            "count": len(items),
+            "revision": _feed_revision(items),
+            "updated_at": items[0]["updated_at"] if items else "",
+        }
+    )
     response.headers["Cache-Control"] = "no-store, max-age=0"
     return response
 

@@ -10,6 +10,12 @@
   const liveSelectAll = document.getElementById('liveSelectAll');
   const liveBulkDelete = document.getElementById('liveBulkDelete');
   const liveBulkState = document.getElementById('liveBulkState');
+  const clearCurrentFeed = document.getElementById('clearCurrentFeed');
+  const priorityList = document.getElementById('priorityList');
+  const priorityNewTerm = document.getElementById('priorityNewTerm');
+  const addPriorityTerm = document.getElementById('addPriorityTerm');
+  const savePriorities = document.getElementById('savePriorities');
+  const priorityResult = document.getElementById('priorityResult');
   const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
   if (!feed || !soundToggle) return;
 
@@ -18,15 +24,22 @@
   let audioContext = null;
   let publishingEnabled = true;
   let latestItems = [];
+  let lastFeedRevision = '';
+  let priorityTerms = [];
+  let prioritiesDirty = false;
   const commandWatchers = new Map();
   const localizedCache = new Map();
   const localizationInFlight = new Set();
+  const selectedNewsIds = new Set();
+  const openNewsIds = new Set();
 
   function faTime(value) {
     if (!value) return '—';
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return value;
-    return date.toLocaleString('fa-IR', { hour: '2-digit', minute: '2-digit', second: '2-digit', year: 'numeric', month: 'short', day: 'numeric' });
+    return date.toLocaleString('fa-IR', {
+      hour: '2-digit', minute: '2-digit', second: '2-digit', year: 'numeric', month: 'short', day: 'numeric'
+    });
   }
 
   function setText(id, value) {
@@ -64,19 +77,26 @@
 
   function paintPublishing() {
     if (publishingState) publishingState.textContent = publishingEnabled ? 'فعال' : 'متوقف';
+    if (publishingState) publishingState.classList.toggle('offline', !publishingEnabled);
     if (panicToggle) panicToggle.textContent = publishingEnabled ? '⛔ توقف کامل انتشار' : '▶️ ازسرگیری انتشار';
   }
 
   function selectedIds() {
-    return Array.from(feed.querySelectorAll('.live-select:checked')).map(input => input.value).filter(Boolean);
+    return [...selectedNewsIds];
   }
 
   function syncBulkState() {
-    const boxes = Array.from(feed.querySelectorAll('.live-select'));
-    const selected = boxes.filter(box => box.checked).length;
-    if (liveBulkDelete) liveBulkDelete.disabled = selected === 0;
-    if (liveSelectAll) liveSelectAll.checked = boxes.length > 0 && selected === boxes.length;
-    if (liveBulkState) liveBulkState.textContent = selected ? `${selected.toLocaleString('fa-IR')} خبر انتخاب شده` : '';
+    const visibleIds = latestItems.map(item => String(item.id || item.item_id || '')).filter(Boolean);
+    for (const id of [...selectedNewsIds]) {
+      if (!visibleIds.includes(id)) selectedNewsIds.delete(id);
+    }
+    if (liveBulkDelete) liveBulkDelete.disabled = selectedNewsIds.size === 0;
+    if (liveSelectAll) liveSelectAll.checked = visibleIds.length > 0 && visibleIds.every(id => selectedNewsIds.has(id));
+    if (liveBulkState) {
+      liveBulkState.textContent = selectedNewsIds.size
+        ? `${selectedNewsIds.size.toLocaleString('fa-IR')} خبر انتخاب شده · فقط از پنل پاک می‌شود`
+        : 'فقط از پنل؛ هیچ پیامی در تلگرام حذف نمی‌شود.';
+    }
   }
 
   async function getJson(url) {
@@ -107,7 +127,7 @@
         if (commandResult) commandResult.textContent = `${label}: ${data.message || data.status}`;
         if (['succeeded', 'failed', 'reconciled'].includes(data.status)) {
           commandWatchers.delete(commandId);
-          await Promise.allSettled([refreshStatus(), refreshHealth(), refreshLiveFeed()]);
+          await Promise.allSettled([refreshStatus(), refreshHealth(), refreshLiveFeed(true)]);
           return data;
         }
       } catch (_) {}
@@ -149,10 +169,10 @@
     if (!ids.length) return;
     ids.forEach(id => localizationInFlight.add(id));
     try {
-      await localizeIds(ids);
-      renderLatest();
+      const localized = await localizeIds(ids);
+      if (localized.length) renderLatest();
     } catch (_) {
-      // Live polling stays responsive; persistence allows a later retry.
+      // Polling stays responsive; localization is retried on a later cycle.
     } finally {
       ids.forEach(id => localizationInFlight.delete(id));
     }
@@ -165,27 +185,39 @@
       .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
   }
 
-  function finalOutputBlock(item) {
-    const box = document.createElement('section');
-    box.className = 'final-output-box live-final-output';
-    const label = document.createElement('strong');
-    label.textContent = 'خروجی نهایی تلگرام';
+  function trackedDetails(className, label, content, stateKey) {
+    const details = document.createElement('details');
+    details.className = className;
+    details.open = openNewsIds.has(stateKey);
+    const summary = document.createElement('summary');
+    summary.textContent = label;
     const pre = document.createElement('pre');
-    pre.textContent = item.final_message ? telegramPreviewText(item.final_message) : 'در حال آماده‌سازی نسخه نهایی فارسی…';
-    box.append(label, pre);
-    return box;
+    pre.textContent = content;
+    details.append(summary, pre);
+    details.addEventListener('toggle', () => {
+      if (details.open) openNewsIds.add(stateKey);
+      else openNewsIds.delete(stateKey);
+    });
+    return details;
   }
 
-  function sourceDetails(item) {
+  function finalOutputBlock(item, id) {
+    return trackedDetails(
+      'final-output-details final-output-box live-final-output',
+      'خروجی نهایی تلگرام',
+      item.final_message ? telegramPreviewText(item.final_message) : 'در حال آماده‌سازی نسخه نهایی فارسی…',
+      `final:${id}`,
+    );
+  }
+
+  function sourceDetails(item, id) {
     if (!item.original_title && !item.original_body) return null;
-    const details = document.createElement('details');
-    details.className = 'original-source-text';
-    const summary = document.createElement('summary');
-    summary.textContent = 'متن اصلی منبع';
-    const pre = document.createElement('pre');
-    pre.textContent = [item.original_title, item.original_body].filter(Boolean).join('\n\n');
-    details.append(summary, pre);
-    return details;
+    return trackedDetails(
+      'original-source-text',
+      'متن اصلی منبع',
+      [item.original_title, item.original_body].filter(Boolean).join('\n\n'),
+      `original:${id}`,
+    );
   }
 
   async function ensureLocalized(item) {
@@ -194,6 +226,7 @@
     if (!merged.needs_localization && merged.final_message) return merged;
     const rows = await localizeIds([id]);
     const localized = rows.find(row => String(row.id || row.item_id || '') === id);
+    if (localized) renderLatest();
     return localized || mergeLocalized(item);
   }
 
@@ -214,8 +247,16 @@
       row.dataset.newsId = id;
 
       const check = document.createElement('input');
-      check.type = 'checkbox'; check.className = 'live-select'; check.value = id; check.setAttribute('aria-label', 'انتخاب خبر');
-      check.addEventListener('change', syncBulkState); row.appendChild(check);
+      check.type = 'checkbox';
+      check.className = 'live-select';
+      check.value = id;
+      check.checked = selectedNewsIds.has(id);
+      check.setAttribute('aria-label', 'انتخاب خبر');
+      check.addEventListener('change', () => {
+        if (check.checked) selectedNewsIds.add(id); else selectedNewsIds.delete(id);
+        syncBulkState();
+      });
+      row.appendChild(check);
       const rail = document.createElement('div'); rail.className = 'news-status-rail'; row.appendChild(rail);
 
       const content = document.createElement('div'); content.className = 'live-news-copy';
@@ -223,13 +264,18 @@
       const title = document.createElement('strong'); title.textContent = item.title || 'عنوان فارسی در حال آماده‌سازی';
       titleLine.appendChild(title); content.appendChild(titleLine);
       const meta = document.createElement('small');
-      meta.textContent = [item.source, item.panel_status_fa, item.decision_reason_fa, item.published_at_source ? `زمان منبع: ${faTime(item.published_at_source)}` : ''].filter(Boolean).join(' · ');
+      meta.textContent = [
+        item.source,
+        item.panel_status_fa,
+        item.decision_reason_fa,
+        item.published_at_source ? `زمان منبع: ${faTime(item.published_at_source)}` : '',
+      ].filter(Boolean).join(' · ');
       content.appendChild(meta);
       if (item.body) {
         const body = document.createElement('p'); body.className = 'persian-body'; body.textContent = item.body; content.appendChild(body);
       }
-      content.appendChild(finalOutputBlock(item));
-      const original = sourceDetails(item); if (original) content.appendChild(original);
+      content.appendChild(finalOutputBlock(item, id));
+      const original = sourceDetails(item, id); if (original) content.appendChild(original);
       row.appendChild(content);
 
       const actions = document.createElement('div'); actions.className = 'live-news-actions newsroom-live-actions';
@@ -257,9 +303,9 @@
           reject.disabled = true; const old = reject.textContent; reject.textContent = 'در حال رد…';
           try {
             await postJson(`/api/command-center/live/${encodeURIComponent(id)}/reject`);
-            if (commandResult) commandResult.textContent = 'خبر رد شد.';
-            row.remove();
-            await refreshLiveFeed();
+            selectedNewsIds.delete(id);
+            if (commandResult) commandResult.textContent = 'خبر رد شد و از ورودی پنل کنار رفت.';
+            await refreshLiveFeed(true);
           } catch (error) {
             if (commandResult) commandResult.textContent = `رد خبر: ${error.message}`;
             reject.disabled = false; reject.textContent = old;
@@ -287,40 +333,59 @@
       }
 
       if (item.source_url) {
-        const source = document.createElement('a'); source.className = 'button source-button'; source.href = item.source_url; source.target = '_blank'; source.rel = 'noopener'; source.textContent = 'منبع'; actions.appendChild(source);
+        const source = document.createElement('a');
+        source.className = 'button source-button';
+        source.href = item.source_url;
+        source.target = '_blank';
+        source.rel = 'noopener';
+        source.textContent = 'منبع';
+        actions.appendChild(source);
       }
 
-      const del = actionButton('حذف', 'button danger-lite');
+      const del = actionButton('حذف از پنل', 'button danger-lite');
       del.addEventListener('click', async () => {
-        del.disabled = true; del.textContent = 'در حال حذف…';
+        del.disabled = true; del.textContent = 'در حال حذف از پنل…';
         try {
           const data = await postJson('/api/command-center/clear', { scope: 'live', ids: [id] });
-          if (commandResult) commandResult.textContent = data.message || 'خبر حذف شد.';
-          row.remove();
-          await refreshLiveFeed();
+          selectedNewsIds.delete(id);
+          if (commandResult) commandResult.textContent = data.message || 'خبر فقط از پنل پاک شد.';
+          await refreshLiveFeed(true);
         } catch (error) {
-          if (commandResult) commandResult.textContent = `حذف خبر: ${error.message}`;
-          del.disabled = false; del.textContent = 'حذف';
+          if (commandResult) commandResult.textContent = `حذف از پنل: ${error.message}`;
+          del.disabled = false; del.textContent = 'حذف از پنل';
         }
       });
-      actions.appendChild(del); row.appendChild(actions); frag.appendChild(row);
+      actions.appendChild(del);
+      row.appendChild(actions);
+      frag.appendChild(row);
     }
     if (!items.length) {
-      const empty = document.createElement('div'); empty.className = 'empty-state'; empty.textContent = 'هنوز خبر تازه‌ای وارد نشده.'; frag.appendChild(empty);
+      const empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.textContent = 'هنوز خبر تازه‌ای وارد نشده.';
+      frag.appendChild(empty);
     }
     feed.replaceChildren(frag);
     syncBulkState();
   }
 
-  async function refreshLiveFeed() {
+  async function refreshLiveFeed(force = false) {
     try {
       const data = await getJson('/api/live-feed');
       const items = Array.isArray(data.items) ? data.items : [];
       const nextFirst = String(items[0]?.id || '');
-      if (nextFirst && firstId && nextFirst !== firstId) { beep(); showBadge(); document.title = '🔴 خبر جدید | بی‌خبر'; }
+      if (nextFirst && firstId && nextFirst !== firstId) {
+        beep(); showBadge(); document.title = '🔴 خبر جدید | بی‌خبر';
+      }
       if (nextFirst) firstId = nextFirst;
       latestItems = items;
-      renderLatest();
+      const revision = String(data.revision || '');
+      if (force || revision !== lastFeedRevision) {
+        lastFeedRevision = revision;
+        renderLatest();
+      } else {
+        syncBulkState();
+      }
       void localizeMissing(items);
       if (liveCount) liveCount.textContent = String(data.count ?? items.length);
     } catch (_) {}
@@ -343,11 +408,20 @@
   async function refreshHealth() {
     try {
       const data = await getJson('/api/command-center/health');
-      const agentFa = { active: 'فعال', stale: 'بدون heartbeat تازه', unknown: 'نامشخص' }[data.agent_state] || 'نامشخص';
+      const agentFa = { active: 'فعال', stale: 'heartbeat قدیمی', unknown: 'نامشخص' }[data.agent_state] || 'نامشخص';
       const tgFa = { ok: 'سالم', error: 'خطا', unknown: 'نامشخص' }[data.telegram_state] || 'نامشخص';
-      setText('agentState', agentFa); setText('lastCycleAt', faTime(data.last_cycle_at)); setText('telegramState', tgFa);
-      setText('healthCycle', faTime(data.last_cycle_at)); setText('healthCycleState', agentFa);
-      setText('healthPublication', faTime(data.last_publication_at)); setText('healthTelegram', tgFa); setText('healthError', data.last_error || '—');
+      setText('agentState', agentFa);
+      setText('lastCycleAt', faTime(data.last_scan_at || data.last_cycle_at));
+      setText('telegramState', tgFa);
+      setText('healthCycle', faTime(data.last_cycle_at));
+      setText('healthCycleState', agentFa);
+      setText('healthPublication', faTime(data.last_publication_at));
+      setText('healthTelegram', tgFa);
+      setText('healthError', data.last_error || '—');
+      setText('healthSourcesOk', Number(data.sources_ok || 0).toLocaleString('fa-IR'));
+      setText('healthSourcesFailed', Number(data.sources_failed || 0).toLocaleString('fa-IR'));
+      setText('healthItemsFetched', Number(data.items_fetched || 0).toLocaleString('fa-IR'));
+      setText('healthPublishedCycle', Number(data.published_last_cycle || 0).toLocaleString('fa-IR'));
     } catch (_) {
       setText('agentState', 'نامشخص'); setText('telegramState', 'نامشخص');
     }
@@ -363,9 +437,14 @@
       image.src = `${data.image_url}?t=${encodeURIComponent(data.generated_at || Date.now())}`;
       body.appendChild(image);
     }
-    const pre = document.createElement('pre'); pre.textContent = telegramPreviewText(data.message || ''); body.appendChild(pre);
+    const pre = document.createElement('pre');
+    pre.textContent = telegramPreviewText(data.message || '');
+    body.appendChild(pre);
     if (data.available_for_publish === false) {
-      const note = document.createElement('small'); note.className = 'preview-warning'; note.textContent = 'این پیش‌نمایش قابل مشاهده است، اما به‌دلیل نبود عدد دقیق قابل استناد، انتشار خودکار آن غیرفعال است.'; body.appendChild(note);
+      const note = document.createElement('small');
+      note.className = 'preview-warning';
+      note.textContent = 'داده برای مشاهده موجود است، اما برای انتشار عدد قابل استناد کافی نیست.';
+      body.appendChild(note);
     }
     if (data.generated_at) {
       const small = document.createElement('small');
@@ -380,7 +459,7 @@
     body.textContent = 'در حال دریافت پیش‌نمایش…';
     try {
       let data = await getJson(`/api/command-center/module/${name}/preview`);
-      if (!data.available || !data.message) {
+      if (!data.available || (!data.message && !data.image_url)) {
         body.textContent = 'در حال ساخت پیش‌نمایش واقعی…';
         const queued = await postJson(`/api/command-center/module/${name}/preview`);
         const result = await watchCommand(queued.command_id, 'ساخت پیش‌نمایش');
@@ -390,7 +469,7 @@
         }
         data = await getJson(`/api/command-center/module/${name}/preview`);
       }
-      if (!data.available || !data.message) {
+      if (!data.available || (!data.message && !data.image_url)) {
         body.textContent = 'داده واقعی کافی برای پیش‌نمایش موجود نیست.';
         return;
       }
@@ -406,6 +485,9 @@
       if (!panel) return;
       const opening = panel.hidden;
       panel.hidden = !opening;
+      document.querySelectorAll(`[data-preview-toggle="${name}"]`).forEach(btn => {
+        if (!btn.classList.contains('link-button')) btn.textContent = opening ? 'بستن پیش‌نمایش' : 'پیش‌نمایش';
+      });
       if (opening) await loadPreview(name, panel);
     });
   });
@@ -413,33 +495,149 @@
   document.querySelectorAll('[data-command-module]').forEach(button => {
     button.addEventListener('click', async () => {
       const name = button.dataset.commandModule;
-      const old = button.textContent; button.disabled = true; button.textContent = 'در حال ارسال…';
+      const old = button.textContent;
+      button.disabled = true;
+      button.textContent = 'در حال ارسال…';
       try {
         const data = await postJson(`/api/command-center/module/${name}`);
         if (commandResult) commandResult.textContent = `${old}: در صف اجرا`;
         void watchCommand(data.command_id, old);
-      } catch (error) { if (commandResult) commandResult.textContent = `${old}: ${error.message}`; }
-      finally { button.disabled = false; button.textContent = old; }
+      } catch (error) {
+        if (commandResult) commandResult.textContent = `${old}: ${error.message}`;
+      } finally {
+        button.disabled = false;
+        button.textContent = old;
+      }
     });
   });
 
   liveSelectAll?.addEventListener('change', () => {
-    feed.querySelectorAll('.live-select').forEach(box => { box.checked = liveSelectAll.checked; });
-    syncBulkState();
+    const ids = latestItems.map(item => String(item.id || item.item_id || '')).filter(Boolean);
+    if (liveSelectAll.checked) ids.forEach(id => selectedNewsIds.add(id));
+    else ids.forEach(id => selectedNewsIds.delete(id));
+    renderLatest();
   });
 
   liveBulkDelete?.addEventListener('click', async () => {
     const ids = selectedIds();
     if (!ids.length) return;
     liveBulkDelete.disabled = true;
-    if (liveBulkState) liveBulkState.textContent = 'در حال حذف…';
+    if (liveBulkState) liveBulkState.textContent = 'در حال حذف فقط از پنل…';
     try {
       const data = await postJson('/api/command-center/clear', { scope: 'live', ids });
-      if (liveBulkState) liveBulkState.textContent = data.message || 'حذف شد.';
-      await refreshLiveFeed();
+      ids.forEach(id => selectedNewsIds.delete(id));
+      if (liveBulkState) liveBulkState.textContent = data.message || 'فقط از پنل پاک شد.';
+      await refreshLiveFeed(true);
     } catch (error) {
       if (liveBulkState) liveBulkState.textContent = `خطا: ${error.message}`;
     } finally { syncBulkState(); }
+  });
+
+  clearCurrentFeed?.addEventListener('click', async () => {
+    const ids = latestItems.map(item => String(item.id || item.item_id || '')).filter(Boolean);
+    if (!ids.length) return;
+    clearCurrentFeed.disabled = true;
+    const old = clearCurrentFeed.textContent;
+    clearCurrentFeed.textContent = 'در حال پاک‌کردن پنل…';
+    try {
+      const data = await postJson('/api/command-center/clear', { scope: 'live', ids });
+      selectedNewsIds.clear();
+      openNewsIds.clear();
+      if (liveBulkState) liveBulkState.textContent = data.message || 'ورودی‌های فعلی فقط از پنل پاک شدند.';
+      await refreshLiveFeed(true);
+    } catch (error) {
+      if (liveBulkState) liveBulkState.textContent = `خطا: ${error.message}`;
+    } finally {
+      clearCurrentFeed.disabled = false;
+      clearCurrentFeed.textContent = old;
+    }
+  });
+
+  function setPrioritiesDirty(value) {
+    prioritiesDirty = value;
+    if (savePriorities) savePriorities.disabled = !value;
+  }
+
+  function renderPriorities() {
+    if (!priorityList) return;
+    priorityList.replaceChildren();
+    priorityTerms.forEach((term, index) => {
+      const row = document.createElement('div');
+      row.className = 'priority-rule-row';
+      const rank = document.createElement('span'); rank.className = 'priority-rank'; rank.textContent = (index + 1).toLocaleString('fa-IR');
+      const text = document.createElement('strong'); text.textContent = term;
+      const controls = document.createElement('div'); controls.className = 'priority-rule-actions';
+      const up = actionButton('↑', 'mini-button'); up.title = 'بالاتر'; up.disabled = index === 0;
+      const down = actionButton('↓', 'mini-button'); down.title = 'پایین‌تر'; down.disabled = index === priorityTerms.length - 1;
+      const remove = actionButton('حذف', 'mini-button danger-lite'); remove.title = 'حذف اولویت';
+      up.addEventListener('click', () => {
+        [priorityTerms[index - 1], priorityTerms[index]] = [priorityTerms[index], priorityTerms[index - 1]];
+        setPrioritiesDirty(true); renderPriorities();
+      });
+      down.addEventListener('click', () => {
+        [priorityTerms[index], priorityTerms[index + 1]] = [priorityTerms[index + 1], priorityTerms[index]];
+        setPrioritiesDirty(true); renderPriorities();
+      });
+      remove.addEventListener('click', () => {
+        if (priorityTerms.length <= 1) return;
+        priorityTerms.splice(index, 1); setPrioritiesDirty(true); renderPriorities();
+      });
+      controls.append(up, down, remove);
+      row.append(rank, text, controls);
+      priorityList.appendChild(row);
+    });
+  }
+
+  async function loadPriorities() {
+    if (!priorityList) return;
+    try {
+      const data = await getJson('/api/command-center/priorities');
+      priorityTerms = Array.isArray(data.priority_terms) ? data.priority_terms.slice(0, 20) : [];
+      renderPriorities();
+      setPrioritiesDirty(false);
+      if (priorityResult) priorityResult.textContent = 'همگام با ایجنت';
+    } catch (error) {
+      if (priorityResult) priorityResult.textContent = `دریافت اولویت‌ها ناموفق: ${error.message}`;
+    }
+  }
+
+  addPriorityTerm?.addEventListener('click', () => {
+    const term = String(priorityNewTerm?.value || '').replace(/\s+/g, ' ').trim();
+    if (term.length < 2 || term.length > 80) {
+      if (priorityResult) priorityResult.textContent = 'عبارت باید بین ۲ تا ۸۰ نویسه باشد.';
+      return;
+    }
+    if (priorityTerms.some(value => value.toLocaleLowerCase() === term.toLocaleLowerCase())) {
+      if (priorityResult) priorityResult.textContent = 'این اولویت از قبل وجود دارد.';
+      return;
+    }
+    if (priorityTerms.length >= 20) {
+      if (priorityResult) priorityResult.textContent = 'حداکثر ۲۰ اولویت مجاز است.';
+      return;
+    }
+    priorityTerms.push(term);
+    if (priorityNewTerm) priorityNewTerm.value = '';
+    setPrioritiesDirty(true);
+    renderPriorities();
+  });
+
+  priorityNewTerm?.addEventListener('keydown', event => {
+    if (event.key === 'Enter') { event.preventDefault(); addPriorityTerm?.click(); }
+  });
+
+  savePriorities?.addEventListener('click', async () => {
+    savePriorities.disabled = true;
+    if (priorityResult) priorityResult.textContent = 'در حال ذخیره…';
+    try {
+      const data = await postJson('/api/command-center/priorities', { priority_terms: priorityTerms });
+      priorityTerms = Array.isArray(data.priority_terms) ? data.priority_terms : priorityTerms;
+      renderPriorities();
+      setPrioritiesDirty(false);
+      if (priorityResult) priorityResult.textContent = 'ذخیره شد؛ از چرخه بعدی ایجنت اعمال می‌شود.';
+    } catch (error) {
+      if (priorityResult) priorityResult.textContent = `خطا: ${error.message}`;
+      savePriorities.disabled = false;
+    }
   });
 
   panicToggle?.addEventListener('click', async () => {
@@ -447,19 +645,34 @@
     try {
       const data = await postJson('/api/command-center/publishing', { enabled: !publishingEnabled });
       publishingEnabled = Boolean(data.publishing); paintPublishing();
-      if (commandResult) commandResult.textContent = publishingEnabled ? 'انتشار فعال شد.' : 'انتشار متوقف شد.';
+      if (commandResult) commandResult.textContent = publishingEnabled ? 'انتشار فعال شد؛ ایجنت وضعیت جدید را می‌خواند.' : 'انتشار خودکار متوقف شد.';
     } catch (error) { if (commandResult) commandResult.textContent = `خطا: ${error.message}`; }
     finally { panicToggle.disabled = false; }
   });
 
   soundToggle.addEventListener('click', async () => {
-    soundOn = !soundOn; localStorage.setItem('bikhabar_sound_alert', soundOn ? 'on' : 'off'); paintSound();
-    if (soundOn) { try { audioContext ||= new (window.AudioContext || window.webkitAudioContext)(); await audioContext.resume?.(); beep(); } catch (_) {} }
+    soundOn = !soundOn;
+    localStorage.setItem('bikhabar_sound_alert', soundOn ? 'on' : 'off');
+    paintSound();
+    if (soundOn) {
+      try {
+        audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+        await audioContext.resume?.();
+        beep();
+      } catch (_) {}
+    }
   });
 
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) document.title = 'اتاق خبر | بی‌خبر'; });
-  paintSound(); paintPublishing();
-  refreshLiveFeed(); refreshStatus(); refreshHealth();
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) document.title = 'اتاق خبر | بی‌خبر';
+  });
+
+  paintSound();
+  paintPublishing();
+  refreshLiveFeed(true);
+  refreshStatus();
+  refreshHealth();
+  loadPriorities();
   window.setInterval(refreshLiveFeed, 1000);
   window.setInterval(() => { refreshStatus(); refreshHealth(); }, 2000);
 })();
