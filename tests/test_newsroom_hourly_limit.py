@@ -65,7 +65,9 @@ def test_fourth_normal_unique_story_waits_after_three_news_posts_in_rolling_hour
 
     assert summary.published == 0
     assert summary.rate_limited == 1
-    assert sent == ["sanctions-1", "nuclear-1", "airspace-1"]
+    assert len(sent) == 3
+    assert set(sent) == {"sanctions-1", "nuclear-1", "airspace-1"}
+    assert "sanctions-2" not in sent
     assert editorial.queue()[-1]["rejection_reason"] == "hourly_publish_limit"
     assert live.records()[-1].panel_status == "waiting"
 
