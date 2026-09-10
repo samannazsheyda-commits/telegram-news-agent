@@ -1,11 +1,11 @@
 from datetime import datetime
 from pathlib import Path
 
-from src import services
 from src.newsroom_eligibility import evaluate_eligibility
 from src.newsroom_models import RawNewsItem
 from src.newsroom_normalize import normalize_item
 from src.newsroom_publisher import TelegramNewsroomPublisher
+from src.strict_translation import translate_to_fa_strict
 
 
 NOW = datetime.fromisoformat("2026-09-10T08:30:00+00:00")
@@ -100,7 +100,7 @@ def test_strict_translation_never_calls_mymemory_after_google_failures():
                 raise RuntimeError("google api unavailable")
             return Response()
 
-    assert services.translate_to_fa_strict("Iran launched a missile", session=Session()) == ""
+    assert translate_to_fa_strict("Iran launched a missile", session=Session()) == ""
     assert all("mymemory" not in url for url in calls)
 
 
