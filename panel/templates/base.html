@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <meta name="theme-color" content="#f3f5f7">
+  <meta name="theme-color" content="#f7f8fa">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="بی‌خبر">
@@ -21,7 +21,7 @@
   <header class="topbar newsroom-topbar">
     <a href="{{ url_for('dashboard') if session.get('admin') else url_for('login') }}" class="brand-lockup">
       <span class="brand-mark">ب</span>
-      <span class="brand-copy"><strong>بی‌خبر</strong><small>اتاق خبر زنده</small></span>
+      <span class="brand-copy"><strong>بی‌خبر</strong><small>مانیتورینگ زنده</small></span>
     </a>
     {% if session.get('admin') %}
     <div class="topbar-actions">
@@ -36,7 +36,7 @@
 
   {% if session.get('admin') %}
   <nav class="nav newsroom-nav">
-    <a href="{{ url_for('dashboard') }}">اتاق خبر</a>
+    <a href="{{ url_for('dashboard') }}">مانیتورینگ</a>
     <a href="{{ url_for('review_queue') }}">بررسی خبرها</a>
     <a href="{{ url_for('history') }}">منتشرشده‌ها</a>
     <a href="/source-manager">منابع</a>

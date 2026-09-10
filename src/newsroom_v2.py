@@ -13,6 +13,7 @@ from .newsroom_eligibility import evaluate_eligibility
 from .newsroom_fingerprint import build_fingerprint
 from .newsroom_models import LiveFeedRecord, NormalizedNewsItem, RawNewsItem
 from .newsroom_normalize import normalize_item
+from .newsroom_priorities import DEFAULT_PRIORITY_RULES, normalize_priority_rules
 from .panel_live_feed import LiveFeedStore
 
 
@@ -93,10 +94,10 @@ def _stale_before_ingest(raw: RawNewsItem, now: datetime, freshness_hours: int) 
     return age > timedelta(hours=max(1, int(freshness_hours)))
 
 
-def _urgency_score(raw: RawNewsItem) -> tuple[int, str]:
-    text = f"{raw.title} {raw.summary}".lower()
-    war_hits = sum(1 for term in WAR_ALERT_TERMS if term in text)
-    iran_hit = any(term in text for term in IRAN_ALERT_TERMS)
+def _urgency_score(raw: RawNewsItem, priority_rules: list[str] | None = None) -> tuple[int, str]:
+    text = f"{raw.title} {raw.summary}".casefold()
+    war_hits = sum(1 for term in WAR_ALERT_TERMS if term.casefold() in text)
+    iran_hit = any(term.casefold() in text for term in IRAN_ALERT_TERMS)
     if war_hits and iran_hit:
         rank = 300 + min(war_hits, 20)
     elif war_hits:
@@ -105,6 +106,15 @@ def _urgency_score(raw: RawNewsItem) -> tuple[int, str]:
         rank = 100
     else:
         rank = 0
+
+    try:
+        rules = normalize_priority_rules(priority_rules if priority_rules is not None else DEFAULT_PRIORITY_RULES)
+    except ValueError:
+        rules = list(DEFAULT_PRIORITY_RULES)
+    for index, rule in enumerate(rules):
+        if rule.casefold() in text:
+            rank += 1000 + (len(rules) - index) * 10
+            break
     return rank, str(raw.published_at or raw.fetched_at or "")
 
 
@@ -184,6 +194,10 @@ def run_cycle(
     items, summary.sources_ok, summary.sources_failed = _collect(fetcher)
     summary.items_fetched = len(items)
     freshness_hours = int(settings.get("freshness_hours") or 2)
+    try:
+        priority_rules = normalize_priority_rules(settings.get("priority_rules"))
+    except ValueError:
+        priority_rules = list(DEFAULT_PRIORITY_RULES)
 
     fresh_items: list[RawNewsItem] = []
     for raw in items:
@@ -192,7 +206,7 @@ def run_cycle(
             continue
         fresh_items.append(raw)
 
-    fresh_items.sort(key=_urgency_score, reverse=True)
+    fresh_items.sort(key=lambda raw: _urgency_score(raw, priority_rules), reverse=True)
 
     for raw in fresh_items:
         item = normalize_item(raw)

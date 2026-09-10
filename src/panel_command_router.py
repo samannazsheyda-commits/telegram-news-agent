@@ -9,11 +9,13 @@ from pathlib import Path
 from typing import Any
 
 from .editorial_store import LocalEditorialStore
+from .newsroom_priorities import normalize_priority_rules
 from .panel_command_file import apply_command as apply_legacy_command
+from .panel_live_feed import LiveFeedStore
 
 TERMINAL = {"succeeded", "failed", "reconciled"}
 NEWSROOM_ACTIONS = {
-    "clear", "settings_save",
+    "clear", "settings_save", "refresh",
     "weather_now", "air_traffic_now", "tanker_now", "market_now",
     "weather_preview", "air_traffic_preview", "tanker_preview", "market_preview",
 }
@@ -125,20 +127,10 @@ def _clear_history(store: LocalEditorialStore, ids: list[str], statuses: set[str
 
 
 def _clear_live(ids: list[str]) -> int:
-    path = Path("data/panel_live_feed.json")
-    targets = set(ids)
-    before = _read_json(path, [])
-    if not isinstance(before, list):
-        before = []
-    def identity(row: Any) -> str:
-        if not isinstance(row, dict):
-            return ""
-        return str(row.get("item_id") or row.get("id") or row.get("news_key") or "")
-    after = [row for row in before if identity(row) not in targets]
-    removed = len(before) - len(after)
-    if removed:
-        _atomic_write(path, after)
-    return removed
+    feed = LiveFeedStore("data/panel_live_feed.json", "data/panel_dismissed.json")
+    rows = feed.records()
+    urls = [row.source_url for row in rows if row.item_id in set(ids) and row.source_url]
+    return feed.dismiss(ids, urls)
 
 
 def _apply_clear(payload: dict[str, Any]) -> dict:
@@ -150,7 +142,7 @@ def _apply_clear(payload: dict[str, Any]) -> dict:
     store = LocalEditorialStore("data/editorial_queue.json", "data/editorial_history.json")
     if scope == "live":
         count = _clear_live(ids)
-        message = f"{count} خبر از فید زنده پاک شد"
+        message = f"{count} خبر از فید زنده پاک و برای اسکن‌های بعدی مخفی شد"
     elif scope == "pending":
         count = _clear_pending(store, ids)
         message = f"{count} خبر از صف انتظار پاک شد"
@@ -170,6 +162,7 @@ def _normalise_settings(value: Any) -> dict[str, Any]:
     settings["updated_at"] = _now()
     settings["version"] = int(settings.get("version") or 1)
     settings["freshness_hours"] = max(1, min(48, int(settings.get("freshness_hours") or 3)))
+    settings["priority_rules"] = normalize_priority_rules(settings.get("priority_rules"))
     settings["earthquake_min"] = max(0.0, min(10.0, float(settings.get("earthquake_min") or 2.0)))
     settings["earthquake_breaking"] = max(settings["earthquake_min"], min(10.0, float(settings.get("earthquake_breaking") or 4.0)))
     if settings.get("dedup_mode") not in {"strict", "balanced", "loose"}:
@@ -188,7 +181,7 @@ def _normalise_settings(value: Any) -> dict[str, Any]:
 def _apply_settings(payload: dict[str, Any]) -> dict:
     settings = _normalise_settings(payload.get("settings"))
     _atomic_write(Path("data/newsroom_settings.json"), settings)
-    return _write_result(payload["command_id"], "settings_save", "succeeded", "تنظیمات اتاق خبر ذخیره شد")
+    return _write_result(payload["command_id"], "settings_save", "succeeded", "تنظیمات مانیتورینگ ذخیره شد")
 
 
 def _save_preview(name: str, preview: dict) -> None:
@@ -200,6 +193,21 @@ def _save_preview(name: str, preview: dict) -> None:
 def _apply_module(payload: dict[str, Any]) -> dict:
     action = payload["action"]
     command_id = payload["command_id"]
+    if action == "refresh":
+        from . import runtime_v13
+        from .newsroom_runtime_v2 import run_once
+        settings = runtime_v13.load_newsroom_settings()
+        result = run_once(
+            shadow=False,
+            data_dir=os.environ.get("DATA_DIR", "data"),
+            settings=settings,
+        )
+        message = (
+            f"اسکن انجام شد؛ {int(result.get('items_fetched') or 0)} ورودی، "
+            f"{int(result.get('panel_feed_count') or 0)} خبر در پنل، "
+            f"{int(result.get('published') or 0)} انتشار"
+        )
+        return _write_result(command_id, action, "succeeded", message)
     if action == "weather_preview":
         from .weather_digest import build_preview, save_preview
         preview = build_preview()
@@ -210,10 +218,12 @@ def _apply_module(payload: dict[str, Any]) -> dict:
         from .air_traffic import build_air_traffic_preview
         preview = build_air_traffic_preview()
         _save_preview("air_traffic", preview)
-        return _write_result(command_id, action, "succeeded", "پیش‌نمایش ترافیک هوایی به‌روز شد؛ چیزی منتشر نشد")
+        return _write_result(command_id, action, "succeeded", "پیش‌نمایش ترافیک هوایی با داده تازه ساخته شد؛ چیزی منتشر نشد")
     if action == "tanker_preview":
         from .panel_modules import build_hormuz_preview
         preview = build_hormuz_preview()
+        if not preview.get("available_for_publish"):
+            raise RuntimeError("داده قابل اندازه‌گیری معتبر برای نفتکش‌ها و تنگه هرمز فعلاً در دسترس نیست")
         _save_preview("tanker", preview)
         return _write_result(command_id, action, "succeeded", "پیش‌نمایش هرمز به‌روز شد؛ چیزی منتشر نشد")
     if action == "market_preview":
