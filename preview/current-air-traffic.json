@@ -1,0 +1,1390 @@
+{
+  "generated_at": "2026-09-10T23:01:41.522962+00:00",
+  "count": 173,
+  "aircraft": [
+    {
+      "icao": "8014f8",
+      "callsign": "AKJ562",
+      "lat": 23.0413,
+      "lon": 50.6022,
+      "track": 96.77,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "702066",
+      "callsign": "BBC128",
+      "lat": 24.0488,
+      "lon": 55.673,
+      "track": 117.43,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "4bc849",
+      "callsign": "PGT70AF",
+      "lat": 40.2963,
+      "lon": 44.9573,
+      "track": 79.68,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "738060",
+      "callsign": "ELY5110",
+      "lat": 41.6694,
+      "lon": 44.9625,
+      "track": 42.19,
+      "seen_pos": 5.0
+    },
+    {
+      "icao": "801860",
+      "callsign": "IGO67P",
+      "lat": 23.4377,
+      "lon": 56.0764,
+      "track": 296.86,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "80189d",
+      "callsign": "AIC187",
+      "lat": 22.9609,
+      "lon": 66.2724,
+      "track": 270.11,
+      "seen_pos": 86.0
+    },
+    {
+      "icao": "8960f0",
+      "callsign": "UAE385",
+      "lat": 22.3331,
+      "lon": 65.7583,
+      "track": 292.86,
+      "seen_pos": 22.0
+    },
+    {
+      "icao": "89610e",
+      "callsign": "UAE129",
+      "lat": 25.3536,
+      "lon": 54.463,
+      "track": 286.7,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "89617f",
+      "callsign": "UAE2V",
+      "lat": 24.793,
+      "lon": 58.0165,
+      "track": 102.42,
+      "seen_pos": 3.0
+    },
+    {
+      "icao": "89617b",
+      "callsign": "UAE3MX",
+      "lat": 25.8657,
+      "lon": 52.6748,
+      "track": 297.45,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "896175",
+      "callsign": "UAE221",
+      "lat": 26.358,
+      "lon": 51.5691,
+      "track": 295.95,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "4bd8c8",
+      "callsign": "TKJ2AR",
+      "lat": 40.2272,
+      "lon": 46.0561,
+      "track": 91.51,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "4bb2ab",
+      "callsign": "TKJ50X",
+      "lat": 40.9921,
+      "lon": 39.7994,
+      "track": 112.5,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "7020ac",
+      "callsign": "UBG342",
+      "lat": 25.1964,
+      "lon": 56.5063,
+      "track": 98.23,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "7020bd",
+      "callsign": "UBG362",
+      "lat": 22.6474,
+      "lon": 53.9114,
+      "track": 97.96,
+      "seen_pos": 48.0
+    },
+    {
+      "icao": "8961ea",
+      "callsign": "ETD575",
+      "lat": 26.1605,
+      "lon": 51.9197,
+      "track": 312.25,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "89621b",
+      "callsign": "UAE9U",
+      "lat": 24.9715,
+      "lon": 57.4655,
+      "track": 113.05,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "896217",
+      "callsign": "UAE348",
+      "lat": 24.3264,
+      "lon": 56.4676,
+      "track": 130.08,
+      "seen_pos": 3.0
+    },
+    {
+      "icao": "8a0815",
+      "callsign": "LNI113",
+      "lat": 22.1799,
+      "lon": 49.8117,
+      "track": 102.75,
+      "seen_pos": 10.0
+    },
+    {
+      "icao": "4bb265",
+      "callsign": "THY1JM",
+      "lat": 22.2118,
+      "lon": 54.8912,
+      "track": 274.89,
+      "seen_pos": 5.0
+    },
+    {
+      "icao": "8962e5",
+      "callsign": "ETD49D",
+      "lat": 22.8371,
+      "lon": 50.6998,
+      "track": 269.32,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "020123",
+      "callsign": "RAM217",
+      "lat": 25.2567,
+      "lon": 51.6052,
+      "track": 244.69,
+      "seen_pos": 4.0
+    },
+    {
+      "icao": "896353",
+      "callsign": "ETD72W",
+      "lat": 25.9915,
+      "lon": 52.3936,
+      "track": 295.78,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "896327",
+      "callsign": "ETD844",
+      "lat": 39.4161,
+      "lon": 43.8108,
+      "track": 176.26,
+      "seen_pos": 12.0
+    },
+    {
+      "icao": "896326",
+      "callsign": "ETD841",
+      "lat": 25.116,
+      "lon": 53.6523,
+      "track": 315.57,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "896308",
+      "callsign": "UAE3PX",
+      "lat": 22.9593,
+      "lon": 66.7199,
+      "track": 270.35,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "896316",
+      "callsign": "UAE58",
+      "lat": 32.6287,
+      "lon": 38.1904,
+      "track": 153.64,
+      "seen_pos": 22.0
+    },
+    {
+      "icao": "896315",
+      "callsign": "UAE5K",
+      "lat": 25.2142,
+      "lon": 55.1663,
+      "track": 177.68,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "4bb219",
+      "callsign": "THY4VS",
+      "lat": 41.669,
+      "lon": 44.9634,
+      "track": 42.19,
+      "seen_pos": 19.0
+    },
+    {
+      "icao": "89637d",
+      "callsign": "ETD187",
+      "lat": 27.112,
+      "lon": 48.8585,
+      "track": 293.91,
+      "seen_pos": 9.0
+    },
+    {
+      "icao": "896398",
+      "callsign": "ETD9FJ",
+      "lat": 23.5149,
+      "lon": 57.4546,
+      "track": 97.13,
+      "seen_pos": 64.0
+    },
+    {
+      "icao": "896397",
+      "callsign": "ETD392",
+      "lat": 24.4305,
+      "lon": 54.8678,
+      "track": 119.86,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "8963f7",
+      "callsign": "UAE1J",
+      "lat": 34.2057,
+      "lon": 37.2683,
+      "track": 151.91,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "8963d1",
+      "callsign": "UAE5QL",
+      "lat": 25.2784,
+      "lon": 55.2525,
+      "track": 243.31,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "4ac9b4",
+      "callsign": "SERMT",
+      "lat": 40.7157,
+      "lon": 46.0809,
+      "track": 277.16,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "8963ba",
+      "callsign": "",
+      "lat": 27.067,
+      "lon": 48.1899,
+      "track": 86.87,
+      "seen_pos": 31.0
+    },
+    {
+      "icao": "896532",
+      "callsign": "FDB1584",
+      "lat": 25.2107,
+      "lon": 55.4402,
+      "track": 301.66,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "a98ac7",
+      "callsign": "UNIDENT",
+      "lat": 25.7066,
+      "lon": 51.0746,
+      "track": 128.07,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "89648a",
+      "callsign": "ETD6MQ",
+      "lat": 24.3791,
+      "lon": 54.7084,
+      "track": 233.69,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "896451",
+      "callsign": "UAE213",
+      "lat": 26.0831,
+      "lon": 52.1887,
+      "track": 296.37,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "89643e",
+      "callsign": "ETD551",
+      "lat": 22.908,
+      "lon": 50.3702,
+      "track": 273.43,
+      "seen_pos": 4.0
+    },
+    {
+      "icao": "896461",
+      "callsign": "ETD3F4",
+      "lat": 24.6888,
+      "lon": 54.2901,
+      "track": 307.72,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "89649d",
+      "callsign": "ETD5W2",
+      "lat": 25.6712,
+      "lon": 53.0505,
+      "track": 310.53,
+      "seen_pos": 4.0
+    },
+    {
+      "icao": "3965a9",
+      "callsign": "AFR111",
+      "lat": 40.898,
+      "lon": 43.0286,
+      "track": 276.48,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "4bb064",
+      "callsign": "",
+      "lat": -1.5753,
+      "lon": 39.5856,
+      "track": 181.63,
+      "seen_pos": 5.0
+    },
+    {
+      "icao": "4bb063",
+      "callsign": "THY9TZ",
+      "lat": 25.2978,
+      "lon": 53.4562,
+      "track": 315.66,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "896643",
+      "callsign": "FDB808",
+      "lat": 25.2332,
+      "lon": 55.3998,
+      "track": 301.21,
+      "seen_pos": 56.0
+    },
+    {
+      "icao": "896624",
+      "callsign": "UAE823",
+      "lat": 25.514,
+      "lon": 53.1611,
+      "track": 282.71,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "896622",
+      "callsign": "UAE393",
+      "lat": 24.827,
+      "lon": 56.4153,
+      "track": 295.02,
+      "seen_pos": 3.0
+    },
+    {
+      "icao": "896618",
+      "callsign": "UAE9988",
+      "lat": 24.8917,
+      "lon": 55.1641,
+      "track": 272.81,
+      "seen_pos": 28.0
+    },
+    {
+      "icao": "896598",
+      "callsign": "ETD14P",
+      "lat": 26.4325,
+      "lon": 51.3548,
+      "track": 289.77,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "89656d",
+      "callsign": "ETD5H3",
+      "lat": 23.8252,
+      "lon": 53.7431,
+      "track": 240.07,
+      "seen_pos": 6.0
+    },
+    {
+      "icao": "89656f",
+      "callsign": "ETD3P1",
+      "lat": 23.444,
+      "lon": 53.0296,
+      "track": 239.62,
+      "seen_pos": 55.0
+    },
+    {
+      "icao": "896559",
+      "callsign": "ABY512",
+      "lat": 24.1417,
+      "lon": 67.1568,
+      "track": 90.59,
+      "seen_pos": 17.0
+    },
+    {
+      "icao": "8964b1",
+      "callsign": "UAE414",
+      "lat": 24.8409,
+      "lon": 55.8507,
+      "track": 126.16,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "896707",
+      "callsign": "UAE98V",
+      "lat": 32.7935,
+      "lon": 38.0916,
+      "track": 153.18,
+      "seen_pos": 0.0
+    },
+    {
+      "icao": "896718",
+      "callsign": "ABY081",
+      "lat": 25.2104,
+      "lon": 54.5563,
+      "track": 273.78,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "89405c",
+      "callsign": "GFA520",
+      "lat": 26.1848,
+      "lon": 51.1826,
+      "track": 119.12,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "89405f",
+      "callsign": "GFA709",
+      "lat": 26.4426,
+      "lon": 49.1276,
+      "track": 251.27,
+      "seen_pos": 96.0
+    },
+    {
+      "icao": "896690",
+      "callsign": "ABY150",
+      "lat": 26.9297,
+      "lon": 50.69,
+      "track": 113.15,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "89665d",
+      "callsign": "ABY388",
+      "lat": 25.4896,
+      "lon": 55.4024,
+      "track": 120.01,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "8965d2",
+      "callsign": "FDB646",
+      "lat": 22.9751,
+      "lon": 50.914,
+      "track": 95.48,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "8965d4",
+      "callsign": "FDB1054",
+      "lat": 25.2385,
+      "lon": 55.3956,
+      "track": 151.59,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "8965c0",
+      "callsign": "FDB1688",
+      "lat": 25.0219,
+      "lon": 55.7884,
+      "track": 300.44,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "89409a",
+      "callsign": "GFA500",
+      "lat": 25.158,
+      "lon": 55.6467,
+      "track": 173.72,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "040184",
+      "callsign": "ETH432",
+      "lat": 26.4481,
+      "lon": 50.4326,
+      "track": 107.29,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "706214",
+      "callsign": "JZR314",
+      "lat": 34.1634,
+      "lon": 38.3891,
+      "track": 161.94,
+      "seen_pos": 3.0
+    },
+    {
+      "icao": "406f72",
+      "callsign": "BAW34",
+      "lat": 41.0681,
+      "lon": 47.6832,
+      "track": 288.24,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "394a05",
+      "callsign": "AFR257",
+      "lat": 40.7681,
+      "lon": 46.0097,
+      "track": 270.23,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "040236",
+      "callsign": "ETH622",
+      "lat": 23.3248,
+      "lon": 55.8739,
+      "track": 352.01,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "760a0c",
+      "callsign": "FJL631",
+      "lat": 25.2284,
+      "lon": 56.0548,
+      "track": 108.35,
+      "seen_pos": 3.0
+    },
+    {
+      "icao": "760a05",
+      "callsign": "FJL767",
+      "lat": 25.0339,
+      "lon": 56.793,
+      "track": 101.86,
+      "seen_pos": 4.0
+    },
+    {
+      "icao": "4ba9e6",
+      "callsign": "THY38X",
+      "lat": 25.2794,
+      "lon": 55.3235,
+      "track": 301.08,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "06a38c",
+      "callsign": "QTR22C",
+      "lat": 25.1587,
+      "lon": 55.5332,
+      "track": 300.43,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "06a2e7",
+      "callsign": "QTR5T",
+      "lat": 22.9167,
+      "lon": 50.5104,
+      "track": 241.01,
+      "seen_pos": 55.0
+    },
+    {
+      "icao": "06a2f0",
+      "callsign": "QTR648",
+      "lat": 25.0519,
+      "lon": 52.7844,
+      "track": 107.33,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "06a2eb",
+      "callsign": "QTR6Q",
+      "lat": 26.0888,
+      "lon": 51.0593,
+      "track": 297.09,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "06a2ea",
+      "callsign": "QTR42Y",
+      "lat": 25.2675,
+      "lon": 51.6184,
+      "track": 154.69,
+      "seen_pos": 4.0
+    },
+    {
+      "icao": "06a2ff",
+      "callsign": "QTR95W",
+      "lat": 26.4941,
+      "lon": 50.0628,
+      "track": 311.73,
+      "seen_pos": 11.0
+    },
+    {
+      "icao": "040104",
+      "callsign": "",
+      "lat": 26.5762,
+      "lon": 49.1926,
+      "track": 95.58,
+      "seen_pos": 3.0
+    },
+    {
+      "icao": "06a2c4",
+      "callsign": "VOZ008",
+      "lat": 25.064,
+      "lon": 52.3752,
+      "track": 118.73,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "4ba946",
+      "callsign": "THY91",
+      "lat": 41.4987,
+      "lon": 45.1809,
+      "track": 276.22,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "744827",
+      "callsign": "RJA622",
+      "lat": 25.8725,
+      "lon": 51.5177,
+      "track": 118.15,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "744826",
+      "callsign": "RJA650",
+      "lat": 30.7274,
+      "lon": 38.7421,
+      "track": 120.27,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "744822",
+      "callsign": "RJA612N",
+      "lat": 26.5837,
+      "lon": 51.6909,
+      "track": 109.76,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "71c360",
+      "callsign": "AAR512",
+      "lat": 41.8316,
+      "lon": 39.9862,
+      "track": 92.91,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "06a063",
+      "callsign": "",
+      "lat": 24.361,
+      "lon": 58.1157,
+      "track": 294.59,
+      "seen_pos": 7.0
+    },
+    {
+      "icao": "7448a8",
+      "callsign": "RJA824",
+      "lat": 33.0624,
+      "lon": 38.8496,
+      "track": 63.58,
+      "seen_pos": 57.0
+    },
+    {
+      "icao": "7448a1",
+      "callsign": "RJA744",
+      "lat": 31.0616,
+      "lon": 37.8143,
+      "track": 118.54,
+      "seen_pos": 0.0
+    },
+    {
+      "icao": "48e958",
+      "callsign": "LOT723",
+      "lat": 41.6687,
+      "lon": 44.493,
+      "track": 115.77,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "06a080",
+      "callsign": "QTR8148",
+      "lat": 25.9621,
+      "lon": 51.6222,
+      "track": 119.42,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "06a087",
+      "callsign": "QTR1174",
+      "lat": 26.7485,
+      "lon": 48.0799,
+      "track": 268.12,
+      "seen_pos": 17.0
+    },
+    {
+      "icao": "7c8070",
+      "callsign": "QFA219",
+      "lat": 40.9059,
+      "lon": 42.4001,
+      "track": 273.72,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "80138d",
+      "callsign": "AXB196",
+      "lat": 25.3542,
+      "lon": 55.767,
+      "track": 94.12,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "801403",
+      "callsign": "AXB273",
+      "lat": 24.6835,
+      "lon": 56.7527,
+      "track": 295.11,
+      "seen_pos": 6.0
+    },
+    {
+      "icao": "510077",
+      "callsign": "BRU735",
+      "lat": 52.7327,
+      "lon": 49.8319,
+      "track": 145.59,
+      "seen_pos": 64.0
+    },
+    {
+      "icao": "4cc4c5",
+      "callsign": "ABD5024",
+      "lat": 22.8355,
+      "lon": 52.3762,
+      "track": 96.74,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "4bb863",
+      "callsign": "PGT81CJ",
+      "lat": 40.285,
+      "lon": 45.7537,
+      "track": 92.47,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "4bb879",
+      "callsign": "PGT830",
+      "lat": 22.6485,
+      "lon": 53.9014,
+      "track": 97.92,
+      "seen_pos": 63.0
+    },
+    {
+      "icao": "06a114",
+      "callsign": "QTR46K",
+      "lat": 25.2582,
+      "lon": 51.6062,
+      "track": 157.5,
+      "seen_pos": 5.0
+    },
+    {
+      "icao": "06a10a",
+      "callsign": "QTR4R",
+      "lat": 24.5833,
+      "lon": 51.4553,
+      "track": 218.17,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "06a127",
+      "callsign": "QTR76K",
+      "lat": 24.6492,
+      "lon": 53.897,
+      "track": 105.4,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "06a147",
+      "callsign": "QTR57W",
+      "lat": 26.2701,
+      "lon": 50.5664,
+      "track": 277.62,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "06a13c",
+      "callsign": "QTR35A",
+      "lat": 25.0647,
+      "lon": 51.7917,
+      "track": 208.16,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "06a14a",
+      "callsign": "QTR38P",
+      "lat": 25.2561,
+      "lon": 51.6068,
+      "track": 247.5,
+      "seen_pos": 22.0
+    },
+    {
+      "icao": "500528",
+      "callsign": "T7GEB",
+      "lat": 24.0702,
+      "lon": 55.3525,
+      "track": 196.53,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "06a106",
+      "callsign": "QTR8J",
+      "lat": 25.2555,
+      "lon": 51.6039,
+      "track": 70.31,
+      "seen_pos": 79.0
+    },
+    {
+      "icao": "06a104",
+      "callsign": "QTR9B",
+      "lat": 25.2118,
+      "lon": 51.4995,
+      "track": 172.81,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "06a103",
+      "callsign": "QTR890",
+      "lat": 25.2681,
+      "lon": 51.6043,
+      "track": 67.5,
+      "seen_pos": 34.0
+    },
+    {
+      "icao": "06a0a7",
+      "callsign": "QTR201",
+      "lat": 25.2565,
+      "lon": 51.6006,
+      "track": 149.06,
+      "seen_pos": 16.0
+    },
+    {
+      "icao": "06a0b2",
+      "callsign": "QTR39R",
+      "lat": 25.2551,
+      "lon": 51.6015,
+      "track": 25.31,
+      "seen_pos": 23.0
+    },
+    {
+      "icao": "06a0ab",
+      "callsign": "QTR25E",
+      "lat": 25.8119,
+      "lon": 51.563,
+      "track": 351.15,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "06a0bc",
+      "callsign": "QTR71Y",
+      "lat": 25.9561,
+      "lon": 51.3443,
+      "track": 298.09,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "06a0bd",
+      "callsign": "QTR861",
+      "lat": 22.9606,
+      "lon": 66.3803,
+      "track": 270.23,
+      "seen_pos": 56.0
+    },
+    {
+      "icao": "06a0dc",
+      "callsign": "QTR62J",
+      "lat": 25.3643,
+      "lon": 51.6167,
+      "track": 22.21,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "06a0f7",
+      "callsign": "QTR52U",
+      "lat": 25.3804,
+      "lon": 51.7554,
+      "track": 119.02,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "06a0fc",
+      "callsign": "QTR802",
+      "lat": 25.2657,
+      "lon": 51.6202,
+      "track": 157.5,
+      "seen_pos": 5.0
+    },
+    {
+      "icao": "88516f",
+      "callsign": "THA923",
+      "lat": 40.6567,
+      "lon": 47.5839,
+      "track": 94.62,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "710db9",
+      "callsign": "KNE325",
+      "lat": 22.5535,
+      "lon": 54.5937,
+      "track": 97.85,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "758308",
+      "callsign": "PAL685",
+      "lat": 25.276,
+      "lon": 51.5963,
+      "track": 338.49,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "3c6702",
+      "callsign": "DLH732",
+      "lat": 41.4118,
+      "lon": 40.5919,
+      "track": 102.78,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "3c6709",
+      "callsign": "DLH768",
+      "lat": 41.9091,
+      "lon": 36.7346,
+      "track": 99.21,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "3c670a",
+      "callsign": "DLH772",
+      "lat": 41.8637,
+      "lon": 37.0829,
+      "track": 99.44,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "151dff",
+      "callsign": "SDM6115",
+      "lat": 46.2732,
+      "lon": 47.9648,
+      "track": 341.41,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "48449a",
+      "callsign": "P4A8K",
+      "lat": 24.3843,
+      "lon": 54.6388,
+      "track": 210.33,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "4246ba",
+      "callsign": "AHY078",
+      "lat": 40.5211,
+      "lon": 48.3239,
+      "track": 114.56,
+      "seen_pos": 76.0
+    },
+    {
+      "icao": "04c03b",
+      "callsign": "KQA310",
+      "lat": 24.0013,
+      "lon": 55.8481,
+      "track": 5.54,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "a7d635",
+      "callsign": "N604BA",
+      "lat": 41.1367,
+      "lon": 45.9355,
+      "track": 109.21,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "70c107",
+      "callsign": "OMA412",
+      "lat": 25.924,
+      "lon": 53.5326,
+      "track": 106.71,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "70c100",
+      "callsign": "OMA671",
+      "lat": 22.562,
+      "lon": 56.393,
+      "track": 242.53,
+      "seen_pos": 44.0
+    },
+    {
+      "icao": "7609ee",
+      "callsign": "PIA279",
+      "lat": 25.3595,
+      "lon": 52.3352,
+      "track": 285.61,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "70c0f7",
+      "callsign": "OMA685",
+      "lat": 22.5541,
+      "lon": 50.1955,
+      "track": 274.32,
+      "seen_pos": 6.0
+    },
+    {
+      "icao": "7609e3",
+      "callsign": "SIF702",
+      "lat": 22.091,
+      "lon": 55.2029,
+      "track": 259.03,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "7609e2",
+      "callsign": "SIF798",
+      "lat": 23.7437,
+      "lon": 57.6973,
+      "track": 283.1,
+      "seen_pos": 53.0
+    },
+    {
+      "icao": "7609b6",
+      "callsign": "PIA287",
+      "lat": 25.273,
+      "lon": 51.5997,
+      "track": 157.5,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "7609b0",
+      "callsign": "ABQ478",
+      "lat": 25.3323,
+      "lon": 54.0376,
+      "track": 282.46,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "4baa73",
+      "callsign": "THY6BP",
+      "lat": 41.0536,
+      "lon": 46.2466,
+      "track": 109.55,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "706059",
+      "callsign": "KAC418",
+      "lat": 27.3185,
+      "lon": 49.7629,
+      "track": 310.26,
+      "seen_pos": 5.0
+    },
+    {
+      "icao": "4bcdf9",
+      "callsign": "SXS6DQ",
+      "lat": 41.6501,
+      "lon": 44.9752,
+      "track": 316.37,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "86da38",
+      "callsign": "ANA224",
+      "lat": 41.1096,
+      "lon": 47.3557,
+      "track": 89.76,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "8940d1",
+      "callsign": "DHX265",
+      "lat": 26.4998,
+      "lon": 51.9475,
+      "track": 110.4,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "8940ca",
+      "callsign": "GFA87S",
+      "lat": 26.4537,
+      "lon": 50.3117,
+      "track": 302.33,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "8940dd",
+      "callsign": "GFA752",
+      "lat": 25.5713,
+      "lon": 54.9034,
+      "track": 108.04,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "4d0116",
+      "callsign": "CLX7334",
+      "lat": 40.8339,
+      "lon": 43.879,
+      "track": 92.38,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "8940c5",
+      "callsign": "GFA181",
+      "lat": 26.5584,
+      "lon": 49.729,
+      "track": 282.32,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "4d010a",
+      "callsign": "ICV782",
+      "lat": 40.933,
+      "lon": 41.7872,
+      "track": 273.13,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "507c71",
+      "callsign": "QNT444",
+      "lat": 40.692,
+      "lon": 46.3233,
+      "track": 97.27,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "76cce3",
+      "callsign": "SIA21",
+      "lat": 41.1647,
+      "lon": 41.6654,
+      "track": 101.33,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "76cda4",
+      "callsign": "SIA333",
+      "lat": 40.7701,
+      "lon": 45.5434,
+      "track": 97.04,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "8966bd",
+      "callsign": "ETD43",
+      "lat": 26.6573,
+      "lon": 50.6412,
+      "track": 288.4,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "06e029",
+      "callsign": "RWD301",
+      "lat": 25.2582,
+      "lon": 51.6073,
+      "track": 157.5,
+      "seen_pos": 16.0
+    },
+    {
+      "icao": "8966a6",
+      "callsign": "ETD2K5",
+      "lat": 26.3904,
+      "lon": 51.0791,
+      "track": 247.76,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "010281",
+      "callsign": "LMU722",
+      "lat": 34.5868,
+      "lon": 38.0554,
+      "track": 181.63,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "010204",
+      "callsign": "MSR910",
+      "lat": 27.0678,
+      "lon": 49.5309,
+      "track": 93.1,
+      "seen_pos": 4.0
+    },
+    {
+      "icao": "507c5a",
+      "callsign": "UZB281",
+      "lat": 40.3657,
+      "lon": 45.4527,
+      "track": 260.0,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "750572",
+      "callsign": "MXD702",
+      "lat": 21.9798,
+      "lon": 51.1122,
+      "track": 92.77,
+      "seen_pos": 75.0
+    },
+    {
+      "icao": "717cfc",
+      "callsign": "KNE327",
+      "lat": 22.8996,
+      "lon": 51.2766,
+      "track": 95.93,
+      "seen_pos": 14.0
+    },
+    {
+      "icao": "514005",
+      "callsign": "",
+      "lat": 41.5792,
+      "lon": 40.2867,
+      "track": 0.0,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "4d23e1",
+      "callsign": "CHZ256",
+      "lat": 22.858,
+      "lon": 51.2175,
+      "track": 274.18,
+      "seen_pos": 3.0
+    },
+    {
+      "icao": "8a0a6b",
+      "callsign": "GIA955",
+      "lat": 22.2721,
+      "lon": 51.9424,
+      "track": 98.76,
+      "seen_pos": 102.0
+    },
+    {
+      "icao": "aa7468",
+      "callsign": "CKS273",
+      "lat": 40.2557,
+      "lon": 44.6654,
+      "track": 79.38,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "3c7a43",
+      "callsign": "CFG2360",
+      "lat": 40.5573,
+      "lon": 45.9216,
+      "track": 100.12,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "3c7a4a",
+      "callsign": "CFG2367",
+      "lat": 41.1416,
+      "lon": 47.7428,
+      "track": 282.09,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "4cacf1",
+      "callsign": "GTR1986",
+      "lat": 40.8974,
+      "lon": 42.5743,
+      "track": 273.62,
+      "seen_pos": 114.0
+    },
+    {
+      "icao": "3c458d",
+      "callsign": "BOX614",
+      "lat": 40.8351,
+      "lon": 43.8585,
+      "track": 91.97,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "04c27f",
+      "callsign": "UNO659P",
+      "lat": -1.4724,
+      "lon": 36.9456,
+      "track": 248.68,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "39c421",
+      "callsign": "AFR201",
+      "lat": 40.8485,
+      "lon": 43.5295,
+      "track": 274.42,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "04c2a6",
+      "callsign": "KQA2340",
+      "lat": 24.23,
+      "lon": 55.872,
+      "track": 5.67,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "010154",
+      "callsign": "MSR959",
+      "lat": 25.4106,
+      "lon": 54.2491,
+      "track": 285.96,
+      "seen_pos": 1.0
+    },
+    {
+      "icao": "39d2a4",
+      "callsign": "AFR185",
+      "lat": 40.7834,
+      "lon": 45.1928,
+      "track": 273.24,
+      "seen_pos": 2.0
+    },
+    {
+      "icao": "7100c3",
+      "callsign": "SVA805",
+      "lat": 22.4138,
+      "lon": 56.0872,
+      "track": 242.49,
+      "seen_pos": 18.0
+    },
+    {
+      "icao": "71156f",
+      "callsign": "KNE333",
+      "lat": 23.0529,
+      "lon": 57.4546,
+      "track": 69.51,
+      "seen_pos": 25.0
+    },
+    {
+      "icao": "711568",
+      "callsign": "KNE896",
+      "lat": 22.8206,
+      "lon": 51.9843,
+      "track": 96.08,
+      "seen_pos": 4.0
+    }
+  ]
+}
