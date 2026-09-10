@@ -4,6 +4,7 @@ import argparse
 import math
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
@@ -133,7 +134,7 @@ def _fetch_center(lat: float, lon: float, *, session=requests) -> list[dict]:
     for template in PROVIDERS:
         url = template.format(lat=lat, lon=lon, radius=QUERY_RADIUS_NM)
         try:
-            response = session.get(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"}, timeout=20)
+            response = session.get(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"}, timeout=10)
             response.raise_for_status()
             payload = response.json()
             rows = payload.get("ac") if isinstance(payload, dict) else None
@@ -148,18 +149,23 @@ def _fetch_center(lat: float, lon: float, *, session=requests) -> list[dict]:
 def _fetch_point_fallback(*, session=requests) -> list[dict]:
     merged: dict[str, dict] = {}
     failures = 0
-    for index, (lat, lon) in enumerate(QUERY_CENTERS):
-        if index:
-            time.sleep(1.05)
-        try:
-            rows = _fetch_center(lat, lon, session=session)
-        except Exception as exc:
-            failures += 1
-            print(f"AIR_TRAFFIC_SOURCE_ERROR center=({lat},{lon}) error={exc}")
-            continue
-        for row in filter_middle_east_aircraft(rows):
-            key = str(row.get("hex") or row.get("icao") or f"{row.get('lat')}:{row.get('lon')}")
-            merged[key] = row
+    workers = min(8, max(1, len(QUERY_CENTERS)))
+    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="air-fallback") as executor:
+        futures = {
+            executor.submit(_fetch_center, lat, lon, session=session): (lat, lon)
+            for lat, lon in QUERY_CENTERS
+        }
+        for future in as_completed(futures):
+            lat, lon = futures[future]
+            try:
+                rows = future.result()
+            except Exception as exc:
+                failures += 1
+                print(f"AIR_TRAFFIC_SOURCE_ERROR center=({lat},{lon}) error={exc}")
+                continue
+            for row in filter_middle_east_aircraft(rows):
+                key = str(row.get("hex") or row.get("icao") or f"{row.get('lat')}:{row.get('lon')}")
+                merged[key] = row
     if not merged:
         raise RuntimeError(f"no live air-traffic positions; failed_centers={failures}")
     print(f"AIR_TRAFFIC_FETCH provider=point-fallback aircraft={len(merged)} failed_centers={failures}")
