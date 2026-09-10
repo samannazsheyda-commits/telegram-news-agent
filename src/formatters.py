@@ -24,8 +24,8 @@ SOURCE_FA = {
     "Financial Times": "فایننشال تایمز", "The New York Times": "نیویورک تایمز",
     "France 24": "فرانس ۲۴", "DW": "دویچه‌وله", "Times of Israel": "تایمز اسرائیل",
     "Haaretz": "هاآرتص", "Donald Trump / Truth Social": "ترامپ / تروث سوشال",
-    "Barak Ravid / X": "باراک راوید", "Abbas Araghchi / X": "عباس عراقچی",
-    "Mohsen Rezaei / X": "محسن رضایی", "Sepah News / X": "سپاه نیوز",
+    "Barak Ravid / X": "باراک راوید / ایکس", "Abbas Araghchi / X": "عباس عراقچی / ایکس",
+    "Mohsen Rezaei / X": "محسن رضایی / ایکس", "Sepah News / X": "سپاه نیوز / ایکس",
     "RN Intel / Telegram": "آر‌اِن اینتل / تلگرام",
     "Jerusalem Post / X": "جروزالم پست / ایکس",
     "Middle East Spectator / Telegram": "میدل ایست اسپکتیتور / تلگرام",
@@ -49,10 +49,15 @@ SOURCE_SUFFIXES = (
     "ABC News", "ای‌بی‌سی نیوز", "Sky News", "اسکای نیوز", "Bloomberg", "بلومبرگ", "CNBC", "سی‌ان‌بی‌سی",
 )
 GOOGLE_NEWS_BOILERPLATE = (
-    "پوشش جامع و به‌روز اخبار",
-    "جمع‌آوری‌شده از منابع مختلف در سراسر جهان توسط گوگل نیوز",
-    "comprehensive up-to-date news coverage",
-    "aggregated from sources all over the world by google news",
+    "پوشش جامع و به‌روز اخبار", "جمع‌آوری‌شده از منابع مختلف در سراسر جهان توسط گوگل نیوز",
+    "comprehensive up-to-date news coverage", "aggregated from sources all over the world by google news",
+)
+EDITORIAL_TITLE_PREFIXES = (
+    "analysis:", "opinion:", "explainer:", "commentary:", "factbox:", "viewpoint:",
+    "inside ", "live updates:", "timeline:", "profile:", "background:",
+    "what we know", "what to know", "everything you need to know",
+    "تحلیل:", "یادداشت:", "نظر:", "گزارش تحلیلی:", "آنچه باید بدانید", "آنچه می‌دانیم",
+    "چرا ", "چگونه ", "چطور ", "آیا ",
 )
 
 
@@ -213,7 +218,16 @@ def _source_label(source: str) -> str:
         return label
     label = re.sub(r"\s*/\s*Telegram\s*$", " / تلگرام", source or "", flags=re.IGNORECASE)
     label = re.sub(r"\s*/\s*X\s*$", " / ایکس", label, flags=re.IGNORECASE)
-    return label
+    return label.strip()
+
+
+def _blocked_final_title(title: str) -> bool:
+    clean = re.sub(r"\s+", " ", str(title or "")).strip().lower()
+    if not clean:
+        return True
+    if "?" in clean or "؟" in clean:
+        return True
+    return clean.startswith(EDITORIAL_TITLE_PREFIXES)
 
 
 def _hashtags_for(item: NewsItem, title_fa: str, summary_fa: str) -> list[str]:
@@ -244,15 +258,18 @@ def format_truth(post: TruthPost, persian_text: str) -> str:
     label = "▫️ بازنشر ترامپ در تروث سوشال | ایران" if post.is_retruth else "⚪️ ترامپ در تروث سوشال | ایران"
     parts = [
         _safe(label), "", f"<b>{_safe(_ensure_period(_clean_persian_output_text(persian_text)))}</b>", "",
-        f'📌 <a href="{_safe(post.url)}">منبع: Truth Social</a>',
+        f'📌 <a href="{_safe(post.url)}">منبع: تروث سوشال</a>',
     ]
     parts += _brand_footer()
-    parts += ["", "#ترامپ"]
+    parts += ["", "#ترامپ", "", "🇮🇷 🇺🇸"]
     return "\n".join(parts).strip()
 
 
 def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override: str | None = None) -> str:
-    title_fa = _ensure_period(_clean_persian_output_text(_strip_source_suffix(title_fa)))
+    title_fa = _clean_persian_output_text(_strip_source_suffix(title_fa))
+    if _blocked_final_title(title_fa):
+        return ""
+    title_fa = _ensure_period(title_fa)
     summary_fa = _ensure_period(_up_to_two_sentences(_clean_persian_output_text(_strip_source_suffix(summary_fa))))
     if _unnamed_activist_headline(title_fa) and not _detail_names_activist(summary_fa):
         return ""

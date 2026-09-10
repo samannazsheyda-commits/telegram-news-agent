@@ -22,6 +22,22 @@ SECURITY_TERMS = (
     "flight ban", "flight cancellation", "sanction", "tanker", "war", "military", "shipping",
     "حمله", "موشک", "پهپاد", "انفجار", "رهگیری", "حریم هوایی", "نوتام", "لغو پرواز", "تحریم", "نفتکش",
 )
+SELECTED_TOPIC_TERMS = (
+    "missile", "ballistic", "cruise missile", "rocket", "drone", "uav", "attack", "strike",
+    "explosion", "blast", "bombing", "intercept", "air defense", "air defence", "air raid",
+    "warship", "destroyer", "carrier", "military exercise", "military drill", "naval exercise",
+    "weapon", "weapons", "munition", "موشک", "بالستیک", "کروز", "راکت", "پهپاد", "حمله",
+    "انفجار", "بمباران", "رهگیری", "پدافند", "آژیر", "ناو", "ناوشکن", "رزمایش", "تسلیحات",
+    "strait of hormuz", "hormuz", "persian gulf", "tanker", "shipping", "commercial vessel",
+    "merchant vessel", "ship seized", "vessel seized", "seizure", "sinking", "خلیج فارس", "تنگه هرمز",
+    "هرمز", "نفتکش", "کشتی تجاری", "شناور", "توقیف", "غرق",
+    "restricted zone", "exclusion zone", "منطقه محدود", "منطقه ممنوع",
+    "airspace", "notam", "flight ban", "flight cancellation", "flights cancelled", "حریم هوایی",
+    "نوتام", "لغو پرواز", "ممنوعیت پرواز",
+    "nuclear", "uranium", "enrichment", "iaea", "atomic", "sanction", "sanctions", "هسته‌ای",
+    "هسته ای", "اورانیوم", "غنی‌سازی", "آژانس بین‌المللی انرژی اتمی", "تحریم",
+    "trump", "white house", "pentagon", "centcom", "ترامپ", "کاخ سفید", "پنتاگون", "سنتکام",
+)
 COMPANY_TERMS = (
     "company", "corporate", "ceo", "earnings", "profit", "profits", "revenue", "sales", "shares",
     "quarterly", "business", "market outlook", "شرکت", "مدیرعامل", "سود", "درآمد", "سهام",
@@ -29,17 +45,21 @@ COMPANY_TERMS = (
 OPERATIONAL_OVERRIDE_TERMS = (
     "resume overflight", "resumes overflight", "resume overflights", "resumes overflights",
     "iranian airspace", "iran airspace", "airspace", "notam", "flight ban", "flight cancellation",
-    "attack", "strike", "missile", "drone", "sanction", "tanker", "shipping", "war",
-    "ازسرگیری پرواز", "از سرگیری پرواز", "حریم هوایی", "نوتام", "لغو پرواز", "تحریم", "حمله", "موشک", "پهپاد",
+    "restricted zone", "exclusion zone", "attack", "strike", "missile", "drone", "sanction", "tanker", "shipping", "war",
+    "ازسرگیری پرواز", "از سرگیری پرواز", "حریم هوایی", "نوتام", "لغو پرواز", "منطقه محدود", "منطقه ممنوع",
+    "تحریم", "حمله", "موشک", "پهپاد",
 )
 ARTICLE_PREFIXES = (
     "analysis:", "analysis -", "opinion:", "opinion -", "explainer:", "explainer -",
     "commentary:", "commentary -", "factbox:", "factbox -", "viewpoint:", "viewpoint -",
+    "inside ", "live updates:", "live updates -", "timeline:", "timeline -", "profile:", "profile -",
+    "background:", "background -", "everything you need to know", "what we know", "what to know",
     "تحلیل:", "تحلیل -", "یادداشت:", "یادداشت -", "نظر:", "نظر -", "گزارش تحلیلی:",
+    "آنچه باید بدانید", "آنچه می‌دانیم", "خط زمانی:", "پروفایل:",
 )
 QUESTION_PREFIXES = (
     "why ", "how ", "what ", "when ", "where ", "who ", "could ", "would ", "should ",
-    "can ", "will ", "is ", "are ", "does ", "do ", "did ", "what we know", "what to know",
+    "can ", "will ", "is ", "are ", "does ", "do ", "did ",
     "چرا ", "چگونه ", "چطور ", "آیا ", "چه چیزی ", "چه می‌دانیم", "آنچه می‌دانیم",
 )
 TEASER_PATTERNS = (
@@ -101,7 +121,7 @@ def _question_or_article(title: str) -> bool:
     clean = re.sub(r"\s+", " ", str(title or "")).strip().lower()
     if not clean:
         return False
-    if clean.endswith("?") or clean.endswith("؟"):
+    if "?" in clean or "؟" in clean:
         return True
     if clean.startswith(ARTICLE_PREFIXES):
         return True
@@ -157,9 +177,6 @@ def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> Eligibility
     protected = item.raw.source_priority == "protected"
     iran_relevant = _contains_any(text, IRAN_TERMS)
 
-    # This channel is Iran/Hormuz focused. Generic regional war alerts (for
-    # example Houthi/Yemen attacks on Saudi Arabia) must never auto-publish
-    # merely because they contain a missile/drone/security keyword.
     if not iran_relevant:
         if protected:
             return EligibilityResult(False, "needs_editorial_review", review=True)
@@ -171,5 +188,8 @@ def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> Eligibility
         if protected:
             return EligibilityResult(False, "needs_editorial_review", review=True)
         return EligibilityResult(False, "filtered_low_value")
+
+    if not _contains_any(text, SELECTED_TOPIC_TERMS):
+        return EligibilityResult(False, "outside_selected_topics", review=protected)
 
     return EligibilityResult(True, "eligible")

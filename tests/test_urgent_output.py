@@ -3,7 +3,7 @@ from pathlib import Path
 from src.urgent_output import normalize_urgent_message
 
 
-def test_urgent_message_strips_raw_source_noise_and_english_tokens():
+def test_urgent_message_strips_raw_source_noise_and_moves_flags_to_footer():
     raw = (
         '🛑 <b>RN Intel / Telegram: 🇾🇪 🇸🇦 BREAKING: هشدار در جنوب عربستان سعودی '
         '@Middle_East_Spectator</b>\n\n'
@@ -15,12 +15,16 @@ def test_urgent_message_strips_raw_source_noise_and_english_tokens():
     assert 'Telegram' not in cleaned
     assert 'BREAKING' not in cleaned
     assert '@Middle_East_Spectator' not in cleaned
-    assert '🇾🇪' not in cleaned
-    assert '🇸🇦' not in cleaned
     assert 'آر‌اِن اینتل / تلگرام' in cleaned
     assert 'فوری' in cleaned
     assert '<a href="https://example.com/source">لینک منبع خبر</a>' in cleaned
     assert '<a href="https://t.me/bikhabaar">بی‌خبر</a>' in cleaned
+    first_line = cleaned.splitlines()[0]
+    assert '🇾🇪' not in first_line and '🇸🇦' not in first_line
+    footer = cleaned.splitlines()[-1]
+    assert '🇾🇪' in footer
+    assert '🇸🇦' in footer
+    assert '🇮🇷' in footer
 
 
 def test_urgent_workflow_normalizes_every_text_message_before_send():

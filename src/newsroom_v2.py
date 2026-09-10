@@ -167,6 +167,18 @@ def _publisher_result(payload) -> tuple[bool, int | None]:
     return False, None
 
 
+def _merge_candidates(*groups):
+    merged = []
+    seen = set()
+    for group in groups:
+        for record in group:
+            if record.event_id in seen:
+                continue
+            seen.add(record.event_id)
+            merged.append(record)
+    return merged
+
+
 def run_cycle(
     fetcher,
     ledger: EventLedger,
@@ -215,7 +227,10 @@ def run_cycle(
             continue
 
         fingerprint = build_fingerprint(item)
-        candidates = ledger.find_candidates(fingerprint)
+        candidates = _merge_candidates(
+            ledger.find_candidates(fingerprint),
+            ledger.find_same_source_claims(item.raw.source, item.raw.title, item.raw.published_at),
+        )
         decision = decide_item(item, fingerprint, candidates)
 
         duplicate_event = None
@@ -254,7 +269,15 @@ def run_cycle(
             ledger.update_material_facts(event_id, fingerprint.key_facts, now.isoformat())
             ledger.add_variant(event_id, item.raw.source_url, now.isoformat())
         else:
-            event = ledger.create_event(fingerprint=fingerprint, canonical_title=item.raw.title, primary_source=item.raw.source, source_url=item.raw.source_url, first_seen=item.raw.fetched_at or now.isoformat(), key_facts=fingerprint.key_facts)
+            event = ledger.create_event(
+                fingerprint=fingerprint,
+                canonical_title=item.raw.title,
+                primary_source=item.raw.source,
+                source_url=item.raw.source_url,
+                first_seen=item.raw.fetched_at or now.isoformat(),
+                key_facts=fingerprint.key_facts,
+                source_item_id=item.raw.source_item_id,
+            )
             event_id = event.event_id
             if decision.decision == "new_event":
                 summary.new_events += 1

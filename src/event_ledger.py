@@ -3,13 +3,75 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import tempfile
 from dataclasses import replace
+from datetime import datetime, timedelta, timezone
+from difflib import SequenceMatcher
 from pathlib import Path
 from urllib.parse import urlparse
 
 from .newsroom_fingerprint import fingerprint_similarity
 from .newsroom_models import EventFingerprint, EventRecord
+
+
+KINETIC_ACTIONS = {"strike", "explosion", "intercept"}
+KINETIC_OBJECTS = {"missiles", "explosions"}
+
+
+def _parse_time(value: str) -> datetime | None:
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def _bucket_time(value: str) -> datetime | None:
+    raw = str(value or "").strip()
+    if not raw or raw == "unknown" or "T" not in raw:
+        return None
+    return _parse_time(raw)
+
+
+def _is_kinetic(fp: EventFingerprint) -> bool:
+    return bool(set(fp.actions) & KINETIC_ACTIONS or set(fp.objects) & KINETIC_OBJECTS)
+
+
+def _nearby_bucket(left: EventFingerprint, right: EventFingerprint) -> bool:
+    if left.time_bucket == right.time_bucket:
+        return True
+    a = _bucket_time(left.time_bucket)
+    b = _bucket_time(right.time_bucket)
+    if a is None or b is None:
+        return False
+    window = timedelta(minutes=75) if (_is_kinetic(left) or _is_kinetic(right)) else timedelta(hours=12)
+    return abs(a - b) <= window
+
+
+def _normalized_claim(value: str) -> str:
+    text = re.sub(r"\s+", " ", str(value or "").lower()).strip()
+    return re.sub(r"[^a-z0-9\u0600-\u06ff]+", " ", text).strip()
+
+
+def _claim_similarity(left: str, right: str) -> float:
+    a = _normalized_claim(left)
+    b = _normalized_claim(right)
+    if not a or not b:
+        return 0.0
+    ta, tb = set(a.split()), set(b.split())
+    token_overlap = len(ta & tb) / max(1, min(len(ta), len(tb))) if ta and tb else 0.0
+    return max(token_overlap, SequenceMatcher(None, a, b).ratio())
+
+
+def _source_key(value: str) -> str:
+    text = re.sub(r"\s+", " ", str(value or "").strip().lower())
+    return re.sub(r"\s*/\s*(?:x|telegram)\s*$", "", text).strip()
 
 
 class EventLedger:
@@ -56,6 +118,40 @@ class EventLedger:
             return None
         return next((record for record in self._read() if url in record.source_variants), None)
 
+    def find_same_source_claims(
+        self,
+        source: str,
+        title: str,
+        published_at: str,
+        *,
+        max_age_hours: int = 12,
+        min_text_similarity: float = 0.82,
+    ) -> list[EventRecord]:
+        """Return recent near-verbatim claims from the same publisher.
+
+        This closes the gap where the same White House/official claim gets a new
+        post URL and lands in a later fingerprint time bucket. We only widen the
+        candidate window when wording itself is strongly similar, so a genuinely
+        new attack/update from the same source is not collapsed just because the
+        actors and topic are similar.
+        """
+        source_key = _source_key(source)
+        published = _parse_time(published_at)
+        if not source_key or published is None or not str(title or "").strip():
+            return []
+        window = timedelta(hours=max(1, int(max_age_hours)))
+        matches: list[EventRecord] = []
+        for record in self._read():
+            if _source_key(record.primary_source) != source_key:
+                continue
+            record_time = _parse_time(record.last_updated) or _parse_time(record.first_seen)
+            if record_time is None or abs(published - record_time) > window:
+                continue
+            if _claim_similarity(title, record.canonical_title) < min_text_similarity:
+                continue
+            matches.append(record)
+        return matches
+
     def _replace(self, updated: EventRecord) -> EventRecord:
         records = self._read()
         replaced = False
@@ -91,13 +187,17 @@ class EventLedger:
         matches: list[EventRecord] = []
         for record in self._read():
             stored = self._record_fingerprint(record)
-            if stored is not None and stored.time_bucket != fingerprint.time_bucket:
-                continue
             if record.fingerprint == fingerprint.key:
                 matches.append(record)
                 continue
-            if stored is not None and fingerprint_similarity(stored, fingerprint) >= min_similarity:
-                matches.append(record)
+            if stored is None:
+                continue
+            similarity = fingerprint_similarity(stored, fingerprint)
+            if similarity < min_similarity:
+                continue
+            if not _nearby_bucket(stored, fingerprint):
+                continue
+            matches.append(record)
         return matches
 
     @staticmethod
