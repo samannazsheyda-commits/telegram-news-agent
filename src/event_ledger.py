@@ -118,6 +118,29 @@ class EventLedger:
             return None
         return next((record for record in self._read() if url in record.source_variants), None)
 
+    def publication_count_since(self, since: datetime) -> int:
+        """Count successful Telegram news publications in a rolling time window.
+
+        Publication timestamps live inside fingerprint_data so older ledger files
+        remain schema-compatible. Records created before this counter existed do
+        not fabricate timestamps from last_updated, because that field can move
+        when a source variant arrives and is not proof of a publication.
+        """
+        if since.tzinfo is None:
+            since = since.replace(tzinfo=timezone.utc)
+        since_utc = since.astimezone(timezone.utc)
+        count = 0
+        for record in self._read():
+            data = record.fingerprint_data or {}
+            raw_times = data.get("publication_times") or []
+            if not isinstance(raw_times, list):
+                continue
+            for raw_time in raw_times:
+                published = _parse_time(str(raw_time or ""))
+                if published is not None and published >= since_utc:
+                    count += 1
+        return count
+
     def find_same_source_claims(
         self,
         source: str,
@@ -268,10 +291,26 @@ class EventLedger:
         if event is None:
             raise KeyError(event_id)
         ids = list(event.published_message_ids)
+        fingerprint_data = dict(event.fingerprint_data or {})
+        publication_times = list(fingerprint_data.get("publication_times") or [])
         if message_id not in ids:
             ids.append(message_id)
+            # A timestamp is appended only for a newly recorded Telegram message,
+            # making retries/idempotent mark_published calls safe for rate counts.
+            if _parse_time(updated_at) is not None:
+                publication_times.append(updated_at)
+        fingerprint_data["publication_times"] = publication_times[-200:]
         merged_facts = list(dict.fromkeys([*event.key_facts, *facts]))
-        return self._replace(replace(event, published_message_ids=ids, key_facts=merged_facts, last_updated=updated_at, status="published"))
+        return self._replace(
+            replace(
+                event,
+                published_message_ids=ids,
+                key_facts=merged_facts,
+                last_updated=updated_at,
+                status="published",
+                fingerprint_data=fingerprint_data,
+            )
+        )
 
     def update_material_facts(self, event_id: str, facts: list[str], updated_at: str) -> EventRecord:
         event = self.get(event_id)
