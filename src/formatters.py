@@ -26,16 +26,16 @@ SOURCE_FA = {
     "Haaretz": "هاآرتص", "Donald Trump / Truth Social": "ترامپ / تروث سوشال",
     "Barak Ravid / X": "باراک راوید", "Abbas Araghchi / X": "عباس عراقچی",
     "Mohsen Rezaei / X": "محسن رضایی", "Sepah News / X": "سپاه نیوز",
-    "RN Intel / Telegram": "آر‌اِن اینتل / تلگرام",
-    "Jerusalem Post / X": "جروزالم پست / ایکس",
-    "Middle East Spectator / Telegram": "میدل ایست اسپکتیتور / تلگرام",
-    "Clash Report / Telegram": "کلش ریپورت / تلگرام",
-    "GeoPWatch / Telegram": "ژئوپی‌واچ / تلگرام",
-    "Tabz Live / Telegram": "تبز لایو / تلگرام",
-    "The Cradle / Telegram": "دِ کرِیدل / تلگرام",
-    "War Noir / Telegram": "وار نوآر / تلگرام",
-    "CENTCOM / X": "سنتکام / ایکس",
-    "White House / X": "کاخ سفید / ایکس",
+    "RN Intel / Telegram": "آر‌اِن اینتل",
+    "Jerusalem Post / X": "جروزالم پست",
+    "Middle East Spectator / Telegram": "میدل ایست اسپکتیتور",
+    "Clash Report / Telegram": "کلش ریپورت",
+    "GeoPWatch / Telegram": "ژئوپی‌واچ",
+    "Tabz Live / Telegram": "تبز لایو",
+    "The Cradle / Telegram": "دِ کرِیدل",
+    "War Noir / Telegram": "وار نوآر",
+    "CENTCOM / X": "سنتکام",
+    "White House / X": "کاخ سفید",
     "TankerTrackers": "تانکرترکرز", "NOTAM / Airspace": "نوتام / حریم هوایی",
 }
 SOURCE_SUFFIXES = (
@@ -53,6 +53,33 @@ GOOGLE_NEWS_BOILERPLATE = (
     "جمع‌آوری‌شده از منابع مختلف در سراسر جهان توسط گوگل نیوز",
     "comprehensive up-to-date news coverage",
     "aggregated from sources all over the world by google news",
+)
+EDITORIAL_TITLE_PREFIXES = (
+    "analysis:", "opinion:", "explainer:", "commentary:", "factbox:", "viewpoint:",
+    "inside ", "live updates:", "timeline:", "profile:", "background:",
+    "what we know", "what to know", "everything you need to know",
+    "تحلیل:", "یادداشت:", "نظر:", "گزارش تحلیلی:", "آنچه باید بدانید", "آنچه می‌دانیم",
+    "چرا ", "چگونه ", "چطور ", "آیا ",
+)
+COUNTRY_FLAG_RULES = (
+    ("🇮🇷", ("iran", "iranian", "ایران", "ایرانی", "سپاه")),
+    ("🇺🇸", ("united states", "u.s.", "american", "america", "آمریکا", "آمریکایی", "سنتکام")),
+    ("🇮🇱", ("israel", "israeli", "اسرائیل", "اسرائیلی")),
+    ("🇸🇦", ("saudi arabia", "saudi", "عربستان سعودی", "سعودی")),
+    ("🇦🇪", ("united arab emirates", "uae", "امارات", "امارات متحده")),
+    ("🇯🇴", ("jordan", "jordanian", "اردن", "اردنی")),
+    ("🇾🇪", ("yemen", "yemeni", "یمن", "یمنی", "حوثی")),
+    ("🇮🇶", ("iraq", "iraqi", "عراق", "عراقی")),
+    ("🇶🇦", ("qatar", "qatari", "قطر", "قطری")),
+    ("🇧🇭", ("bahrain", "بحرین")),
+    ("🇰🇼", ("kuwait", "کویت")),
+    ("🇴🇲", ("oman", "عمان")),
+    ("🇬🇧", ("united kingdom", "britain", "british", "بریتانیا", "انگلیس")),
+    ("🇷🇺", ("russia", "russian", "روسیه", "روسی")),
+    ("🇨🇳", ("china", "chinese", "چین", "چینی")),
+    ("🇹🇷", ("turkey", "turkish", "ترکیه", "ترکی")),
+    ("🇸🇾", ("syria", "syrian", "سوریه", "سوری")),
+    ("🇱🇧", ("lebanon", "lebanese", "لبنان", "لبنانی")),
 )
 
 
@@ -211,9 +238,38 @@ def _source_label(source: str) -> str:
     label = SOURCE_FA.get(source)
     if label:
         return label
-    label = re.sub(r"\s*/\s*Telegram\s*$", " / تلگرام", source or "", flags=re.IGNORECASE)
-    label = re.sub(r"\s*/\s*X\s*$", " / ایکس", label, flags=re.IGNORECASE)
-    return label
+    # Platform is metadata, not the public-facing source name.
+    label = re.sub(r"\s*/\s*Telegram\s*$", "", source or "", flags=re.IGNORECASE)
+    label = re.sub(r"\s*/\s*X\s*$", "", label, flags=re.IGNORECASE)
+    return label.strip()
+
+
+def _blocked_final_title(title: str) -> bool:
+    clean = re.sub(r"\s+", " ", str(title or "")).strip().lower()
+    if not clean:
+        return True
+    if "?" in clean or "؟" in clean:
+        return True
+    return clean.startswith(EDITORIAL_TITLE_PREFIXES)
+
+
+def _country_term_present(text: str, term: str) -> bool:
+    if re.search(r"[a-z]", term):
+        return bool(re.search(rf"(?<![a-z]){re.escape(term)}(?![a-z])", text, flags=re.IGNORECASE))
+    return term in text
+
+
+def _country_flags_for(item: NewsItem, title_fa: str, summary_fa: str) -> list[str]:
+    text = _story_text(item, title_fa, summary_fa)
+    flags: list[str] = []
+    for flag, terms in COUNTRY_FLAG_RULES:
+        if any(_country_term_present(text, term) for term in terms):
+            flags.append(flag)
+        if len(flags) == 4:
+            break
+    if "🇮🇷" not in flags:
+        flags.insert(0, "🇮🇷")
+    return flags[:4]
 
 
 def _hashtags_for(item: NewsItem, title_fa: str, summary_fa: str) -> list[str]:
@@ -244,15 +300,18 @@ def format_truth(post: TruthPost, persian_text: str) -> str:
     label = "▫️ بازنشر ترامپ در تروث سوشال | ایران" if post.is_retruth else "⚪️ ترامپ در تروث سوشال | ایران"
     parts = [
         _safe(label), "", f"<b>{_safe(_ensure_period(_clean_persian_output_text(persian_text)))}</b>", "",
-        f'📌 <a href="{_safe(post.url)}">منبع: Truth Social</a>',
+        f'📌 <a href="{_safe(post.url)}">منبع: تروث سوشال</a>',
     ]
     parts += _brand_footer()
-    parts += ["", "#ترامپ"]
+    parts += ["", "#ترامپ", "", "🇮🇷 🇺🇸"]
     return "\n".join(parts).strip()
 
 
 def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override: str | None = None) -> str:
-    title_fa = _ensure_period(_clean_persian_output_text(_strip_source_suffix(title_fa)))
+    title_fa = _clean_persian_output_text(_strip_source_suffix(title_fa))
+    if _blocked_final_title(title_fa):
+        return ""
+    title_fa = _ensure_period(title_fa)
     summary_fa = _ensure_period(_up_to_two_sentences(_clean_persian_output_text(_strip_source_suffix(summary_fa))))
     if _unnamed_activist_headline(title_fa) and not _detail_names_activist(summary_fa):
         return ""
@@ -269,6 +328,9 @@ def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override:
     tags = _hashtags_for(item, title_fa, summary_fa)
     if tags:
         parts += ["", " ".join(tags)]
+    flags = _country_flags_for(item, title_fa, summary_fa)
+    if flags:
+        parts += ["", " ".join(flags)]
     return "\n".join(parts).strip()
 
 
