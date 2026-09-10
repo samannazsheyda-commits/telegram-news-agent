@@ -17,6 +17,7 @@ from src.panel_command_router import _apply_clear
 
 class FakeData:
     def __init__(self):
+        now_iso = datetime.now(timezone.utc).isoformat()
         self.files = {
             "data/newsroom_settings.json": {
                 "auto_publish": True,
@@ -37,8 +38,8 @@ class FakeData:
                     "source": "Reuters",
                     "source_url": "https://example.com/1",
                     "panel_status": "new",
-                    "published_at_source": "2026-09-10T21:30:00+00:00",
-                    "updated_at": "2026-09-10T21:30:01+00:00",
+                    "published_at_source": now_iso,
+                    "updated_at": now_iso,
                 }
             ],
             "data/editorial_queue.json": [],
