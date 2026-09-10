@@ -3,9 +3,11 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import tempfile
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
+from difflib import SequenceMatcher
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -52,6 +54,26 @@ def _nearby_bucket(left: EventFingerprint, right: EventFingerprint) -> bool:
     return abs(a - b) <= window
 
 
+def _normalized_claim(value: str) -> str:
+    text = re.sub(r"\s+", " ", str(value or "").lower()).strip()
+    return re.sub(r"[^a-z0-9\u0600-\u06ff]+", " ", text).strip()
+
+
+def _claim_similarity(left: str, right: str) -> float:
+    a = _normalized_claim(left)
+    b = _normalized_claim(right)
+    if not a or not b:
+        return 0.0
+    ta, tb = set(a.split()), set(b.split())
+    token_overlap = len(ta & tb) / max(1, min(len(ta), len(tb))) if ta and tb else 0.0
+    return max(token_overlap, SequenceMatcher(None, a, b).ratio())
+
+
+def _source_key(value: str) -> str:
+    text = re.sub(r"\s+", " ", str(value or "").strip().lower())
+    return re.sub(r"\s*/\s*(?:x|telegram)\s*$", "", text).strip()
+
+
 class EventLedger:
     def __init__(self, path: str | Path = "data/event_ledger.json"):
         self.path = Path(path)
@@ -96,6 +118,40 @@ class EventLedger:
             return None
         return next((record for record in self._read() if url in record.source_variants), None)
 
+    def find_same_source_claims(
+        self,
+        source: str,
+        title: str,
+        published_at: str,
+        *,
+        max_age_hours: int = 12,
+        min_text_similarity: float = 0.82,
+    ) -> list[EventRecord]:
+        """Return recent near-verbatim claims from the same publisher.
+
+        This closes the gap where the same White House/official claim gets a new
+        post URL and lands in a later fingerprint time bucket. We only widen the
+        candidate window when wording itself is strongly similar, so a genuinely
+        new attack/update from the same source is not collapsed just because the
+        actors and topic are similar.
+        """
+        source_key = _source_key(source)
+        published = _parse_time(published_at)
+        if not source_key or published is None or not str(title or "").strip():
+            return []
+        window = timedelta(hours=max(1, int(max_age_hours)))
+        matches: list[EventRecord] = []
+        for record in self._read():
+            if _source_key(record.primary_source) != source_key:
+                continue
+            record_time = _parse_time(record.last_updated) or _parse_time(record.first_seen)
+            if record_time is None or abs(published - record_time) > window:
+                continue
+            if _claim_similarity(title, record.canonical_title) < min_text_similarity:
+                continue
+            matches.append(record)
+        return matches
+
     def _replace(self, updated: EventRecord) -> EventRecord:
         records = self._read()
         replaced = False
@@ -139,9 +195,6 @@ class EventLedger:
             similarity = fingerprint_similarity(stored, fingerprint)
             if similarity < min_similarity:
                 continue
-            # The old implementation only compared the exact 30-minute bucket,
-            # which let the same story re-enter from another source in the next
-            # bucket. Keep nearby buckets eligible for strict cross-source dedup.
             if not _nearby_bucket(stored, fingerprint):
                 continue
             matches.append(record)
