@@ -16,7 +16,7 @@ def test_agent_service_uses_paid_vps_as_live_runtime():
     assert "Environment=CUSTOM_SOURCES_PATH=/var/lib/bikhabar/runtime/data/custom_sources.json" in service
     assert "Environment=NEWSROOM_SETTINGS_PATH=/var/lib/bikhabar/runtime/data/newsroom_settings.json" in service
     assert "Environment=PANEL_COMMAND_DIR=/var/lib/bikhabar/runtime/panel_commands" in service
-    assert "Environment=POLL_SECONDS=5" in service
+    assert "Environment=POLL_SECONDS=2" in service
     assert "Environment=SESSION_SECONDS=0" in service
     assert "python -m src.vps_runtime" in service
 
@@ -30,7 +30,7 @@ def test_panel_service_reads_and_writes_same_local_runtime():
 
 def test_env_example_defaults_to_fast_vps_paths():
     env = _read("deploy/agent.env.example")
-    assert "POLL_SECONDS=5" in env
+    assert "POLL_SECONDS=2" in env
     assert "SESSION_SECONDS=0" in env
     assert "DATA_DIR=/var/lib/bikhabar/runtime/data" in env
     assert "PANEL_LOCAL_ROOT=/var/lib/bikhabar/runtime" in env

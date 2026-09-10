@@ -19,21 +19,22 @@ def _credentials() -> tuple[str, str]:
 
 
 def build_hormuz_preview() -> dict:
-    """Build the real Hormuz/tanker report for panel preview without publishing."""
+    """Build a source-backed Hormuz preview without fabricating unavailable counts."""
     report_date = datetime.now(timezone.utc).astimezone(TEHRAN).date()
     report = fetch_hormuz_traffic_report(report_date)
-    if report.observed_count is None:
-        raise RuntimeError("hormuz_measurable_count_unavailable")
     return {
         "message": format_hormuz_report(report),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "observed_count": report.observed_count,
-        "source": "Hormuz live traffic data",
+        "available_for_publish": report.observed_count is not None,
+        "source": "Kpler / Vortexa / Reuters",
     }
 
 
 def publish_hormuz_now() -> bool:
     preview = build_hormuz_preview()
+    if not preview.get("available_for_publish"):
+        raise RuntimeError("hormuz_measurable_count_unavailable")
     token, chat_id = _credentials()
     send_telegram(preview["message"], token, chat_id)
     return True

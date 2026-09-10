@@ -98,7 +98,7 @@
   }
 
   async function watchCommand(commandId, label = 'فرمان') {
-    if (!commandId || commandWatchers.has(commandId)) return;
+    if (!commandId || commandWatchers.has(commandId)) return null;
     commandWatchers.set(commandId, true);
     const started = Date.now();
     while (Date.now() - started < 45000) {
@@ -111,10 +111,11 @@
           return data;
         }
       } catch (_) {}
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 650));
     }
     commandWatchers.delete(commandId);
     if (commandResult) commandResult.textContent = `${label}: نتیجه هنوز از ایجنت نرسیده`;
+    return null;
   }
 
   function mergeLocalized(item) {
@@ -127,6 +128,18 @@
     renderFeed(latestItems.map(mergeLocalized));
   }
 
+  async function localizeIds(ids) {
+    const unique = [...new Set(ids.filter(Boolean))].slice(0, 12);
+    if (!unique.length) return [];
+    const data = await postJson('/api/live-feed/localize', { ids: unique });
+    const rows = Array.isArray(data.items) ? data.items : [];
+    for (const item of rows) {
+      const id = String(item.id || item.item_id || '');
+      if (id) localizedCache.set(id, item);
+    }
+    return rows;
+  }
+
   async function localizeMissing(items) {
     const ids = items
       .filter(item => item.needs_localization)
@@ -136,45 +149,60 @@
     if (!ids.length) return;
     ids.forEach(id => localizationInFlight.add(id));
     try {
-      const data = await postJson('/api/live-feed/localize', { ids });
-      for (const item of Array.isArray(data.items) ? data.items : []) {
-        const id = String(item.id || item.item_id || '');
-        if (id) localizedCache.set(id, item);
-      }
+      await localizeIds(ids);
       renderLatest();
     } catch (_) {
-      // The 1-second live feed keeps running; a later cycle can retry localization.
+      // Live polling stays responsive; persistence allows a later retry.
     } finally {
       ids.forEach(id => localizationInFlight.delete(id));
     }
   }
 
-  function detailsBlock(item) {
+  function telegramPreviewText(value) {
+    return String(value || '')
+      .replace(/<a\b[^>]*>(.*?)<\/a>/gi, '$1')
+      .replace(/<\/?(?:b|strong|i|em|u|s|code|pre)>/gi, '')
+      .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+  }
+
+  function finalOutputBlock(item) {
+    const box = document.createElement('section');
+    box.className = 'final-output-box live-final-output';
+    const label = document.createElement('strong');
+    label.textContent = 'خروجی نهایی تلگرام';
+    const pre = document.createElement('pre');
+    pre.textContent = item.final_message ? telegramPreviewText(item.final_message) : 'در حال آماده‌سازی نسخه نهایی فارسی…';
+    box.append(label, pre);
+    return box;
+  }
+
+  function sourceDetails(item) {
+    if (!item.original_title && !item.original_body) return null;
     const details = document.createElement('details');
-    details.className = 'news-details';
+    details.className = 'original-source-text';
     const summary = document.createElement('summary');
-    summary.textContent = 'جزئیات و خروجی نهایی';
-    details.appendChild(summary);
-
-    const body = document.createElement('div');
-    body.className = 'news-details-body';
-    if (item.body) {
-      const p = document.createElement('p'); p.className = 'persian-body'; p.textContent = item.body; body.appendChild(p);
-    }
-    const final = document.createElement('section');
-    final.className = 'final-output-box';
-    const h = document.createElement('strong'); h.textContent = 'خروجی نهایی تلگرام'; final.appendChild(h);
-    const pre = document.createElement('pre'); pre.textContent = item.final_message || 'خروجی نهایی هنوز آماده نشده.'; final.appendChild(pre);
-    body.appendChild(final);
-
-    if (item.original_title || item.original_body) {
-      const original = document.createElement('details'); original.className = 'original-source-text';
-      const originalSummary = document.createElement('summary'); originalSummary.textContent = 'متن اصلی منبع'; original.appendChild(originalSummary);
-      const originalPre = document.createElement('pre'); originalPre.textContent = [item.original_title, item.original_body].filter(Boolean).join('\n\n'); original.appendChild(originalPre);
-      body.appendChild(original);
-    }
-    details.appendChild(body);
+    summary.textContent = 'متن اصلی منبع';
+    const pre = document.createElement('pre');
+    pre.textContent = [item.original_title, item.original_body].filter(Boolean).join('\n\n');
+    details.append(summary, pre);
     return details;
+  }
+
+  async function ensureLocalized(item) {
+    const id = String(item.id || item.item_id || '');
+    const merged = mergeLocalized(item);
+    if (!merged.needs_localization && merged.final_message) return merged;
+    const rows = await localizeIds([id]);
+    const localized = rows.find(row => String(row.id || row.item_id || '') === id);
+    return localized || mergeLocalized(item);
+  }
+
+  function actionButton(label, className = 'button') {
+    const button = document.createElement('button');
+    button.className = className;
+    button.type = 'button';
+    button.textContent = label;
+    return button;
   }
 
   function renderFeed(items) {
@@ -189,20 +217,65 @@
       check.type = 'checkbox'; check.className = 'live-select'; check.value = id; check.setAttribute('aria-label', 'انتخاب خبر');
       check.addEventListener('change', syncBulkState); row.appendChild(check);
       const rail = document.createElement('div'); rail.className = 'news-status-rail'; row.appendChild(rail);
-      const content = document.createElement('div'); content.className = 'live-news-copy';
-      const title = document.createElement('strong'); title.textContent = item.title || 'عنوان فارسی در حال آماده‌سازی';
-      const titleLine = document.createElement('div'); titleLine.className = 'news-title-line'; titleLine.appendChild(title); content.appendChild(titleLine);
-      const meta = document.createElement('small'); meta.textContent = [item.source, item.panel_status_fa, item.decision_reason_fa].filter(Boolean).join(' · '); content.appendChild(meta);
-      content.appendChild(detailsBlock(item)); row.appendChild(content);
 
-      const actions = document.createElement('div'); actions.className = 'live-news-actions';
+      const content = document.createElement('div'); content.className = 'live-news-copy';
+      const titleLine = document.createElement('div'); titleLine.className = 'news-title-line';
+      const title = document.createElement('strong'); title.textContent = item.title || 'عنوان فارسی در حال آماده‌سازی';
+      titleLine.appendChild(title); content.appendChild(titleLine);
+      const meta = document.createElement('small');
+      meta.textContent = [item.source, item.panel_status_fa, item.decision_reason_fa, item.published_at_source ? `زمان منبع: ${faTime(item.published_at_source)}` : ''].filter(Boolean).join(' · ');
+      content.appendChild(meta);
+      if (item.body) {
+        const body = document.createElement('p'); body.className = 'persian-body'; body.textContent = item.body; content.appendChild(body);
+      }
+      content.appendChild(finalOutputBlock(item));
+      const original = sourceDetails(item); if (original) content.appendChild(original);
+      row.appendChild(content);
+
+      const actions = document.createElement('div'); actions.className = 'live-news-actions newsroom-live-actions';
+      if (item.can_publish && id) {
+        const publish = actionButton('انتشار', 'button publish-button');
+        publish.addEventListener('click', async () => {
+          publish.disabled = true; const old = publish.textContent; publish.textContent = 'آماده‌سازی…';
+          try {
+            const finalItem = await ensureLocalized(item);
+            if (!finalItem.final_message) throw new Error('نسخه نهایی فارسی هنوز آماده نیست');
+            const data = await postJson(`/api/command-center/live/${encodeURIComponent(id)}/publish`);
+            publish.textContent = 'در حال انتشار…';
+            const result = await watchCommand(data.command_id, 'انتشار خبر');
+            if (result?.status === 'failed') throw new Error(result.message || 'انتشار ناموفق بود');
+          } catch (error) {
+            if (commandResult) commandResult.textContent = `انتشار خبر: ${error.message}`;
+          } finally { publish.disabled = false; publish.textContent = old; }
+        });
+        actions.appendChild(publish);
+      }
+
+      if (item.can_reject && id) {
+        const reject = actionButton('رد', 'button reject-button');
+        reject.addEventListener('click', async () => {
+          reject.disabled = true; const old = reject.textContent; reject.textContent = 'در حال رد…';
+          try {
+            await postJson(`/api/command-center/live/${encodeURIComponent(id)}/reject`);
+            if (commandResult) commandResult.textContent = 'خبر رد شد.';
+            row.remove();
+            await refreshLiveFeed();
+          } catch (error) {
+            if (commandResult) commandResult.textContent = `رد خبر: ${error.message}`;
+            reject.disabled = false; reject.textContent = old;
+          }
+        });
+        actions.appendChild(reject);
+      }
+
       if (item.review_url) {
-        const edit = document.createElement('a'); edit.className = 'button'; edit.href = item.review_url; edit.textContent = 'ویرایش / بررسی'; actions.appendChild(edit);
+        const edit = document.createElement('a'); edit.className = 'button'; edit.href = item.review_url; edit.textContent = 'ویرایش'; actions.appendChild(edit);
       } else if (item.can_review && id) {
-        const edit = document.createElement('button'); edit.className = 'button'; edit.type = 'button'; edit.textContent = 'ویرایش';
+        const edit = actionButton('ویرایش');
         edit.addEventListener('click', async () => {
           edit.disabled = true; const old = edit.textContent; edit.textContent = 'در حال آماده‌سازی…';
           try {
+            if (item.needs_localization) await ensureLocalized(item);
             const data = await postJson(`/api/command-center/live/${encodeURIComponent(id)}/review`);
             if (data.review_url) window.location.assign(data.review_url);
           } catch (error) {
@@ -212,17 +285,23 @@
         });
         actions.appendChild(edit);
       }
+
       if (item.source_url) {
         const source = document.createElement('a'); source.className = 'button source-button'; source.href = item.source_url; source.target = '_blank'; source.rel = 'noopener'; source.textContent = 'منبع'; actions.appendChild(source);
       }
-      const del = document.createElement('button'); del.className = 'button danger-lite'; del.type = 'button'; del.textContent = 'حذف';
+
+      const del = actionButton('حذف', 'button danger-lite');
       del.addEventListener('click', async () => {
         del.disabled = true; del.textContent = 'در حال حذف…';
         try {
           const data = await postJson('/api/command-center/clear', { scope: 'live', ids: [id] });
-          await watchCommand(data.command_id, 'حذف خبر');
-        } catch (error) { if (commandResult) commandResult.textContent = `حذف خبر: ${error.message}`; }
-        finally { del.disabled = false; del.textContent = 'حذف'; }
+          if (commandResult) commandResult.textContent = data.message || 'خبر حذف شد.';
+          row.remove();
+          await refreshLiveFeed();
+        } catch (error) {
+          if (commandResult) commandResult.textContent = `حذف خبر: ${error.message}`;
+          del.disabled = false; del.textContent = 'حذف';
+        }
       });
       actions.appendChild(del); row.appendChild(actions); frag.appendChild(row);
     }
@@ -276,7 +355,18 @@
 
   function renderPreview(body, data) {
     body.replaceChildren();
-    const pre = document.createElement('pre'); pre.textContent = data.message; body.appendChild(pre);
+    if (data.image_url) {
+      const image = document.createElement('img');
+      image.className = 'module-preview-image';
+      image.alt = 'پیش‌نمایش ترافیک هوایی';
+      image.loading = 'eager';
+      image.src = `${data.image_url}?t=${encodeURIComponent(data.generated_at || Date.now())}`;
+      body.appendChild(image);
+    }
+    const pre = document.createElement('pre'); pre.textContent = telegramPreviewText(data.message || ''); body.appendChild(pre);
+    if (data.available_for_publish === false) {
+      const note = document.createElement('small'); note.className = 'preview-warning'; note.textContent = 'این پیش‌نمایش قابل مشاهده است، اما به‌دلیل نبود عدد دقیق قابل استناد، انتشار خودکار آن غیرفعال است.'; body.appendChild(note);
+    }
     if (data.generated_at) {
       const small = document.createElement('small');
       small.textContent = `ساخته‌شده: ${faTime(data.generated_at)}`;
@@ -305,13 +395,12 @@
         return;
       }
       renderPreview(body, data);
-    } catch (error) {
-      body.textContent = `خطا در دریافت پیش‌نمایش: ${error.message}`;
-    }
+    } catch (error) { body.textContent = `خطا در دریافت پیش‌نمایش: ${error.message}`; }
   }
 
   document.querySelectorAll('[data-preview-toggle]').forEach(button => {
-    button.addEventListener('click', async () => {
+    button.addEventListener('click', async event => {
+      event.stopPropagation();
       const name = button.dataset.previewToggle;
       const panel = document.querySelector(`[data-preview-panel="${name}"]`);
       if (!panel) return;
@@ -328,14 +417,14 @@
       try {
         const data = await postJson(`/api/command-center/module/${name}`);
         if (commandResult) commandResult.textContent = `${old}: در صف اجرا`;
-        watchCommand(data.command_id, old);
+        void watchCommand(data.command_id, old);
       } catch (error) { if (commandResult) commandResult.textContent = `${old}: ${error.message}`; }
       finally { button.disabled = false; button.textContent = old; }
     });
   });
 
   liveSelectAll?.addEventListener('change', () => {
-    feed.querySelectorAll('.live-select').forEach(input => { input.checked = liveSelectAll.checked; });
+    feed.querySelectorAll('.live-select').forEach(box => { box.checked = liveSelectAll.checked; });
     syncBulkState();
   });
 
@@ -346,12 +435,11 @@
     if (liveBulkState) liveBulkState.textContent = 'در حال حذف…';
     try {
       const data = await postJson('/api/command-center/clear', { scope: 'live', ids });
-      await watchCommand(data.command_id, 'حذف گروهی');
+      if (liveBulkState) liveBulkState.textContent = data.message || 'حذف شد.';
+      await refreshLiveFeed();
     } catch (error) {
       if (liveBulkState) liveBulkState.textContent = `خطا: ${error.message}`;
-    } finally {
-      syncBulkState();
-    }
+    } finally { syncBulkState(); }
   });
 
   panicToggle?.addEventListener('click', async () => {
@@ -370,7 +458,7 @@
   });
 
   document.addEventListener('visibilitychange', () => { if (!document.hidden) document.title = 'اتاق خبر | بی‌خبر'; });
-  paintSound(); paintPublishing(); syncBulkState();
+  paintSound(); paintPublishing();
   refreshLiveFeed(); refreshStatus(); refreshHealth();
   window.setInterval(refreshLiveFeed, 1000);
   window.setInterval(() => { refreshStatus(); refreshHealth(); }, 2000);

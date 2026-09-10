@@ -201,13 +201,13 @@ def test_supported_modules_enqueue_real_commands():
         assert data.commands[-1]["action"] == action
 
 
-def test_bulk_clear_enqueues_selected_scope_and_ids():
+def test_bulk_clear_removes_live_items_immediately():
     data = FakeData(); client = _app(data).test_client(); csrf = _login(client)
     response = client.post("/api/command-center/clear", json={"scope": "live", "ids": ["a", "b"]}, headers={"X-CSRFToken": csrf})
-    assert response.status_code == 202
-    assert data.commands[-1]["action"] == "clear"
-    assert data.commands[-1]["scope"] == "live"
-    assert data.commands[-1]["ids"] == ["a", "b"]
+    assert response.status_code == 200
+    assert response.get_json()["status"] == "succeeded"
+    assert data.files["data/panel_live_feed.json"] == []
+    assert data.commands == []
 
 
 def test_any_live_item_can_be_promoted_to_review_for_editing():

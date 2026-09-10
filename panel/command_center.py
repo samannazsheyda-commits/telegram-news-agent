@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import re
 from datetime import datetime, timezone
+from pathlib import Path
 from uuid import uuid4
 
-from flask import Blueprint, current_app, jsonify, request, session
+from flask import Blueprint, current_app, jsonify, request, send_file, session
 
 
 bp = Blueprint("command_center", __name__)
@@ -124,6 +125,12 @@ def _live_row_id(row: dict) -> str:
     return str(row.get("item_id") or row.get("id") or row.get("news_key") or "").strip()
 
 
+def _find_live_item(item_id: str) -> dict | None:
+    value, _ = _data().read_json("data/panel_live_feed.json", [])
+    rows = value if isinstance(value, list) else []
+    return next((dict(row) for row in rows if isinstance(row, dict) and _live_row_id(row) == item_id), None)
+
+
 def _review_record_from_live(row: dict, item_id: str) -> dict:
     now = _now_iso()
     record = dict(row)
@@ -145,6 +152,44 @@ def _review_record_from_live(row: dict, item_id: str) -> dict:
         }
     )
     return record
+
+
+def _remove_live_ids(ids: list[str], *, mark_seen: bool = True) -> int:
+    targets = set(ids)
+    before, _ = _data().read_json("data/panel_live_feed.json", [])
+    rows = [dict(row) for row in before if isinstance(row, dict)] if isinstance(before, list) else []
+    matched = [row for row in rows if _live_row_id(row) in targets]
+    _write_list(
+        "data/panel_live_feed.json",
+        lambda current: [row for row in current if _live_row_id(row) not in targets],
+        "panel: remove live feed items",
+    )
+    if mark_seen:
+        for row in matched:
+            key = str(row.get("news_key") or "").strip()
+            if key:
+                try:
+                    _data().mark_news_seen(key)
+                except Exception:
+                    pass
+    return len(matched)
+
+
+def _remove_from_queue(item_id: str) -> None:
+    _write_list(
+        "data/editorial_queue.json",
+        lambda rows: [row for row in rows if str(row.get("id") or row.get("item_id") or "") != item_id],
+        "panel: remove item from editorial queue",
+    )
+
+
+def _upsert_history(record: dict) -> None:
+    item_id = str(record.get("id") or record.get("item_id") or "")
+    _write_list(
+        "data/editorial_history.json",
+        lambda rows: [record] + [row for row in rows if str(row.get("id") or row.get("item_id") or "") != item_id],
+        "panel: update editorial history",
+    )
 
 
 @bp.before_request
@@ -212,7 +257,30 @@ def module_preview(module_name: str):
     if not isinstance(preview, dict) or not preview:
         return jsonify({"ok": True, "available": False, "message": "", "generated_at": ""})
     message = str(preview.get("message") or preview.get("text") or preview.get("caption") or "")
-    return jsonify({"ok": True, "available": bool(message or preview), "message": message, **preview})
+    public = dict(preview)
+    if module_name == "air-traffic" and preview.get("image_path"):
+        public["image_url"] = "/api/command-center/module/air-traffic/preview/image"
+    return jsonify({"ok": True, "available": bool(message or preview), "message": message, **public})
+
+
+@bp.get("/api/command-center/module/air-traffic/preview/image")
+def air_traffic_preview_image():
+    backend = _data()
+    root_value = getattr(backend, "root", None)
+    if root_value is None:
+        return jsonify({"ok": False, "error": "preview_image_unavailable"}), 404
+    preview, _ = backend.read_json("data/air_traffic_preview.json", {})
+    image_rel = str(preview.get("image_path") or "data/air_traffic_preview.png") if isinstance(preview, dict) else "data/air_traffic_preview.png"
+    root = Path(root_value).resolve()
+    candidate = Path(image_rel)
+    image = candidate.resolve() if candidate.is_absolute() else (root / candidate).resolve()
+    if root != image and root not in image.parents:
+        return jsonify({"ok": False, "error": "invalid_preview_image"}), 400
+    if not image.is_file():
+        return jsonify({"ok": False, "error": "preview_image_unavailable"}), 404
+    response = send_file(image, mimetype="image/png", max_age=0)
+    response.headers["Cache-Control"] = "no-store, max-age=0"
+    return response
 
 
 @bp.post("/api/command-center/module/<module_name>/preview")
@@ -280,20 +348,20 @@ def clear_items():
             ids.append(item_id)
     if not ids or len(ids) > 5000:
         return jsonify({"ok": False, "error": "invalid_clear_request"}), 400
+    if scope == "live":
+        count = _remove_live_ids(ids, mark_seen=True)
+        return jsonify({"ok": True, "status": "succeeded", "count": count, "message": f"{count} خبر از ورودی زنده حذف شد"})
     command_id = _enqueue("clear", scope=scope, ids=ids)
     return jsonify({"ok": True, "command_id": command_id, "status": "queued", "count": len(ids)}), 202
 
 
 @bp.post("/api/command-center/live/<item_id>/review")
 def promote_live_to_review(item_id: str):
-    live, _ = _data().read_json("data/panel_live_feed.json", [])
-    rows = live if isinstance(live, list) else []
-    row = next((dict(value) for value in rows if isinstance(value, dict) and _live_row_id(value) == item_id), None)
+    row = _find_live_item(item_id)
     if row is None:
         return jsonify({"ok": False, "error": "live_item_not_found"}), 404
     if str(row.get("panel_status") or "") in _TERMINAL_LIVE_STATUSES:
         return jsonify({"ok": False, "error": "already_published"}), 409
-
     record = _review_record_from_live(row, item_id)
 
     def transform(queue: list[dict]) -> list[dict]:
@@ -301,6 +369,45 @@ def promote_live_to_review(item_id: str):
 
     _write_list("data/editorial_queue.json", transform, "panel: promote live item to review")
     return jsonify({"ok": True, "review_url": f"/review/{item_id}"})
+
+
+@bp.post("/api/command-center/live/<item_id>/reject")
+def reject_live_item(item_id: str):
+    row = _find_live_item(item_id)
+    if row is None:
+        return jsonify({"ok": False, "error": "live_item_not_found"}), 404
+    if str(row.get("panel_status") or "") in _TERMINAL_LIVE_STATUSES:
+        return jsonify({"ok": False, "error": "already_published"}), 409
+    now = _now_iso()
+    record = _review_record_from_live(row, item_id)
+    record.update(status="rejected_manual", decision_at=now, updated_at=now)
+    _upsert_history(record)
+    _remove_from_queue(item_id)
+    _remove_live_ids([item_id], mark_seen=True)
+    return jsonify({"ok": True, "status": "rejected", "message": "خبر رد و از ورودی زنده حذف شد"})
+
+
+@bp.post("/api/command-center/live/<item_id>/publish")
+def publish_live_item(item_id: str):
+    row = _find_live_item(item_id)
+    if row is None:
+        return jsonify({"ok": False, "error": "live_item_not_found"}), 404
+    if str(row.get("panel_status") or "") in _TERMINAL_LIVE_STATUSES:
+        return jsonify({"ok": False, "error": "already_published"}), 409
+    title = str(row.get("final_persian_title") or row.get("persian_title") or "").strip()
+    body = str(row.get("final_persian_body") or row.get("persian_body") or "").strip()
+    if not title or not any("\u0600" <= ch <= "\u06ff" for ch in title):
+        return jsonify({"ok": False, "error": "final_not_ready"}), 409
+    record = _review_record_from_live(row, item_id)
+    record["persian_title"] = title
+    record["persian_body"] = body
+
+    def transform(queue: list[dict]) -> list[dict]:
+        return [record] + [existing for existing in queue if str(existing.get("id") or existing.get("item_id") or "") != item_id]
+
+    _write_list("data/editorial_queue.json", transform, "panel: queue live item for publication")
+    command_id = _enqueue("publish", item_id=item_id, title=title, body=body)
+    return jsonify({"ok": True, "command_id": command_id, "status": "queued", "message": "خبر برای انتشار ارسال شد"}), 202
 
 
 @bp.post("/api/command-center/module/<module_name>")
