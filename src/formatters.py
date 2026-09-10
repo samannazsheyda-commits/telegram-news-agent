@@ -61,26 +61,6 @@ EDITORIAL_TITLE_PREFIXES = (
     "تحلیل:", "یادداشت:", "نظر:", "گزارش تحلیلی:", "آنچه باید بدانید", "آنچه می‌دانیم",
     "چرا ", "چگونه ", "چطور ", "آیا ",
 )
-COUNTRY_FLAG_RULES = (
-    ("🇮🇷", ("iran", "iranian", "ایران", "ایرانی", "سپاه")),
-    ("🇺🇸", ("united states", "u.s.", "american", "america", "آمریکا", "آمریکایی", "سنتکام")),
-    ("🇮🇱", ("israel", "israeli", "اسرائیل", "اسرائیلی")),
-    ("🇸🇦", ("saudi arabia", "saudi", "عربستان سعودی", "سعودی")),
-    ("🇦🇪", ("united arab emirates", "uae", "امارات", "امارات متحده")),
-    ("🇯🇴", ("jordan", "jordanian", "اردن", "اردنی")),
-    ("🇾🇪", ("yemen", "yemeni", "یمن", "یمنی", "حوثی")),
-    ("🇮🇶", ("iraq", "iraqi", "عراق", "عراقی")),
-    ("🇶🇦", ("qatar", "qatari", "قطر", "قطری")),
-    ("🇧🇭", ("bahrain", "بحرین")),
-    ("🇰🇼", ("kuwait", "کویت")),
-    ("🇴🇲", ("oman", "عمان")),
-    ("🇬🇧", ("united kingdom", "britain", "british", "بریتانیا", "انگلیس")),
-    ("🇷🇺", ("russia", "russian", "روسیه", "روسی")),
-    ("🇨🇳", ("china", "chinese", "چین", "چینی")),
-    ("🇹🇷", ("turkey", "turkish", "ترکیه", "ترکی")),
-    ("🇸🇾", ("syria", "syrian", "سوریه", "سوری")),
-    ("🇱🇧", ("lebanon", "lebanese", "لبنان", "لبنانی")),
-)
 
 
 def _safe(value: str) -> str:
@@ -238,7 +218,6 @@ def _source_label(source: str) -> str:
     label = SOURCE_FA.get(source)
     if label:
         return label
-    # Platform is metadata, not the public-facing source name.
     label = re.sub(r"\s*/\s*Telegram\s*$", "", source or "", flags=re.IGNORECASE)
     label = re.sub(r"\s*/\s*X\s*$", "", label, flags=re.IGNORECASE)
     return label.strip()
@@ -251,25 +230,6 @@ def _blocked_final_title(title: str) -> bool:
     if "?" in clean or "؟" in clean:
         return True
     return clean.startswith(EDITORIAL_TITLE_PREFIXES)
-
-
-def _country_term_present(text: str, term: str) -> bool:
-    if re.search(r"[a-z]", term):
-        return bool(re.search(rf"(?<![a-z]){re.escape(term)}(?![a-z])", text, flags=re.IGNORECASE))
-    return term in text
-
-
-def _country_flags_for(item: NewsItem, title_fa: str, summary_fa: str) -> list[str]:
-    text = _story_text(item, title_fa, summary_fa)
-    flags: list[str] = []
-    for flag, terms in COUNTRY_FLAG_RULES:
-        if any(_country_term_present(text, term) for term in terms):
-            flags.append(flag)
-        if len(flags) == 4:
-            break
-    if "🇮🇷" not in flags:
-        flags.insert(0, "🇮🇷")
-    return flags[:4]
 
 
 def _hashtags_for(item: NewsItem, title_fa: str, summary_fa: str) -> list[str]:
@@ -328,9 +288,6 @@ def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override:
     tags = _hashtags_for(item, title_fa, summary_fa)
     if tags:
         parts += ["", " ".join(tags)]
-    flags = _country_flags_for(item, title_fa, summary_fa)
-    if flags:
-        parts += ["", " ".join(flags)]
     return "\n".join(parts).strip()
 
 
