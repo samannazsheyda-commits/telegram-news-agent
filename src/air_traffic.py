@@ -34,7 +34,7 @@ QUERY_CENTERS = (
     (28.5, 56.0), (26.0, 51.0), (25.2, 55.3), (23.6, 58.4),
     (21.0, 45.0), (15.4, 44.2), (10.0, 51.0),
 )
-USER_AGENT = "bikhabaar-air-traffic/1.3"
+USER_AGENT = "bikhabaar-air-traffic/1.4"
 
 
 def _tehran_jalali(now: datetime | None = None) -> tuple[str, str]:
@@ -51,7 +51,7 @@ def _tehran_jalali(now: datetime | None = None) -> tuple[str, str]:
 
 def build_caption(now: datetime | None = None) -> str:
     date_text, time_text = _tehran_jalali(now)
-    return f"وضعیت ترافیک هوایی خاورمیانه\n⏰ {date_text} — {time_text}"
+    return f"وضعیت ترافیک هوایی ایران و منطقه\n⏰ {date_text} — {time_text}"
 
 
 def _world_pixel(lon: float, lat: float, zoom: int) -> tuple[float, float]:
@@ -81,6 +81,36 @@ def viewport_bounds() -> dict[str, float]:
     return {"min_lat": min_lat, "max_lat": max_lat, "min_lon": min_lon, "max_lon": max_lon}
 
 
+def _aircraft_key(row: dict) -> str:
+    identity = str(row.get("hex") or row.get("icao") or "").strip().lower()
+    if identity:
+        return identity
+    return f"{row.get('lat')}:{row.get('lon')}"
+
+
+def _seen_seconds(row: dict) -> float:
+    value = row.get("seen_pos")
+    if value is None:
+        value = row.get("seen")
+    try:
+        return max(0.0, float(value))
+    except (TypeError, ValueError):
+        return 9999.0
+
+
+def _merge_aircraft_rows(*groups: Iterable[dict]) -> list[dict]:
+    merged: dict[str, dict] = {}
+    for group in groups:
+        for row in group:
+            if not isinstance(row, dict):
+                continue
+            key = _aircraft_key(row)
+            current = merged.get(key)
+            if current is None or _seen_seconds(row) < _seen_seconds(current):
+                merged[key] = row
+    return list(merged.values())
+
+
 def filter_middle_east_aircraft(rows: Iterable[dict], *, max_seen_seconds: float = 120, bounds: dict[str, float] | None = None) -> list[dict]:
     bounds = bounds or viewport_bounds()
     kept: list[dict] = []
@@ -90,7 +120,7 @@ def filter_middle_east_aircraft(rows: Iterable[dict], *, max_seen_seconds: float
         try:
             lat = float(row.get("lat"))
             lon = float(row.get("lon"))
-            seen_pos = float(row.get("seen_pos", row.get("seen", 9999)))
+            seen_pos = _seen_seconds(row)
         except (TypeError, ValueError):
             continue
         if seen_pos > max_seen_seconds:
@@ -130,6 +160,7 @@ def _fetch_opensky_bbox(*, session=requests) -> list[dict]:
 
 
 def _fetch_center(lat: float, lon: float, *, session=requests) -> list[dict]:
+    successful_groups: list[list[dict]] = []
     errors: list[str] = []
     for template in PROVIDERS:
         url = template.format(lat=lat, lon=lon, radius=QUERY_RADIUS_NM)
@@ -140,14 +171,16 @@ def _fetch_center(lat: float, lon: float, *, session=requests) -> list[dict]:
             rows = payload.get("ac") if isinstance(payload, dict) else None
             if not isinstance(rows, list):
                 raise ValueError("aircraft list missing")
-            return rows
+            successful_groups.append(rows)
         except Exception as exc:
             errors.append(f"{url}: {exc}")
-    raise RuntimeError("; ".join(errors))
+    if not successful_groups:
+        raise RuntimeError("; ".join(errors) or "no point provider response")
+    return _merge_aircraft_rows(*successful_groups)
 
 
 def _fetch_point_fallback(*, session=requests) -> list[dict]:
-    merged: dict[str, dict] = {}
+    groups: list[list[dict]] = []
     failures = 0
     workers = min(8, max(1, len(QUERY_CENTERS)))
     with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="air-fallback") as executor:
@@ -163,25 +196,42 @@ def _fetch_point_fallback(*, session=requests) -> list[dict]:
                 failures += 1
                 print(f"AIR_TRAFFIC_SOURCE_ERROR center=({lat},{lon}) error={exc}")
                 continue
-            for row in filter_middle_east_aircraft(rows):
-                key = str(row.get("hex") or row.get("icao") or f"{row.get('lat')}:{row.get('lon')}")
-                merged[key] = row
+            groups.append(filter_middle_east_aircraft(rows))
+    merged = _merge_aircraft_rows(*groups)
     if not merged:
         raise RuntimeError(f"no live air-traffic positions; failed_centers={failures}")
-    print(f"AIR_TRAFFIC_FETCH provider=point-fallback aircraft={len(merged)} failed_centers={failures}")
-    return list(merged.values())
+    print(f"AIR_TRAFFIC_FETCH provider=point-network aircraft={len(merged)} failed_centers={failures}")
+    return merged
 
 
 def fetch_live_aircraft(*, session=requests) -> list[dict]:
-    try:
-        rows = _fetch_opensky_bbox(session=session)
-        if rows:
-            print(f"AIR_TRAFFIC_FETCH provider=opensky aircraft={len(rows)}")
-            return rows
-        print("AIR_TRAFFIC_SOURCE_ERROR provider=opensky error=empty_bbox")
-    except Exception as exc:
-        print(f"AIR_TRAFFIC_SOURCE_ERROR provider=opensky error={exc}")
-    return _fetch_point_fallback(session=session)
+    groups: list[list[dict]] = []
+    errors: list[str] = []
+    sources = {
+        "opensky": lambda: _fetch_opensky_bbox(session=session),
+        "point-network": lambda: _fetch_point_fallback(session=session),
+    }
+    with ThreadPoolExecutor(max_workers=2, thread_name_prefix="air-sources") as executor:
+        futures = {executor.submit(loader): name for name, loader in sources.items()}
+        for future in as_completed(futures):
+            name = futures[future]
+            try:
+                rows = future.result()
+            except Exception as exc:
+                errors.append(f"{name}:{exc}")
+                print(f"AIR_TRAFFIC_SOURCE_ERROR provider={name} error={exc}")
+                continue
+            if rows:
+                groups.append(rows)
+                print(f"AIR_TRAFFIC_FETCH provider={name} aircraft={len(rows)}")
+            else:
+                print(f"AIR_TRAFFIC_SOURCE_ERROR provider={name} error=empty")
+
+    merged = filter_middle_east_aircraft(_merge_aircraft_rows(*groups), max_seen_seconds=120)
+    if not merged:
+        raise RuntimeError("no live air-traffic positions from any provider" + (f"; {'; '.join(errors)}" if errors else ""))
+    print(f"AIR_TRAFFIC_FETCH merged aircraft={len(merged)} sources={len(groups)}")
+    return merged
 
 
 def _screen_pixel(lon: float, lat: float) -> tuple[float, float]:
