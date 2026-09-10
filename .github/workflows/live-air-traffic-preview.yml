@@ -1,0 +1,62 @@
+name: Live Air Traffic Preview
+
+on:
+  push:
+    branches: [air-traffic-live-preview-2026-09-11]
+    paths:
+      - '.github/workflows/live-air-traffic-preview.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: air-traffic-live-preview-2026-09-11
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - name: Fetch current aircraft positions
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+          from src.air_traffic import fetch_live_aircraft
+
+          rows = fetch_live_aircraft()
+          out = []
+          for row in rows:
+              try:
+                  lat = float(row.get('lat'))
+                  lon = float(row.get('lon'))
+              except (TypeError, ValueError):
+                  continue
+              out.append({
+                  'icao': str(row.get('hex') or row.get('icao') or ''),
+                  'callsign': str(row.get('flight') or row.get('callsign') or '').strip(),
+                  'lat': lat,
+                  'lon': lon,
+                  'track': float(row.get('track') or row.get('true_heading') or 0),
+                  'seen_pos': float(row.get('seen_pos', row.get('seen', 0)) or 0),
+              })
+          payload = {
+              'generated_at': datetime.now(timezone.utc).isoformat(),
+              'count': len(out),
+              'aircraft': out,
+          }
+          Path('preview').mkdir(exist_ok=True)
+          Path('preview/current-air-traffic.json').write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
+          print(f"aircraft={len(out)}")
+          PY
+      - name: Commit snapshot
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add preview/current-air-traffic.json
+          git commit -m 'chore: capture current air traffic snapshot'
+          git push origin HEAD:air-traffic-live-preview-2026-09-11
