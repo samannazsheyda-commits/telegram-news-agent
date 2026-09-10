@@ -7,6 +7,7 @@
   "quiet_end": "07:00",
   "freshness_hours": 2,
   "dedup_mode": "balanced",
+  "hourly_news_limit": 3,
   "priority_terms": [
     "موشک از ایران",
     "موشک به ایران",
