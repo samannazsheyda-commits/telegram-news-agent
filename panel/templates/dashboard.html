@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}اتاق خبر | بی‌خبر{% endblock %}
+{% block title %}مانیتورینگ | بی‌خبر{% endblock %}
 {% block content %}
-<section class="newsroom-hero">
+<section class="newsroom-hero monitoring-hero">
   <div>
     <span class="eyebrow"><span class="red-dot"></span> رصد زنده ۲۴/۷</span>
-    <h1>اتاق خبر بی‌خبر</h1>
-    <p>خبرهای تازه، خروجی نهایی تلگرام، ماژول‌ها و وضعیت واقعی ایجنت؛ بدون رفرش صفحه.</p>
+    <h1>اتاق مانیتورینگ بی‌خبر</h1>
+    <p>ورودی لحظه‌ای خبر، خروجی نهایی فارسی، وضعیت واقعی ایجنت و پیش‌نمایش ماژول‌ها در یک صفحه.</p>
   </div>
   <div class="live-controls">
     <span id="newNewsBadge" class="new-news-badge" hidden>خبر جدید</span>
@@ -13,17 +13,17 @@
   </div>
 </section>
 
-<section class="newsroom-status-strip">
-  <div><span>ایجنت</span><strong id="agentState">نامشخص</strong></div>
-  <div><span>آخرین اسکن</span><strong id="lastCycleAt">—</strong></div>
-  <div><span>تلگرام</span><strong id="telegramState">نامشخص</strong></div>
-  <div><span>انتشار</span><strong id="publishingState">در حال بررسی…</strong></div>
+<section class="newsroom-status-strip" aria-label="وضعیت زنده">
+  <div><span>ایجنت</span><strong id="agentState">در حال دریافت…</strong></div>
+  <div><span>آخرین اسکن</span><strong id="lastCycleAt">در حال دریافت…</strong></div>
+  <div><span>تلگرام</span><strong id="telegramState">در حال دریافت…</strong></div>
+  <div><span>انتشار</span><strong id="publishingState">در حال دریافت…</strong></div>
 </section>
 
 <section class="ops-card newsroom-actions-card">
   <div>
-    <h2>کنترل انتشار</h2>
-    <p>هر فرمان تا نتیجه نهایی ایجنت دنبال می‌شود.</p>
+    <h2>کنترل فوری</h2>
+    <p>نتیجه هر فرمان از خود ایجنت برمی‌گردد؛ «در صف» پایان کار نیست.</p>
   </div>
   <div class="ops-card-actions">
     <button id="panicToggle" class="danger-button" type="button">⛔ توقف کامل انتشار</button>
@@ -32,12 +32,21 @@
   <small class="command-result" id="commandResult">آماده</small>
 </section>
 
-<section class="priority-banner static-priority-banner">
-  <div class="priority-title"><span>اولویت قرمز ۲۴/۷</span><small>بنر ثابت اولویت سردبیری</small></div>
-  <div class="priority-tags">
-    <span>🚀 موشک از ایران</span><span>🛡️ موشک به ایران</span><span>💥 انفجار</span>
-    <span>🚢 تنگه هرمز</span><span>⚔️ حمله مستقیم</span><span>🛩️ پهپاد</span><span>🛢️ نفتکش</span>
+<section class="priority-editor-card">
+  <div class="priority-editor-head">
+    <div>
+      <span class="section-kicker">اولویت قرمز ۲۴/۷</span>
+      <h2>عبارت‌های اولویت سردبیری</h2>
+      <p>ترتیب از بالا به پایین مهم است. می‌توانی عبارت جدید اضافه کنی، جابه‌جا کنی یا حذفش کنی.</p>
+    </div>
+    <button id="priorityRulesSave" class="button primary-action" type="button" disabled>ذخیره اولویت‌ها</button>
   </div>
+  <div id="priorityRulesList" class="priority-rules-list" aria-live="polite"><span class="muted">در حال دریافت اولویت‌ها…</span></div>
+  <div class="priority-add-row">
+    <input id="priorityRuleInput" maxlength="120" placeholder="مثلاً: حمله به سفارت" aria-label="عبارت اولویت جدید">
+    <button id="priorityRuleAdd" class="button" type="button">＋ اضافه کردن</button>
+  </div>
+  <small id="priorityRulesResult" class="command-result"></small>
 </section>
 
 <section class="stats premium-stats">
@@ -47,40 +56,40 @@
   <a class="stat" href="{{ url_for('history', status='rejected_manual') }}"><span>ردشده امروز</span><b>{{ rejected_today }}</b><small>سردبیری</small></a>
 </section>
 
-<section class="section-head"><div><span class="section-kicker">ماژول‌ها</span><h2>پیش‌نمایش و انتشار</h2></div><small>روی «پیش‌نمایش» بزن؛ دوباره بزن تا بسته شود.</small></section>
+<section class="section-head"><div><span class="section-kicker">ماژول‌های عملیاتی</span><h2>پیش‌نمایش تازه و انتشار</h2></div><small>باز کردن هر کارت، پیش‌نمایش تازه می‌سازد؛ کلیک دوباره آن را می‌بندد.</small></section>
 <section class="module-grid newsroom-modules">
   {% for name, preview_id, icon, title, desc in [
     ('weather','weatherPreview','🌤️','هواشناسی فردا','هر شب ۲۳:۰۰ تهران'),
-    ('air-traffic','airTrafficPreview','✈️','ترافیک هوایی ایران و منطقه','۱۲:۰۰ و ۰۰:۰۰ تهران'),
-    ('tanker','tankerPreview','🚢','نفتکش‌ها و تنگه هرمز','گزارش معتبر؛ بدون عددسازی'),
-    ('market','marketPreview','💵','بازار و دلار','دلار، طلا و بازار')
+    ('air-traffic','airTrafficPreview','✈️','ترافیک هوایی ایران و منطقه','داده زنده؛ تصویر تازه هنگام باز کردن'),
+    ('tanker','tankerPreview','🚢','نفتکش‌ها و تنگه هرمز','فقط داده قابل استناد؛ بدون عددسازی'),
+    ('market','marketPreview','💵','بازار و دلار','دلار، طلا و داده‌های بازار')
   ] %}
   <article class="module-card" data-module-card="{{ name }}">
     <div class="module-icon">{{ icon }}</div>
-    <div class="module-copy"><h3>{{ title }}</h3><p>{{ desc }}</p><span class="module-status">وضعیت نامشخص</span></div>
+    <div class="module-copy"><h3>{{ title }}</h3><p>{{ desc }}</p><span class="module-status">در حال بررسی…</span></div>
     <div class="module-actions">
-      <button class="button preview-toggle" data-preview-toggle="{{ name }}" type="button">پیش‌نمایش</button>
+      <button class="button preview-toggle" data-preview-toggle="{{ name }}" type="button">پیش‌نمایش تازه</button>
       <button class="button command-action" data-command-module="{{ name }}" type="button">انتشار همین حالا</button>
     </div>
     <div id="{{ preview_id }}" class="module-preview" data-preview-panel="{{ name }}" hidden>
       <div class="module-preview-toolbar"><strong>پیش‌نمایش نهایی</strong><button class="link-button preview-toggle" data-preview-toggle="{{ name }}" type="button">بستن</button></div>
-      <div class="module-preview-body">در حال دریافت…</div>
+      <div class="module-preview-body">برای ساخت داده تازه، پیش‌نمایش را باز کن.</div>
     </div>
   </article>
   {% endfor %}
 </section>
 
-<section class="section-head"><div><span class="section-kicker">سلامت سیستم</span><h2>داده واقعی</h2></div><small>اگر داده‌ای نداریم، «نامشخص» می‌بینی؛ نه سبز ساختگی.</small></section>
+<section class="section-head"><div><span class="section-kicker">سلامت سیستم</span><h2>وضعیت واقعی سرویس</h2></div><small>هیچ وضعیت سبزی بدون heartbeat واقعی نمایش داده نمی‌شود.</small></section>
 <section class="health-grid newsroom-health-grid">
-  <article class="health-card"><span>آخرین چرخه ایجنت</span><strong id="healthCycle">—</strong><small id="healthCycleState">نامشخص</small></article>
-  <article class="health-card"><span>آخرین انتشار</span><strong id="healthPublication">—</strong><small>ثبت‌شده در state</small></article>
-  <article class="health-card"><span>وضعیت تلگرام</span><strong id="healthTelegram">نامشخص</strong><small>بدون حدس</small></article>
-  <article class="health-card"><span>آخرین خطا</span><strong id="healthError">—</strong><small>آخرین خطای ثبت‌شده</small></article>
+  <article class="health-card"><span>آخرین چرخه ایجنت</span><strong id="healthCycle">—</strong><small id="healthCycleState">در حال دریافت…</small></article>
+  <article class="health-card"><span>آخرین انتشار</span><strong id="healthPublication">—</strong><small>آخرین ارسال ثبت‌شده</small></article>
+  <article class="health-card"><span>منابع چرخه آخر</span><strong id="healthSources">—</strong><small id="healthItems">—</small></article>
+  <article class="health-card"><span>آخرین خطا</span><strong id="healthError">—</strong><small id="healthTelegram">تلگرام: در حال دریافت…</small></article>
 </section>
 
 <section class="live-card card newsroom-live-card">
   <div class="card-heading">
-    <div><span class="section-kicker">فید زنده</span><h2>ورودی زنده</h2></div>
+    <div><span class="section-kicker">فید زنده فارسی</span><h2>ورودی زنده</h2></div>
     <span class="pulse-label"><span class="live-dot"></span> زنده</span>
   </div>
   <div class="live-bulk-toolbar">
@@ -98,9 +107,7 @@
           <div class="news-title-line"><strong>{{ item.display_title }}</strong></div>
           <small>{{ item.source_display or item.source }} · {{ item.panel_status_fa }}</small>
         </div>
-        <div class="live-news-actions">
-          {% if item.source_url %}<a class="button source-button" href="{{ item.source_url }}" target="_blank" rel="noopener">منبع</a>{% endif %}
-        </div>
+        <div class="live-news-actions">{% if item.source_url %}<a class="button source-button" href="{{ item.source_url }}" target="_blank" rel="noopener">منبع</a>{% endif %}</div>
       </article>
     {% endfor %}
   {% else %}
@@ -112,15 +119,19 @@
 <div class="lower-grid">
   <section class="card compact-list-card">
     <div class="card-heading"><h2>نیازمند بررسی دستی</h2><a href="{{ url_for('review_queue') }}">مشاهده همه</a></div>
-    {% if pending %}{% for item in pending[:6] %}<div class="row compact-row"><span><strong>{{ item.persian_title or item.original_title }}</strong><br><small>{{ item.source }}</small></span><a class="button" href="{{ url_for('review_edit', item_id=item.id) }}">ویرایش / بررسی</a></div>{% endfor %}
+    {% if pending %}
+      {% for item in pending[:6] %}<div class="row compact-row"><span><strong>{{ item.persian_title or 'ترجمه فارسی در حال آماده‌سازی' }}</strong><br><small>{{ item.source }}</small></span><a class="button" href="{{ url_for('review_edit', item_id=item.id) }}">ویرایش / بررسی</a></div>{% endfor %}
     {% else %}<p class="empty-copy">نیاز به تصمیم دستی نیست؛ فعلاً موردی برای بررسی وجود ندارد.</p>{% endif %}
   </section>
   <section class="card compact-list-card">
     <div class="card-heading"><h2>منتشرشده</h2><a href="{{ url_for('history') }}">تاریخچه کامل</a></div>
-    {% if published %}{% for item in published[:6] %}<div class="row compact-row"><span><strong>{{ item.final_persian_title or item.persian_title or item.original_title }}</strong><br><small>{{ item.source }}</small></span></div>{% endfor %}
+    {% if published %}
+      {% for item in published[:6] %}<div class="row compact-row"><span><strong>{{ item.final_persian_title or item.persian_title or 'خبر منتشرشده' }}</strong><br><small>{{ item.source }}</small></span></div>{% endfor %}
     {% else %}<p class="empty-copy">هنوز سابقه انتشار ثبت نشده.</p>{% endif %}
   </section>
 </div>
+
+<div id="agentSettingsAnchor" class="agent-settings-anchor"></div>
 
 <script src="{{ url_for('static', filename='live.js') }}" defer></script>
 {% endblock %}
