@@ -8,7 +8,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .editorial_store import LocalEditorialStore
 from .panel_command_file import apply_command as apply_legacy_command
 
 TERMINAL = {"succeeded", "failed", "reconciled"}
@@ -17,8 +16,6 @@ NEWSROOM_ACTIONS = {
     "weather_now", "air_traffic_now", "tanker_now", "market_now",
     "weather_preview", "air_traffic_preview", "tanker_preview", "market_preview",
 }
-PUBLISHED_STATUSES = {"published_manual", "published_auto"}
-REJECTED_STATUSES = {"rejected_manual", "superseded"}
 
 
 def _now() -> str:
@@ -51,7 +48,15 @@ def _result_path(command_id: str) -> Path:
     return Path("panel_results") / f"{command_id}.json"
 
 
-def _write_result(command_id: str, action: str, status: str, message: str, *, scope: str = "", ids: list[str] | None = None) -> dict:
+def _write_result(
+    command_id: str,
+    action: str,
+    status: str,
+    message: str,
+    *,
+    scope: str = "",
+    ids: list[str] | None = None,
+) -> dict:
     payload = {
         "command_id": command_id,
         "item_id": "",
@@ -104,36 +109,18 @@ def _validated_ids(value: Any) -> list[str]:
     return ids
 
 
-def _clear_pending(store: LocalEditorialStore, ids: list[str]) -> int:
-    count = 0
-    for item_id in ids:
-        if store.get_pending(item_id) is None:
-            continue
-        store.move_to_history(item_id, status="superseded", decision_at=_now())
-        count += 1
-    return count
-
-
-def _clear_history(store: LocalEditorialStore, ids: list[str], statuses: set[str]) -> int:
-    targets = set(ids)
-    before = store.history()
-    after = [row for row in before if not (str(row.get("id") or "") in targets and str(row.get("status") or "") in statuses)]
-    removed = len(before) - len(after)
-    if removed:
-        _atomic_write(store.history_path, after)
-    return removed
-
-
 def _clear_live(ids: list[str]) -> int:
     path = Path("data/panel_live_feed.json")
     targets = set(ids)
     before = _read_json(path, [])
     if not isinstance(before, list):
         before = []
+
     def identity(row: Any) -> str:
         if not isinstance(row, dict):
             return ""
         return str(row.get("item_id") or row.get("id") or row.get("news_key") or "")
+
     after = [row for row in before if identity(row) not in targets]
     removed = len(before) - len(after)
     if removed:
@@ -145,22 +132,17 @@ def _apply_clear(payload: dict[str, Any]) -> dict:
     command_id = payload["command_id"]
     scope = str(payload.get("scope") or "").strip()
     ids = _validated_ids(payload.get("ids"))
-    if scope not in {"live", "pending", "published", "rejected"}:
+    if scope != "live":
         raise ValueError("invalid_clear_scope")
-    store = LocalEditorialStore("data/editorial_queue.json", "data/editorial_history.json")
-    if scope == "live":
-        count = _clear_live(ids)
-        message = f"{count} خبر از فید زنده پاک شد"
-    elif scope == "pending":
-        count = _clear_pending(store, ids)
-        message = f"{count} خبر از صف انتظار پاک شد"
-    elif scope == "published":
-        count = _clear_history(store, ids, PUBLISHED_STATUSES)
-        message = f"{count} مورد از فهرست منتشرشده پاک شد"
-    else:
-        count = _clear_history(store, ids, REJECTED_STATUSES)
-        message = f"{count} مورد از فهرست ردشده پاک شد"
-    return _write_result(command_id, "clear", "succeeded", message, scope=scope, ids=ids)
+    count = _clear_live(ids)
+    return _write_result(
+        command_id,
+        "clear",
+        "succeeded",
+        f"{count} خبر فقط از فید پنل پاک شد؛ تلگرام دست‌نخورده ماند",
+        scope=scope,
+        ids=ids,
+    )
 
 
 def _normalise_settings(value: Any) -> dict[str, Any]:
@@ -171,7 +153,9 @@ def _normalise_settings(value: Any) -> dict[str, Any]:
     settings["version"] = int(settings.get("version") or 1)
     settings["freshness_hours"] = max(1, min(48, int(settings.get("freshness_hours") or 3)))
     settings["earthquake_min"] = max(0.0, min(10.0, float(settings.get("earthquake_min") or 2.0)))
-    settings["earthquake_breaking"] = max(settings["earthquake_min"], min(10.0, float(settings.get("earthquake_breaking") or 4.0)))
+    settings["earthquake_breaking"] = max(
+        settings["earthquake_min"], min(10.0, float(settings.get("earthquake_breaking") or 4.0))
+    )
     if settings.get("dedup_mode") not in {"strict", "balanced", "loose"}:
         settings["dedup_mode"] = "strict"
     if settings.get("notam_sensitivity") not in {"high", "normal", "critical"}:
@@ -179,6 +163,11 @@ def _normalise_settings(value: Any) -> dict[str, Any]:
     settings["emergency_lock"] = bool(settings.get("emergency_lock", False))
     settings["auto_publish"] = bool(settings.get("auto_publish", True))
     settings["quiet_mode"] = bool(settings.get("quiet_mode", False))
+    priority_terms = settings.get("priority_terms")
+    if not isinstance(priority_terms, list):
+        settings["priority_terms"] = []
+    else:
+        settings["priority_terms"] = [str(term).strip() for term in priority_terms if str(term).strip()][:20]
     for key in ("market", "alerts", "ui", "sources"):
         if not isinstance(settings.get(key), dict):
             settings[key] = {}
@@ -202,41 +191,49 @@ def _apply_module(payload: dict[str, Any]) -> dict:
     command_id = payload["command_id"]
     if action == "weather_preview":
         from .weather_digest import build_preview, save_preview
+
         preview = build_preview()
         save_preview(preview)
         _save_preview("weather", preview)
         return _write_result(command_id, action, "succeeded", "پیش‌نمایش هواشناسی به‌روز شد؛ چیزی منتشر نشد")
     if action == "air_traffic_preview":
         from .air_traffic import build_air_traffic_preview
+
         preview = build_air_traffic_preview()
         _save_preview("air_traffic", preview)
         return _write_result(command_id, action, "succeeded", "پیش‌نمایش ترافیک هوایی به‌روز شد؛ چیزی منتشر نشد")
     if action == "tanker_preview":
         from .panel_modules import build_hormuz_preview
+
         preview = build_hormuz_preview()
         _save_preview("tanker", preview)
         return _write_result(command_id, action, "succeeded", "پیش‌نمایش هرمز به‌روز شد؛ چیزی منتشر نشد")
     if action == "market_preview":
         from .panel_modules import build_market_preview
+
         preview = build_market_preview()
         _save_preview("market", preview)
         return _write_result(command_id, action, "succeeded", "پیش‌نمایش بازار به‌روز شد؛ چیزی منتشر نشد")
     if action == "weather_now":
         from .weather_digest import run as run_weather
+
         rc = int(run_weather(force=True) or 0)
         if rc != 0:
             raise RuntimeError(f"weather_failed_rc_{rc}")
         return _write_result(command_id, action, "succeeded", "هواشناسی همین حالا منتشر شد")
     if action == "air_traffic_now":
         from .air_traffic import publish_air_traffic_snapshot
+
         publish_air_traffic_snapshot()
         return _write_result(command_id, action, "succeeded", "نقشه ترافیک هوایی همین حالا منتشر شد")
     if action == "tanker_now":
         from .panel_modules import publish_hormuz_now
+
         publish_hormuz_now()
         return _write_result(command_id, action, "succeeded", "گزارش نفتکش‌ها و تنگه هرمز منتشر شد")
     if action == "market_now":
         from .panel_modules import publish_market_now
+
         publish_market_now()
         return _write_result(command_id, action, "succeeded", "گزارش بازار همین حالا منتشر شد")
     raise ValueError("unsupported_module_action")
@@ -271,7 +268,14 @@ def apply_command(path: str | Path) -> dict:
         _consume(command_path)
         return result
     except Exception as exc:
-        result = _write_result(payload["command_id"], action, "failed", str(exc), scope=str(payload.get("scope") or ""), ids=list(payload.get("ids") or []))
+        result = _write_result(
+            payload["command_id"],
+            action,
+            "failed",
+            str(exc),
+            scope=str(payload.get("scope") or ""),
+            ids=list(payload.get("ids") or []),
+        )
         _consume(command_path)
         return result
 
