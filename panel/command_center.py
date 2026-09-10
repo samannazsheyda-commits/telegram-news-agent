@@ -7,6 +7,8 @@ from uuid import uuid4
 
 from flask import Blueprint, current_app, jsonify, request, send_file, session
 
+from src.newsroom_priorities import DEFAULT_PRIORITY_RULES, normalize_priority_rules
+
 
 bp = Blueprint("command_center", __name__)
 
@@ -51,6 +53,10 @@ def _settings() -> tuple[dict, str | None]:
     value.setdefault("quiet_start", "00:00")
     value.setdefault("quiet_end", "07:00")
     value.setdefault("freshness_hours", 3)
+    try:
+        value["priority_rules"] = normalize_priority_rules(value.get("priority_rules"))
+    except ValueError:
+        value["priority_rules"] = list(DEFAULT_PRIORITY_RULES)
     return value, sha
 
 
@@ -100,15 +106,20 @@ def _public_settings(settings: dict) -> dict:
         freshness = max(1, min(48, int(settings.get("freshness_hours") or 3)))
     except (TypeError, ValueError):
         freshness = 3
+    try:
+        priorities = normalize_priority_rules(settings.get("priority_rules"))
+    except ValueError:
+        priorities = list(DEFAULT_PRIORITY_RULES)
     return {
         "quiet_mode": bool(settings.get("quiet_mode", False)),
         "quiet_start": str(settings.get("quiet_start") or "00:00"),
         "quiet_end": str(settings.get("quiet_end") or "07:00"),
         "freshness_hours": freshness,
+        "priority_rules": priorities,
     }
 
 
-def _age_state(value: str, active_seconds: int = 45) -> str:
+def _age_state(value: str, active_seconds: int = 20) -> str:
     if not value:
         return "unknown"
     try:
@@ -154,16 +165,44 @@ def _review_record_from_live(row: dict, item_id: str) -> dict:
     return record
 
 
-def _remove_live_ids(ids: list[str], *, mark_seen: bool = True) -> int:
+def _persist_dismissals(rows: list[dict]) -> None:
+    if not rows:
+        return
+    now = _now_iso()
+    additions: list[dict] = []
+    for row in rows:
+        item_id = _live_row_id(row)
+        source_url = str(row.get("source_url") or row.get("link") or "").strip()
+        if item_id:
+            additions.append({"item_id": item_id, "source_url": "", "dismissed_at": now})
+        if source_url:
+            additions.append({"item_id": "", "source_url": source_url, "dismissed_at": now})
+
+    def transform(current: list[dict]) -> list[dict]:
+        merged: dict[tuple[str, str], dict] = {}
+        for entry in [*additions, *current]:
+            key = (str(entry.get("item_id") or ""), str(entry.get("source_url") or ""))
+            if key != ("", "") and key not in merged:
+                merged[key] = entry
+        return list(merged.values())[:5000]
+
+    _write_list("data/panel_dismissed.json", transform, "panel: persist dismissed live news")
+
+
+def _remove_live_ids(ids: list[str], *, mark_seen: bool = True, dismiss: bool = True) -> int:
     targets = set(ids)
     before, _ = _data().read_json("data/panel_live_feed.json", [])
     rows = [dict(row) for row in before if isinstance(row, dict)] if isinstance(before, list) else []
     matched = [row for row in rows if _live_row_id(row) in targets]
+    if dismiss:
+        _persist_dismissals(matched)
     _write_list(
         "data/panel_live_feed.json",
         lambda current: [row for row in current if _live_row_id(row) not in targets],
         "panel: remove live feed items",
     )
+    for item_id in targets:
+        _remove_from_queue(item_id)
     if mark_seen:
         for row in matched:
             key = str(row.get("news_key") or "").strip()
@@ -210,7 +249,7 @@ def status():
         "emergency_lock": bool(settings.get("emergency_lock", False)),
         "live_count": len(live) if isinstance(live, list) else 0,
         "queue_count": len(queue) if isinstance(queue, list) else 0,
-        "poll_seconds": 5,
+        "poll_seconds": 2,
         "updated_at": settings.get("updated_at", ""),
         "modules": _module_public_state(),
         "settings": _public_settings(settings),
@@ -230,21 +269,25 @@ def command_result(command_id: str):
 
 @bp.get("/api/command-center/health")
 def health():
-    state, _ = _data().read_json("state.json", {})
+    state, _ = _data().read_json("data/runtime_health.json", {})
     state = state if isinstance(state, dict) else {}
-    last_cycle = str(state.get("last_cycle_at") or state.get("last_scan_at") or state.get("updated_at") or "")
-    last_publication = str(state.get("last_publication_at") or state.get("last_publish_at") or "")
-    last_error = str(state.get("last_error") or "")
+    last_cycle = str(state.get("last_cycle_at") or "")
     telegram_state = str(state.get("telegram_state") or "unknown")
-    if telegram_state not in {"ok", "error", "unknown"}:
+    if telegram_state not in {"ok", "error", "unknown", "configured"}:
         telegram_state = "unknown"
     return jsonify({
         "ok": True,
         "agent_state": _age_state(last_cycle),
         "last_cycle_at": last_cycle,
-        "last_publication_at": last_publication,
-        "last_error": last_error,
+        "last_publication_at": str(state.get("last_publication_at") or ""),
+        "last_error": str(state.get("last_error") or ""),
         "telegram_state": telegram_state,
+        "sources_ok": int(state.get("sources_ok") or 0),
+        "sources_failed": int(state.get("sources_failed") or 0),
+        "items_fetched": int(state.get("items_fetched") or 0),
+        "published": int(state.get("published") or 0),
+        "publish_failed": int(state.get("publish_failed") or 0),
+        "panel_feed_count": int(state.get("panel_feed_count") or 0),
     })
 
 
@@ -259,7 +302,8 @@ def module_preview(module_name: str):
     message = str(preview.get("message") or preview.get("text") or preview.get("caption") or "")
     public = dict(preview)
     if module_name == "air-traffic" and preview.get("image_path"):
-        public["image_url"] = "/api/command-center/module/air-traffic/preview/image"
+        stamp = re.sub(r"[^0-9]", "", str(preview.get("generated_at") or ""))[-14:]
+        public["image_url"] = f"/api/command-center/module/air-traffic/preview/image?v={stamp or 'fresh'}"
     return jsonify({"ok": True, "available": bool(message or preview), "message": message, **public})
 
 
@@ -314,6 +358,7 @@ def update_settings():
     payload = request.get_json(silent=True) or {}
     try:
         freshness = int(payload.get("freshness_hours"))
+        priorities = normalize_priority_rules(payload.get("priority_rules"))
     except (TypeError, ValueError):
         return jsonify({"ok": False, "error": "invalid_settings"}), 400
     quiet_start = str(payload.get("quiet_start") or "").strip()
@@ -327,6 +372,7 @@ def update_settings():
         settings["quiet_mode"] = quiet_mode
         settings["quiet_start"] = quiet_start
         settings["quiet_end"] = quiet_end
+        settings["priority_rules"] = priorities
         return settings
 
     settings = _write_settings(transform)
@@ -349,8 +395,8 @@ def clear_items():
     if not ids or len(ids) > 5000:
         return jsonify({"ok": False, "error": "invalid_clear_request"}), 400
     if scope == "live":
-        count = _remove_live_ids(ids, mark_seen=True)
-        return jsonify({"ok": True, "status": "succeeded", "count": count, "message": f"{count} خبر از ورودی زنده حذف شد"})
+        count = _remove_live_ids(ids, mark_seen=True, dismiss=True)
+        return jsonify({"ok": True, "status": "succeeded", "count": count, "message": f"{count} خبر حذف شد و در اسکن بعدی برنمی‌گردد"})
     command_id = _enqueue("clear", scope=scope, ids=ids)
     return jsonify({"ok": True, "command_id": command_id, "status": "queued", "count": len(ids)}), 202
 
@@ -383,7 +429,7 @@ def reject_live_item(item_id: str):
     record.update(status="rejected_manual", decision_at=now, updated_at=now)
     _upsert_history(record)
     _remove_from_queue(item_id)
-    _remove_live_ids([item_id], mark_seen=True)
+    _remove_live_ids([item_id], mark_seen=True, dismiss=True)
     return jsonify({"ok": True, "status": "rejected", "message": "خبر رد و از ورودی زنده حذف شد"})
 
 
