@@ -26,6 +26,7 @@ NEWS_GLOSSARY = (
     ("موفق سلتی", "موفق السلطی"),
     ("موفق صلتی", "موفق السلطی"),
     ("Muwaffaq Salti", "موفق السلطی"),
+    ("Saildrone Explorer", "سیل‌درون اکسپلورر"),
 )
 
 IDIOM_REPAIRS: tuple[tuple[str, tuple[str, ...], str], ...] = (
@@ -95,6 +96,18 @@ def _polish_fa(text: str) -> str:
 def _repair_news_idioms(source: str, translated: str) -> str:
     source_lower = (source or "").lower()
     value = translated
+    if "saildrone explorer" in source_lower:
+        value = value.replace("Saildrone Explorer", "سیل‌درون اکسپلورر")
+        value = re.sub(
+            r"(?:یک\s+فروند\s+)?هواپیمای(?:\s+شناسایی)?(?:\s+دریایی)?\s+(?:«)?سیل‌درون اکسپلورر(?:»)?",
+            "یک فروند شناور سطحی بدون سرنشین «سیل‌درون اکسپلورر»",
+            value,
+        )
+        value = re.sub(
+            r"(?:یک\s+فروند\s+)?هواپیما\s+(?:«)?سیل‌درون اکسپلورر(?:»)?",
+            "یک فروند شناور سطحی بدون سرنشین «سیل‌درون اکسپلورر»",
+            value,
+        )
     if "may not be a nuclear deal with iran" in source_lower and "ability to build bomb may be destroyed" in source_lower:
         return "یک مقام ارشد آمریکایی: ممکن است توافق هسته‌ای با ایران به‌زودی حاصل نشود، اما آمریکا می‌تواند توان ایران برای ساخت سلاح هسته‌ای را از بین ببرد"
     if source_lower == "the administration doubled down on its iran policy":
