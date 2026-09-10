@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from src.event_ledger import EventLedger
 from src.formatters import format_news
 from src.newsroom_decision import decide_item
 from src.newsroom_eligibility import evaluate_eligibility
@@ -9,13 +10,22 @@ from src.newsroom_normalize import normalize_item
 from src.sources import NewsItem
 
 
-def _raw(title: str, *, url: str, item_id: str, summary: str = "", source: str = "CENTCOM / X") -> RawNewsItem:
+def _raw(
+    title: str,
+    *,
+    url: str,
+    item_id: str,
+    summary: str = "",
+    source: str = "CENTCOM / X",
+    published_at: str = "2026-09-10T16:15:00+00:00",
+    fetched_at: str = "2026-09-10T16:16:00+00:00",
+) -> RawNewsItem:
     return RawNewsItem(
         source=source,
         source_url=url,
         source_item_id=item_id,
-        published_at="2026-09-10T16:15:00+00:00",
-        fetched_at="2026-09-10T16:16:00+00:00",
+        published_at=published_at,
+        fetched_at=fetched_at,
         title=title,
         summary=summary,
         source_priority="protected",
@@ -63,6 +73,39 @@ def test_minor_vessel_count_drift_is_duplicate_not_material_update():
     item = normalize_item(current)
     result = decide_item(item, build_fingerprint(item), [_published_event(prior)])
     assert result.decision == "duplicate_same_claim"
+
+
+def test_same_shipping_claim_from_new_source_is_candidate_across_time_bucket(tmp_path):
+    ledger = EventLedger(tmp_path / "ledger.json")
+    prior = _raw(
+        "CENTCOM says US forces redirected 96 commercial vessels near Iran and allowed 50 humanitarian ships to pass",
+        url="https://example.com/prior-window",
+        item_id="prior-window",
+        published_at="2026-09-10T15:35:00+00:00",
+        fetched_at="2026-09-10T15:36:00+00:00",
+    )
+    prior_item = normalize_item(prior)
+    prior_fp = build_fingerprint(prior_item)
+    ledger.create_event(
+        fingerprint=prior_fp,
+        canonical_title=prior.title,
+        primary_source=prior.source,
+        source_url=prior.source_url,
+        first_seen=prior.fetched_at,
+        key_facts=prior_fp.key_facts,
+        source_item_id=prior.source_item_id,
+    )
+
+    current = _raw(
+        "US forces redirected 96 commercial vessels near Iran while 50 humanitarian ships were allowed through",
+        url="https://example.com/new-window",
+        item_id="new-window",
+        source="Clash Report / Telegram",
+        published_at="2026-09-10T16:15:00+00:00",
+        fetched_at="2026-09-10T16:16:00+00:00",
+    )
+    current_fp = build_fingerprint(normalize_item(current))
+    assert ledger.find_candidates(current_fp)
 
 
 def test_question_mark_anywhere_in_headline_is_hard_filtered():
