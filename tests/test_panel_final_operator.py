@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -243,9 +242,10 @@ def test_live_feed_api_has_revision_and_stays_persian_first():
 def test_module_preview_ui_is_inline_toggle_and_non_publishing_refresh():
     html = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
     js = Path("panel/static/live.js").read_text(encoding="utf-8")
+    assert 'data-preview-toggle="{{ name }}"' in html
+    assert 'data-preview-panel="{{ name }}"' in html
     for name in ("weather", "air-traffic", "tanker", "market"):
-        assert f'data-preview-toggle="{name}"' in html
-        assert f'data-preview-panel="{name}"' in html
+        assert f"'{name}'" in html
     assert "panel.hidden = !opening" in js or "preview.hidden" in js
     assert "/preview" in js
     assert "پیش‌نمایش" in html
