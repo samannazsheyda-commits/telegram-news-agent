@@ -69,7 +69,7 @@ def install_vps_paths() -> None:
 
 def main() -> int:
     install_vps_paths()
-    poll_seconds = max(1, int(os.environ.get("POLL_SECONDS", "5")))
+    poll_seconds = max(1, int(os.environ.get("POLL_SECONDS", "2")))
     session_seconds = int(os.environ.get("SESSION_SECONDS", "0"))
     print(
         json.dumps(
