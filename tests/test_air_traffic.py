@@ -2,14 +2,17 @@ from datetime import datetime, timezone
 
 from PIL import Image
 
+import src.air_traffic as air_traffic
 from src.air_traffic import (
     CENTER_LAT,
     CENTER_LON,
     MAP_HEIGHT,
     MAP_WIDTH,
     MAP_ZOOM,
+    _fetch_center,
     _fetch_opensky_bbox,
     build_caption,
+    fetch_live_aircraft,
     filter_middle_east_aircraft,
     render_air_traffic_map,
     viewport_bounds,
@@ -18,7 +21,7 @@ from src.air_traffic import (
 
 def test_caption_is_only_title_and_tehran_timestamp():
     now = datetime(2026, 9, 6, 17, 30, tzinfo=timezone.utc)
-    assert build_caption(now) == "وضعیت ترافیک هوایی خاورمیانه\n⏰ ۱۵ شهریور ۱۴۰۵ — ۲۱:۰۰"
+    assert build_caption(now) == "وضعیت ترافیک هوایی ایران و منطقه\n⏰ ۱۵ شهریور ۱۴۰۵ — ۲۱:۰۰"
 
 
 def test_portrait_crop_matches_requested_region():
@@ -82,6 +85,71 @@ def test_opensky_fetch_uses_one_bbox_request_for_full_frame():
     assert url.endswith("/api/states/all")
     assert set(kwargs["params"]) == {"lamin", "lomin", "lamax", "lomax"}
     assert {row["hex"] for row in rows} == {"a1", "a2", "a3"}
+
+
+class _PointResponse:
+    def __init__(self, rows):
+        self._rows = rows
+
+    def raise_for_status(self):
+        return None
+
+    def json(self):
+        return {"ac": self._rows}
+
+
+class _PointSession:
+    def __init__(self):
+        self.calls = []
+
+    def get(self, url, **kwargs):
+        self.calls.append(url)
+        if "adsb.lol" in url:
+            return _PointResponse([
+                {"hex": "iran-a", "lat": 35.7, "lon": 51.4, "seen_pos": 1},
+                {"hex": "shared", "lat": 35.6, "lon": 51.3, "seen_pos": 8},
+            ])
+        return _PointResponse([
+            {"hex": "iran-b", "lat": 35.8, "lon": 51.5, "seen_pos": 2},
+            {"hex": "shared", "lat": 35.65, "lon": 51.35, "seen_pos": 1},
+        ])
+
+
+def test_point_center_merges_both_adsb_providers_and_prefers_fresher_duplicate():
+    session = _PointSession()
+    rows = _fetch_center(35.7, 51.4, session=session)
+    assert len(session.calls) == 2
+    assert {row["hex"] for row in rows} == {"iran-a", "iran-b", "shared"}
+    shared = next(row for row in rows if row["hex"] == "shared")
+    assert shared["seen_pos"] == 1
+    assert shared["lat"] == 35.65
+
+
+def test_fetch_live_aircraft_merges_opensky_and_point_coverage(monkeypatch):
+    monkeypatch.setattr(
+        air_traffic,
+        "_fetch_opensky_bbox",
+        lambda session=None: [
+            {"hex": "caspian", "lat": 45.0, "lon": 50.0, "seen_pos": 5},
+            {"hex": "shared", "lat": 32.0, "lon": 52.0, "seen_pos": 20},
+        ],
+    )
+    monkeypatch.setattr(
+        air_traffic,
+        "_fetch_point_fallback",
+        lambda session=None: [
+            {"hex": "iran", "lat": 35.7, "lon": 51.4, "seen_pos": 2},
+            {"hex": "gulf", "lat": 25.2, "lon": 55.3, "seen_pos": 3},
+            {"hex": "shared", "lat": 32.1, "lon": 52.1, "seen_pos": 1},
+        ],
+    )
+
+    rows = fetch_live_aircraft(session=object())
+
+    assert {row["hex"] for row in rows} == {"caspian", "iran", "gulf", "shared"}
+    shared = next(row for row in rows if row["hex"] == "shared")
+    assert shared["seen_pos"] == 1
+    assert shared["lat"] == 32.1
 
 
 def test_render_uses_yellow_airplane_symbols_instead_of_red_dots(tmp_path):
