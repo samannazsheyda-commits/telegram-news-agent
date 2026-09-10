@@ -12,6 +12,8 @@ from bs4 import BeautifulSoup
 USER_AGENT = "Mozilla/5.0 (compatible; TelegramNewsAgent/2.0)"
 PERSIAN_RE = re.compile(r"[\u0600-\u06FF]")
 LATIN_WORD_RE = re.compile(r"\b[A-Za-z]{3,}\b")
+HANDLE_RE = re.compile(r"(?<![\w@])@[A-Za-z0-9_]{2,64}\b")
+URL_RE = re.compile(r"https?://\S+", re.I)
 
 NEWS_GLOSSARY = (
     ("ایالات متحده", "آمریکا"),
@@ -51,9 +53,6 @@ IDIOM_REPAIRS: tuple[tuple[str, tuple[str, ...], str], ...] = (
     ("play down", ("کم بازی", "پایین بازی"), "کم‌اهمیت جلوه داد"),
 )
 
-# If a source contains one of these event concepts, the Persian translation
-# must preserve that concept. This prevents fluent-looking but materially wrong
-# machine translations from reaching Telegram.
 SEMANTIC_PRESERVATION_RULES: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
     (("missile", "ballistic", "cruise missile", "rocket"), ("موشک", "بالستیک", "کروز", "راکت")),
     (("explosion", "exploded", "blast", "detonation"), ("انفجار", "منفجر", "انفجاری")),
@@ -184,6 +183,12 @@ def _source_has_term(source_lower: str, term: str) -> bool:
     return term in source_lower
 
 
+def _quality_core(value: str) -> str:
+    text = URL_RE.sub(" ", str(value or ""))
+    text = HANDLE_RE.sub(" ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
 def translation_is_publishable(source: str, translated: str) -> bool:
     source_text = str(source or "").strip()
     value = _polish_fa(str(translated or "").strip())
@@ -191,31 +196,34 @@ def translation_is_publishable(source: str, translated: str) -> bool:
         return False
     if value.lower() == source_text.lower():
         return False
-    if re.search(r"@[A-Za-z0-9_]{2,}", value) or re.search(r"https?://", value, re.I):
+
+    source_core = _quality_core(source_text)
+    quality_value = _quality_core(value)
+    if not quality_value or not has_persian(quality_value):
         return False
 
-    latin_words = LATIN_WORD_RE.findall(value)
-    words = re.findall(r"[A-Za-z\u0600-\u06FF]+", value)
+    latin_words = LATIN_WORD_RE.findall(quality_value)
+    words = re.findall(r"[A-Za-z\u0600-\u06FF]+", quality_value)
     if words and len(latin_words) / len(words) > 0.20:
         return False
 
-    source_words = re.findall(r"[A-Za-z\u0600-\u06FF]+", source_text)
+    source_words = re.findall(r"[A-Za-z\u0600-\u06FF]+", source_core)
     if source_words and len(words) < max(2, int(len(source_words) * 0.30)):
         return False
     if source_words and len(words) > len(source_words) * 3 + 12:
         return False
 
-    source_numbers = _numbers(source_text)
-    translated_numbers = _numbers(value)
+    source_numbers = _numbers(source_core)
+    translated_numbers = _numbers(quality_value)
     if source_numbers and not source_numbers.issubset(translated_numbers):
         return False
 
-    source_lower = source_text.lower()
+    source_lower = source_core.lower()
     for source_terms, persian_terms in SEMANTIC_PRESERVATION_RULES:
         if any(_source_has_term(source_lower, term) for term in source_terms):
-            if not any(term in value for term in persian_terms):
+            if not any(term in quality_value for term in persian_terms):
                 return False
-    return len(re.sub(r"\W+", " ", value).strip()) >= 4
+    return len(re.sub(r"\W+", " ", quality_value).strip()) >= 4
 
 
 def _translation_quality_ok(source: str, translated: str) -> bool:
