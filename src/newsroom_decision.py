@@ -15,6 +15,7 @@ PROTECTED_SOURCES = {
     "state department",
     "u.s. treasury",
 }
+NUMERIC_FACT_RE = re.compile(r"^\d+(?:\.\d+)?$")
 
 
 def _stored_fingerprint(record: EventRecord) -> EventFingerprint | None:
@@ -80,6 +81,39 @@ def _claim_text_similarity(item: NormalizedNewsItem, record: EventRecord) -> flo
     return max(token_overlap, sequence)
 
 
+def _claim_shape_similarity(item: NormalizedNewsItem, record: EventRecord) -> float:
+    current = _normalized_claim_text(item.normalized_text or item.raw.title)
+    prior = _normalized_claim_text(record.canonical_title)
+    current = re.sub(r"\b\d+(?:\.\d+)?\b", "#", current)
+    prior = re.sub(r"\b\d+(?:\.\d+)?\b", "#", prior)
+    if not current or not prior:
+        return 0.0
+    return SequenceMatcher(None, current, prior).ratio()
+
+
+def _minor_numeric_drift(item: NormalizedNewsItem, fingerprint: EventFingerprint, record: EventRecord) -> bool:
+    current = set(fingerprint.key_facts)
+    existing = set(record.key_facts)
+    added = sorted(current - existing, key=lambda x: float(x) if NUMERIC_FACT_RE.match(x) else float("inf"))
+    removed = sorted(existing - current, key=lambda x: float(x) if NUMERIC_FACT_RE.match(x) else float("inf"))
+    if not added or len(added) != len(removed):
+        return False
+    if not all(NUMERIC_FACT_RE.match(value) for value in [*added, *removed]):
+        return False
+    if _claim_shape_similarity(item, record) < 0.90:
+        return False
+    for new_raw, old_raw in zip(added, removed):
+        new_value = float(new_raw)
+        old_value = float(old_raw)
+        delta = abs(new_value - old_value)
+        relative = delta / max(abs(old_value), 1.0)
+        # A tiny rolling counter change (for example 96 -> 97 vessels) is not
+        # a new story. Larger casualty/attack/count changes remain material.
+        if delta > 2 or relative > 0.05:
+            return False
+    return True
+
+
 def decide_item(
     item: NormalizedNewsItem,
     fingerprint: EventFingerprint,
@@ -112,11 +146,6 @@ def decide_item(
                 event_id="",
             )
 
-    # Sparse fingerprints can legitimately collide (for example two unrelated
-    # Iran diplomacy stories with no extracted action/object). Only treat an
-    # exact sparse hash as a duplicate when the claim text is also strongly
-    # similar. Structured breaking alerts still dedupe through the normal
-    # weighted fingerprint path below.
     for record in candidates:
         if record.fingerprint != fingerprint.key:
             continue
@@ -125,6 +154,14 @@ def decide_item(
             continue
         new_facts = _new_material_facts(fingerprint, record)
         if new_facts:
+            if _minor_numeric_drift(item, fingerprint, record):
+                return DecisionResult(
+                    decision="duplicate_same_claim",
+                    reason="same_claim_minor_numeric_drift",
+                    confidence=text_similarity,
+                    event_id=record.event_id,
+                    duplicate_of=record.event_id,
+                )
             return DecisionResult(
                 decision="material_update",
                 reason="exact_structural_claim_with_new_material_facts:" + ",".join(sorted(new_facts)),
@@ -156,6 +193,7 @@ def decide_item(
         )
 
     similarity, best = scored[0]
+    text_similarity = _claim_text_similarity(item, best)
 
     if similarity < 0.70:
         return DecisionResult(
@@ -167,6 +205,14 @@ def decide_item(
 
     new_facts = _new_material_facts(fingerprint, best)
     if new_facts:
+        if _minor_numeric_drift(item, fingerprint, best):
+            return DecisionResult(
+                decision="duplicate_same_claim",
+                reason="same_claim_minor_numeric_drift",
+                confidence=max(similarity, text_similarity),
+                event_id=best.event_id,
+                duplicate_of=best.event_id,
+            )
         return DecisionResult(
             decision="material_update",
             reason="new_material_facts:" + ",".join(sorted(new_facts)),
@@ -174,11 +220,14 @@ def decide_item(
             event_id=best.event_id,
         )
 
-    if similarity >= 0.82:
+    # Strict editor: a second source does not make the same event a new story.
+    # When both the structural event and wording overlap strongly, suppress it
+    # as the same claim even if the source URL/provider differs.
+    if similarity >= 0.78 or (similarity >= 0.70 and text_similarity >= 0.78):
         return DecisionResult(
             decision="duplicate_same_claim",
-            reason="same_structural_claim_without_new_material_facts",
-            confidence=similarity,
+            reason="cross_source_same_event_without_new_material_fact",
+            confidence=max(similarity, text_similarity),
             event_id=best.event_id,
             duplicate_of=best.event_id,
         )
