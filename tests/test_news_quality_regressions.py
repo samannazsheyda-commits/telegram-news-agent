@@ -75,6 +75,30 @@ def test_question_mark_anywhere_in_headline_is_hard_filtered():
     assert result.reason == "filtered_question_or_article"
 
 
+def test_article_style_inside_headline_is_hard_filtered():
+    raw = _raw(
+        "Inside Iran's naval strategy in the Strait of Hormuz",
+        url="https://example.com/inside-analysis",
+        item_id="inside-analysis",
+    )
+    result = evaluate_eligibility(normalize_item(raw), datetime.fromisoformat("2026-09-10T16:20:00+00:00"))
+    assert result.eligible is False
+    assert result.reason == "filtered_question_or_article"
+
+
+def test_final_formatter_refuses_question_headline_even_after_translation():
+    item = NewsItem(
+        "q",
+        "Reuters",
+        "Iran navy update",
+        "",
+        "https://example.com/q",
+        "Thu, 10 Sep 2026 16:15:00 GMT",
+    )
+    text = format_news(item, "آیا ایران مسیر کشتی‌ها را تغییر می‌دهد؟", "", marker_override="⚪️")
+    assert text == ""
+
+
 def test_final_news_has_relevant_flags_at_very_bottom():
     item = NewsItem(
         "k",
