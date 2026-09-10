@@ -137,7 +137,7 @@ def main() -> int:
     if args.monitor:
         return monitor(
             shadow=args.shadow,
-            poll_seconds=int(os.environ.get("POLL_SECONDS", "5")),
+            poll_seconds=int(os.environ.get("POLL_SECONDS", "2")),
             session_seconds=int(os.environ.get("SESSION_SECONDS", "0")),
         )
     print(json.dumps(run_cycle(shadow=args.shadow), ensure_ascii=False, sort_keys=True))
