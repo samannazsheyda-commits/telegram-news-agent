@@ -34,8 +34,8 @@
       </label>
       <div class="setting-field readonly-setting">
         <span>فاصله رصد ایجنت</span>
-        <strong>۵ ثانیه</strong>
-        <small>برای پایداری سرویس از این صفحه قابل تغییر نیست.</small>
+        <strong>۲ ثانیه</strong>
+        <small>برای سرعت و پایداری سرویس از این صفحه قابل تغییر نیست.</small>
       </div>
       <div class="settings-actions">
         <span id="settingsResult">در حال دریافت تنظیمات…</span>
