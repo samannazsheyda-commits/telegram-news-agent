@@ -5,11 +5,51 @@ import json
 import os
 import tempfile
 from dataclasses import replace
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
 from .newsroom_fingerprint import fingerprint_similarity
 from .newsroom_models import EventFingerprint, EventRecord
+
+
+KINETIC_ACTIONS = {"strike", "explosion", "intercept"}
+KINETIC_OBJECTS = {"missiles", "explosions"}
+
+
+def _parse_time(value: str) -> datetime | None:
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def _bucket_time(value: str) -> datetime | None:
+    raw = str(value or "").strip()
+    if not raw or raw == "unknown" or "T" not in raw:
+        return None
+    return _parse_time(raw)
+
+
+def _is_kinetic(fp: EventFingerprint) -> bool:
+    return bool(set(fp.actions) & KINETIC_ACTIONS or set(fp.objects) & KINETIC_OBJECTS)
+
+
+def _nearby_bucket(left: EventFingerprint, right: EventFingerprint) -> bool:
+    if left.time_bucket == right.time_bucket:
+        return True
+    a = _bucket_time(left.time_bucket)
+    b = _bucket_time(right.time_bucket)
+    if a is None or b is None:
+        return False
+    window = timedelta(minutes=75) if (_is_kinetic(left) or _is_kinetic(right)) else timedelta(hours=12)
+    return abs(a - b) <= window
 
 
 class EventLedger:
@@ -91,13 +131,20 @@ class EventLedger:
         matches: list[EventRecord] = []
         for record in self._read():
             stored = self._record_fingerprint(record)
-            if stored is not None and stored.time_bucket != fingerprint.time_bucket:
-                continue
             if record.fingerprint == fingerprint.key:
                 matches.append(record)
                 continue
-            if stored is not None and fingerprint_similarity(stored, fingerprint) >= min_similarity:
-                matches.append(record)
+            if stored is None:
+                continue
+            similarity = fingerprint_similarity(stored, fingerprint)
+            if similarity < min_similarity:
+                continue
+            # The old implementation only compared the exact 30-minute bucket,
+            # which let the same story re-enter from another source in the next
+            # bucket. Keep nearby buckets eligible for strict cross-source dedup.
+            if not _nearby_bucket(stored, fingerprint):
+                continue
+            matches.append(record)
         return matches
 
     @staticmethod
