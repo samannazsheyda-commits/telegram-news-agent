@@ -35,11 +35,14 @@ OPERATIONAL_OVERRIDE_TERMS = (
 ARTICLE_PREFIXES = (
     "analysis:", "analysis -", "opinion:", "opinion -", "explainer:", "explainer -",
     "commentary:", "commentary -", "factbox:", "factbox -", "viewpoint:", "viewpoint -",
+    "inside ", "live updates:", "live updates -", "timeline:", "timeline -", "profile:", "profile -",
+    "background:", "background -", "everything you need to know", "what we know", "what to know",
     "تحلیل:", "تحلیل -", "یادداشت:", "یادداشت -", "نظر:", "نظر -", "گزارش تحلیلی:",
+    "آنچه باید بدانید", "آنچه می‌دانیم", "خط زمانی:", "پروفایل:",
 )
 QUESTION_PREFIXES = (
     "why ", "how ", "what ", "when ", "where ", "who ", "could ", "would ", "should ",
-    "can ", "will ", "is ", "are ", "does ", "do ", "did ", "what we know", "what to know",
+    "can ", "will ", "is ", "are ", "does ", "do ", "did ",
     "چرا ", "چگونه ", "چطور ", "آیا ", "چه چیزی ", "چه می‌دانیم", "آنچه می‌دانیم",
 )
 TEASER_PATTERNS = (
@@ -101,7 +104,9 @@ def _question_or_article(title: str) -> bool:
     clean = re.sub(r"\s+", " ", str(title or "")).strip().lower()
     if not clean:
         return False
-    if clean.endswith("?") or clean.endswith("؟"):
+    # A question mark anywhere means this is a question/explainer-style headline,
+    # even when a factual clause follows it after the question.
+    if "?" in clean or "؟" in clean:
         return True
     if clean.startswith(ARTICLE_PREFIXES):
         return True
