@@ -29,6 +29,10 @@ NEWS_GLOSSARY = (
     ("موفق صلتی", "موفق السلطی"),
     ("Muwaffaq Salti", "موفق السلطی"),
     ("Saildrone Explorer", "سیل‌درون اکسپلورر"),
+    ("MBS", "محمد بن سلمان"),
+    ("ام. بی. اس", "محمد بن سلمان"),
+    ("ام.بی.اس", "محمد بن سلمان"),
+    ("ام بی اس", "محمد بن سلمان"),
     ("CENTCOM", "سنتکام"),
     ("IRGC", "سپاه پاسداران"),
     ("IDF", "ارتش اسرائیل"),
@@ -70,6 +74,21 @@ SEMANTIC_PRESERVATION_RULES: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...]
     (("uranium",), ("اورانیوم",)),
     (("enrichment", "enriched"), ("غنی‌سازی", "غنی سازی", "غنی‌شده", "غنی شده")),
     (("warship", "destroyer", "aircraft carrier"), ("ناو", "ناوشکن", "ناو هواپیمابر")),
+)
+
+# These are not style preferences; they are known machine-translation artifacts
+# that must never reach the public channel. If a source-aware repair did not
+# remove them, fail closed and let another translation backend try.
+MECHANICAL_TRANSLATION_FRAGMENTS = (
+    "نقطه خفه کننده",
+    "نقطه خفه‌کننده",
+    "نقطهٔ خفه کننده",
+    "نقطهٔ خفه‌کننده",
+    "داستان من در",
+    "اسکوپ:",
+    "ام. بی. اس",
+    "ام.بی.اس",
+    "ام بی اس",
 )
 
 _PERSIAN_TO_ASCII_DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
@@ -124,7 +143,17 @@ def _polish_fa(text: str) -> str:
 
 def _repair_news_idioms(source: str, translated: str) -> str:
     source_lower = (source or "").lower()
-    value = translated
+    value = _polish_fa(translated)
+
+    if "mbs" in source_lower or "mohammed bin salman" in source_lower or "mohammad bin salman" in source_lower:
+        value = re.sub(r"\bMBS\b", "محمد بن سلمان", value, flags=re.I)
+        value = re.sub(r"ام\s*[.٫]?\s*بی\s*[.٫]?\s*اس", "محمد بن سلمان", value)
+
+    if "chokepoint" in source_lower:
+        value = re.sub(r"نقطه(?:ٔ|‌)?\s*خفه[‌\s-]*کننده", "گلوگاه", value)
+        value = re.sub(r"گلوگاه\s+حیاتی\s+دریای\s+سرخ", "گلوگاه حیاتی دریای سرخ", value)
+        value = re.sub(r"گلوگاه\s+دریای\s+سرخ\s+حیاتی", "گلوگاه حیاتی دریای سرخ", value)
+
     if "saildrone explorer" in source_lower:
         value = value.replace("Saildrone Explorer", "سیل‌درون اکسپلورر")
         value = re.sub(
@@ -200,6 +229,8 @@ def translation_is_publishable(source: str, translated: str) -> bool:
     source_core = _quality_core(source_text)
     quality_value = _quality_core(value)
     if not quality_value or not has_persian(quality_value):
+        return False
+    if any(fragment in quality_value for fragment in MECHANICAL_TRANSLATION_FRAGMENTS):
         return False
 
     latin_words = LATIN_WORD_RE.findall(quality_value)
