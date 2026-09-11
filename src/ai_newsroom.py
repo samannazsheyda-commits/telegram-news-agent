@@ -10,7 +10,7 @@ import requests
 
 
 HF_CHAT_URL = "https://router.huggingface.co/v1/chat/completions"
-HF_FEATURE_URL = "https://router.huggingface.co/hf-inference/models/{model}/pipeline/feature-extraction"
+HF_FEATURE_URL = "https://router.huggingface.co/hf-inference/models/{model}"
 _ALLOWED_MODES = {"off", "optional", "required"}
 _ALLOWED_RELATIONS = {"duplicate_same_event", "material_update", "different_event"}
 _ALLOWED_PRIORITIES = {"critical", "high", "normal", "low"}
