@@ -226,3 +226,14 @@ def test_manual_github_sample_uses_same_real_renderer_not_browser_ui():
     assert "python -m src.air_traffic --publish" in workflow
     assert "globe.airplanes.live" not in workflow
     assert "--headless" not in workflow
+
+
+def test_vps_installer_explicitly_installs_persian_render_font():
+    installer = Path("deploy/install-vps.sh").read_text(encoding="utf-8")
+    assert "fonts-dejavu-core" in installer
+
+
+def test_vps_updater_repairs_missing_persian_render_font():
+    updater = Path("deploy/update-vps.sh").read_text(encoding="utf-8")
+    assert "fonts-dejavu-core" in updater
+    assert "DejaVuSans.ttf" in updater
