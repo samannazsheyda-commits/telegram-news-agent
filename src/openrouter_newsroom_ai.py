@@ -11,7 +11,7 @@ from .local_semantic_ai import LocalFirstNewsAI
 
 
 OPENROUTER_CHAT_URL = "https://openrouter.ai/api/v1/chat/completions"
-_DEFAULT_OPENROUTER_MODEL = "qwen/qwen3-235b-a22b-2507:free"
+_DEFAULT_OPENROUTER_MODEL = "qwen/qwen3-32b:free"
 _ALLOWED_MODES = {"off", "optional", "required"}
 
 
