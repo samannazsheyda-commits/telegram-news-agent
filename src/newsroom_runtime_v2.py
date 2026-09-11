@@ -10,6 +10,7 @@ from pathlib import Path
 from .ai_newsroom import AIConfig
 from .editorial_store import LocalEditorialStore
 from .event_ledger import EventLedger
+from .groq_newsroom_ai import GroqConfig, LocalFirstGroqNewsAI
 from .local_semantic_ai import LocalFirstNewsAI
 from .newsroom_raw_intake import build_raw_fetchers
 from .newsroom_v2 import run_cycle
@@ -33,23 +34,34 @@ def run_once(
     editorial = LocalEditorialStore(data_dir / "editorial_queue.json", data_dir / "editorial_history.json")
     fetchers = fetchers if fetchers is not None else build_raw_fetchers()
 
-    ai_config = AIConfig.from_env()
+    hf_config = AIConfig.from_env()
+    groq_config = GroqConfig.from_env()
+    ai_mode = groq_config.mode
     ai = None
-    if ai_config.mode != "off" and ai_config.token:
-        ai = LocalFirstNewsAI(ai_config)
+    ai_provider = "none"
+    if ai_mode != "off" and groq_config.api_key:
+        ai = LocalFirstGroqNewsAI(groq_config)
+        ai_provider = "groq"
+    elif hf_config.mode != "off" and hf_config.token:
+        # Backward-compatible emergency fallback. Production prefers Groq as soon
+        # as GROQ_API_KEY is present, so exhausted Hugging Face credits are not
+        # touched on the normal path.
+        ai = LocalFirstNewsAI(hf_config)
+        ai_mode = hf_config.mode
+        ai_provider = "huggingface"
 
     if publisher is None:
         publisher = StrictTelegramNewsroomPublisher(
             os.environ.get("TELEGRAM_BOT_TOKEN", ""),
             os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"),
             ai=ai,
-            ai_mode=ai_config.mode,
+            ai_mode=ai_mode,
         )
     effective_settings = {
         "auto_publish": True,
         "freshness_hours": int(os.environ.get("NEWSROOM_V2_PANEL_FRESHNESS_HOURS", "12")),
         "panel_max_records": int(os.environ.get("NEWSROOM_V2_PANEL_MAX_RECORDS", "500")),
-        "ai_newsroom_mode": ai_config.mode,
+        "ai_newsroom_mode": ai_mode,
     }
     if settings:
         effective_settings.update(settings)
@@ -67,8 +79,9 @@ def run_once(
     result = summary.__dict__.copy()
     result["mode"] = "shadow" if shadow else "production"
     result["telegram_writes"] = 0 if shadow else summary.published
-    result["ai_newsroom_mode"] = ai_config.mode
+    result["ai_newsroom_mode"] = ai_mode
     result["ai_available"] = bool(ai is not None and ai.available)
+    result["ai_provider"] = ai_provider
     return result
 
 
