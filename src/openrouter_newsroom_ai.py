@@ -11,7 +11,8 @@ from .local_semantic_ai import LocalFirstNewsAI
 
 
 OPENROUTER_CHAT_URL = "https://openrouter.ai/api/v1/chat/completions"
-_DEFAULT_OPENROUTER_MODEL = "qwen/qwen3-32b:free"
+_DEFAULT_OPENROUTER_MODEL = "google/gemma-4-26b-a4b-it:free"
+_DEFAULT_OPENROUTER_FALLBACK_MODEL = "openrouter/free"
 _ALLOWED_MODES = {"off", "optional", "required"}
 
 
@@ -20,6 +21,7 @@ class OpenRouterConfig:
     api_key: str = ""
     mode: str = "optional"
     model: str = _DEFAULT_OPENROUTER_MODEL
+    fallback_model: str = _DEFAULT_OPENROUTER_FALLBACK_MODEL
     event_memory_hours: int = 72
     duplicate_threshold: float = 0.87
     importance_threshold: int = 70
@@ -43,10 +45,15 @@ class OpenRouterConfig:
             os.environ.get("OPENROUTER_MODEL", _DEFAULT_OPENROUTER_MODEL)
             or _DEFAULT_OPENROUTER_MODEL
         ).strip()
+        fallback_model = str(
+            os.environ.get("OPENROUTER_FALLBACK_MODEL", _DEFAULT_OPENROUTER_FALLBACK_MODEL)
+            or _DEFAULT_OPENROUTER_FALLBACK_MODEL
+        ).strip()
         return cls(
             api_key=str(os.environ.get("OPENROUTER_API_KEY", "") or "").strip(),
             mode=mode,
             model=model,
+            fallback_model=fallback_model,
             editorial_model=model,
             persian_editor_model=model,
             translation_model=model,
@@ -76,7 +83,7 @@ def _env_float(name: str, default: float, minimum: float, maximum: float) -> flo
 
 
 class OpenRouterNewsAI(HuggingFaceNewsAI):
-    """OpenRouter-hosted Qwen provider using the strict newsroom contracts."""
+    """OpenRouter-hosted newsroom model using the strict shared contracts."""
 
     def __init__(self, config: OpenRouterConfig | None = None, *, session=requests):
         super().__init__(config or OpenRouterConfig.from_env(), session=session)
@@ -103,20 +110,49 @@ class OpenRouterNewsAI(HuggingFaceNewsAI):
                 raise AIServiceError("openrouter_" + message[3:]) from exc
             raise
 
+    def _chat_payload(self, *, model: str, system: str, user: str, max_tokens: int) -> dict[str, Any]:
+        return {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+            "temperature": 0,
+            "max_tokens": max_tokens,
+            "response_format": {"type": "json_object"},
+        }
+
     def _chat_json(self, *, model: str, system: str, user: str, max_tokens: int = 500) -> dict[str, Any]:
-        payload = self._post_json(
-            OPENROUTER_CHAT_URL,
-            {
-                "model": self.config.model,
-                "messages": [
-                    {"role": "system", "content": system},
-                    {"role": "user", "content": user},
-                ],
-                "temperature": 0,
-                "max_tokens": max_tokens,
-                "response_format": {"type": "json_object"},
-            },
-        )
+        primary_model = self.config.model
+        try:
+            payload = self._post_json(
+                OPENROUTER_CHAT_URL,
+                self._chat_payload(
+                    model=primary_model,
+                    system=system,
+                    user=user,
+                    max_tokens=max_tokens,
+                ),
+            )
+        except AIServiceError as exc:
+            message = str(exc)
+            fallback_model = str(getattr(self.config, "fallback_model", "") or "").strip()
+            if (
+                message.startswith("openrouter_http_404")
+                and fallback_model
+                and fallback_model != primary_model
+            ):
+                payload = self._post_json(
+                    OPENROUTER_CHAT_URL,
+                    self._chat_payload(
+                        model=fallback_model,
+                        system=system,
+                        user=user,
+                        max_tokens=max_tokens,
+                    ),
+                )
+            else:
+                raise
         try:
             content = payload["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
@@ -126,6 +162,6 @@ class OpenRouterNewsAI(HuggingFaceNewsAI):
 
 
 class LocalFirstOpenRouterNewsAI(LocalFirstNewsAI, OpenRouterNewsAI):
-    """Local semantic shortlisting plus OpenRouter Qwen editorial/language decisions."""
+    """Local semantic shortlisting plus OpenRouter editorial/language decisions."""
 
     pass
