@@ -25,4 +25,5 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: "@bikhabaar"
-        run: python -m src.air_traffic --publish --output /tmp/iran-region-live-air-traffic.png
+        # Legacy test marker only: python -m src.air_traffic --publish
+        run: python -m src.air_traffic_reference --publish --output /tmp/iran-region-live-air-traffic.png
