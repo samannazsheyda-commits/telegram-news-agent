@@ -12,6 +12,11 @@ from src.newsroom_publisher import TelegramNewsroomPublisher
 from src.sources import NewsItem
 
 
+class _OfflineTranslationSession:
+    def get(self, *args, **kwargs):
+        raise RuntimeError("offline regression test")
+
+
 def _raw(
     title: str,
     *,
@@ -212,6 +217,7 @@ def test_publisher_refuses_translation_that_loses_core_event_meaning():
     publisher = TelegramNewsroomPublisher(
         "token",
         "@bikhabaar",
+        session=_OfflineTranslationSession(),
         translator=lambda _text: "ایران درباره رویداد تازه‌ای گزارش داد",
     )
     assert publisher._message(normalize_item(raw)) == ""
@@ -228,6 +234,7 @@ def test_publisher_refuses_translation_that_drops_numeric_fact():
     publisher = TelegramNewsroomPublisher(
         "token",
         "@bikhabaar",
+        session=_OfflineTranslationSession(),
         translator=lambda _text: "ایران از شلیک موشک‌های بالستیک به سمت اسرائیل خبر داد",
     )
     assert publisher._message(normalize_item(raw)) == ""
