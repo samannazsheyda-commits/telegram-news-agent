@@ -65,8 +65,7 @@ def test_embed_texts_parses_hf_inference_vectors():
     vectors = ai.embed_texts(["alpha", "beta"])
     assert vectors == [[1.0, 0.0], [0.5, 0.5]]
     url, kwargs = session.calls[0]
-    assert "BAAI/bge-m3" in url
-    assert url.endswith("/pipeline/feature-extraction")
+    assert url == "https://router.huggingface.co/hf-inference/models/BAAI/bge-m3"
     assert kwargs["headers"]["Authorization"] == "Bearer hf_test"
     assert kwargs["json"]["inputs"] == ["alpha", "beta"]
 
@@ -142,7 +141,7 @@ def test_qwen_translation_is_fallback_without_madlad_endpoint():
 
 def test_persian_editor_requires_faithful_and_natural_flags():
     payload = {"choices": [{"message": {"content": json.dumps({
-        "text": "عربستان سعودی فرودگاه المخا را هدف حملات هوایی قرار داده است.",
+        "text": "عربستان سعودی فرودگاه المخا در یمن را هدف حملات هوایی قرار داده است.",
         "faithful": True,
         "natural": True,
         "reason": "",
