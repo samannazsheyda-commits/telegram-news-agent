@@ -24,6 +24,13 @@ if [[ ! -d "${APP_DIR}/.git" ]]; then
   exit 1
 fi
 
+# The air-traffic image embeds Persian text. Existing VPS installs may predate
+# this renderer, so repair the font dependency once if it is missing.
+if [[ ! -f /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf ]]; then
+  apt-get update
+  DEBIAN_FRONTEND=noninteractive apt-get install -y fonts-dejavu-core
+fi
+
 install -d -o bikhabar -g bikhabar -m 700 "${RUNTIME_ROOT}" "${RUNTIME_DATA}" "${COMMAND_DIR}"
 
 chown -R bikhabar:bikhabar "${APP_DIR}"
