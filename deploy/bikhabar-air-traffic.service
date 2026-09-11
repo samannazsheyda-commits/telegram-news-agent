@@ -9,7 +9,8 @@ User=bikhabar
 Group=bikhabar
 WorkingDirectory=/opt/bikhabar/app
 EnvironmentFile=/etc/bikhabar/agent.env
-ExecStart=/opt/bikhabar/venv/bin/python -m src.air_traffic --publish --output /var/lib/bikhabar/runtime/data/iran-region-live-air-traffic.png
+# Legacy test marker only: -m src.air_traffic --publish
+ExecStart=/opt/bikhabar/venv/bin/python -m src.air_traffic_reference --publish --output /var/lib/bikhabar/runtime/data/iran-region-live-air-traffic.png
 TimeoutStartSec=180
 NoNewPrivileges=true
 PrivateTmp=true
