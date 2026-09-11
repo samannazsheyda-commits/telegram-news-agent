@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import time
 from dataclasses import dataclass
 from typing import Any, Iterable
 
@@ -14,6 +15,7 @@ HF_FEATURE_URL = "https://router.huggingface.co/hf-inference/models/{model}"
 _ALLOWED_MODES = {"off", "optional", "required"}
 _ALLOWED_RELATIONS = {"duplicate_same_event", "material_update", "different_event"}
 _ALLOWED_PRIORITIES = {"critical", "high", "normal", "low"}
+_TRANSIENT_HTTP_STATUSES = {408, 425, 429, 500, 502, 503, 504}
 
 
 class AIServiceError(RuntimeError):
@@ -33,6 +35,8 @@ class AIConfig:
     duplicate_threshold: float = 0.87
     importance_threshold: int = 70
     timeout_seconds: int = 25
+    request_min_interval_ms: int = 500
+    request_max_retries: int = 4
 
     @classmethod
     def from_env(cls) -> "AIConfig":
@@ -60,6 +64,8 @@ class AIConfig:
             duplicate_threshold=_env_float("AI_DUPLICATE_THRESHOLD", 0.87, minimum=0.0, maximum=1.0),
             importance_threshold=_env_int("AI_IMPORTANCE_THRESHOLD", 70, minimum=0, maximum=100),
             timeout_seconds=_env_int("AI_NEWSROOM_TIMEOUT_SECONDS", 25, minimum=5, maximum=120),
+            request_min_interval_ms=_env_int("AI_REQUEST_MIN_INTERVAL_MS", 500, minimum=0, maximum=5000),
+            request_max_retries=_env_int("AI_REQUEST_MAX_RETRIES", 4, minimum=0, maximum=8),
         )
 
 
@@ -161,6 +167,7 @@ class HuggingFaceNewsAI:
         self.config = config or AIConfig.from_env()
         self.session = session
         self._embedding_cache: dict[str, list[float]] = {}
+        self._last_request_at = 0.0
 
     @property
     def available(self) -> bool:
@@ -175,20 +182,78 @@ class HuggingFaceNewsAI:
             "User-Agent": "BikhabarNewsroom/2.0",
         }
 
+    def _throttle(self) -> None:
+        minimum = max(0.0, float(self.config.request_min_interval_ms) / 1000.0)
+        if minimum <= 0:
+            return
+        elapsed = time.monotonic() - self._last_request_at
+        remaining = minimum - elapsed
+        if remaining > 0:
+            time.sleep(remaining)
+
+    @staticmethod
+    def _retry_after_seconds(response: Any, attempt: int) -> float:
+        headers = getattr(response, "headers", {}) or {}
+        raw = str(headers.get("Retry-After") or "").strip()
+        if raw:
+            try:
+                return max(0.0, min(30.0, float(raw)))
+            except ValueError:
+                pass
+        return min(8.0, 0.75 * (2 ** attempt))
+
+    @staticmethod
+    def _response_error_detail(response: Any) -> str:
+        text = str(getattr(response, "text", "") or "").replace("\n", " ").strip()
+        if not text:
+            return ""
+        return text[:180]
+
     def _post_json(self, url: str, payload: dict[str, Any], *, timeout: int | None = None) -> Any:
-        try:
-            response = self.session.post(
-                url,
-                headers=self._headers(),
-                json=payload,
-                timeout=timeout or self.config.timeout_seconds,
-            )
-            response.raise_for_status()
-            return response.json()
-        except AIServiceError:
-            raise
-        except Exception as exc:
-            raise AIServiceError(f"hf_request_failed:{type(exc).__name__}") from exc
+        retries = max(0, int(self.config.request_max_retries))
+        request_timeout = timeout or self.config.timeout_seconds
+        last_network_error: Exception | None = None
+
+        for attempt in range(retries + 1):
+            self._throttle()
+            try:
+                response = self.session.post(
+                    url,
+                    headers=self._headers(),
+                    json=payload,
+                    timeout=request_timeout,
+                )
+                self._last_request_at = time.monotonic()
+            except AIServiceError:
+                raise
+            except requests.RequestException as exc:
+                self._last_request_at = time.monotonic()
+                last_network_error = exc
+                if attempt < retries:
+                    time.sleep(min(8.0, 0.75 * (2 ** attempt)))
+                    continue
+                raise AIServiceError(f"hf_network_error:{type(exc).__name__}") from exc
+            except Exception as exc:
+                self._last_request_at = time.monotonic()
+                raise AIServiceError(f"hf_request_failed:{type(exc).__name__}") from exc
+
+            status = int(getattr(response, "status_code", 200) or 200)
+            if status >= 400:
+                detail = self._response_error_detail(response)
+                if status in _TRANSIENT_HTTP_STATUSES and attempt < retries:
+                    time.sleep(self._retry_after_seconds(response, attempt))
+                    continue
+                suffix = f":{detail}" if detail else ""
+                raise AIServiceError(f"hf_http_{status}{suffix}")
+
+            try:
+                return response.json()
+            except Exception as exc:
+                raise AIServiceError("hf_invalid_json_response") from exc
+
+        if last_network_error is not None:
+            raise AIServiceError(f"hf_network_error:{type(last_network_error).__name__}") from last_network_error
+        raise AIServiceError("hf_request_exhausted")
 
     def _chat_json(self, *, model: str, system: str, user: str, max_tokens: int = 500) -> dict[str, Any]:
         payload = self._post_json(

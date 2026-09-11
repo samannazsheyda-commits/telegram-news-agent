@@ -53,6 +53,12 @@ _HORMUZ_CRITICAL_ACTIONS = (
     "حمله", "توقیف", "غرق", "بسته شد", "مسدود", "محاصره",
 )
 _AI_MODES = {"off", "optional", "required"}
+_AI_FAILURE_RETRY_COOLDOWN = timedelta(minutes=5)
+_AI_RETRYABLE_REASONS = (
+    "ai_semantic_unavailable:",
+    "ai_editor_unavailable:",
+    "ai_required_unavailable",
+)
 
 
 @dataclass
@@ -271,6 +277,23 @@ def _ai_available(ai, mode: str) -> bool:
     return mode != "off" and ai is not None and bool(getattr(ai, "available", True))
 
 
+def _ai_retry_blocked(previous: LiveFeedRecord | None, now: datetime, *, ai_enabled: bool) -> bool:
+    if previous is None or previous.panel_status not in {"waiting", "failed"}:
+        return False
+    reason = str(previous.decision_reason or "")
+    retryable = any(reason.startswith(prefix) for prefix in _AI_RETRYABLE_REASONS)
+    if reason == "publish_failed" and ai_enabled:
+        retryable = True
+    if not retryable:
+        return False
+    updated = _parse_source_time(previous.updated_at)
+    if updated is None:
+        return False
+    now_utc = now.astimezone(timezone.utc)
+    age = now_utc - updated
+    return timedelta(0) <= age < _AI_FAILURE_RETRY_COOLDOWN
+
+
 def _story_text(item: NormalizedNewsItem) -> str:
     return re.sub(r"\s+", " ", f"{item.raw.title} {item.raw.summary}").strip()
 
@@ -353,6 +376,7 @@ def run_cycle(
     freshness_hours = int(settings.get("freshness_hours") or 2)
     ai_mode = _ai_mode(settings, ai)
     ai_enabled = _ai_available(ai, ai_mode)
+    existing_feed = {row.item_id: row for row in live_feed.records()}
 
     fresh_items: list[RawNewsItem] = []
     for raw in items:
@@ -366,6 +390,8 @@ def run_cycle(
 
     for raw in fresh_items:
         item = normalize_item(raw)
+        if _ai_retry_blocked(existing_feed.get(_item_id(item)), now, ai_enabled=ai_enabled):
+            continue
 
         exact_source_event = ledger.find_by_source_url(item.raw.source_url)
         if exact_source_event is not None and exact_source_event.published_message_ids:

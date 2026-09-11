@@ -8,7 +8,7 @@ from .ai_newsroom import AIConfig, HuggingFaceNewsAI
 
 
 _LOCAL_VECTOR_SIZE = 512
-_LOCAL_DUPLICATE_THRESHOLD = 0.20
+_LOCAL_DUPLICATE_THRESHOLD = 0.35
 _STOPWORDS = {
     "a", "an", "the", "of", "to", "in", "at", "on", "with", "and", "for", "from", "after", "by", "as",
     "its", "their", "says", "said", "forces", "aligned", "town",
@@ -62,9 +62,9 @@ class LocalFirstNewsAI(HuggingFaceNewsAI):
 
     def __init__(self, config: AIConfig | None = None, *, session=None):
         resolved = config or AIConfig.from_env()
-        # Local lexical/alias vectors use a lower candidate threshold than dense
-        # embeddings. This threshold only decides whether Qwen should compare the
-        # pair; it never makes the duplicate decision by itself.
+        # Local lexical/alias vectors need a lower candidate threshold than dense
+        # embeddings, but 0.35 is selective enough to avoid sending loosely
+        # related regional stories to Qwen for expensive relation checks.
         resolved = replace(
             resolved,
             duplicate_threshold=min(float(resolved.duplicate_threshold), _LOCAL_DUPLICATE_THRESHOLD),
