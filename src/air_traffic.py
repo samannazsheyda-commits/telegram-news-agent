@@ -340,6 +340,23 @@ def _load_font(size: int, *, bold: bool = False) -> ImageFont.FreeTypeFont:
     )
 
 
+def _fit_rtl_font(
+    draw: ImageDraw.ImageDraw,
+    text: str,
+    *,
+    max_width: int,
+    start_size: int,
+    min_size: int,
+    bold: bool = False,
+) -> ImageFont.FreeTypeFont:
+    for size in range(start_size, min_size - 1, -1):
+        font = _load_font(size, bold=bold)
+        bbox = draw.textbbox((0, 0), text, font=font, anchor="ra", direction="rtl", language="fa")
+        if bbox[2] - bbox[0] <= max_width:
+            return font
+    return _load_font(min_size, bold=bold)
+
+
 def _draw_rtl(
     draw: ImageDraw.ImageDraw,
     xy: tuple[int, int],
@@ -354,11 +371,11 @@ def _draw_rtl(
 
 def _draw_airplane_mark(draw: ImageDraw.ImageDraw) -> None:
     # Compact vector mark; no emoji/font dependency.
-    x, y = 78, MAP_HEIGHT + 120
+    x, y = 78, MAP_HEIGHT + 112
     points = [
-        (x, y - 48), (x + 14, y - 18), (x + 55, y - 4), (x + 55, y + 12),
-        (x + 13, y + 5), (x + 3, y + 48), (x - 11, y + 48), (x - 7, y + 5),
-        (x - 46, y + 20), (x - 55, y + 8), (x - 16, y - 14), (x - 12, y - 48),
+        (x, y - 43), (x + 13, y - 17), (x + 50, y - 4), (x + 50, y + 10),
+        (x + 12, y + 4), (x + 3, y + 43), (x - 10, y + 43), (x - 6, y + 4),
+        (x - 42, y + 18), (x - 50, y + 7), (x - 15, y - 13), (x - 11, y - 43),
     ]
     draw.polygon(points, fill="#0c3b6e")
 
@@ -369,39 +386,62 @@ def _append_information_strip(map_image: Image.Image, *, now: datetime | None = 
     draw = ImageDraw.Draw(image)
 
     draw.rectangle((0, MAP_HEIGHT, MAP_WIDTH, MAP_HEIGHT + 4), fill="#d6e4f0")
-    draw.line((154, MAP_HEIGHT + 34, 154, FINAL_HEIGHT - 36), fill="#c6d7e5", width=3)
+    draw.line((154, MAP_HEIGHT + 28, 154, FINAL_HEIGHT - 42), fill="#c6d7e5", width=3)
     _draw_airplane_mark(draw)
 
-    title_font = _load_font(44, bold=True)
-    meta_font = _load_font(28)
-    brand_font = _load_font(27, bold=True)
-    latin_font = _load_font(22)
-
     right = MAP_WIDTH - 46
+    text_left = 190
+    max_text_width = right - text_left
+    title_font = _fit_rtl_font(
+        draw,
+        TITLE_FA,
+        max_width=max_text_width,
+        start_size=40,
+        min_size=32,
+        bold=True,
+    )
+    meta_font = _fit_rtl_font(
+        draw,
+        _tehran_stamp(now),
+        max_width=max_text_width,
+        start_size=26,
+        min_size=21,
+    )
+    source_font = _load_font(21)
+    brand_font = _fit_rtl_font(
+        draw,
+        "بی‌خبر | مانیتور تحولات ایران",
+        max_width=max_text_width,
+        start_size=24,
+        min_size=20,
+        bold=True,
+    )
+
     _draw_rtl(
         draw,
-        (right, MAP_HEIGHT + 62),
+        (right, MAP_HEIGHT + 46),
         TITLE_FA,
         font=title_font,
         fill="#0b315d",
     )
     _draw_rtl(
         draw,
-        (right, MAP_HEIGHT + 126),
+        (right, MAP_HEIGHT + 104),
         _tehran_stamp(now),
         font=meta_font,
         fill="#304963",
     )
-    draw.text(
-        (190, MAP_HEIGHT + 180),
-        "LIVE DATA: OpenSky + ADS-B / Airplanes.live",
-        font=latin_font,
-        fill="#49657d",
-    )
-    draw.line((190, MAP_HEIGHT + 224, MAP_WIDTH - 46, MAP_HEIGHT + 224), fill="#d6e4f0", width=2)
     _draw_rtl(
         draw,
-        (right, MAP_HEIGHT + 255),
+        (right, MAP_HEIGHT + 157),
+        "داده زنده: OpenSky + ADS-B + Airplanes.live",
+        font=source_font,
+        fill="#49657d",
+    )
+    draw.line((text_left, MAP_HEIGHT + 201, right, MAP_HEIGHT + 201), fill="#d6e4f0", width=2)
+    _draw_rtl(
+        draw,
+        (right, MAP_HEIGHT + 220),
         "بی‌خبر | مانیتور تحولات ایران",
         font=brand_font,
         fill="#173f68",
