@@ -185,6 +185,14 @@ def test_render_is_bright_1080x1920_with_timestamp_strip_and_yellow_aircraft(tmp
     assert bright_footer > len(footer_pixels) * 0.55
     assert dark_ink > 500
 
+    # Text must not collide with the left divider or the physical bottom edge.
+    title_guard = image.crop((155, 1655, 178, 1735))
+    title_guard_dark = sum(1 for r, g, b in title_guard.getdata() if r < 90 and g < 110 and b < 140)
+    assert title_guard_dark == 0
+    bottom_guard = image.crop((150, 1908, 1080, 1920))
+    bottom_guard_dark = sum(1 for r, g, b in bottom_guard.getdata() if r < 90 and g < 110 and b < 140)
+    assert bottom_guard_dark == 0
+
 
 def test_publish_refuses_implausibly_sparse_snapshot(monkeypatch, tmp_path):
     rows = [
