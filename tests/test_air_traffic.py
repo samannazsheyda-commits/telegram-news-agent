@@ -214,3 +214,15 @@ def test_vps_air_traffic_service_publishes_instead_of_preview_only():
     service = Path("deploy/bikhabar-air-traffic.service").read_text(encoding="utf-8")
     assert "-m src.air_traffic --publish" in service
     assert "Temporary safety gate" not in service
+
+
+def test_vps_updater_restarts_timer_after_schedule_change():
+    updater = Path("deploy/update-vps.sh").read_text(encoding="utf-8")
+    assert "systemctl restart bikhabar-air-traffic.timer" in updater
+
+
+def test_manual_github_sample_uses_same_real_renderer_not_browser_ui():
+    workflow = Path(".github/workflows/air-traffic.yml").read_text(encoding="utf-8")
+    assert "python -m src.air_traffic --publish" in workflow
+    assert "globe.airplanes.live" not in workflow
+    assert "--headless" not in workflow
