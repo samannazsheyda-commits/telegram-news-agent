@@ -163,14 +163,14 @@ def test_semantic_same_event_from_different_source_is_suppressed(tmp_path):
 def test_semantic_material_update_is_not_collapsed(tmp_path):
     ledger, feed, editorial = _stores(tmp_path)
     prior = _raw(
-        "Houthis enter Dhubab in Yemen",
+        "Iran-backed Houthis enter Dhubab in Yemen",
         source="Reuters",
         url="https://reuters.example/dhubab",
         item_id="dhubab",
     )
     event = _seed_published(ledger, prior)
     current = _raw(
-        "Saudi airstrikes hit Mokha airport in Yemen after Houthi advance",
+        "Saudi airstrikes hit Mokha airport in Yemen after an Iran-backed Houthi advance",
         source="Associated Press",
         url="https://ap.example/mokha",
         item_id="mokha",
@@ -214,7 +214,7 @@ def test_senior_editor_low_importance_routes_to_review(tmp_path):
     summary, _ledger, _feed, editorial, publisher = _run(tmp_path, raw, FakeAI(publish=False, importance=25))
     assert publisher.items == []
     assert summary.review_items == 1
-    assert editorial.queue_items()
+    assert editorial.queue()
 
 
 def test_ai_outage_fails_closed_in_required_mode(tmp_path):
@@ -222,5 +222,5 @@ def test_ai_outage_fails_closed_in_required_mode(tmp_path):
     summary, _ledger, feed, editorial, publisher = _run(tmp_path, raw, FakeAI(fail=True))
     assert publisher.items == []
     assert summary.review_items == 1
-    assert editorial.queue_items()
+    assert editorial.queue()
     assert "ai_" in feed.records()[0].decision_reason
