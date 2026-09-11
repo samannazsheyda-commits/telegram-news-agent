@@ -111,6 +111,13 @@ def test_ai_editor_cannot_drop_core_attack_meaning():
     assert publisher._translate_resilient(source) == ""
 
 
+def test_ai_editor_cannot_replace_key_actor_or_country():
+    changed = "آمریکا فرودگاه المخا در یمن را هدف حملات هوایی قرار داده است؛ این حملات پس از پیشروی حوثی‌های مورد حمایت ایران انجام شد."
+    ai = FakeAI(draft=changed, edited=changed, faithful=True, natural=True)
+    publisher = StrictTelegramNewsroomPublisher("token", "@bikhabaar", ai=ai, ai_mode="required")
+    assert publisher._translate_resilient(SOURCE) == ""
+
+
 def test_ai_failure_in_required_mode_never_calls_telegram():
     session = NoNetworkSession()
     ai = FakeAI(fail=True)
