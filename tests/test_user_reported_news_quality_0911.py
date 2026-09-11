@@ -57,7 +57,9 @@ def test_routine_hormuz_diplomatic_call_is_not_auto_publishable():
     ))
     result = evaluate_eligibility(item, NOW)
     assert result.eligible is False
-    assert result.reason == "filtered_routine_diplomacy"
+    # Preserve the established public reason contract while making the routine
+    # diplomacy filter explicit internally.
+    assert result.reason == "outside_selected_topics"
 
 
 def test_hormuz_operational_change_remains_publishable():
