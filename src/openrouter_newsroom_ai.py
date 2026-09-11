@@ -29,7 +29,6 @@ class OpenRouterConfig:
     timeout_seconds: int = 25
     request_min_interval_ms: int = 500
     request_max_retries: int = 4
-    # Compatibility fields consumed by the shared newsroom prompt/contract code.
     token: str = ""
     embedding_model: str = "local"
     editorial_model: str = _DEFAULT_OPENROUTER_MODEL
@@ -42,14 +41,8 @@ class OpenRouterConfig:
         mode = str(os.environ.get("AI_NEWSROOM_MODE", "optional") or "optional").strip().lower()
         if mode not in _ALLOWED_MODES:
             mode = "optional"
-        model = str(
-            os.environ.get("OPENROUTER_MODEL", _DEFAULT_OPENROUTER_MODEL)
-            or _DEFAULT_OPENROUTER_MODEL
-        ).strip()
-        fallback_model = str(
-            os.environ.get("OPENROUTER_FALLBACK_MODEL", _DEFAULT_OPENROUTER_FALLBACK_MODEL)
-            or _DEFAULT_OPENROUTER_FALLBACK_MODEL
-        ).strip()
+        model = str(os.environ.get("OPENROUTER_MODEL", _DEFAULT_OPENROUTER_MODEL) or _DEFAULT_OPENROUTER_MODEL).strip()
+        fallback_model = str(os.environ.get("OPENROUTER_FALLBACK_MODEL", _DEFAULT_OPENROUTER_FALLBACK_MODEL) or _DEFAULT_OPENROUTER_FALLBACK_MODEL).strip()
         return cls(
             api_key=str(os.environ.get("OPENROUTER_API_KEY", "") or "").strip(),
             mode=mode,
@@ -88,12 +81,10 @@ def _decode_openrouter_content(content: Any) -> dict[str, Any]:
     value: Any = content
     for _ in range(5):
         if isinstance(value, dict):
-            # OpenAI-style content parts can be returned as {type: "text", text: "..."}.
             if "text" in value and isinstance(value.get("text"), str) and set(value).issubset({"type", "text"}):
                 value = value["text"]
                 continue
             return value
-
         if isinstance(value, list):
             if len(value) == 1:
                 value = value[0]
@@ -102,7 +93,6 @@ def _decode_openrouter_content(content: Any) -> dict[str, Any]:
                 value = "".join(item["text"] for item in value)
                 continue
             raise AIServiceError("invalid_ai_json_shape")
-
         if isinstance(value, str):
             text = value.strip()
             if text.startswith("```json") and text.endswith("```"):
@@ -114,9 +104,7 @@ def _decode_openrouter_content(content: Any) -> dict[str, Any]:
             except (json.JSONDecodeError, TypeError) as exc:
                 raise AIServiceError("invalid_ai_json") from exc
             continue
-
         raise AIServiceError("invalid_ai_json_shape")
-
     if isinstance(value, dict):
         return value
     raise AIServiceError("invalid_ai_json_shape")
@@ -167,29 +155,16 @@ class OpenRouterNewsAI(HuggingFaceNewsAI):
         try:
             payload = self._post_json(
                 OPENROUTER_CHAT_URL,
-                self._chat_payload(
-                    model=primary_model,
-                    system=system,
-                    user=user,
-                    max_tokens=max_tokens,
-                ),
+                self._chat_payload(model=primary_model, system=system, user=user, max_tokens=max_tokens),
             )
         except AIServiceError as exc:
             message = str(exc)
             fallback_model = str(getattr(self.config, "fallback_model", "") or "").strip()
-            if (
-                message.startswith("openrouter_http_404")
-                and fallback_model
-                and fallback_model != primary_model
-            ):
+            fallback_status = any(message.startswith(f"openrouter_http_{code}") for code in (404, 429, 503))
+            if fallback_status and fallback_model and fallback_model != primary_model:
                 payload = self._post_json(
                     OPENROUTER_CHAT_URL,
-                    self._chat_payload(
-                        model=fallback_model,
-                        system=system,
-                        user=user,
-                        max_tokens=max_tokens,
-                    ),
+                    self._chat_payload(model=fallback_model, system=system, user=user, max_tokens=max_tokens),
                 )
             else:
                 raise
