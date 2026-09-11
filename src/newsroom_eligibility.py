@@ -205,7 +205,7 @@ def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> Eligibility
 
     material_operation = _contains_any(text, MATERIAL_OPERATION_TERMS)
     if _contains_any(text, ROUTINE_DIPLOMACY_TERMS) and not material_operation:
-        return EligibilityResult(False, "filtered_routine_diplomacy", review=protected)
+        return EligibilityResult(False, "outside_selected_topics", review=True)
 
     if _contains_any(text, LOW_VALUE_COMMENTARY_TERMS) and not material_operation:
         return EligibilityResult(False, "filtered_low_value_commentary", review=protected)
