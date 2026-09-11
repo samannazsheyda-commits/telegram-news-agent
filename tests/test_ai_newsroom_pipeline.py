@@ -224,3 +224,35 @@ def test_ai_outage_fails_closed_in_required_mode(tmp_path):
     assert summary.review_items == 1
     assert editorial.queue()
     assert "ai_" in feed.records()[0].decision_reason
+
+
+def test_ai_failure_waiting_item_is_not_retried_every_poll(tmp_path):
+    raw = _raw("Iran launched ballistic missiles toward Israel")
+    ledger, feed, editorial = _stores(tmp_path)
+    publisher = Publisher()
+    ai = FakeAI(fail=True)
+    settings = {
+        "auto_publish": True,
+        "freshness_hours": 12,
+        "panel_max_records": 500,
+        "ai_newsroom_mode": "required",
+        "hourly_news_limit": 20,
+    }
+
+    first = run_cycle(lambda: [raw], ledger, feed, editorial, publisher, settings, NOW, ai=ai)
+    assert first.review_items == 1
+    assert len(ai.score_calls) == 1
+
+    second = run_cycle(
+        lambda: [raw],
+        ledger,
+        feed,
+        editorial,
+        publisher,
+        settings,
+        NOW + timedelta(seconds=2),
+        ai=ai,
+    )
+    assert second.published == 0
+    assert len(ai.score_calls) == 1
+    assert publisher.items == []
