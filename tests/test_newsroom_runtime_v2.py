@@ -45,6 +45,7 @@ def test_production_run_uses_verified_publisher(tmp_path):
 
 def test_runtime_prefers_groq_when_both_provider_keys_exist(tmp_path, monkeypatch):
     monkeypatch.setenv("AI_NEWSROOM_MODE", "required")
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setenv("GROQ_API_KEY", "gsk_test")
     monkeypatch.setenv("HF_TOKEN", "hf_exhausted")
     result = run_once(
@@ -56,4 +57,21 @@ def test_runtime_prefers_groq_when_both_provider_keys_exist(tmp_path, monkeypatc
     )
     assert result["ai_available"] is True
     assert result["ai_provider"] == "groq"
+    assert result["ai_newsroom_mode"] == "required"
+
+
+def test_runtime_prefers_openrouter_over_groq_and_hf(tmp_path, monkeypatch):
+    monkeypatch.setenv("AI_NEWSROOM_MODE", "required")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-test")
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_unreachable")
+    monkeypatch.setenv("HF_TOKEN", "hf_exhausted")
+    result = run_once(
+        shadow=True,
+        fetchers=[],
+        publisher=lambda item: {"ok": True, "message_id": 1},
+        data_dir=tmp_path,
+        now=datetime(2026, 9, 7, 21, 30, tzinfo=timezone.utc),
+    )
+    assert result["ai_available"] is True
+    assert result["ai_provider"] == "openrouter"
     assert result["ai_newsroom_mode"] == "required"

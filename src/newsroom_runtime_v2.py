@@ -14,6 +14,7 @@ from .groq_newsroom_ai import GroqConfig, LocalFirstGroqNewsAI
 from .local_semantic_ai import LocalFirstNewsAI
 from .newsroom_raw_intake import build_raw_fetchers
 from .newsroom_v2 import run_cycle
+from .openrouter_newsroom_ai import OpenRouterConfig, LocalFirstOpenRouterNewsAI
 from .panel_live_feed import LiveFeedStore
 from .strict_translation import StrictTelegramNewsroomPublisher
 
@@ -36,16 +37,20 @@ def run_once(
 
     hf_config = AIConfig.from_env()
     groq_config = GroqConfig.from_env()
-    ai_mode = groq_config.mode
+    openrouter_config = OpenRouterConfig.from_env()
+    ai_mode = openrouter_config.mode
     ai = None
     ai_provider = "none"
-    if ai_mode != "off" and groq_config.api_key:
+    if ai_mode != "off" and openrouter_config.api_key:
+        ai = LocalFirstOpenRouterNewsAI(openrouter_config)
+        ai_provider = "openrouter"
+    elif groq_config.mode != "off" and groq_config.api_key:
         ai = LocalFirstGroqNewsAI(groq_config)
+        ai_mode = groq_config.mode
         ai_provider = "groq"
     elif hf_config.mode != "off" and hf_config.token:
-        # Backward-compatible emergency fallback. Production prefers Groq as soon
-        # as GROQ_API_KEY is present, so exhausted Hugging Face credits are not
-        # touched on the normal path.
+        # Compatibility fallback only. Production prefers OpenRouter, then Groq,
+        # so exhausted Hugging Face credits are not touched on the normal path.
         ai = LocalFirstNewsAI(hf_config)
         ai_mode = hf_config.mode
         ai_provider = "huggingface"
