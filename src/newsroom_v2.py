@@ -58,7 +58,6 @@ _AI_RETRYABLE_REASONS = (
     "ai_semantic_unavailable:",
     "ai_editor_unavailable:",
     "ai_required_unavailable",
-    "publish_failed",
 )
 
 
@@ -278,11 +277,14 @@ def _ai_available(ai, mode: str) -> bool:
     return mode != "off" and ai is not None and bool(getattr(ai, "available", True))
 
 
-def _ai_retry_blocked(previous: LiveFeedRecord | None, now: datetime) -> bool:
+def _ai_retry_blocked(previous: LiveFeedRecord | None, now: datetime, *, ai_enabled: bool) -> bool:
     if previous is None or previous.panel_status not in {"waiting", "failed"}:
         return False
     reason = str(previous.decision_reason or "")
-    if not any(reason.startswith(prefix) for prefix in _AI_RETRYABLE_REASONS):
+    retryable = any(reason.startswith(prefix) for prefix in _AI_RETRYABLE_REASONS)
+    if reason == "publish_failed" and ai_enabled:
+        retryable = True
+    if not retryable:
         return False
     updated = _parse_source_time(previous.updated_at)
     if updated is None:
@@ -388,7 +390,7 @@ def run_cycle(
 
     for raw in fresh_items:
         item = normalize_item(raw)
-        if _ai_retry_blocked(existing_feed.get(_item_id(item)), now):
+        if _ai_retry_blocked(existing_feed.get(_item_id(item)), now, ai_enabled=ai_enabled):
             continue
 
         exact_source_event = ledger.find_by_source_url(item.raw.source_url)
