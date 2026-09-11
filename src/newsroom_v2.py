@@ -7,12 +7,13 @@ from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from typing import Callable
 
+from .ai_newsroom import AIServiceError, cosine_similarity
 from .editorial_store import LocalEditorialStore, ReviewItem
 from .event_ledger import EventLedger
 from .newsroom_decision import decide_item
 from .newsroom_eligibility import evaluate_eligibility
 from .newsroom_fingerprint import build_fingerprint
-from .newsroom_models import LiveFeedRecord, NormalizedNewsItem, RawNewsItem
+from .newsroom_models import EventRecord, LiveFeedRecord, NormalizedNewsItem, RawNewsItem
 from .newsroom_normalize import normalize_item
 from .panel_live_feed import LiveFeedStore
 
@@ -51,6 +52,7 @@ _HORMUZ_CRITICAL_ACTIONS = (
     "attack", "seized", "seizure", "sinking", "sank", "closed", "blockade", "blocked",
     "حمله", "توقیف", "غرق", "بسته شد", "مسدود", "محاصره",
 )
+_AI_MODES = {"off", "optional", "required"}
 
 
 @dataclass
@@ -258,6 +260,79 @@ def _merge_candidates(*groups):
     return merged
 
 
+def _ai_mode(settings: dict, ai) -> str:
+    raw = str(settings.get("ai_newsroom_mode") or "").strip().lower()
+    if not raw and ai is not None:
+        raw = str(getattr(getattr(ai, "config", None), "mode", "optional") or "optional").strip().lower()
+    return raw if raw in _AI_MODES else "optional"
+
+
+def _ai_available(ai, mode: str) -> bool:
+    return mode != "off" and ai is not None and bool(getattr(ai, "available", True))
+
+
+def _story_text(item: NormalizedNewsItem) -> str:
+    return re.sub(r"\s+", " ", f"{item.raw.title} {item.raw.summary}").strip()
+
+
+def _event_text(record: EventRecord) -> str:
+    facts = " ".join(str(value) for value in (record.key_facts or []) if str(value).strip())
+    return re.sub(r"\s+", " ", f"{record.canonical_title} {facts}").strip()
+
+
+def _semantic_relation(ai, ledger: EventLedger, item: NormalizedNewsItem, now: datetime):
+    """Return (closest event, relation decision, similarity) or all-None when no close event exists."""
+    hours = int(getattr(ai.config, "event_memory_hours", 72) or 72)
+    threshold = float(getattr(ai.config, "duplicate_threshold", 0.87) or 0.87)
+    recent = [
+        record for record in ledger.recent_records(now, hours=hours)
+        if record.published_message_ids and item.raw.source_url not in record.source_variants
+    ][:40]
+    if not recent:
+        return None, None, 0.0
+
+    new_text = _story_text(item)
+    prior_texts = [_event_text(record) for record in recent]
+    vectors = ai.embed_texts([new_text, *prior_texts])
+    if len(vectors) != len(recent) + 1:
+        raise AIServiceError("semantic_embedding_count_mismatch")
+    new_vector = vectors[0]
+    scored = [(cosine_similarity(new_vector, vector), record, text) for vector, record, text in zip(vectors[1:], recent, prior_texts)]
+    similarity, record, prior_text = max(scored, key=lambda row: row[0])
+    if similarity < threshold:
+        return None, None, similarity
+    relation = ai.judge_relation(new_text, prior_text)
+    return record, relation, similarity
+
+
+def _review_ai_failure(
+    *,
+    summary: CycleSummary,
+    editorial_store: LocalEditorialStore,
+    live_feed: LiveFeedStore,
+    item: NormalizedNewsItem,
+    event_id: str,
+    decision: str,
+    duplicate_of: str,
+    reason: str,
+    now: datetime,
+) -> None:
+    summary.review_items += 1
+    _queue_item(editorial_store, item, reason, now)
+    live_feed.upsert(
+        _feed_record(
+            item,
+            event_id=event_id,
+            decision=decision,
+            reason=reason,
+            duplicate_of=duplicate_of,
+            panel_status="waiting",
+            message_id=None,
+            now=now,
+        )
+    )
+
+
 def run_cycle(
     fetcher,
     ledger: EventLedger,
@@ -267,6 +342,7 @@ def run_cycle(
     settings: dict,
     now: datetime,
     shadow: bool = False,
+    ai=None,
 ) -> CycleSummary:
     if now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
@@ -275,6 +351,8 @@ def run_cycle(
     items, summary.sources_ok, summary.sources_failed = _collect(fetcher)
     summary.items_fetched = len(items)
     freshness_hours = int(settings.get("freshness_hours") or 2)
+    ai_mode = _ai_mode(settings, ai)
+    ai_enabled = _ai_available(ai, ai_mode)
 
     fresh_items: list[RawNewsItem] = []
     for raw in items:
@@ -341,8 +419,44 @@ def run_cycle(
                 live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of, panel_status="duplicate", message_id=None, now=now))
                 continue
 
+        semantic_event = None
+        semantic_relation = None
+        semantic_error = ""
+        if ai_enabled and not retry_unpublished_duplicate:
+            try:
+                semantic_event, semantic_relation, _similarity = _semantic_relation(ai, ledger, item, now)
+            except Exception as exc:
+                semantic_error = f"ai_semantic_unavailable:{type(exc).__name__}"
+                print(f"AI_SEMANTIC_FAILED source={item.raw.source!r} type={type(exc).__name__} error={exc}", flush=True)
+
+        if semantic_event is not None and semantic_relation is not None and semantic_relation.relation == "duplicate_same_event":
+            summary.same_claim_duplicates += 1
+            try:
+                ledger.add_variant(semantic_event.event_id, item.raw.source_url, now.isoformat())
+            except KeyError:
+                pass
+            live_feed.upsert(
+                _feed_record(
+                    item,
+                    event_id=semantic_event.event_id,
+                    decision="duplicate_semantic",
+                    reason=f"ai_duplicate_same_event:{semantic_relation.reason}",
+                    duplicate_of=semantic_event.event_id,
+                    panel_status="duplicate",
+                    message_id=None,
+                    now=now,
+                )
+            )
+            continue
+
+        semantic_material = semantic_event is not None and semantic_relation is not None and semantic_relation.relation == "material_update"
         if retry_unpublished_duplicate:
             event_id = decision.duplicate_of
+        elif semantic_material:
+            summary.material_updates += 1
+            event_id = semantic_event.event_id
+            ledger.update_material_facts(event_id, fingerprint.key_facts, now.isoformat())
+            ledger.add_variant(event_id, item.raw.source_url, now.isoformat())
         elif decision.decision == "material_update":
             summary.material_updates += 1
             event_id = decision.event_id
@@ -362,6 +476,9 @@ def run_cycle(
             if decision.decision == "new_event":
                 summary.new_events += 1
 
+        effective_decision = "material_update" if semantic_material else decision.decision
+        effective_duplicate = semantic_event.event_id if semantic_material else (decision.duplicate_of if retry_unpublished_duplicate else "")
+
         eligibility = evaluate_eligibility(item, now)
         if not eligibility.eligible:
             if eligibility.reason == "stale":
@@ -375,24 +492,86 @@ def run_cycle(
                 panel_status = "waiting"
             else:
                 panel_status = "rejected"
-            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=eligibility.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status=panel_status, message_id=None, now=now))
+            live_feed.upsert(_feed_record(item, event_id=event_id, decision=effective_decision, reason=eligibility.reason, duplicate_of=effective_duplicate, panel_status=panel_status, message_id=None, now=now))
             continue
+
+        if ai_mode == "required" and not ai_enabled:
+            _review_ai_failure(
+                summary=summary,
+                editorial_store=editorial_store,
+                live_feed=live_feed,
+                item=item,
+                event_id=event_id,
+                decision=effective_decision,
+                duplicate_of=effective_duplicate,
+                reason="ai_required_unavailable",
+                now=now,
+            )
+            continue
+
+        if semantic_error and ai_mode == "required":
+            _review_ai_failure(
+                summary=summary,
+                editorial_store=editorial_store,
+                live_feed=live_feed,
+                item=item,
+                event_id=event_id,
+                decision=effective_decision,
+                duplicate_of=effective_duplicate,
+                reason=semantic_error,
+                now=now,
+            )
+            continue
+
+        if ai_enabled:
+            try:
+                editorial = ai.score_story(_story_text(item))
+                threshold = int(getattr(ai.config, "importance_threshold", 70) or 70)
+                if editorial.publish is not True or editorial.importance < threshold:
+                    _review_ai_failure(
+                        summary=summary,
+                        editorial_store=editorial_store,
+                        live_feed=live_feed,
+                        item=item,
+                        event_id=event_id,
+                        decision=effective_decision,
+                        duplicate_of=effective_duplicate,
+                        reason=f"ai_editor_rejected:{editorial.topic}:{editorial.reason}",
+                        now=now,
+                    )
+                    continue
+            except Exception as exc:
+                reason = f"ai_editor_unavailable:{type(exc).__name__}"
+                print(f"AI_EDITOR_FAILED source={item.raw.source!r} type={type(exc).__name__} error={exc}", flush=True)
+                if ai_mode == "required":
+                    _review_ai_failure(
+                        summary=summary,
+                        editorial_store=editorial_store,
+                        live_feed=live_feed,
+                        item=item,
+                        event_id=event_id,
+                        decision=effective_decision,
+                        duplicate_of=effective_duplicate,
+                        reason=reason,
+                        now=now,
+                    )
+                    continue
 
         auto_publish = settings.get("auto_publish") is not False
         needs_review = decision.decision == "needs_editorial_review" or not auto_publish
         if needs_review:
             summary.review_items += 1
             _queue_item(editorial_store, item, decision.reason if decision.decision == "needs_editorial_review" else "auto_publish_off", now)
-            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="waiting", message_id=None, now=now))
+            live_feed.upsert(_feed_record(item, event_id=event_id, decision=effective_decision, reason=decision.reason, duplicate_of=effective_duplicate, panel_status="waiting", message_id=None, now=now))
             continue
 
         if shadow:
-            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="new", message_id=None, now=now))
+            live_feed.upsert(_feed_record(item, event_id=event_id, decision=effective_decision, reason=decision.reason, duplicate_of=effective_duplicate, panel_status="new", message_id=None, now=now))
             continue
 
         hourly_limit = _hourly_news_limit(settings)
         recent_publications = ledger.publication_count_since(now - timedelta(hours=1))
-        critical_unique = decision.decision == "new_event" and _critical_breaking_event(item)
+        critical_unique = effective_decision == "new_event" and _critical_breaking_event(item)
         if recent_publications >= hourly_limit and not critical_unique:
             summary.rate_limited += 1
             summary.review_items += 1
@@ -401,9 +580,9 @@ def run_cycle(
                 _feed_record(
                     item,
                     event_id=event_id,
-                    decision=decision.decision,
+                    decision=effective_decision,
                     reason="hourly_publish_limit",
-                    duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "",
+                    duplicate_of=effective_duplicate,
                     panel_status="waiting",
                     message_id=None,
                     now=now,
@@ -422,12 +601,12 @@ def run_cycle(
         if ok and message_id is not None:
             ledger.mark_published(event_id, message_id, fingerprint.key_facts, now.isoformat())
             summary.published += 1
-            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason=decision.reason, duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="auto_published", message_id=message_id, now=now))
+            live_feed.upsert(_feed_record(item, event_id=event_id, decision=effective_decision, reason=decision.reason, duplicate_of=effective_duplicate, panel_status="auto_published", message_id=message_id, now=now))
         else:
             summary.publish_failed += 1
             summary.review_items += 1
             _queue_item(editorial_store, item, "publish_failed", now)
-            live_feed.upsert(_feed_record(item, event_id=event_id, decision=decision.decision, reason="publish_failed", duplicate_of=decision.duplicate_of if retry_unpublished_duplicate else "", panel_status="failed", message_id=None, now=now))
+            live_feed.upsert(_feed_record(item, event_id=event_id, decision=effective_decision, reason="publish_failed", duplicate_of=effective_duplicate, panel_status="failed", message_id=None, now=now))
 
     max_records = int(settings.get("panel_max_records") or 500)
     live_feed.prune(now, freshness_hours=freshness_hours, max_records=max_records)
