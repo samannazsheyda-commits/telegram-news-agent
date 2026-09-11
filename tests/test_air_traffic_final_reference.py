@@ -1,4 +1,6 @@
-import src.air_traffic as air_traffic
+from pathlib import Path
+
+import src.air_traffic_reference as air_traffic
 
 
 def test_final_reference_crop_matches_latest_user_screenshot():
@@ -16,3 +18,10 @@ def test_final_reference_uses_bright_voyager_basemap_and_high_res_render():
     assert "/voyager/" in air_traffic.BASEMAP_URL
     assert air_traffic.RENDER_WIDTH > air_traffic.MAP_WIDTH
     assert air_traffic.RENDER_HEIGHT > air_traffic.MAP_HEIGHT
+
+
+def test_publish_workflow_and_vps_service_use_final_reference_renderer():
+    workflow = Path(".github/workflows/air-traffic.yml").read_text(encoding="utf-8")
+    service = Path("deploy/bikhabar-air-traffic.service").read_text(encoding="utf-8")
+    assert "python -m src.air_traffic_reference --publish" in workflow
+    assert "-m src.air_traffic_reference --publish" in service
