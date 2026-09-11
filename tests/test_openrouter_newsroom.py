@@ -33,17 +33,21 @@ class FakeSession:
         return self.responses.pop(0)
 
 
-def editorial_payload():
+def editorial_data():
     return {
-        "choices": [{"message": {"content": json.dumps({
-            "importance": 95,
-            "topic": "missile_attack",
-            "publish": True,
-            "reason": "active kinetic event",
-            "new_fact": True,
-            "priority_class": "critical",
-        })}}]
+        "importance": 95,
+        "topic": "missile_attack",
+        "publish": True,
+        "reason": "active kinetic event",
+        "new_fact": True,
+        "priority_class": "critical",
     }
+
+
+def editorial_payload(content=None):
+    if content is None:
+        content = json.dumps(editorial_data())
+    return {"choices": [{"message": {"content": content}}]}
 
 
 def test_config_reads_openrouter_credentials_and_stable_free_model(monkeypatch):
@@ -79,6 +83,40 @@ def test_openrouter_editor_uses_openai_endpoint_and_json_mode():
     assert kwargs["headers"]["X-Title"] == "Bikhabar Newsroom"
     assert kwargs["json"]["model"] == "google/gemma-4-26b-a4b-it:free"
     assert kwargs["json"]["response_format"] == {"type": "json_object"}
+
+
+def test_openrouter_accepts_double_encoded_json_content():
+    content = json.dumps(json.dumps(editorial_data()))
+    session = FakeSession([FakeResponse(editorial_payload(content))])
+    ai = OpenRouterNewsAI(
+        OpenRouterConfig(api_key="sk-or-v1-test", mode="required", request_min_interval_ms=0),
+        session=session,
+    )
+    decision = ai.score_story("Iran launched missiles toward Israel")
+    assert decision.publish is True
+    assert decision.priority_class == "critical"
+
+
+def test_openrouter_accepts_single_item_json_array_content():
+    content = json.dumps([editorial_data()])
+    session = FakeSession([FakeResponse(editorial_payload(content))])
+    ai = OpenRouterNewsAI(
+        OpenRouterConfig(api_key="sk-or-v1-test", mode="required", request_min_interval_ms=0),
+        session=session,
+    )
+    decision = ai.score_story("Iran launched missiles toward Israel")
+    assert decision.publish is True
+
+
+def test_openrouter_accepts_content_part_array():
+    content = [{"type": "text", "text": json.dumps(editorial_data())}]
+    session = FakeSession([FakeResponse(editorial_payload(content))])
+    ai = OpenRouterNewsAI(
+        OpenRouterConfig(api_key="sk-or-v1-test", mode="required", request_min_interval_ms=0),
+        session=session,
+    )
+    decision = ai.score_story("Iran launched missiles toward Israel")
+    assert decision.publish is True
 
 
 def test_openrouter_falls_back_to_free_router_when_primary_free_model_is_removed():
