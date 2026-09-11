@@ -29,7 +29,7 @@ RENDER_HEIGHT = 2004
 PLANE_SCALE = 1.82
 MIN_PUBLISH_AIRCRAFT = 8
 MAX_POSITION_AGE_SECONDS = 120
-BASEMAP_URL = "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
+BASEMAP_URL = "https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
 
 QUERY_RADIUS_NM = 250
 QUERY_CENTERS = (
@@ -298,7 +298,7 @@ def _append_information_strip(map_image: Image.Image, *, now: datetime) -> Image
     )
     draw.text(
         (left, MAP_HEIGHT + 202),
-        "Map: © OpenStreetMap contributors © CARTO",
+        "Map: © OpenStreetMap contributors, Tiles style by HOT",
         font=base._load_font(16),
         fill="#6b7f91",
     )
