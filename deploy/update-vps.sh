@@ -137,6 +137,8 @@ systemctl enable bikhabar-agent bikhabar-panel bikhabar-weather.timer bikhabar-a
 systemctl restart bikhabar-agent
 systemctl restart bikhabar-panel
 systemctl enable --now bikhabar-weather.timer bikhabar-air-traffic.timer >/dev/null
+# The timer unit may already be active; restart it so changed OnCalendar lines take effect immediately.
+systemctl restart bikhabar-air-traffic.timer
 sleep 6
 systemctl is-active --quiet bikhabar-agent
 systemctl is-active --quiet bikhabar-panel
