@@ -1,11 +1,15 @@
 [Unit]
-Description=Publish Bikhabar air traffic map twice daily
+Description=Publish Bikhabar live air traffic at 20:00, 00:00 and 02:00 Tehran
 
 [Timer]
-OnCalendar=*-*-* 08:30:00 UTC
+# Iran currently uses UTC+03:30 year-round.
+# 20:00 Tehran = 16:30 UTC; 00:00 = 20:30 UTC; 02:00 = 22:30 UTC.
+OnCalendar=*-*-* 16:30:00 UTC
 OnCalendar=*-*-* 20:30:00 UTC
+OnCalendar=*-*-* 22:30:00 UTC
 Persistent=true
-RandomizedDelaySec=30
+AccuracySec=1s
+RandomizedDelaySec=0
 Unit=bikhabar-air-traffic.service
 
 [Install]
