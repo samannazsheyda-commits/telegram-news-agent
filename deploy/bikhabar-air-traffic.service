@@ -1,5 +1,5 @@
 [Unit]
-Description=Build Bikhabar live Middle East air traffic preview
+Description=Publish Bikhabar live Iran-region air traffic snapshot
 After=network-online.target
 Wants=network-online.target
 
@@ -9,9 +9,7 @@ User=bikhabar
 Group=bikhabar
 WorkingDirectory=/opt/bikhabar/app
 EnvironmentFile=/etc/bikhabar/agent.env
-# Temporary safety gate: keep fetching/rendering live aircraft data for preview,
-# but do not auto-publish until the approved visual map is implemented.
-ExecStart=/opt/bikhabar/venv/bin/python -m src.air_traffic --output /var/lib/bikhabar/runtime/data/middle-east-air-traffic.png
+ExecStart=/opt/bikhabar/venv/bin/python -m src.air_traffic --publish --output /var/lib/bikhabar/runtime/data/iran-region-live-air-traffic.png
 TimeoutStartSec=180
 NoNewPrivileges=true
 PrivateTmp=true

@@ -17,7 +17,7 @@ if [[ "${EUID}" -ne 0 ]]; then
 fi
 
 apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y git ca-certificates curl util-linux python3 python3-pip
+DEBIAN_FRONTEND=noninteractive apt-get install -y git ca-certificates curl util-linux python3 python3-pip fonts-dejavu-core
 python3 -m pip install --upgrade uv
 
 if ! id bikhabar >/dev/null 2>&1; then

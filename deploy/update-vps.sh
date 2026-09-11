@@ -24,6 +24,13 @@ if [[ ! -d "${APP_DIR}/.git" ]]; then
   exit 1
 fi
 
+# The air-traffic image embeds Persian text. Existing VPS installs may predate
+# this renderer, so repair the font dependency once if it is missing.
+if [[ ! -f /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf ]]; then
+  apt-get update
+  DEBIAN_FRONTEND=noninteractive apt-get install -y fonts-dejavu-core
+fi
+
 install -d -o bikhabar -g bikhabar -m 700 "${RUNTIME_ROOT}" "${RUNTIME_DATA}" "${COMMAND_DIR}"
 
 chown -R bikhabar:bikhabar "${APP_DIR}"
@@ -137,6 +144,8 @@ systemctl enable bikhabar-agent bikhabar-panel bikhabar-weather.timer bikhabar-a
 systemctl restart bikhabar-agent
 systemctl restart bikhabar-panel
 systemctl enable --now bikhabar-weather.timer bikhabar-air-traffic.timer >/dev/null
+# The timer unit may already be active; restart it so changed OnCalendar lines take effect immediately.
+systemctl restart bikhabar-air-traffic.timer
 sleep 6
 systemctl is-active --quiet bikhabar-agent
 systemctl is-active --quiet bikhabar-panel

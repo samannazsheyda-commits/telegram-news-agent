@@ -103,9 +103,11 @@ def test_strict_translation_never_calls_mymemory_after_google_failures():
     assert all("mymemory" not in url for url in calls)
 
 
-def test_scheduled_air_traffic_job_does_not_publish_wrong_map_automatically():
+def test_scheduled_air_traffic_job_publishes_only_the_approved_validated_renderer():
     service = Path("deploy/bikhabar-air-traffic.service").read_text(encoding="utf-8")
-    assert "--publish" not in service
+    assert "-m src.air_traffic --publish" in service
+    assert "iran-region-live-air-traffic.png" in service
+    assert "Temporary safety gate" not in service
 
 
 def test_vps_updater_keeps_two_second_news_polling():
