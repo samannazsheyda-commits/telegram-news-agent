@@ -19,82 +19,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - name: Capture real live Airplanes.live map
-        shell: bash
-        run: |
-          set -euo pipefail
-          BROWSER="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          if [ -z "$BROWSER" ]; then
-            echo "No Chrome/Chromium browser found" >&2
-            exit 1
-          fi
-          MAP_URL='https://globe.airplanes.live/?lat=31.5&lon=52.5&zoom=5'
-          "$BROWSER" \
-            --headless=new \
-            --disable-gpu \
-            --disable-dev-shm-usage \
-            --no-sandbox \
-            --hide-scrollbars \
-            --window-size=1080,1920 \
-            --virtual-time-budget=18000 \
-            --run-all-compositor-stages-before-draw \
-            --screenshot=air-traffic-live.png \
-            "$MAP_URL"
-          test -s air-traffic-live.png
-          BYTES=$(stat -c%s air-traffic-live.png)
-          echo "Screenshot bytes: $BYTES"
-          if [ "$BYTES" -lt 50000 ]; then
-            echo "Screenshot too small; live map likely did not render" >&2
-            exit 1
-          fi
-
-      - name: Publish screenshot to Telegram
+      - name: Install renderer dependencies
+        run: pip install -r requirements.txt
+      - name: Build and publish the real live snapshot
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: "@bikhabaar"
-          MAP_URL: "https://globe.airplanes.live/?lat=31.5&lon=52.5&zoom=5"
-        run: |
-          python -m pip install --quiet requests jdatetime
-          python - <<'PY'
-          import html
-          import os
-          from datetime import datetime, timezone
-          from zoneinfo import ZoneInfo
-
-          import jdatetime
-          import requests
-
-          token = os.environ.get('TELEGRAM_BOT_TOKEN','').strip()
-          chat_id = os.environ.get('TELEGRAM_CHAT_ID','@bikhabaar').strip()
-          map_url = os.environ.get('MAP_URL','').strip()
-          if not token:
-              raise SystemExit('missing TELEGRAM_BOT_TOKEN')
-
-          now = datetime.now(timezone.utc).astimezone(ZoneInfo('Asia/Tehran'))
-          jd = jdatetime.date.fromgregorian(date=now.date())
-          weekdays = ['دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه','یکشنبه']
-          months = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند']
-          trans = str.maketrans('0123456789','۰۱۲۳۴۵۶۷۸۹')
-          stamp = f"{weekdays[now.weekday()]} {jd.day} {months[jd.month-1]} {jd.year} — {now:%H:%M:%S}".translate(trans)
-          caption = (
-              '✈️ <b>وضعیت لحظه‌ای ترافیک هوایی ایران و منطقه</b>\n\n'
-              f'⏰ {stamp}\n'
-              f'📌 <a href="{html.escape(map_url, quote=True)}">منبع زنده: ایرپلینز لایو</a>\n\n'
-              '📡 <a href="https://t.me/bikhabaar">بی‌خبر</a> ←\n'
-              'مانیتور تحولات ایران\n'
-              '#ترافیک_هوایی'
-          )
-          with open('air-traffic-live.png','rb') as fh:
-              response = requests.post(
-                  f'https://api.telegram.org/bot{token}/sendPhoto',
-                  data={'chat_id': chat_id, 'caption': caption, 'parse_mode':'HTML'},
-                  files={'photo': ('air-traffic-live.png', fh, 'image/png')},
-                  timeout=60,
-              )
-          response.raise_for_status()
-          payload = response.json()
-          if not payload.get('ok'):
-              raise RuntimeError(payload)
-          print('TELEGRAM_MESSAGE_ID', payload.get('result',{}).get('message_id'))
-          PY
+        run: python -m src.air_traffic --publish --output /tmp/iran-region-live-air-traffic.png
