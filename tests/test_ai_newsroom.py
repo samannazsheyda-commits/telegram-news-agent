@@ -11,10 +11,11 @@ from src.ai_newsroom import (
 
 
 class FakeResponse:
-    def __init__(self, payload, status_code=200):
+    def __init__(self, payload, status_code=200, headers=None):
         self._payload = payload
         self.status_code = status_code
         self.text = json.dumps(payload)
+        self.headers = dict(headers or {})
 
     def raise_for_status(self):
         if self.status_code >= 400:
@@ -50,6 +51,8 @@ def test_config_defaults_and_env(monkeypatch):
     assert cfg.importance_threshold == 70
     assert cfg.embedding_model == "BAAI/bge-m3"
     assert cfg.editorial_model.startswith("Qwen/Qwen3-4B-Instruct-2507")
+    assert cfg.request_min_interval_ms == 500
+    assert cfg.request_max_retries == 4
 
 
 def test_cosine_similarity_is_deterministic():
@@ -59,7 +62,7 @@ def test_cosine_similarity_is_deterministic():
 
 
 def test_embed_texts_parses_hf_inference_vectors():
-    cfg = AIConfig(token="hf_test")
+    cfg = AIConfig(token="hf_test", request_min_interval_ms=0)
     session = FakeSession([FakeResponse([[1.0, 0.0], [0.5, 0.5]])])
     ai = HuggingFaceNewsAI(cfg, session=session)
     vectors = ai.embed_texts(["alpha", "beta"])
@@ -85,7 +88,7 @@ def test_score_story_parses_json_only_chat_response():
             }
         }]
     }
-    ai = HuggingFaceNewsAI(AIConfig(token="hf_test"), session=FakeSession([FakeResponse(payload)]))
+    ai = HuggingFaceNewsAI(AIConfig(token="hf_test", request_min_interval_ms=0), session=FakeSession([FakeResponse(payload)]))
     decision = ai.score_story("Iran launched missiles toward Israel")
     assert decision.importance == 91
     assert decision.publish is True
@@ -93,9 +96,46 @@ def test_score_story_parses_json_only_chat_response():
     assert decision.priority_class == "critical"
 
 
+def test_transient_429_retries_then_succeeds(monkeypatch):
+    payload = {
+        "choices": [{"message": {"content": json.dumps({
+            "importance": 91,
+            "topic": "missile_attack",
+            "publish": True,
+            "reason": "active kinetic event",
+            "new_fact": True,
+            "priority_class": "critical",
+        })}}]
+    }
+    session = FakeSession([
+        FakeResponse({"error": "rate limited"}, status_code=429, headers={"Retry-After": "0"}),
+        FakeResponse(payload),
+    ])
+    monkeypatch.setattr("src.ai_newsroom.time.sleep", lambda _seconds: None)
+    ai = HuggingFaceNewsAI(
+        AIConfig(token="hf_test", request_min_interval_ms=0, request_max_retries=2),
+        session=session,
+    )
+    decision = ai.score_story("Iran launched missiles toward Israel")
+    assert decision.publish is True
+    assert len(session.calls) == 2
+
+
+def test_nontransient_http_error_exposes_status_and_does_not_retry(monkeypatch):
+    session = FakeSession([FakeResponse({"error": "payment required"}, status_code=402)])
+    monkeypatch.setattr("src.ai_newsroom.time.sleep", lambda _seconds: None)
+    ai = HuggingFaceNewsAI(
+        AIConfig(token="hf_test", request_min_interval_ms=0, request_max_retries=4),
+        session=session,
+    )
+    with pytest.raises(AIServiceError, match="hf_http_402"):
+        ai.score_story("Iran launched missiles toward Israel")
+    assert len(session.calls) == 1
+
+
 def test_score_story_rejects_malformed_json():
     payload = {"choices": [{"message": {"content": "not-json"}}]}
-    ai = HuggingFaceNewsAI(AIConfig(token="hf_test"), session=FakeSession([FakeResponse(payload)]))
+    ai = HuggingFaceNewsAI(AIConfig(token="hf_test", request_min_interval_ms=0), session=FakeSession([FakeResponse(payload)]))
     with pytest.raises(AIServiceError):
         ai.score_story("some story")
 
@@ -109,7 +149,7 @@ def test_relation_judge_contract():
             "reason": "same event from another source",
         })}}]
     }
-    ai = HuggingFaceNewsAI(AIConfig(token="hf_test"), session=FakeSession([FakeResponse(payload)]))
+    ai = HuggingFaceNewsAI(AIConfig(token="hf_test", request_min_interval_ms=0), session=FakeSession([FakeResponse(payload)]))
     result = ai.judge_relation("new paraphrase", "prior event")
     assert result.relation == "duplicate_same_event"
     assert result.confidence == pytest.approx(0.95)
@@ -117,7 +157,7 @@ def test_relation_judge_contract():
 
 
 def test_madlad_endpoint_is_preferred_when_configured():
-    cfg = AIConfig(token="hf_test", madlad_endpoint="https://madlad.example/infer")
+    cfg = AIConfig(token="hf_test", madlad_endpoint="https://madlad.example/infer", request_min_interval_ms=0)
     session = FakeSession([FakeResponse([{"generated_text": "ترجمه دقیق"}])])
     ai = HuggingFaceNewsAI(cfg, session=session)
     draft = ai.translate_to_fa("The airport was hit by airstrikes")
@@ -133,7 +173,7 @@ def test_qwen_translation_is_fallback_without_madlad_endpoint():
         "text": "فرودگاه هدف حملات هوایی قرار گرفت",
         "faithful": True,
     })}}]}
-    ai = HuggingFaceNewsAI(AIConfig(token="hf_test"), session=FakeSession([FakeResponse(payload)]))
+    ai = HuggingFaceNewsAI(AIConfig(token="hf_test", request_min_interval_ms=0), session=FakeSession([FakeResponse(payload)]))
     draft = ai.translate_to_fa("The airport was hit by airstrikes")
     assert draft.backend == "qwen_fallback"
     assert "فرودگاه" in draft.text
@@ -146,7 +186,7 @@ def test_persian_editor_requires_faithful_and_natural_flags():
         "natural": True,
         "reason": "",
     })}}]}
-    ai = HuggingFaceNewsAI(AIConfig(token="hf_test"), session=FakeSession([FakeResponse(payload)]))
+    ai = HuggingFaceNewsAI(AIConfig(token="hf_test", request_min_interval_ms=0), session=FakeSession([FakeResponse(payload)]))
     edit = ai.edit_persian(
         "Saudi airstrikes hit Mokha airport in Yemen.",
         "حملات هوایی عربستان فرودگاه موخا را زده است.",
