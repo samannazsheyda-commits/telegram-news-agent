@@ -13,9 +13,9 @@ def test_final_reference_crop_matches_latest_user_screenshot():
     assert 31.0 <= air_traffic.CENTER_LAT <= 32.0
 
 
-def test_final_reference_uses_bright_voyager_basemap_and_high_res_render():
-    assert "basemaps.cartocdn.com" in air_traffic.BASEMAP_URL
-    assert "/voyager/" in air_traffic.BASEMAP_URL
+def test_final_reference_uses_bright_keyless_basemap_and_high_res_render():
+    assert "tile.openstreetmap.fr/hot" in air_traffic.BASEMAP_URL
+    assert "{z}/{x}/{y}.png" in air_traffic.BASEMAP_URL
     assert air_traffic.RENDER_WIDTH > air_traffic.MAP_WIDTH
     assert air_traffic.RENDER_HEIGHT > air_traffic.MAP_HEIGHT
 
