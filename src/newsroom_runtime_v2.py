@@ -7,6 +7,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .ai_newsroom import AIConfig, HuggingFaceNewsAI
 from .editorial_store import LocalEditorialStore
 from .event_ledger import EventLedger
 from .newsroom_raw_intake import build_raw_fetchers
@@ -30,15 +31,24 @@ def run_once(
     feed = LiveFeedStore(data_dir / "panel_live_feed.json")
     editorial = LocalEditorialStore(data_dir / "editorial_queue.json", data_dir / "editorial_history.json")
     fetchers = fetchers if fetchers is not None else build_raw_fetchers()
+
+    ai_config = AIConfig.from_env()
+    ai = None
+    if ai_config.mode != "off" and ai_config.token:
+        ai = HuggingFaceNewsAI(ai_config)
+
     if publisher is None:
         publisher = StrictTelegramNewsroomPublisher(
             os.environ.get("TELEGRAM_BOT_TOKEN", ""),
             os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"),
+            ai=ai,
+            ai_mode=ai_config.mode,
         )
     effective_settings = {
         "auto_publish": True,
         "freshness_hours": int(os.environ.get("NEWSROOM_V2_PANEL_FRESHNESS_HOURS", "12")),
         "panel_max_records": int(os.environ.get("NEWSROOM_V2_PANEL_MAX_RECORDS", "500")),
+        "ai_newsroom_mode": ai_config.mode,
     }
     if settings:
         effective_settings.update(settings)
@@ -51,10 +61,13 @@ def run_once(
         effective_settings,
         now or datetime.now(timezone.utc),
         shadow=shadow,
+        ai=ai,
     )
     result = summary.__dict__.copy()
     result["mode"] = "shadow" if shadow else "production"
     result["telegram_writes"] = 0 if shadow else summary.published
+    result["ai_newsroom_mode"] = ai_config.mode
+    result["ai_available"] = bool(ai is not None and ai.available)
     return result
 
 

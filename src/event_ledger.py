@@ -109,6 +109,22 @@ class EventLedger:
     def records(self) -> list[EventRecord]:
         return self._read()
 
+    def recent_records(self, now: datetime, *, hours: int = 72) -> list[EventRecord]:
+        """Return ledger events updated inside the rolling newsroom memory window."""
+        if now.tzinfo is None:
+            now = now.replace(tzinfo=timezone.utc)
+        now_utc = now.astimezone(timezone.utc)
+        cutoff = now_utc - timedelta(hours=max(1, int(hours)))
+        future_grace = now_utc + timedelta(minutes=10)
+        recent: list[tuple[datetime, EventRecord]] = []
+        for record in self._read():
+            seen = _parse_time(record.last_updated) or _parse_time(record.first_seen)
+            if seen is None or seen < cutoff or seen > future_grace:
+                continue
+            recent.append((seen, record))
+        recent.sort(key=lambda pair: pair[0], reverse=True)
+        return [record for _, record in recent]
+
     def get(self, event_id: str) -> EventRecord | None:
         return next((record for record in self._read() if record.event_id == event_id), None)
 
