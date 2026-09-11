@@ -36,7 +36,6 @@ SELECTED_TOPIC_TERMS = (
     "نوتام", "لغو پرواز", "ممنوعیت پرواز",
     "nuclear", "uranium", "enrichment", "iaea", "atomic", "sanction", "sanctions", "هسته‌ای",
     "هسته ای", "اورانیوم", "غنی‌سازی", "آژانس بین‌المللی انرژی اتمی", "تحریم",
-    "trump", "white house", "pentagon", "centcom", "ترامپ", "کاخ سفید", "پنتاگون", "سنتکام",
 )
 COMPANY_TERMS = (
     "company", "corporate", "ceo", "earnings", "profit", "profits", "revenue", "sales", "shares",
@@ -48,6 +47,28 @@ OPERATIONAL_OVERRIDE_TERMS = (
     "restricted zone", "exclusion zone", "attack", "strike", "missile", "drone", "sanction", "tanker", "shipping", "war",
     "ازسرگیری پرواز", "از سرگیری پرواز", "حریم هوایی", "نوتام", "لغو پرواز", "منطقه محدود", "منطقه ممنوع",
     "تحریم", "حمله", "موشک", "پهپاد",
+)
+# Routine diplomatic traffic is useful for the editor/panel, but should not flood
+# the public channel merely because it mentions Hormuz or Iran. A concrete
+# operational change/action overrides this filter.
+ROUTINE_DIPLOMACY_TERMS = (
+    "spoke by phone", "phone call", "telephone call", "held a call", "called his counterpart",
+    "called her counterpart", "met with", "meeting with", "held talks", "talks with", "discussed with",
+    "consultations", "coordination", "coordinating", "diplomatic contact", "foreign minister",
+    "counterpart", "تماس تلفنی", "گفت‌وگو", "گفتگو", "دیدار", "ملاقات", "رایزنی", "هماهنگی",
+    "وزیر خارجه", "همتای",
+)
+MATERIAL_OPERATION_TERMS = (
+    "attack", "strike", "airstrike", "missile", "rocket", "drone", "explosion", "bombing", "intercept",
+    "seized", "seizure", "sinking", "sank", "closed", "closure", "blockade", "blocked", "reopened",
+    "airspace", "notam", "tanker attacked", "ship attacked", "vessel attacked", "sanction announced",
+    "حمله", "موشک", "راکت", "پهپاد", "انفجار", "بمباران", "رهگیری", "توقیف", "غرق", "بسته شد",
+    "انسداد", "محاصره", "بازگشایی", "حریم هوایی", "نوتام", "تحریم جدید",
+)
+LOW_VALUE_COMMENTARY_TERMS = (
+    "no regret", "no regrets", "not regretful", "does not regret", "doesn't regret", "would do it again",
+    "midterm election", "midterm elections", "political impact", "election impact",
+    "پشیمان نیست", "پشیمانی ندارد", "انتخابات میان‌دوره‌ای", "تأثیر انتخاباتی", "تاثیر انتخاباتی",
 )
 ARTICLE_PREFIXES = (
     "analysis:", "analysis -", "opinion:", "opinion -", "explainer:", "explainer -",
@@ -63,8 +84,8 @@ QUESTION_PREFIXES = (
     "چرا ", "چگونه ", "چطور ", "آیا ", "چه چیزی ", "چه می‌دانیم", "آنچه می‌دانیم",
 )
 TEASER_PATTERNS = (
-    "read more", "continue reading", "full story", "click here", "more at ", "more on ",
-    "ادامه مطلب", "ادامه خبر", "برای ادامه", "متن کامل", "بیشتر بخوانید",
+    "read more", "continue reading", "full story", "click here", "more at ", "more on ", "my story at",
+    "ادامه مطلب", "ادامه خبر", "برای ادامه", "متن کامل", "بیشتر بخوانید", "داستان من در",
 )
 AGGREGATOR_HOSTS = {
     "news.google.com", "www.news.google.com", "feedproxy.google.com", "google.com", "www.google.com",
@@ -181,6 +202,13 @@ def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> Eligibility
         if protected:
             return EligibilityResult(False, "needs_editorial_review", review=True)
         return EligibilityResult(False, "not_iran_relevant")
+
+    material_operation = _contains_any(text, MATERIAL_OPERATION_TERMS)
+    if _contains_any(text, ROUTINE_DIPLOMACY_TERMS) and not material_operation:
+        return EligibilityResult(False, "outside_selected_topics", review=True)
+
+    if _contains_any(text, LOW_VALUE_COMMENTARY_TERMS) and not material_operation:
+        return EligibilityResult(False, "filtered_low_value_commentary", review=protected)
 
     company_like = _contains_any(text, COMPANY_TERMS)
     operational = _contains_any(text, OPERATIONAL_OVERRIDE_TERMS)

@@ -6,7 +6,9 @@ from .newsroom_models import NormalizedNewsItem, RawNewsItem
 
 
 ACTOR_ALIASES = {
-    "Donald Trump": ("donald trump", "trump"),
+    "Donald Trump": ("donald trump", "president trump", "trump"),
+    "Mohammed bin Salman": ("mohammed bin salman", "mohammad bin salman", "crown prince mbs", " mbs ", "محمد بن سلمان"),
+    "Houthis": ("houthis", "houthi", "ansar allah", "ansarallah", "حوثی", "انصارالله"),
     "CENTCOM": ("centcom", "u.s. central command", "us central command"),
     "White House": ("white house",),
     "Mohsen Rezaei": ("mohsen rezaei", "محسن رضایی"),
@@ -16,6 +18,12 @@ ACTOR_ALIASES = {
 LOCATION_ALIASES = {
     "Strait of Hormuz": ("strait of hormuz", "هرمز", "تنگه هرمز"),
     "Iran": ("iran", "iranian", "ایران", "ایرانی"),
+    "Yemen": ("yemen", "yemeni", "یمن"),
+    "Dhubab": ("dhubab", "ذباب"),
+    "Red Sea": ("red sea", "دریای سرخ"),
+    "Saudi Arabia": ("saudi arabia", "saudi", "عربستان سعودی", "عربستان"),
+    "Oman": ("oman", "omani", "عمان"),
+    "South Korea": ("south korea", "south korean", "کره جنوبی"),
     "Spain": ("spain", "spanish", "اسپانیا"),
     "Jordan": ("jordan", "jordanian", "اردن"),
     "Qeshm": ("qeshm", "قشم"),
@@ -38,6 +46,10 @@ ACTION_PATTERNS = (
     ("reopen_airspace", r"\b(?:reopen|reopens|reopened)\b[^.]{0,40}\bairspace\b|بازگشایی حریم هوایی|حریم هوایی باز"),
     ("intercept", r"\bintercept(?:s|ed|ing)?\b|رهگیر|رهگیری"),
     ("redirect_vessels", r"\bredirect(?:s|ed|ing)?\b[^.]{0,60}\b(?:vessels?|ships?)\b|تغییر مسیر"),
+    ("no_regret", r"\b(?:no regrets?|does not regret|doesn't regret|not regretful|has no regret)\b|پشیمان نیست|پشیمانی ندارد"),
+    ("diplomatic_contact", r"\b(?:spoke by phone|phone call|called|calls|met with|meets with|meeting with|talks with|discussed with|conversation with)\b|تماس تلفنی|گفت.?وگو|دیدار|ملاقات"),
+    ("urge_action", r"\b(?:urge|urged|urges|press|pressed|presses|asked? .*? to|called on .*? to)\b|درخواست کرد|خواست تا|تحت فشار قرار داد"),
+    ("advance", r"\b(?:reach|reaches|reached|approach|approaches|approached|advance|advances|advanced|moved? (?:toward|towards|into))\b|پیشروی|نزدیک شد|رسید"),
     ("strike", r"\b(?:strike|strikes|struck|attack|attacks|attacked)\b|حمله"),
     ("explosion", r"\b(?:explosion|explosions|blast|blasts|detonation|detonations)\b|انفجار|انفجارها|انفجارهایی"),
 )
@@ -50,8 +62,9 @@ def _normalize_text(value: str) -> str:
 
 def _extract_aliases(text: str, aliases: dict[str, tuple[str, ...]]) -> list[str]:
     found: list[str] = []
+    padded = f" {text} "
     for canonical, values in aliases.items():
-        if any(alias in text for alias in values):
+        if any(alias in text or alias in padded for alias in values):
             found.append(canonical)
     return found
 
@@ -82,6 +95,10 @@ def _extract_objects(text: str) -> list[str]:
         objects.append("restricted zone")
     if any(term in text for term in ("explosion", "explosions", "blast", "blasts", "detonation", "انفجار")):
         objects.append("explosions")
+    if any(term in text for term in ("houthis", "houthi", "ansar allah", "ansarallah", "حوثی", "انصارالله")):
+        objects.append("houthi movement")
+    if ("war" in text or "جنگ" in text) and ("iran" in text or "ایران" in text):
+        objects.append("iran war")
     return objects
 
 
