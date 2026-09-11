@@ -48,11 +48,11 @@ def editorial_payload():
 
 def test_config_reads_openrouter_credentials_and_free_qwen_model(monkeypatch):
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-test")
-    monkeypatch.setenv("OPENROUTER_MODEL", "qwen/qwen3-235b-a22b-2507:free")
+    monkeypatch.delenv("OPENROUTER_MODEL", raising=False)
     monkeypatch.setenv("AI_NEWSROOM_MODE", "required")
     cfg = OpenRouterConfig.from_env()
     assert cfg.api_key == "sk-or-v1-test"
-    assert cfg.model == "qwen/qwen3-235b-a22b-2507:free"
+    assert cfg.model == "qwen/qwen3-32b:free"
     assert cfg.mode == "required"
 
 
@@ -60,10 +60,10 @@ def test_openrouter_editor_uses_openai_endpoint_and_json_mode():
     session = FakeSession([FakeResponse(editorial_payload())])
     cfg = OpenRouterConfig(
         api_key="sk-or-v1-test",
-        model="qwen/qwen3-235b-a22b-2507:free",
-        editorial_model="qwen/qwen3-235b-a22b-2507:free",
-        persian_editor_model="qwen/qwen3-235b-a22b-2507:free",
-        translation_model="qwen/qwen3-235b-a22b-2507:free",
+        model="qwen/qwen3-32b:free",
+        editorial_model="qwen/qwen3-32b:free",
+        persian_editor_model="qwen/qwen3-32b:free",
+        translation_model="qwen/qwen3-32b:free",
         mode="required",
         request_min_interval_ms=0,
     )
@@ -74,7 +74,7 @@ def test_openrouter_editor_uses_openai_endpoint_and_json_mode():
     assert url == "https://openrouter.ai/api/v1/chat/completions"
     assert kwargs["headers"]["Authorization"] == "Bearer sk-or-v1-test"
     assert kwargs["headers"]["X-Title"] == "Bikhabar Newsroom"
-    assert kwargs["json"]["model"] == "qwen/qwen3-235b-a22b-2507:free"
+    assert kwargs["json"]["model"] == "qwen/qwen3-32b:free"
     assert kwargs["json"]["response_format"] == {"type": "json_object"}
 
 
