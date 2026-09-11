@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from dataclasses import dataclass
 from typing import Any
@@ -82,6 +83,45 @@ def _env_float(name: str, default: float, minimum: float, maximum: float) -> flo
     return max(minimum, min(maximum, value))
 
 
+def _decode_openrouter_content(content: Any) -> dict[str, Any]:
+    """Normalize valid structured OpenRouter content without weakening the final dict contract."""
+    value: Any = content
+    for _ in range(5):
+        if isinstance(value, dict):
+            # OpenAI-style content parts can be returned as {type: "text", text: "..."}.
+            if "text" in value and isinstance(value.get("text"), str) and set(value).issubset({"type", "text"}):
+                value = value["text"]
+                continue
+            return value
+
+        if isinstance(value, list):
+            if len(value) == 1:
+                value = value[0]
+                continue
+            if value and all(isinstance(item, dict) and isinstance(item.get("text"), str) for item in value):
+                value = "".join(item["text"] for item in value)
+                continue
+            raise AIServiceError("invalid_ai_json_shape")
+
+        if isinstance(value, str):
+            text = value.strip()
+            if text.startswith("```json") and text.endswith("```"):
+                text = text[7:-3].strip()
+            elif text.startswith("```") and text.endswith("```"):
+                text = text[3:-3].strip()
+            try:
+                value = json.loads(text)
+            except (json.JSONDecodeError, TypeError) as exc:
+                raise AIServiceError("invalid_ai_json") from exc
+            continue
+
+        raise AIServiceError("invalid_ai_json_shape")
+
+    if isinstance(value, dict):
+        return value
+    raise AIServiceError("invalid_ai_json_shape")
+
+
 class OpenRouterNewsAI(HuggingFaceNewsAI):
     """OpenRouter-hosted newsroom model using the strict shared contracts."""
 
@@ -157,8 +197,7 @@ class OpenRouterNewsAI(HuggingFaceNewsAI):
             content = payload["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
             raise AIServiceError("invalid_openrouter_chat_response") from exc
-        from .ai_newsroom import _clean_json_content
-        return _clean_json_content(content)
+        return _decode_openrouter_content(content)
 
 
 class LocalFirstOpenRouterNewsAI(LocalFirstNewsAI, OpenRouterNewsAI):
