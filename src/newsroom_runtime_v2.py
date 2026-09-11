@@ -7,9 +7,10 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .ai_newsroom import AIConfig, HuggingFaceNewsAI
+from .ai_newsroom import AIConfig
 from .editorial_store import LocalEditorialStore
 from .event_ledger import EventLedger
+from .local_semantic_ai import LocalFirstNewsAI
 from .newsroom_raw_intake import build_raw_fetchers
 from .newsroom_v2 import run_cycle
 from .panel_live_feed import LiveFeedStore
@@ -35,7 +36,7 @@ def run_once(
     ai_config = AIConfig.from_env()
     ai = None
     if ai_config.mode != "off" and ai_config.token:
-        ai = HuggingFaceNewsAI(ai_config)
+        ai = LocalFirstNewsAI(ai_config)
 
     if publisher is None:
         publisher = StrictTelegramNewsroomPublisher(
