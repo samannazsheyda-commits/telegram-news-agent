@@ -2,8 +2,8 @@ import json
 
 import pytest
 
-from src.ai_newsroom import AIConfig, AIServiceError
-from src.groq_newsroom_ai import GroqNewsAI, LocalFirstGroqNewsAI
+from src.ai_newsroom import AIServiceError
+from src.groq_newsroom_ai import GroqConfig, GroqNewsAI, LocalFirstGroqNewsAI
 
 
 class FakeResponse:
@@ -46,17 +46,20 @@ def test_config_reads_groq_credentials_and_qwen36_model(monkeypatch):
     monkeypatch.setenv("GROQ_API_KEY", "gsk_test")
     monkeypatch.setenv("GROQ_MODEL", "qwen/qwen3.6-27b")
     monkeypatch.setenv("AI_NEWSROOM_MODE", "required")
-    cfg = AIConfig.from_env()
-    assert cfg.groq_api_key == "gsk_test"
-    assert cfg.groq_model == "qwen/qwen3.6-27b"
+    cfg = GroqConfig.from_env()
+    assert cfg.api_key == "gsk_test"
+    assert cfg.model == "qwen/qwen3.6-27b"
     assert cfg.mode == "required"
 
 
 def test_groq_editor_uses_openai_compatible_endpoint_and_json_mode():
     session = FakeSession([FakeResponse(editorial_payload())])
-    cfg = AIConfig(
-        groq_api_key="gsk_test",
-        groq_model="qwen/qwen3.6-27b",
+    cfg = GroqConfig(
+        api_key="gsk_test",
+        model="qwen/qwen3.6-27b",
+        editorial_model="qwen/qwen3.6-27b",
+        persian_editor_model="qwen/qwen3.6-27b",
+        translation_model="qwen/qwen3.6-27b",
         mode="required",
         request_min_interval_ms=0,
     )
@@ -68,11 +71,12 @@ def test_groq_editor_uses_openai_compatible_endpoint_and_json_mode():
     assert kwargs["headers"]["Authorization"] == "Bearer gsk_test"
     assert kwargs["json"]["model"] == "qwen/qwen3.6-27b"
     assert kwargs["json"]["response_format"] == {"type": "json_object"}
+    assert kwargs["json"]["reasoning_format"] == "hidden"
 
 
 def test_local_first_groq_never_calls_remote_embedding_endpoint():
     ai = LocalFirstGroqNewsAI(
-        AIConfig(groq_api_key="gsk_test", mode="required", request_min_interval_ms=0),
+        GroqConfig(api_key="gsk_test", mode="required", request_min_interval_ms=0),
         session=FakeSession([]),
     )
     vectors = ai.embed_texts([
@@ -85,8 +89,8 @@ def test_local_first_groq_never_calls_remote_embedding_endpoint():
 
 def test_groq_errors_are_provider_specific_and_fail_closed():
     session = FakeSession([FakeResponse({"error": "rate limit"}, status_code=429)])
-    cfg = AIConfig(
-        groq_api_key="gsk_test",
+    cfg = GroqConfig(
+        api_key="gsk_test",
         mode="required",
         request_min_interval_ms=0,
         request_max_retries=0,
