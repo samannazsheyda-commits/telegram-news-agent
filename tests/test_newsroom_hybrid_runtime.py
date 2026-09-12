@@ -5,6 +5,7 @@ import src.newsroom_hybrid_runtime as hybrid
 
 def test_ancillary_cycle_disables_legacy_news_and_truth(monkeypatch):
     seen = {}
+    legacy = hybrid.v13.v12.v11.v10.v9.v8
     original_news = lambda: ["legacy-news"]
     original_truth = lambda: ["legacy-truth"]
     monkeypatch.setattr(hybrid.v13.base.agent, "fetch_news_items", original_news)
@@ -12,6 +13,7 @@ def test_ancillary_cycle_disables_legacy_news_and_truth(monkeypatch):
     monkeypatch.setattr(hybrid.v13, "install_production_policies", lambda: None)
     monkeypatch.setattr(hybrid.v13, "expire_previous_day_queue", lambda now: 0)
     monkeypatch.setattr(hybrid.v13, "_publish_phone_once_per_day", lambda now: seen.setdefault("phone", True))
+    monkeypatch.setattr(legacy, "install_strict_dedup_policy", lambda: None)
 
     def ancillary(now):
         seen["news"] = hybrid.v13.base.agent.fetch_news_items()
@@ -19,7 +21,7 @@ def test_ancillary_cycle_disables_legacy_news_and_truth(monkeypatch):
         seen["now"] = now
         return 0
 
-    monkeypatch.setattr(hybrid.v13.v12.v11.v10.v9.v8, "run", ancillary)
+    monkeypatch.setattr(legacy, "run", ancillary)
     now = datetime(2026, 9, 8, 1, 0, tzinfo=timezone.utc)
     assert hybrid.run_ancillary_cycle(now) == 0
     assert seen["news"] == []
