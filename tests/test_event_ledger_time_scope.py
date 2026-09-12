@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from src.event_ledger import EventLedger
 from src.newsroom_models import EventFingerprint
 
@@ -41,4 +43,5 @@ def test_exact_same_day_fingerprint_still_dedupes(tmp_path):
         source_url="https://example.com/current",
         first_seen="2026-09-09T11:00:00+00:00",
     )
-    assert ledger.find_candidates(current) == [event]
+    now = datetime(2026, 9, 10, 12, 0, tzinfo=timezone.utc)
+    assert ledger.find_candidates(current, now=now) == [event]

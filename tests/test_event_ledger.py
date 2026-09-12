@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from src.newsroom_models import EventFingerprint
 from src.event_ledger import EventLedger
 
@@ -93,9 +95,9 @@ def test_find_candidates_returns_same_structural_key(tmp_path):
         canonical_title="US strikes three Iranian tankers",
         primary_source="Reuters",
         source_url="https://reuters.example/a",
-        first_seen="2026-09-07T12:01:00+00:00",
+        first_seen="2026-09-11T12:01:00+00:00",
     )
-    matches = ledger.find_candidates(fp())
+    matches = ledger.find_candidates(fp(), now=datetime(2026, 9, 12, 12, 0, tzinfo=timezone.utc))
     assert [record.event_id for record in matches] == [created.event_id]
 
 
@@ -106,7 +108,7 @@ def test_find_candidates_returns_similar_structural_event(tmp_path):
         canonical_title="US strikes three Iranian tankers",
         primary_source="Reuters",
         source_url="https://reuters.example/a",
-        first_seen="2026-09-07T12:01:00+00:00",
+        first_seen="2026-09-11T12:01:00+00:00",
     )
     similar = EventFingerprint(
         key="ap-hash",
@@ -117,8 +119,22 @@ def test_find_candidates_returns_similar_structural_event(tmp_path):
         key_facts=["3"],
         time_bucket="2026-09-07",
     )
-    matches = ledger.find_candidates(similar)
+    matches = ledger.find_candidates(similar, now=datetime(2026, 9, 12, 12, 0, tzinfo=timezone.utc))
     assert [record.event_id for record in matches] == [created.event_id]
+
+
+def test_find_candidates_ignores_stale_exact_key_when_now_is_provided(tmp_path):
+    ledger = EventLedger(tmp_path / "ledger.json")
+    ledger.create_event(
+        fingerprint=fp(),
+        canonical_title="US strikes three Iranian tankers",
+        primary_source="Reuters",
+        source_url="https://reuters.example/a",
+        first_seen="2026-09-07T12:01:00+00:00",
+    )
+    now = datetime(2026, 9, 12, 12, 0, tzinfo=timezone.utc)
+    matches = ledger.find_candidates(fp(), now=now, max_age_hours=72)
+    assert matches == []
 
 
 def test_find_by_source_url_returns_published_event(tmp_path):

@@ -7,7 +7,7 @@ from src.newsroom_v2 import run_cycle
 from src.panel_live_feed import LiveFeedStore
 
 
-NOW = datetime(2026, 9, 7, 12, 30, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 12, 12, 30, tzinfo=timezone.utc)
 
 
 def raw(source, item_id, title, *, priority="normal", url=None):
@@ -15,8 +15,8 @@ def raw(source, item_id, title, *, priority="normal", url=None):
         source=source,
         source_url=url or f"https://example.com/{item_id}",
         source_item_id=item_id,
-        published_at="2026-09-07T12:00:00+00:00",
-        fetched_at="2026-09-07T12:01:00+00:00",
+        published_at="2026-09-12T12:00:00+00:00",
+        fetched_at="2026-09-12T12:01:00+00:00",
         title=title,
         source_priority=priority,
     )
