@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import requests
@@ -15,6 +17,30 @@ OPENROUTER_CHAT_URL = "https://openrouter.ai/api/v1/chat/completions"
 _DEFAULT_OPENROUTER_MODEL = "google/gemma-4-26b-a4b-it:free"
 _DEFAULT_OPENROUTER_FALLBACK_MODEL = "openrouter/free"
 _ALLOWED_MODES = {"off", "optional", "required"}
+_DAILY_FREE_QUOTA_MARKER = "free-models-per-day"
+_quota_blocked_until_epoch = 0.0
+
+
+def _daily_quota_error(value: object) -> bool:
+    return _DAILY_FREE_QUOTA_MARKER in str(value or "").lower()
+
+
+def _quota_circuit_open() -> bool:
+    global _quota_blocked_until_epoch
+    if _quota_blocked_until_epoch <= 0:
+        return False
+    if time.time() < _quota_blocked_until_epoch:
+        return True
+    _quota_blocked_until_epoch = 0.0
+    return False
+
+
+def _open_quota_circuit() -> None:
+    global _quota_blocked_until_epoch
+    now = datetime.now(timezone.utc)
+    next_day = (now + timedelta(days=1)).date()
+    reset = datetime.combine(next_day, datetime.min.time(), tzinfo=timezone.utc) + timedelta(minutes=5)
+    _quota_blocked_until_epoch = max(_quota_blocked_until_epoch, reset.timestamp())
 
 
 @dataclass(frozen=True)
@@ -118,7 +144,7 @@ class OpenRouterNewsAI(HuggingFaceNewsAI):
 
     @property
     def available(self) -> bool:
-        return bool(self.config.api_key) and self.config.mode != "off"
+        return bool(self.config.api_key) and self.config.mode != "off" and not _quota_circuit_open()
 
     def _headers(self) -> dict[str, str]:
         if not self.config.api_key:
@@ -129,11 +155,23 @@ class OpenRouterNewsAI(HuggingFaceNewsAI):
             "X-Title": "Bikhabar Newsroom",
         }
 
+    def _retry_after_seconds(self, response: Any, attempt: int) -> float:
+        status = int(getattr(response, "status_code", 200) or 200)
+        detail = self._response_error_detail(response)
+        if status == 429 and _daily_quota_error(detail):
+            _open_quota_circuit()
+            raise AIServiceError(f"hf_http_429:{detail}")
+        return super()._retry_after_seconds(response, attempt)
+
     def _post_json(self, url: str, payload: dict[str, Any], *, timeout: int | None = None) -> Any:
+        if _quota_circuit_open():
+            raise AIServiceError("openrouter_daily_quota_circuit_open")
         try:
             return super()._post_json(url, payload, timeout=timeout)
         except AIServiceError as exc:
             message = str(exc)
+            if _daily_quota_error(message):
+                _open_quota_circuit()
             if message.startswith("hf_"):
                 raise AIServiceError("openrouter_" + message[3:]) from exc
             raise
@@ -151,6 +189,8 @@ class OpenRouterNewsAI(HuggingFaceNewsAI):
         }
 
     def _chat_json(self, *, model: str, system: str, user: str, max_tokens: int = 500) -> dict[str, Any]:
+        if _quota_circuit_open():
+            raise AIServiceError("openrouter_daily_quota_circuit_open")
         primary_model = self.config.model
         try:
             payload = self._post_json(
@@ -159,6 +199,8 @@ class OpenRouterNewsAI(HuggingFaceNewsAI):
             )
         except AIServiceError as exc:
             message = str(exc)
+            if _daily_quota_error(message) or message == "openrouter_daily_quota_circuit_open":
+                raise
             fallback_model = str(getattr(self.config, "fallback_model", "") or "").strip()
             fallback_status = any(message.startswith(f"openrouter_http_{code}") for code in (404, 429, 503))
             if fallback_status and fallback_model and fallback_model != primary_model:

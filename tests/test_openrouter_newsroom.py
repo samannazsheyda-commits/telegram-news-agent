@@ -2,6 +2,7 @@ import json
 
 import pytest
 
+import src.openrouter_newsroom_ai as openrouter_module
 from src.ai_newsroom import AIServiceError
 from src.openrouter_newsroom_ai import OpenRouterConfig, OpenRouterNewsAI, LocalFirstOpenRouterNewsAI
 
@@ -119,3 +120,37 @@ def test_openrouter_errors_are_provider_specific_and_fail_closed():
     ai = OpenRouterNewsAI(cfg, session=session)
     with pytest.raises(AIServiceError, match="openrouter_http_429"):
         ai.score_story("Iran launched missiles toward Israel")
+
+
+def test_daily_free_quota_429_opens_shared_circuit_without_retry_or_fallback(monkeypatch):
+    monkeypatch.setattr(openrouter_module, "_quota_blocked_until_epoch", 0.0, raising=False)
+    exhausted = FakeResponse(
+        {
+            "error": {
+                "message": "Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day",
+                "code": 429,
+            }
+        },
+        status_code=429,
+    )
+    session = FakeSession([exhausted])
+    cfg = OpenRouterConfig(
+        api_key="sk-or-v1-test",
+        model="google/gemma-4-26b-a4b-it:free",
+        fallback_model="openrouter/free",
+        mode="optional",
+        request_min_interval_ms=0,
+        request_max_retries=4,
+    )
+    ai = OpenRouterNewsAI(cfg, session=session)
+
+    with pytest.raises(AIServiceError, match="free-models-per-day"):
+        ai.score_story("Iran launched missiles toward Israel")
+
+    assert len(session.calls) == 1
+    assert ai.available is False
+
+    second_session = FakeSession([])
+    second = OpenRouterNewsAI(cfg, session=second_session)
+    assert second.available is False
+    assert second_session.calls == []
