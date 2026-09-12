@@ -162,8 +162,9 @@ def test_teaser_and_truncated_content_never_auto_publishes():
         assert d.reason == "filtered_incomplete_or_teaser"
 
 
-def test_aggregator_link_is_not_accepted_as_direct_source():
+def test_aggregator_link_from_unapproved_source_is_not_accepted():
     d = _decision(_raw(
+        source="Unknown Blog",
         title="Iran announces a new maritime security operation in the Gulf",
         summary="Officials said the operation began on Monday.",
         published_at="2026-09-07T20:45:00+00:00",
