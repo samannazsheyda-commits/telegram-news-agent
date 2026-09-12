@@ -104,22 +104,33 @@ def run_ancillary_cycle(now: datetime) -> int:
     v13.install_production_policies()
     v13.expire_previous_day_queue(now)
 
-    # Complete the legacy install chain before replacing its news hooks.  The
-    # legacy v8 runner installs integrations lazily; if we stub news first, that
-    # installer overwrites the stub and reactivates the old news lane alongside
-    # Newsroom V2.  Once installation is complete, the idempotent runner can no
-    # longer replace these temporary no-news hooks during this ancillary cycle.
+    # Complete the upper legacy install chain before replacing its news hooks.
+    # The deeper runtime_v2 layer still calls install_integrations() on every run,
+    # so guard that installer too: it may otherwise overwrite these no-news stubs
+    # immediately before agent.run() and wake the legacy news lane back up.
     legacy = v13.v12.v11.v10.v9.v8
     legacy.install_strict_dedup_policy()
+    legacy_v2 = legacy.v7.v2
+    original_legacy_v2_install = legacy_v2.install_integrations
 
     original_news = v13.base.agent.fetch_news_items
     original_truth = v13.base.agent.fetch_truth_posts
+    disabled_news = lambda: []
+    disabled_truth = lambda: []
+
+    def install_legacy_v2_without_news() -> None:
+        original_legacy_v2_install()
+        v13.base.agent.fetch_news_items = disabled_news
+        v13.base.agent.fetch_truth_posts = disabled_truth
+
     try:
-        v13.base.agent.fetch_news_items = lambda: []
-        v13.base.agent.fetch_truth_posts = lambda: []
+        legacy_v2.install_integrations = install_legacy_v2_without_news
+        v13.base.agent.fetch_news_items = disabled_news
+        v13.base.agent.fetch_truth_posts = disabled_truth
         v13._publish_phone_once_per_day(now)
         return int(legacy.run(now) or 0)
     finally:
+        legacy_v2.install_integrations = original_legacy_v2_install
         v13.base.agent.fetch_news_items = original_news
         v13.base.agent.fetch_truth_posts = original_truth
 

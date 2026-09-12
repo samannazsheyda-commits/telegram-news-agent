@@ -64,6 +64,43 @@ def test_ancillary_cycle_installs_legacy_hooks_before_disabling_news(monkeypatch
     assert hybrid.v13.base.agent.fetch_news_items is installed_news
 
 
+def test_ancillary_cycle_blocks_runtime_v2_reinstall_from_reactivating_news(monkeypatch):
+    seen = {}
+    legacy = hybrid.v13.v12.v11.v10.v9.v8
+    legacy_v2 = legacy.v7.v2
+    pre_news = lambda: ["pre-news"]
+    pre_truth = lambda: ["pre-truth"]
+    installed_news = lambda: ["runtime-v2-news"]
+    installed_truth = lambda: ["runtime-v2-truth"]
+
+    monkeypatch.setattr(hybrid.v13.base.agent, "fetch_news_items", pre_news)
+    monkeypatch.setattr(hybrid.v13.base.agent, "fetch_truth_posts", pre_truth)
+    monkeypatch.setattr(hybrid.v13, "install_production_policies", lambda: None)
+    monkeypatch.setattr(hybrid.v13, "expire_previous_day_queue", lambda now: 0)
+    monkeypatch.setattr(hybrid.v13, "_publish_phone_once_per_day", lambda now: None)
+    monkeypatch.setattr(legacy, "install_strict_dedup_policy", lambda: None)
+
+    def reinstall_runtime_v2_hooks():
+        hybrid.v13.base.agent.fetch_news_items = installed_news
+        hybrid.v13.base.agent.fetch_truth_posts = installed_truth
+
+    def legacy_run(now):
+        legacy_v2.install_integrations()
+        seen["news_after_reinstall"] = hybrid.v13.base.agent.fetch_news_items()
+        seen["truth_after_reinstall"] = hybrid.v13.base.agent.fetch_truth_posts()
+        return 0
+
+    monkeypatch.setattr(legacy_v2, "install_integrations", reinstall_runtime_v2_hooks)
+    monkeypatch.setattr(legacy, "run", legacy_run)
+
+    now = datetime(2026, 9, 12, 20, 30, tzinfo=timezone.utc)
+    assert hybrid.run_ancillary_cycle(now) == 0
+    assert seen["news_after_reinstall"] == []
+    assert seen["truth_after_reinstall"] == []
+    assert hybrid.v13.base.agent.fetch_news_items is pre_news
+    assert hybrid.v13.base.agent.fetch_truth_posts is pre_truth
+
+
 def test_hybrid_cycle_runs_ancillary_then_v2(monkeypatch):
     order = []
     monkeypatch.setattr(hybrid, "run_ancillary_cycle", lambda now: order.append("ancillary") or 0)
