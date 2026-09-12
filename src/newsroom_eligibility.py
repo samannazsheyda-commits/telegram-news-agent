@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
 from .newsroom_models import NormalizedNewsItem
+from .sources import APPROVED_SOURCE_ALIASES
 
 
 TEHRAN = ZoneInfo("Asia/Tehran")
@@ -90,6 +91,7 @@ TEASER_PATTERNS = (
 AGGREGATOR_HOSTS = {
     "news.google.com", "www.news.google.com", "feedproxy.google.com", "google.com", "www.google.com",
 }
+APPROVED_AGGREGATOR_SOURCES = frozenset(canonical for canonical, _aliases in APPROVED_SOURCE_ALIASES)
 
 
 @dataclass(frozen=True)
@@ -164,7 +166,7 @@ def _incomplete_or_teaser(title: str, summary: str) -> bool:
     return False
 
 
-def _direct_source_link(url: str) -> bool:
+def _direct_source_link(url: str, source: str = "") -> bool:
     raw = str(url or "").strip()
     if not raw:
         return False
@@ -176,7 +178,7 @@ def _direct_source_link(url: str) -> bool:
         return False
     host = parsed.netloc.lower().split(":", 1)[0]
     if host in AGGREGATOR_HOSTS:
-        return False
+        return str(source or "").strip() in APPROVED_AGGREGATOR_SOURCES
     return True
 
 
@@ -191,7 +193,7 @@ def evaluate_eligibility(item: NormalizedNewsItem, now: datetime) -> Eligibility
         return EligibilityResult(False, "filtered_question_or_article")
     if _incomplete_or_teaser(item.raw.title, item.raw.summary):
         return EligibilityResult(False, "filtered_incomplete_or_teaser")
-    if not _direct_source_link(item.raw.source_url):
+    if not _direct_source_link(item.raw.source_url, item.raw.source):
         return EligibilityResult(False, "filtered_non_direct_source")
 
     text = re.sub(r"\s+", " ", f"{item.raw.title} {item.raw.summary}".lower()).strip()
