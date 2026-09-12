@@ -5,6 +5,7 @@ import src.newsroom_hybrid_runtime as hybrid
 
 def test_ancillary_cycle_disables_legacy_news_and_truth(monkeypatch):
     seen = {}
+    legacy = hybrid.v13.v12.v11.v10.v9.v8
     original_news = lambda: ["legacy-news"]
     original_truth = lambda: ["legacy-truth"]
     monkeypatch.setattr(hybrid.v13.base.agent, "fetch_news_items", original_news)
@@ -12,6 +13,7 @@ def test_ancillary_cycle_disables_legacy_news_and_truth(monkeypatch):
     monkeypatch.setattr(hybrid.v13, "install_production_policies", lambda: None)
     monkeypatch.setattr(hybrid.v13, "expire_previous_day_queue", lambda now: 0)
     monkeypatch.setattr(hybrid.v13, "_publish_phone_once_per_day", lambda now: seen.setdefault("phone", True))
+    monkeypatch.setattr(legacy, "install_strict_dedup_policy", lambda: None)
 
     def ancillary(now):
         seen["news"] = hybrid.v13.base.agent.fetch_news_items()
@@ -19,7 +21,7 @@ def test_ancillary_cycle_disables_legacy_news_and_truth(monkeypatch):
         seen["now"] = now
         return 0
 
-    monkeypatch.setattr(hybrid.v13.v12.v11.v10.v9.v8, "run", ancillary)
+    monkeypatch.setattr(legacy, "run", ancillary)
     now = datetime(2026, 9, 8, 1, 0, tzinfo=timezone.utc)
     assert hybrid.run_ancillary_cycle(now) == 0
     assert seen["news"] == []
@@ -27,6 +29,39 @@ def test_ancillary_cycle_disables_legacy_news_and_truth(monkeypatch):
     assert seen["phone"] is True
     assert hybrid.v13.base.agent.fetch_news_items is original_news
     assert hybrid.v13.base.agent.fetch_truth_posts is original_truth
+
+
+def test_ancillary_cycle_installs_legacy_hooks_before_disabling_news(monkeypatch):
+    seen = {}
+    legacy = hybrid.v13.v12.v11.v10.v9.v8
+    pre_install_news = lambda: ["pre-install-news"]
+    installed_news = lambda: ["legacy-installed-news"]
+    installed = {"done": False}
+
+    monkeypatch.setattr(hybrid.v13.base.agent, "fetch_news_items", pre_install_news)
+    monkeypatch.setattr(hybrid.v13.base.agent, "fetch_truth_posts", lambda: ["legacy-truth"])
+    monkeypatch.setattr(hybrid.v13, "install_production_policies", lambda: None)
+    monkeypatch.setattr(hybrid.v13, "expire_previous_day_queue", lambda now: 0)
+    monkeypatch.setattr(hybrid.v13, "_publish_phone_once_per_day", lambda now: None)
+
+    def install_legacy_hooks():
+        if installed["done"]:
+            return
+        hybrid.v13.base.agent.fetch_news_items = installed_news
+        installed["done"] = True
+
+    def legacy_run(now):
+        install_legacy_hooks()
+        seen["news_during_ancillary"] = hybrid.v13.base.agent.fetch_news_items()
+        return 0
+
+    monkeypatch.setattr(legacy, "install_strict_dedup_policy", install_legacy_hooks)
+    monkeypatch.setattr(legacy, "run", legacy_run)
+
+    now = datetime(2026, 9, 12, 20, 0, tzinfo=timezone.utc)
+    assert hybrid.run_ancillary_cycle(now) == 0
+    assert seen["news_during_ancillary"] == []
+    assert hybrid.v13.base.agent.fetch_news_items is installed_news
 
 
 def test_hybrid_cycle_runs_ancillary_then_v2(monkeypatch):
