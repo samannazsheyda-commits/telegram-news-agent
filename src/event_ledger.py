@@ -222,9 +222,35 @@ class EventLedger:
             time_bucket=str(data.get("time_bucket") or ""),
         )
 
-    def find_candidates(self, fingerprint: EventFingerprint, min_similarity: float = 0.70) -> list[EventRecord]:
+    def find_candidates(
+        self,
+        fingerprint: EventFingerprint,
+        min_similarity: float = 0.70,
+        *,
+        now: datetime | None = None,
+        max_age_hours: int = 72,
+    ) -> list[EventRecord]:
+        """Return candidates inside the rolling event-memory window.
+
+        Exact fingerprints are still subject to the same memory boundary as
+        structural matches. Previously an exact key bypassed the age check,
+        allowing a stale event to suppress a genuinely new story indefinitely.
+        """
         matches: list[EventRecord] = []
+        cutoff = None
+        future_grace = None
+        if now is not None:
+            if now.tzinfo is None:
+                now = now.replace(tzinfo=timezone.utc)
+            now_utc = now.astimezone(timezone.utc)
+            cutoff = now_utc - timedelta(hours=max(1, int(max_age_hours)))
+            future_grace = now_utc + timedelta(minutes=10)
+
         for record in self._read():
+            if cutoff is not None:
+                seen = _parse_time(record.last_updated) or _parse_time(record.first_seen)
+                if seen is None or seen < cutoff or seen > future_grace:
+                    continue
             stored = self._record_fingerprint(record)
             if record.fingerprint == fingerprint.key:
                 matches.append(record)
@@ -311,8 +337,6 @@ class EventLedger:
         publication_times = list(fingerprint_data.get("publication_times") or [])
         if message_id not in ids:
             ids.append(message_id)
-            # A timestamp is appended only for a newly recorded Telegram message,
-            # making retries/idempotent mark_published calls safe for rate counts.
             if _parse_time(updated_at) is not None:
                 publication_times.append(updated_at)
         fingerprint_data["publication_times"] = publication_times[-200:]
