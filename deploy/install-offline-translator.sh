@@ -6,9 +6,9 @@ MODEL_DIR="${OFFLINE_TRANSLATOR_MODEL_DIR:-${MODEL_ROOT}/argos-en-fa}"
 OLD_MODEL_DIR="${MODEL_ROOT}/quickmt-en-fa"
 PACKAGE_NAME="translate-en_fa-1_5.argosmodel"
 URLS=(
+  "https://data.argosopentech.com/argospm/v1/${PACKAGE_NAME}"
   "https://argosopentech.nyc3.digitaloceanspaces.com/argospm/${PACKAGE_NAME}"
   "https://cdn.argosopentech.io/${PACKAGE_NAME}"
-  "https://data.argosopentech.com/argospm/v1/${PACKAGE_NAME}"
 )
 
 if [[ "${EUID}" -ne 0 ]]; then
@@ -18,7 +18,7 @@ fi
 
 if [[ -f "${MODEL_DIR}/model/model.bin" ]] \
   && [[ -f "${MODEL_DIR}/model/config.json" ]] \
-  && [[ -f "${MODEL_DIR}/sentencepiece.model" ]]; then
+  && { [[ -f "${MODEL_DIR}/sentencepiece.model" ]] || [[ -f "${MODEL_DIR}/bpe.model" ]]; }; then
   echo "OFFLINE_TRANSLATOR=ready path=${MODEL_DIR}"
   exit 0
 fi
@@ -80,16 +80,19 @@ for model_bin in unpack.rglob("model.bin"):
         continue
     if not (model_dir / "config.json").is_file():
         continue
-    if not (root / "sentencepiece.model").is_file():
+    if not ((root / "sentencepiece.model").is_file() or (root / "bpe.model").is_file()):
         continue
     package_root = root
     break
 
 if package_root is None:
-    raise SystemExit("Argos package is missing model/model.bin, config.json, or sentencepiece.model")
+    raise SystemExit("Argos package is missing model/model.bin, config.json, or a supported tokenizer (sentencepiece.model or bpe.model)")
 
 shutil.copytree(package_root / "model", dest / "model", dirs_exist_ok=True)
-shutil.copy2(package_root / "sentencepiece.model", dest / "sentencepiece.model")
+for tokenizer_name in ("sentencepiece.model", "bpe.model"):
+    tokenizer = package_root / tokenizer_name
+    if tokenizer.is_file():
+        shutil.copy2(tokenizer, dest / tokenizer_name)
 metadata = package_root / "metadata.json"
 if metadata.is_file():
     shutil.copy2(metadata, dest / "metadata.json")
@@ -97,7 +100,7 @@ PY
 
 [[ -s "${INSTALL_DIR}/model/model.bin" ]]
 [[ -s "${INSTALL_DIR}/model/config.json" ]]
-[[ -s "${INSTALL_DIR}/sentencepiece.model" ]]
+{ [[ -s "${INSTALL_DIR}/sentencepiece.model" ]] || [[ -s "${INSTALL_DIR}/bpe.model" ]]; }
 
 rm -rf "${MODEL_DIR}"
 mv "${INSTALL_DIR}" "${MODEL_DIR}"
