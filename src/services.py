@@ -62,7 +62,7 @@ SEMANTIC_PRESERVATION_RULES: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...]
     (("explosion", "exploded", "blast", "detonation"), ("انفجار", "منفجر", "انفجاری")),
     (("drone", "uav"), ("پهپاد", "بدون سرنشین")),
     (("intercept", "intercepted"), ("رهگیری", "سرنگون", "منهدم")),
-    (("attack", "attacked", "strike", "struck", "bombing"), ("حمله", "هدف قرار", "بمباران", "ضربه")),
+    (("attack", "attacked", "strike", "struck", "bombing"), ("حمله", "هدف قرار", "بمباران", "ضربه", "اصابت")),
     (("airspace", "notam", "flight ban"), ("حریم هوایی", "فضای هوایی", "نوتام", "ممنوعیت پرواز")),
     (("tanker",), ("نفتکش",)),
     (("strait of hormuz", "hormuz"), ("هرمز",)),
