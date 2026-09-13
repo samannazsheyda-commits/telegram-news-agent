@@ -164,3 +164,66 @@ echo "AGENT=$(systemctl is-active bikhabar-agent)"
 echo "PANEL=$(systemctl is-active bikhabar-panel)"
 echo "WEATHER_TIMER=$(systemctl is-active bikhabar-weather.timer)"
 echo "AIR_TRAFFIC_TIMER=$(systemctl is-active bikhabar-air-traffic.timer)"
+
+# Print the newsroom evidence automatically so the operator does not have to
+# paste and run a separate chain of diagnostic commands after every update.
+echo "===== NEWSROOM HEALTH ====="
+sleep 4
+"${VENV_DIR}/bin/python" - <<PY || true
+import json
+from pathlib import Path
+
+state_path = Path("${RUNTIME_ROOT}/state.json")
+feed_path = Path("${RUNTIME_DATA}/panel_live_feed.json")
+
+if state_path.exists():
+    try:
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        print(f"STATE_READ_FAILED={type(exc).__name__}:{exc}")
+    else:
+        keys = (
+            "last_cycle_at",
+            "last_cycle_published",
+            "last_cycle_telegram_writes",
+            "last_publish_failed",
+            "last_items_fetched",
+            "last_sources_ok",
+            "last_sources_failed",
+            "telegram_state",
+            "last_error",
+        )
+        print("STATE " + " ".join(f"{key}={state.get(key)!r}" for key in keys))
+else:
+    print("STATE missing")
+
+if feed_path.exists():
+    try:
+        rows = json.loads(feed_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        print(f"FEED_READ_FAILED={type(exc).__name__}:{exc}")
+    else:
+        interesting = [
+            row for row in rows
+            if isinstance(row, dict)
+            and row.get("panel_status") in {"failed", "waiting", "published"}
+        ][:8]
+        print(f"FEED_ROWS={len(rows)} INTERESTING={len(interesting)}")
+        for row in interesting:
+            title = str(row.get("title") or "").replace("\n", " ")[:180]
+            print(
+                "FEED "
+                f"status={row.get('panel_status')!r} "
+                f"decision={row.get('decision')!r} "
+                f"reason={row.get('decision_reason')!r} "
+                f"source={row.get('source')!r} "
+                f"title={title!r}"
+            )
+else:
+    print("FEED missing")
+PY
+
+journalctl -u bikhabar-agent --since "3 minutes ago" --no-pager \
+  | grep -E 'TELEGRAM_PUBLISH_FAILED|STRICT_TRANSLATION|OFFLINE_TRANSLATION|AI_TRANSLATION|published|telegram_writes|publish_failed' \
+  | tail -n 40 || true
+echo "===== END NEWSROOM HEALTH ====="
