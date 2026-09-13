@@ -7,7 +7,6 @@ from threading import Lock
 
 DEFAULT_MODEL_DIR = Path("/var/lib/bikhabar/models/argos-en-fa")
 _REQUIRED_MODEL_FILES = (
-    "model/config.json",
     "model/model.bin",
 )
 
@@ -16,8 +15,9 @@ class OfflinePersianTranslator:
     """Lazy low-memory English→Persian translator backed by Argos + CTranslate2.
 
     Argos packages can use either SentencePiece or the older BPE tokenizer
-    layout.  Supporting both keeps the compact official EN→FA package usable on
-    Bikhabar's 1 GB VPS without pulling in the full Argos Translate runtime.
+    layout. Older Argos 1.5 packages also predate CTranslate2's config.json,
+    so model.bin plus a supported tokenizer is the portable readiness check.
+    CTranslate2 itself remains the final validator when the model is loaded.
     """
 
     def __init__(self, model_dir: str | Path | None = None):
