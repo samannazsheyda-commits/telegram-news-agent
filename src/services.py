@@ -235,7 +235,15 @@ def translation_is_publishable(source: str, translated: str) -> bool:
 
     latin_words = LATIN_WORD_RE.findall(quality_value)
     words = re.findall(r"[A-Za-z\u0600-\u06FF]+", quality_value)
-    if words and len(latin_words) / len(words) > 0.20:
+    source_latin = {token.lower() for token in LATIN_WORD_RE.findall(source_core)}
+    # Residual Latin is allowed only for source-owned proper names/acronyms.
+    # This lets guarded local MT preserve unfamiliar names without opening the
+    # door to hallucinated or largely untranslated English copy.
+    if any(token.lower() not in source_latin for token in latin_words):
+        return False
+    if any(not (token[:1].isupper() or token.isupper()) for token in latin_words):
+        return False
+    if words and len(latin_words) / len(words) > 0.40:
         return False
 
     source_words = re.findall(r"[A-Za-z\u0600-\u06FF]+", source_core)

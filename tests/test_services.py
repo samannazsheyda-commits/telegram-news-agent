@@ -1,4 +1,4 @@
-from src.services import has_persian, send_telegram, translate_to_fa
+from src.services import has_persian, send_telegram, translate_to_fa, translation_is_publishable
 from src.runtime_v2 import translate_news_to_fa
 
 
@@ -85,6 +85,18 @@ def test_translation_repairs_high_risk_journalistic_idioms_without_literal_nonse
                 return FakeResponse(payload=[[[bad_translation, None, None, None]]])
         text = translate_to_fa(source, session=Session)
         assert text == expected
+
+
+def test_quality_gate_allows_bounded_source_owned_proper_names():
+    source = "Officials in Hengam Island and Shib Deraz said Amir Teymouri confirmed the port reopened."
+    translated = "مقام‌ها در Hengam Island و Shib Deraz گفتند Amir Teymouri بازگشایی بندر را تأیید کرد."
+    assert translation_is_publishable(source, translated) is True
+
+
+def test_quality_gate_still_rejects_english_heavy_source_copy():
+    source = "Officials in Hengam Island said shipping lanes remain open after the incident near Qeshm."
+    translated = "مقام‌ها گفتند Hengam Island shipping lanes remain open after the incident near Qeshm."
+    assert translation_is_publishable(source, translated) is False
 
 
 def test_telegram_messages_disable_link_preview():
