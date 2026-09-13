@@ -49,3 +49,10 @@ def test_installer_downloads_compact_argos_package():
 def test_installer_accepts_argos_bpe_packages():
     script = Path("deploy/install-offline-translator.sh").read_text(encoding="utf-8")
     assert "bpe.model" in script
+
+
+def test_installer_does_not_require_modern_ct2_config_json():
+    script = Path("deploy/install-offline-translator.sh").read_text(encoding="utf-8")
+    assert '[[ -f "${MODEL_DIR}/model/config.json" ]]' not in script
+    assert '[[ -s "${INSTALL_DIR}/model/config.json" ]]' not in script
+    assert 'if not (model_dir / "config.json").is_file()' not in script
