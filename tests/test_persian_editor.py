@@ -32,7 +32,25 @@ def test_literal_hormuz_translation_is_repaired():
     assert "در محدوده تنگه هرمز" in edited
 
 
-def test_known_latin_acronyms_are_persianized_but_unknown_latin_is_rejected():
+def test_known_latin_acronyms_are_persianized():
     assert edit_news_text("CENTCOM says Iran launched 2 missiles.", "CENTCOM اعلام کرد ایران ۲ موشک شلیک کرده است.") == "سنتکام اعلام کرد ایران ۲ موشک شلیک کرده است."
-    assert has_forbidden_latin_body("ایران درباره FooBar توضیح داد.")
-    assert edit_news_text("Iran said FooBar changed.", "ایران گفت FooBar تغییر کرده است.") == ""
+
+
+def test_source_owned_proper_names_do_not_kill_safe_persian_fallback():
+    source = (
+        "An Iranian commercial vessel was struck near Hengam Island and the Shib Deraz coast of Qeshm Island, "
+        "killing one person and wounding three others, said Qeshm Governor Amir Teymouri."
+    )
+    translated = (
+        "یک شناور تجاری ایرانی نزدیک Hengam Island و ساحل Shib Deraz جزیره قشم هدف قرار گرفت؛ "
+        "یک نفر کشته و سه نفر زخمی شدند، Amir Teymouri فرماندار قشم گفت."
+    )
+    edited = edit_news_text(source, translated)
+    assert edited == translated
+
+
+def test_hallucinated_latin_not_present_in_source_is_still_rejected():
+    source = "Iran said the situation changed."
+    translated = "ایران گفت FooBar وضعیت را تغییر داده است."
+    assert has_forbidden_latin_body(translated, source)
+    assert edit_news_text(source, translated) == ""
