@@ -78,7 +78,7 @@ def test_runtime_prefers_openrouter_over_groq_and_hf(tmp_path, monkeypatch):
     assert result["ai_newsroom_mode"] == "required"
 
 
-def test_runtime_enables_offline_translation_fallback_by_default(tmp_path, monkeypatch):
+def test_runtime_disables_offline_translation_fallback_by_default(tmp_path, monkeypatch):
     captured = {}
 
     class CapturingPublisher:
@@ -102,4 +102,4 @@ def test_runtime_enables_offline_translation_fallback_by_default(tmp_path, monke
         now=datetime(2026, 9, 7, 21, 30, tzinfo=timezone.utc),
     )
 
-    assert captured["offline_translation_enabled"] is True
+    assert captured["offline_translation_enabled"] is False
