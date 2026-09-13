@@ -170,3 +170,10 @@ def test_optional_mode_uses_guarded_lingva_when_strict_backends_fail(monkeypatch
     )
 
     assert publisher._translate_resilient(SOURCE) == GOOD_FA
+
+
+def test_guarded_copy_allows_small_source_owned_latin_residue():
+    source = "Iran says Patriot intercepted a missile near Tehran."
+    translated = "ایران می‌گوید سامانه Patriot یک موشک را در نزدیکی تهران رهگیری کرد."
+
+    assert strict_translation._natural_persian_copy(source, translated) == translated
