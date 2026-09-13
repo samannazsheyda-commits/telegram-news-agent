@@ -17,7 +17,6 @@ if [[ "${EUID}" -ne 0 ]]; then
 fi
 
 if [[ -f "${MODEL_DIR}/model/model.bin" ]] \
-  && [[ -f "${MODEL_DIR}/model/config.json" ]] \
   && { [[ -f "${MODEL_DIR}/sentencepiece.model" ]] || [[ -f "${MODEL_DIR}/bpe.model" ]]; }; then
   echo "OFFLINE_TRANSLATOR=ready path=${MODEL_DIR}"
   exit 0
@@ -78,16 +77,17 @@ for model_bin in unpack.rglob("model.bin"):
     root = model_dir.parent
     if model_dir.name != "model":
         continue
-    if not (model_dir / "config.json").is_file():
-        continue
     if not ((root / "sentencepiece.model").is_file() or (root / "bpe.model").is_file()):
         continue
     package_root = root
     break
 
 if package_root is None:
-    raise SystemExit("Argos package is missing model/model.bin, config.json, or a supported tokenizer (sentencepiece.model or bpe.model)")
+    raise SystemExit("Argos package is missing model/model.bin or a supported tokenizer (sentencepiece.model or bpe.model)")
 
+# Copy the complete CTranslate2 directory. Legacy Argos 1.5 packages may not
+# contain modern config.json metadata, but current CTranslate2 can validate the
+# converted model itself at load time.
 shutil.copytree(package_root / "model", dest / "model", dirs_exist_ok=True)
 for tokenizer_name in ("sentencepiece.model", "bpe.model"):
     tokenizer = package_root / tokenizer_name
@@ -99,7 +99,6 @@ if metadata.is_file():
 PY
 
 [[ -s "${INSTALL_DIR}/model/model.bin" ]]
-[[ -s "${INSTALL_DIR}/model/config.json" ]]
 { [[ -s "${INSTALL_DIR}/sentencepiece.model" ]] || [[ -s "${INSTALL_DIR}/bpe.model" ]]; }
 
 rm -rf "${MODEL_DIR}"
