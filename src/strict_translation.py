@@ -120,7 +120,7 @@ def _natural_persian_copy(source: str, value: str) -> str:
 
 
 class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
-    """Production publisher with local MT plus optional/required remote AI."""
+    """Production publisher with guarded network/AI translation and opt-in local MT."""
 
     def __init__(
         self,
@@ -130,6 +130,7 @@ class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
         session=services.requests,
         translator=None,
         offline_translator=None,
+        offline_translation_enabled: bool = False,
         ai=None,
         ai_mode: str = "optional",
     ):
@@ -139,6 +140,7 @@ class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
         self.ai_mode = mode if mode in {"off", "optional", "required"} else "optional"
         self.ai = ai
         self.offline_translator = offline_translator or translate_to_fa_offline
+        self.offline_translation_enabled = bool(offline_translation_enabled)
 
     def _translate_with_ai(self, raw: str) -> str:
         if self.ai is None or not bool(getattr(self.ai, "available", True)):
@@ -172,10 +174,10 @@ class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
         if services.has_persian(raw):
             return services._polish_fa(raw)
 
-        # Optional/off modes use the VPS-local model first. This keeps routine
-        # publication independent of OpenRouter/HF rate limits and outages.
-        # Required mode preserves its explicit remote-AI fail-closed contract.
-        if self.ai_mode != "required":
+        # The compact Argos model remains available for explicit/manual use, but
+        # it is not allowed on the default synchronous production path. On the
+        # 1-CPU/low-memory VPS a local inference can block the whole newsroom.
+        if self.offline_translation_enabled and self.ai_mode != "required":
             try:
                 offline = str(self.offline_translator(raw) or "").strip()
             except Exception as exc:
