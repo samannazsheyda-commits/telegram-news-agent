@@ -30,6 +30,11 @@ def _decision_ai_for_newsroom(ai, ai_mode: str):
     return ai if str(ai_mode or "").strip().lower() == "required" else None
 
 
+def _offline_translation_enabled() -> bool:
+    raw = str(os.environ.get("OFFLINE_TRANSLATION_ENABLED", "1") or "1").strip().lower()
+    return raw not in {"0", "false", "no", "off"}
+
+
 def run_once(
     *,
     shadow: bool,
@@ -72,6 +77,7 @@ def run_once(
             os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"),
             ai=ai,
             ai_mode=ai_mode,
+            offline_translation_enabled=_offline_translation_enabled(),
         )
     effective_settings = {
         "auto_publish": True,
