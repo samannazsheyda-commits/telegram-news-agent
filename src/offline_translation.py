@@ -5,25 +5,27 @@ from pathlib import Path
 from threading import Lock
 
 
-DEFAULT_MODEL_DIR = Path("/var/lib/bikhabar/models/quickmt-en-fa")
+DEFAULT_MODEL_DIR = Path("/var/lib/bikhabar/models/argos-en-fa")
 _REQUIRED_FILES = (
-    "config.json",
-    "model.bin",
-    "source_vocabulary.json",
-    "target_vocabulary.json",
-    "src.spm.model",
-    "tgt.spm.model",
+    "model/config.json",
+    "model/model.bin",
+    "sentencepiece.model",
 )
 
 
 class OfflinePersianTranslator:
-    """Lazy CPU English→Persian translator backed by QuickMT + CTranslate2."""
+    """Lazy low-memory English→Persian translator backed by Argos + CTranslate2.
+
+    The previous QuickMT model was too large for Bikhabar's 1 GB VPS and could
+    be killed by the kernel as soon as inference started.  The Argos EN→FA
+    package is substantially smaller and uses the CTranslate2 runtime already
+    shipped with the agent.
+    """
 
     def __init__(self, model_dir: str | Path | None = None):
         self.model_dir = Path(model_dir or os.environ.get("OFFLINE_TRANSLATOR_MODEL_DIR", DEFAULT_MODEL_DIR))
         self._translator = None
-        self._source_sp = None
-        self._target_sp = None
+        self._sp = None
         self._lock = Lock()
 
     @property
@@ -42,10 +44,9 @@ class OfflinePersianTranslator:
                 import ctranslate2
                 import sentencepiece as spm
 
-                self._source_sp = spm.SentencePieceProcessor(model_file=str(self.model_dir / "src.spm.model"))
-                self._target_sp = spm.SentencePieceProcessor(model_file=str(self.model_dir / "tgt.spm.model"))
+                self._sp = spm.SentencePieceProcessor(model_file=str(self.model_dir / "sentencepiece.model"))
                 self._translator = ctranslate2.Translator(
-                    str(self.model_dir),
+                    str(self.model_dir / "model"),
                     device="cpu",
                     compute_type="int8",
                     inter_threads=1,
@@ -54,8 +55,7 @@ class OfflinePersianTranslator:
             except Exception as exc:
                 print(f"OFFLINE_TRANSLATOR_LOAD_FAILED type={type(exc).__name__} error={exc}", flush=True)
                 self._translator = None
-                self._source_sp = None
-                self._target_sp = None
+                self._sp = None
                 return False
         return True
 
@@ -64,20 +64,20 @@ class OfflinePersianTranslator:
         if not raw or not self._load():
             return ""
         try:
-            source_tokens = self._source_sp.encode(raw, out_type=str)
+            source_tokens = self._sp.encode(raw, out_type=str)
             if not source_tokens:
                 return ""
             result = self._translator.translate_batch(
                 [source_tokens],
-                beam_size=5,
-                max_decoding_length=384,
-                repetition_penalty=1.05,
+                beam_size=1,
+                max_decoding_length=256,
+                replace_unknowns=True,
             )
             if not result or not result[0].hypotheses:
                 return ""
-            translated = self._target_sp.decode(result[0].hypotheses[0]).strip()
+            translated = self._sp.decode(result[0].hypotheses[0]).strip()
             if translated:
-                print("OFFLINE_TRANSLATION_OK backend=quickmt-en-fa", flush=True)
+                print("OFFLINE_TRANSLATION_OK backend=argos-en-fa", flush=True)
             return translated
         except Exception as exc:
             print(f"OFFLINE_TRANSLATION_FAILED type={type(exc).__name__} error={exc}", flush=True)
