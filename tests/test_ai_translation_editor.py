@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 
+from src import strict_translation
 from src.ai_newsroom import AIServiceError, PersianEditDecision, TranslationDraft
 from src.newsroom_models import RawNewsItem
 from src.newsroom_normalize import normalize_item
@@ -131,3 +132,27 @@ def test_ai_failure_in_required_mode_never_calls_telegram():
     result = publisher(_item())
     assert result["ok"] is False
     assert session.posts == []
+
+
+def test_strict_translation_falls_back_to_guarded_mymemory_when_google_is_down(monkeypatch):
+    calls = []
+
+    def fail_google(text, session=None):
+        calls.append("google")
+        raise RuntimeError("google_down")
+
+    def fail_mobile(text, session=None):
+        calls.append("mobile")
+        raise RuntimeError("mobile_down")
+
+    def good_mymemory(text, session=None):
+        calls.append("mymemory")
+        return GOOD_FA
+
+    monkeypatch.setattr(strict_translation.services, "_google_translate", fail_google)
+    monkeypatch.setattr(strict_translation.services, "_google_mobile_translate", fail_mobile)
+    monkeypatch.setattr(strict_translation.services, "_mymemory_translate", good_mymemory)
+
+    translated = strict_translation.translate_to_fa_strict(SOURCE, session=object())
+    assert translated == GOOD_FA
+    assert calls == ["google", "mobile", "mymemory"]
