@@ -19,6 +19,17 @@ from .panel_live_feed import LiveFeedStore
 from .strict_translation import StrictTelegramNewsroomPublisher
 
 
+def _decision_ai_for_newsroom(ai, ai_mode: str):
+    """Use scarce remote AI for newsroom decisions only in required mode.
+
+    In optional mode the deterministic newsroom still handles freshness,
+    eligibility, structural deduplication and rate limits. Keeping the remote
+    provider out of those pre-publish steps preserves its limited quota for the
+    Persian translation/editor stage in StrictTelegramNewsroomPublisher.
+    """
+    return ai if str(ai_mode or "").strip().lower() == "required" else None
+
+
 def run_once(
     *,
     shadow: bool,
@@ -70,6 +81,8 @@ def run_once(
     }
     if settings:
         effective_settings.update(settings)
+
+    decision_ai = _decision_ai_for_newsroom(ai, ai_mode)
     summary = run_cycle(
         fetchers,
         ledger,
@@ -79,7 +92,7 @@ def run_once(
         effective_settings,
         now or datetime.now(timezone.utc),
         shadow=shadow,
-        ai=ai,
+        ai=decision_ai,
     )
     result = summary.__dict__.copy()
     result["mode"] = "shadow" if shadow else "production"
