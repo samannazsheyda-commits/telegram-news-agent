@@ -54,8 +54,7 @@ _KNOWN_LATIN = {
     "UAV": "پهپاد",
     "NOTAM": "نوتام",
     # Common residual proper names/acronyms seen in guarded English→Persian
-    # fallbacks. Keep this allow-list explicit: arbitrary Latin such as FooBar
-    # must still fail closed below.
+    # fallbacks. Known terms are still Persianized before the residual guard.
     "JD": "جی‌دی",
     "Vance": "ونس",
     "Patriot": "پاتریوت",
@@ -108,8 +107,21 @@ def trim_to_complete_sentences(text: str, max_chars: int | None = None) -> str:
     return cut[: matches[-1].end()].strip()
 
 
-def has_forbidden_latin_body(text: str) -> bool:
-    return bool(_LATIN_WORD_RE.search(text or ""))
+def has_forbidden_latin_body(text: str, source_text: str = "") -> bool:
+    """Reject Latin residue unless every token is copied from the source.
+
+    Local EN→FA models can preserve unfamiliar names such as Hengam or Teymouri.
+    Those source-owned names are evidence-preserving, not hallucinations. Known
+    newsroom acronyms are Persianized earlier; any new Latin token that did not
+    exist in the source still fails closed.
+    """
+    residual = [token.lower() for token in _LATIN_WORD_RE.findall(text or "")]
+    if not residual:
+        return False
+    if not source_text:
+        return True
+    source_tokens = {token.lower() for token in _LATIN_WORD_RE.findall(source_text or "")}
+    return any(token not in source_tokens for token in residual)
 
 
 def _protected_numbers(text: str) -> list[str]:
@@ -141,6 +153,6 @@ def edit_news_text(source_text: str, translated_text: str, *, max_chars: int = 7
         return ""
     if not _preserves_numbers(source, value):
         return ""
-    if has_forbidden_latin_body(value):
+    if has_forbidden_latin_body(value, source):
         return ""
     return value
