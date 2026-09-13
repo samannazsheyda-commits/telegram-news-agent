@@ -1,4 +1,4 @@
-from src import services
+from src import strict_translation
 
 
 SOURCE = (
@@ -11,14 +11,17 @@ BAD_FA = (
 )
 
 
-def test_repairs_malformed_drone_phrase_and_request_word_order():
-    repaired = services._repair_news_idioms(SOURCE, BAD_FA)
+def test_guarded_copy_repairs_malformed_drone_phrase_and_request_word_order():
+    repaired = strict_translation._natural_persian_copy(SOURCE, BAD_FA)
 
+    assert repaired
     assert "هواپیماهای بدون سرنشین دار" not in repaired
     assert "تهران از روسیه خواست" in repaired
     assert "پهپادهای مسلح" in repaired
-    assert services.translation_is_publishable(SOURCE, repaired) is True
 
 
-def test_unrepaired_malformed_drone_phrase_is_not_publishable():
-    assert services.translation_is_publishable(SOURCE, BAD_FA) is False
+def test_guarded_copy_rejects_unrepairable_malformed_unmanned_phrase():
+    source = "Tehran discussed aviation technology with Russia."
+    bad = "تهران درباره هواپیماهای بدون سرنشین دار با روسیه گفت‌وگو کرد."
+
+    assert strict_translation._natural_persian_copy(source, bad) == ""
