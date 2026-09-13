@@ -3,6 +3,7 @@ from src.strict_translation import StrictTelegramNewsroomPublisher
 
 SOURCE = "An Iranian commercial vessel was struck off Qeshm Island, leaving one killed and three wounded."
 GOOD_FA = "یک شناور تجاری ایرانی در نزدیکی جزیره قشم هدف قرار گرفت؛ یک نفر کشته و سه نفر زخمی شدند."
+BAD_ARGOS_FA = "یک کشتی تجاری ایرانی در نزدیکی جزیره قشم به قتل رسید و یک نفر را کشت و سه نفر دیگر را زخمی کرد."
 
 
 class ExplodingAI:
@@ -44,6 +45,30 @@ def test_optional_mode_falls_back_when_offline_translator_is_unavailable():
     def offline(text):
         calls.append("offline")
         return ""
+
+    def network(text):
+        calls.append("network")
+        return GOOD_FA
+
+    publisher = StrictTelegramNewsroomPublisher(
+        "token",
+        "@bikhabaar",
+        ai=None,
+        ai_mode="optional",
+        translator=network,
+        offline_translator=offline,
+    )
+
+    assert publisher._translate_resilient(SOURCE) == GOOD_FA
+    assert calls == ["offline", "network"]
+
+
+def test_optional_mode_rejects_real_argos_role_reversal_and_falls_back():
+    calls = []
+
+    def offline(text):
+        calls.append("offline")
+        return BAD_ARGOS_FA
 
     def network(text):
         calls.append("network")
