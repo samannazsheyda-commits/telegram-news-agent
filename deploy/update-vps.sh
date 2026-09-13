@@ -88,6 +88,11 @@ else
   fi
 fi
 
+# The newsroom must retain a local Persian translation path when remote AI or
+# public translation services are unavailable. The installer is idempotent: it
+# exits immediately when the compact Argos EN→FA model is already present.
+bash "${APP_DIR}/deploy/install-offline-translator.sh"
+
 seed_once() {
   local src="$1"
   local dst="$2"
