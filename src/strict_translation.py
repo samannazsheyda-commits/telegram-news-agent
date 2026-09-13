@@ -77,6 +77,35 @@ def _preserves_key_entities(source: str, edited: str) -> bool:
     return True
 
 
+def _repair_struck_casualty_role_reversal(source: str, translated: str) -> str:
+    """Repair one observed Argos role reversal only when the English source anchors it.
+
+    Argos can mistranslate "vessel was struck, killing ..." as if the vessel
+    itself were killed and then killed/wounded people. The rewrite is allowed
+    only when the source explicitly says the subject was struck and separately
+    describes casualties, so ordinary Persian uses of "به قتل رسید" are untouched.
+    """
+    source_lower = str(source or "").lower()
+    value = services._polish_fa(str(translated or ""))
+    if "struck" not in source_lower:
+        return value
+    if not any(term in source_lower for term in ("killing", "killed", "wounding", "wounded", "leaving")):
+        return value
+
+    match = re.match(
+        r"^(?P<victim>.+?)\s+به قتل رسید\s+و\s+"
+        r"(?P<killed>[^،؛.!؟]+?نفر)\s+را کشت\s+و\s+"
+        r"(?P<wounded>[^،؛.!؟]+?نفر(?:\s+دیگر)?)\s+را زخمی کرد[.!؟]?$",
+        value,
+    )
+    if not match:
+        return value
+    return services._polish_fa(
+        f"{match.group('victim')} هدف قرار گرفت؛ "
+        f"{match.group('killed')} کشته و {match.group('wounded')} زخمی شدند."
+    )
+
+
 def _natural_persian_copy(source: str, value: str) -> str:
     edited = edit_news_text(source, value)
     if not edited:
@@ -132,6 +161,7 @@ class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
         value = str(translated or "").strip()
         if not value:
             return ""
+        value = _repair_struck_casualty_role_reversal(raw, value)
         value = services._repair_news_idioms(raw, value)
         return _natural_persian_copy(raw, value)
 

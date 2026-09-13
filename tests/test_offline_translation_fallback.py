@@ -4,6 +4,7 @@ from src.strict_translation import StrictTelegramNewsroomPublisher
 SOURCE = "An Iranian commercial vessel was struck off Qeshm Island, leaving one killed and three wounded."
 GOOD_FA = "یک شناور تجاری ایرانی در نزدیکی جزیره قشم هدف قرار گرفت؛ یک نفر کشته و سه نفر زخمی شدند."
 BAD_ARGOS_FA = "یک کشتی تجاری ایرانی در نزدیکی جزیره قشم به قتل رسید و یک نفر را کشت و سه نفر دیگر را زخمی کرد."
+REPAIRED_ARGOS_FA = "یک کشتی تجاری ایرانی در نزدیکی جزیره قشم هدف قرار گرفت؛ یک نفر کشته و سه نفر دیگر زخمی شدند."
 
 
 class ExplodingAI:
@@ -63,7 +64,7 @@ def test_optional_mode_falls_back_when_offline_translator_is_unavailable():
     assert calls == ["offline", "network"]
 
 
-def test_optional_mode_rejects_real_argos_role_reversal_and_falls_back():
+def test_optional_mode_repairs_real_argos_role_reversal_without_network():
     calls = []
 
     def offline(text):
@@ -71,8 +72,7 @@ def test_optional_mode_rejects_real_argos_role_reversal_and_falls_back():
         return BAD_ARGOS_FA
 
     def network(text):
-        calls.append("network")
-        return GOOD_FA
+        raise AssertionError("network translator must not run when the source-anchored repair is safe")
 
     publisher = StrictTelegramNewsroomPublisher(
         "token",
@@ -83,5 +83,5 @@ def test_optional_mode_rejects_real_argos_role_reversal_and_falls_back():
         offline_translator=offline,
     )
 
-    assert publisher._translate_resilient(SOURCE) == GOOD_FA
-    assert calls == ["offline", "network"]
+    assert publisher._translate_resilient(SOURCE) == REPAIRED_ARGOS_FA
+    assert calls == ["offline"]
