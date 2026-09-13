@@ -20,3 +20,10 @@ def test_argos_layout_is_available_without_quickmt_files(tmp_path):
     translator = OfflinePersianTranslator(model_dir)
 
     assert translator.available is True
+
+
+def test_installer_downloads_compact_argos_package():
+    script = Path("deploy/install-offline-translator.sh").read_text(encoding="utf-8")
+
+    assert "translate-en_fa-1_5.argosmodel" in script
+    assert "quickmt/quickmt-en-fa" not in script
