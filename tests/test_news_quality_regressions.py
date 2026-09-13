@@ -112,7 +112,8 @@ def test_same_shipping_claim_from_new_source_is_candidate_across_time_bucket(tmp
         fetched_at="2026-09-10T16:16:00+00:00",
     )
     current_fp = build_fingerprint(normalize_item(current))
-    assert ledger.find_candidates(current_fp)
+    now = datetime.fromisoformat("2026-09-10T16:20:00+00:00")
+    assert ledger.find_candidates(current_fp, now=now)
 
 
 def test_question_mark_anywhere_in_headline_is_hard_filtered():

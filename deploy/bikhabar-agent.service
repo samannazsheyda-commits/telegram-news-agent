@@ -10,6 +10,7 @@ User=bikhabar
 Group=bikhabar
 WorkingDirectory=/opt/bikhabar/app
 EnvironmentFile=/etc/bikhabar/agent.env
+Environment=OFFLINE_TRANSLATION_ENABLED=1
 Environment=PYTHONUNBUFFERED=1
 Environment=BIKHABAR_RUNTIME_ROOT=/var/lib/bikhabar/runtime
 Environment=DATA_DIR=/var/lib/bikhabar/runtime/data
