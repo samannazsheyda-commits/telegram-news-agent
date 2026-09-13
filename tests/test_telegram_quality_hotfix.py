@@ -82,7 +82,7 @@ def test_auto_publisher_does_not_fall_back_to_unverified_lingva_translation():
     assert publisher._message(item) == ""
 
 
-def test_strict_translation_never_calls_mymemory_after_google_failures():
+def test_strict_translation_uses_mymemory_only_through_the_quality_gate_after_google_failures():
     calls = []
 
     class Response:
@@ -99,8 +99,9 @@ def test_strict_translation_never_calls_mymemory_after_google_failures():
                 raise RuntimeError("google api unavailable")
             return Response()
 
+    # MyMemory is now a last-resort transport, but bad copy still fails closed.
     assert translate_to_fa_strict("Iran launched a missile", session=Session()) == ""
-    assert all("mymemory" not in url for url in calls)
+    assert any("mymemory" in url for url in calls)
 
 
 def test_scheduled_air_traffic_job_publishes_only_the_approved_validated_renderer():
