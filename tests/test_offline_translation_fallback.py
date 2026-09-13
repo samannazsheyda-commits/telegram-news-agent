@@ -1,3 +1,6 @@
+from src import strict_translation as strict_translation_module
+from src.newsroom_models import RawNewsItem
+from src.newsroom_normalize import normalize_item
 from src.strict_translation import StrictTelegramNewsroomPublisher
 
 
@@ -108,3 +111,37 @@ def test_default_optional_path_does_not_enter_offline_translator_before_network(
 
     assert publisher._translate_resilient(SOURCE) == GOOD_FA
     assert offline_calls == []
+
+
+def test_optional_mode_keeps_vetted_headline_when_summary_translation_is_unavailable(monkeypatch):
+    summary = "Officials said more details would be released later."
+
+    def offline(text):
+        return GOOD_FA if text == SOURCE else ""
+
+    monkeypatch.setattr(strict_translation_module.newsroom_publisher_module, "_lingva_translate", lambda *a, **k: "")
+    publisher = StrictTelegramNewsroomPublisher(
+        "token",
+        "@bikhabaar",
+        ai=None,
+        ai_mode="optional",
+        translator=lambda text: "",
+        offline_translator=offline,
+        offline_translation_enabled=True,
+    )
+    item = normalize_item(RawNewsItem(
+        source="Al Jazeera English / X",
+        source_url="https://x.com/AJEnglish/status/1",
+        source_item_id="1",
+        published_at="2026-09-13T05:00:00+00:00",
+        fetched_at="2026-09-13T05:01:00+00:00",
+        title=SOURCE,
+        summary=summary,
+        media=[],
+        source_priority="protected",
+    ))
+
+    message = publisher._message(item)
+
+    assert GOOD_FA in message
+    assert summary not in message
