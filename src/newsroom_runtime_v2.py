@@ -31,7 +31,10 @@ def _decision_ai_for_newsroom(ai, ai_mode: str):
 
 
 def _offline_translation_enabled() -> bool:
-    raw = str(os.environ.get("OFFLINE_TRANSLATION_ENABLED", "1") or "1").strip().lower()
+    # Local Argos inference is opt-in only. The production VPS is deliberately
+    # tiny and a synchronous local translation can be OOM-killed before the
+    # network fallback chain gets a chance to publish the story.
+    raw = str(os.environ.get("OFFLINE_TRANSLATION_ENABLED", "0") or "0").strip().lower()
     return raw not in {"0", "false", "no", "off"}
 
 
