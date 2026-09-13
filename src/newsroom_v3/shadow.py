@@ -18,6 +18,7 @@ class ShadowCycleResult:
     ready: int = 0
     waiting: int = 0
     rejected: int = 0
+    duplicates: int = 0
     telegram_writes: int = 0
     story_ids: list[str] = field(default_factory=list)
 
@@ -34,14 +35,7 @@ def _story_id(raw: RawNewsItem) -> str:
 
 
 class NewsroomV3ShadowPipeline:
-    """Deterministic, no-publish V3 intake slice.
-
-    This first shadow stage deliberately stops before dedup/editorial/publishing.
-    It proves that fresh source items can be normalized, eligibility-classified,
-    fingerprinted and persisted in the new authoritative store without any
-    Telegram side effect. Later V3 stages can consume the persisted `ready`
-    records while keeping publish state independent.
-    """
+    """Deterministic, no-publish V3 intake and exact-dedup slice."""
 
     def __init__(self, store: NewsroomV3Store):
         self.store = store
@@ -51,6 +45,7 @@ class NewsroomV3ShadowPipeline:
         ready = 0
         waiting = 0
         rejected = 0
+        duplicates = 0
         story_ids: list[str] = []
 
         for raw in items:
@@ -58,18 +53,37 @@ class NewsroomV3ShadowPipeline:
             item = normalize_item(raw)
             fingerprint = build_fingerprint(item)
             eligibility = evaluate_eligibility(item, now)
+            story_id = _story_id(raw)
+            duplicate_of = ""
 
             if eligibility.eligible:
-                decision_state = "ready"
-                ready += 1
+                canonical = self.store.find_canonical_story(
+                    source_url=raw.source_url,
+                    fingerprint=fingerprint.key,
+                    exclude_story_id=story_id,
+                )
+                if canonical is not None:
+                    decision_state = "duplicate"
+                    duplicate_of = canonical.story_id
+                    decision_reason = (
+                        "duplicate_exact_url"
+                        if str(canonical.source_url or "").strip() == str(raw.source_url or "").strip()
+                        else "duplicate_fingerprint"
+                    )
+                    duplicates += 1
+                else:
+                    decision_state = "ready"
+                    decision_reason = eligibility.reason
+                    ready += 1
             elif eligibility.review:
                 decision_state = "waiting"
+                decision_reason = eligibility.reason
                 waiting += 1
             else:
                 decision_state = "rejected"
+                decision_reason = eligibility.reason
                 rejected += 1
 
-            story_id = _story_id(raw)
             self.store.upsert_story(
                 story_id=story_id,
                 source_item_id=raw.source_item_id,
@@ -80,7 +94,8 @@ class NewsroomV3ShadowPipeline:
                 published_at=raw.published_at,
                 fingerprint=fingerprint.key,
                 decision_state=decision_state,
-                decision_reason=eligibility.reason,
+                decision_reason=decision_reason,
+                duplicate_of=duplicate_of,
             )
             story_ids.append(story_id)
 
@@ -89,6 +104,7 @@ class NewsroomV3ShadowPipeline:
             ready=ready,
             waiting=waiting,
             rejected=rejected,
+            duplicates=duplicates,
             telegram_writes=0,
             story_ids=story_ids,
         )
