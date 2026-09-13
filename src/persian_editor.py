@@ -53,6 +53,13 @@ _KNOWN_LATIN = {
     "IDF": "ارتش اسرائیل",
     "UAV": "پهپاد",
     "NOTAM": "نوتام",
+    # Common residual proper names/acronyms seen in guarded English→Persian
+    # fallbacks. Keep this allow-list explicit: arbitrary Latin such as FooBar
+    # must still fail closed below.
+    "JD": "جی‌دی",
+    "Vance": "ونس",
+    "Patriot": "پاتریوت",
+    "NYT": "نیویورک تایمز",
 }
 
 
@@ -105,17 +112,6 @@ def has_forbidden_latin_body(text: str) -> bool:
     return bool(_LATIN_WORD_RE.search(text or ""))
 
 
-def _latin_residue_is_safe(source: str, edited: str) -> bool:
-    latin_words = [word.lower() for word in _LATIN_WORD_RE.findall(edited or "")]
-    if not latin_words:
-        return True
-    source_words = {word.lower() for word in _LATIN_WORD_RE.findall(source or "")}
-    if any(word not in source_words for word in latin_words):
-        return False
-    words = re.findall(r"[A-Za-z\u0600-\u06FF]+", edited or "")
-    return bool(words) and len(latin_words) / len(words) <= 0.20
-
-
 def _protected_numbers(text: str) -> list[str]:
     return re.findall(r"\d+(?:[.,]\d+)?", text or "")
 
@@ -145,6 +141,6 @@ def edit_news_text(source_text: str, translated_text: str, *, max_chars: int = 7
         return ""
     if not _preserves_numbers(source, value):
         return ""
-    if not _latin_residue_is_safe(source, value):
+    if has_forbidden_latin_body(value):
         return ""
     return value
