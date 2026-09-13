@@ -40,11 +40,12 @@ _ENTITY_PRESERVATION_RULES = (
 
 
 def translate_to_fa_strict(text: str, session=None) -> str:
-    """Translate auto-published newsroom copy using only high-confidence paths.
+    """Translate auto-published newsroom copy through guarded fallbacks.
 
-    Automatic Telegram publication fails closed when both Google paths fail.
-    MyMemory and public Lingva instances are deliberately excluded from this
-    production path so weak fallback text cannot become final channel copy.
+    Google remains the preferred path. If both Google endpoints are unavailable,
+    MyMemory is allowed only as a last-resort transport because its output must
+    still pass the same semantic, numeric, idiom and Persian editorial gates
+    before it can reach Telegram. Public Lingva instances remain excluded here.
     """
     raw = str(text or "").strip()
     if not raw:
@@ -52,7 +53,11 @@ def translate_to_fa_strict(text: str, session=None) -> str:
     if services.has_persian(raw):
         return services._polish_fa(raw)
     resolved_session = session or services.requests
-    for translator in (services._google_translate, services._google_mobile_translate):
+    for translator in (
+        services._google_translate,
+        services._google_mobile_translate,
+        services._mymemory_translate,
+    ):
         try:
             translated = services._polish_fa(translator(raw, session=resolved_session))
             translated = services._repair_news_idioms(raw, translated)
