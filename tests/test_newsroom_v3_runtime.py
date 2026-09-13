@@ -74,6 +74,52 @@ def test_runtime_canary_publishes_at_most_requested_limit(tmp_path):
     assert story.telegram_message_id == 9001
 
 
+def test_runtime_retries_persisted_failed_story_even_when_source_no_longer_returns_it(tmp_path):
+    runtime = _runtime_module()
+    store = NewsroomV3Store(tmp_path / "newsroom_v3.sqlite3")
+    store.upsert_story(
+        story_id="persisted-1",
+        source_item_id="source-1",
+        source="Reuters",
+        source_url="https://example.com/persisted-1",
+        title="Iran launches missiles during military exercise",
+        summary="Material detail",
+        published_at="2026-09-14T10:00:00+00:00",
+        fingerprint="fp-persisted",
+        decision_state="ready",
+        decision_reason="eligible",
+    )
+    store.begin_publish("persisted-1")
+    store.mark_publish_failed("persisted-1", "temporary_failure")
+    store.close()
+
+    calls = []
+
+    def publisher(story):
+        calls.append(story.story_id)
+        return {"ok": True, "message_id": 7777}
+
+    result = runtime.run_once(
+        data_dir=tmp_path,
+        fetchers=[],
+        now=datetime(2026, 9, 14, 10, 6, tzinfo=timezone.utc),
+        shadow=False,
+        publisher=publisher,
+        publish_limit=1,
+    )
+
+    assert result["telegram_writes"] == 1
+    assert calls == ["persisted-1"]
+    reopened = NewsroomV3Store(tmp_path / "newsroom_v3.sqlite3")
+    story = reopened.get_story("persisted-1")
+    assert story.publish_state == "published"
+    assert story.telegram_message_id == 7777
+    assert [(a.attempt_no, a.state) for a in reopened.list_publish_attempts("persisted-1")] == [
+        (1, "failed"),
+        (2, "published"),
+    ]
+
+
 def test_runtime_collects_source_failure_without_aborting_other_sources(tmp_path):
     runtime = _runtime_module()
 
