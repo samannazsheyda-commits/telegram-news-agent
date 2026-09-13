@@ -213,3 +213,39 @@ class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
 
         print("STRICT_TRANSLATION_ALL_FALLBACKS_FAILED", flush=True)
         return ""
+
+    def _message(self, item):
+        """Build safe Persian output, allowing headline-only degradation in optional mode.
+
+        The title must always pass the full translation/editorial guard. When the
+        source also supplied a summary but every summary backend is unavailable or
+        rejected, optional mode may omit only that supplemental summary instead of
+        dropping the already-vetted headline. Required AI mode remains fail-closed.
+        """
+        title_fa = self._translate_resilient(item.raw.title)
+        if not title_fa:
+            return ""
+
+        summary_fa = self._translate_resilient(item.raw.summary) if item.raw.summary else ""
+        if item.raw.summary and not summary_fa:
+            if self.ai_mode == "required":
+                return ""
+            print(
+                f"SUMMARY_TRANSLATION_SKIPPED_HEADLINE_ONLY source={item.raw.source!r}",
+                flush=True,
+            )
+
+        legacy = newsroom_publisher_module.NewsItem(
+            key=item.raw.source_item_id,
+            source=item.raw.source,
+            title=item.raw.title,
+            summary=item.raw.summary,
+            link=item.raw.source_url,
+            published=newsroom_publisher_module._published_rfc2822(item.raw.published_at),
+        )
+        message = newsroom_publisher_module.format_news(legacy, title_fa, summary_fa)
+        if not message:
+            return ""
+        if newsroom_publisher_module._is_explosion(item):
+            message = newsroom_publisher_module._collapse_breaking_header(message)
+        return newsroom_publisher_module.finalize_telegram_message(message)
