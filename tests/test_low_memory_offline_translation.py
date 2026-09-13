@@ -1,11 +1,11 @@
 from pathlib import Path
 
-from src.offline_translation import OfflineEnglishPersianTranslator
+from src.offline_translation import OfflinePersianTranslator
 
 
 def test_default_offline_model_is_compact_argos_layout(monkeypatch):
     monkeypatch.delenv("OFFLINE_TRANSLATOR_MODEL_DIR", raising=False)
-    translator = OfflineEnglishPersianTranslator()
+    translator = OfflinePersianTranslator()
 
     assert translator.model_dir == Path("/var/lib/bikhabar/models/argos-en-fa")
 
@@ -17,6 +17,6 @@ def test_argos_layout_is_available_without_quickmt_files(tmp_path):
     (model_dir / "model" / "config.json").write_text("{}", encoding="utf-8")
     (model_dir / "sentencepiece.model").write_bytes(b"spm")
 
-    translator = OfflineEnglishPersianTranslator(model_dir)
+    translator = OfflinePersianTranslator(model_dir)
 
     assert translator.available is True
