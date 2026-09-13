@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sqlite3
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -15,6 +16,9 @@ class StoryRecord:
     title: str
     summary: str
     published_at: str
+    fetched_at: str
+    media: list[dict]
+    source_priority: str
     fingerprint: str
     decision_state: str
     decision_reason: str
@@ -41,13 +45,23 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-class NewsroomV3Store:
-    """SQLite/WAL authoritative state for Newsroom V3.
+def _media_json(media) -> str:
+    value = media if isinstance(media, list) else []
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
-    Editorial decisions and publication attempts are deliberately stored as
-    separate state machines. A failed Telegram/translation attempt therefore
-    cannot rewrite a story into a duplicate/rejected editorial state.
-    """
+
+def _parse_media(value: str) -> list[dict]:
+    try:
+        parsed = json.loads(str(value or "[]"))
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return []
+    if not isinstance(parsed, list):
+        return []
+    return [dict(row) for row in parsed if isinstance(row, dict)]
+
+
+class NewsroomV3Store:
+    """SQLite/WAL authoritative state for Newsroom V3."""
 
     _DECISION_STATES = {"ready", "waiting", "rejected", "duplicate"}
 
@@ -74,6 +88,9 @@ class NewsroomV3Store:
                     title TEXT NOT NULL DEFAULT '',
                     summary TEXT NOT NULL DEFAULT '',
                     published_at TEXT NOT NULL DEFAULT '',
+                    fetched_at TEXT NOT NULL DEFAULT '',
+                    media_json TEXT NOT NULL DEFAULT '[]',
+                    source_priority TEXT NOT NULL DEFAULT 'normal',
                     fingerprint TEXT NOT NULL DEFAULT '',
                     decision_state TEXT NOT NULL,
                     decision_reason TEXT NOT NULL DEFAULT '',
@@ -109,6 +126,21 @@ class NewsroomV3Store:
                     ON publish_attempts(story_id, attempt_no);
                 """
             )
+            self._ensure_story_columns()
+
+    def _ensure_story_columns(self) -> None:
+        existing = {
+            str(row["name"])
+            for row in self._conn.execute("PRAGMA table_info(stories)").fetchall()
+        }
+        migrations = {
+            "fetched_at": "TEXT NOT NULL DEFAULT ''",
+            "media_json": "TEXT NOT NULL DEFAULT '[]'",
+            "source_priority": "TEXT NOT NULL DEFAULT 'normal'",
+        }
+        for name, definition in migrations.items():
+            if name not in existing:
+                self._conn.execute(f"ALTER TABLE stories ADD COLUMN {name} {definition}")
 
     def close(self) -> None:
         self._conn.close()
@@ -131,17 +163,22 @@ class NewsroomV3Store:
         decision_state: str,
         decision_reason: str = "",
         duplicate_of: str = "",
+        fetched_at: str = "",
+        media=None,
+        source_priority: str = "normal",
     ) -> StoryRecord:
         now = _utc_now()
+        encoded_media = _media_json(media)
         with self._conn:
             self._conn.execute(
                 """
                 INSERT INTO stories (
                     story_id, source_item_id, source, source_url, title, summary,
-                    published_at, fingerprint, decision_state, decision_reason,
-                    duplicate_of, publish_state, last_publish_error,
-                    telegram_message_id, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'not_attempted', '', NULL, ?, ?)
+                    published_at, fetched_at, media_json, source_priority,
+                    fingerprint, decision_state, decision_reason, duplicate_of,
+                    publish_state, last_publish_error, telegram_message_id,
+                    created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'not_attempted', '', NULL, ?, ?)
                 ON CONFLICT(story_id) DO UPDATE SET
                     source_item_id=excluded.source_item_id,
                     source=excluded.source,
@@ -149,6 +186,9 @@ class NewsroomV3Store:
                     title=excluded.title,
                     summary=excluded.summary,
                     published_at=excluded.published_at,
+                    fetched_at=excluded.fetched_at,
+                    media_json=excluded.media_json,
+                    source_priority=excluded.source_priority,
                     fingerprint=excluded.fingerprint,
                     decision_state=excluded.decision_state,
                     decision_reason=excluded.decision_reason,
@@ -163,6 +203,9 @@ class NewsroomV3Store:
                     title,
                     summary,
                     published_at,
+                    str(fetched_at or ""),
+                    encoded_media,
+                    str(source_priority or "normal"),
                     fingerprint,
                     decision_state,
                     decision_reason,
@@ -395,6 +438,9 @@ class NewsroomV3Store:
             title=str(row["title"]),
             summary=str(row["summary"]),
             published_at=str(row["published_at"]),
+            fetched_at=str(row["fetched_at"]),
+            media=_parse_media(str(row["media_json"])),
+            source_priority=str(row["source_priority"] or "normal"),
             fingerprint=str(row["fingerprint"]),
             decision_state=str(row["decision_state"]),
             decision_reason=str(row["decision_reason"]),
