@@ -17,7 +17,7 @@ class ExplodingAI:
         raise AssertionError("optional translation must not depend on the remote AI when offline MT is available")
 
 
-def test_optional_mode_prefers_offline_translator_before_remote_ai_or_network():
+def test_optional_mode_prefers_offline_translator_before_remote_ai_or_network_when_explicitly_enabled():
     calls = []
 
     def offline(text):
@@ -25,7 +25,7 @@ def test_optional_mode_prefers_offline_translator_before_remote_ai_or_network():
         return GOOD_FA
 
     def network(text):
-        raise AssertionError("network translator must not run when offline MT succeeds")
+        raise AssertionError("network translator must not run when explicitly enabled offline MT succeeds")
 
     publisher = StrictTelegramNewsroomPublisher(
         "token",
@@ -34,13 +34,14 @@ def test_optional_mode_prefers_offline_translator_before_remote_ai_or_network():
         ai_mode="optional",
         translator=network,
         offline_translator=offline,
+        offline_translation_enabled=True,
     )
 
     assert publisher._translate_resilient(SOURCE) == GOOD_FA
     assert calls == [("offline", SOURCE)]
 
 
-def test_optional_mode_falls_back_when_offline_translator_is_unavailable():
+def test_optional_mode_falls_back_when_explicit_offline_translator_is_unavailable():
     calls = []
 
     def offline(text):
@@ -58,13 +59,14 @@ def test_optional_mode_falls_back_when_offline_translator_is_unavailable():
         ai_mode="optional",
         translator=network,
         offline_translator=offline,
+        offline_translation_enabled=True,
     )
 
     assert publisher._translate_resilient(SOURCE) == GOOD_FA
     assert calls == ["offline", "network"]
 
 
-def test_optional_mode_repairs_real_argos_role_reversal_without_network():
+def test_optional_mode_repairs_real_argos_role_reversal_when_offline_is_explicitly_enabled():
     calls = []
 
     def offline(text):
@@ -81,6 +83,7 @@ def test_optional_mode_repairs_real_argos_role_reversal_without_network():
         ai_mode="optional",
         translator=network,
         offline_translator=offline,
+        offline_translation_enabled=True,
     )
 
     assert publisher._translate_resilient(SOURCE) == REPAIRED_ARGOS_FA
