@@ -4,6 +4,7 @@ import re
 
 from . import newsroom_publisher as newsroom_publisher_module
 from . import services
+from .offline_translation import translate_to_fa_offline
 from .persian_editor import edit_news_text
 from .newsroom_publisher import TelegramNewsroomPublisher
 
@@ -41,14 +42,7 @@ _ENTITY_PRESERVATION_RULES = (
 
 
 def translate_to_fa_strict(text: str, session=None) -> str:
-    """Translate auto-published newsroom copy through guarded fallbacks.
-
-    Google remains the preferred path. If both Google endpoints are unavailable,
-    MyMemory is allowed only as a last-resort transport because its output must
-    still pass the same semantic, numeric, idiom and Persian editorial gates
-    before it can reach Telegram. Public Lingva instances are handled one layer
-    later by the optional-mode publisher and are subjected to the same gates.
-    """
+    """Translate auto-published newsroom copy through guarded network fallbacks."""
     raw = str(text or "").strip()
     if not raw:
         return ""
@@ -97,7 +91,7 @@ def _natural_persian_copy(source: str, value: str) -> str:
 
 
 class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
-    """Production publisher with optional/required AI translation and editing."""
+    """Production publisher with local MT plus optional/required remote AI."""
 
     def __init__(
         self,
@@ -106,6 +100,7 @@ class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
         *,
         session=services.requests,
         translator=None,
+        offline_translator=None,
         ai=None,
         ai_mode: str = "optional",
     ):
@@ -114,6 +109,7 @@ class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
         mode = str(ai_mode or "optional").strip().lower()
         self.ai_mode = mode if mode in {"off", "optional", "required"} else "optional"
         self.ai = ai
+        self.offline_translator = offline_translator or translate_to_fa_offline
 
     def _translate_with_ai(self, raw: str) -> str:
         if self.ai is None or not bool(getattr(self.ai, "available", True)):
@@ -132,12 +128,32 @@ class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
             print(f"AI_TRANSLATION_EDITOR_FAILED type={type(exc).__name__} error={exc}", flush=True)
             return ""
 
+    def _guard_translation(self, raw: str, translated: str) -> str:
+        value = str(translated or "").strip()
+        if not value:
+            return ""
+        value = services._repair_news_idioms(raw, value)
+        return _natural_persian_copy(raw, value)
+
     def _translate_resilient(self, text: str) -> str:
         raw = str(text or "").strip()
         if not raw:
             return ""
         if services.has_persian(raw):
             return services._polish_fa(raw)
+
+        # Optional/off modes use the VPS-local model first. This keeps routine
+        # publication independent of OpenRouter/HF rate limits and outages.
+        # Required mode preserves its explicit remote-AI fail-closed contract.
+        if self.ai_mode != "required":
+            try:
+                offline = str(self.offline_translator(raw) or "").strip()
+            except Exception as exc:
+                print(f"OFFLINE_TRANSLATION_CALL_FAILED type={type(exc).__name__}", flush=True)
+                offline = ""
+            guarded = self._guard_translation(raw, offline)
+            if guarded:
+                return guarded
 
         if self.ai_mode != "off":
             translated = self._translate_with_ai(raw)
@@ -153,19 +169,15 @@ class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
             print(f"STRICT_TRANSLATION_CALL_FAILED type={type(exc).__name__}", flush=True)
             translated = ""
 
-        if translated:
-            translated = services._repair_news_idioms(raw, translated)
-            guarded = _natural_persian_copy(raw, translated)
-            if guarded:
-                return guarded
+        guarded = self._guard_translation(raw, translated)
+        if guarded:
+            return guarded
 
         fallback = newsroom_publisher_module._lingva_translate(raw, session=self.session)
-        if fallback:
-            fallback = services._repair_news_idioms(raw, fallback)
-            guarded = _natural_persian_copy(raw, fallback)
-            if guarded:
-                print("STRICT_TRANSLATION_LINGVA_FALLBACK_OK", flush=True)
-                return guarded
+        guarded = self._guard_translation(raw, fallback)
+        if guarded:
+            print("STRICT_TRANSLATION_LINGVA_FALLBACK_OK", flush=True)
+            return guarded
 
         print("STRICT_TRANSLATION_ALL_FALLBACKS_FAILED", flush=True)
         return ""
