@@ -53,6 +53,13 @@ _KNOWN_LATIN = {
     "IDF": "ارتش اسرائیل",
     "UAV": "پهپاد",
     "NOTAM": "نوتام",
+    # Common residual proper names/acronyms seen in guarded English→Persian
+    # fallbacks. Keep this allow-list explicit: arbitrary Latin such as FooBar
+    # must still fail closed below.
+    "JD": "جی‌دی",
+    "Vance": "ونس",
+    "Patriot": "پاتریوت",
+    "NYT": "نیویورک تایمز",
 }
 
 
