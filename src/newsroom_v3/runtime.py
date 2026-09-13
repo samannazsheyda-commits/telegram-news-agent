@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import argparse
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -76,3 +78,16 @@ def run_once(
         }
     finally:
         store.close()
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Newsroom V3 shadow runtime")
+    parser.add_argument("--data-dir", default="data")
+    args = parser.parse_args()
+    result = run_once(data_dir=args.data_dir, shadow=True)
+    print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
