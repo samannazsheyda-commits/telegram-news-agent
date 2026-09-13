@@ -412,7 +412,7 @@ def run_cycle(
 
         fingerprint = build_fingerprint(item)
         candidates = _merge_candidates(
-            ledger.find_candidates(fingerprint),
+            ledger.find_candidates(fingerprint, now=now),
             ledger.find_same_source_claims(item.raw.source, item.raw.title, item.raw.published_at),
         )
         decision = decide_item(item, fingerprint, candidates)
