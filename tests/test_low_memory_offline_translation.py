@@ -19,6 +19,17 @@ def test_argos_layout_is_available_without_quickmt_files(tmp_path):
     assert translator.available is True
 
 
+def test_legacy_argos_ct2_layout_without_config_is_available(tmp_path):
+    model_dir = tmp_path / "argos-en-fa"
+    (model_dir / "model").mkdir(parents=True)
+    (model_dir / "model" / "model.bin").write_bytes(b"legacy-ct2-model")
+    (model_dir / "sentencepiece.model").write_bytes(b"spm")
+
+    translator = OfflinePersianTranslator(model_dir)
+
+    assert translator.available is True
+
+
 def test_argos_bpe_layout_is_available(tmp_path):
     model_dir = tmp_path / "argos-en-fa"
     (model_dir / "model").mkdir(parents=True)
