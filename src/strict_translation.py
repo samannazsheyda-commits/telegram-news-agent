@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 
+from . import newsroom_publisher as newsroom_publisher_module
 from . import services
 from .persian_editor import edit_news_text
 from .newsroom_publisher import TelegramNewsroomPublisher
@@ -45,7 +46,8 @@ def translate_to_fa_strict(text: str, session=None) -> str:
     Google remains the preferred path. If both Google endpoints are unavailable,
     MyMemory is allowed only as a last-resort transport because its output must
     still pass the same semantic, numeric, idiom and Persian editorial gates
-    before it can reach Telegram. Public Lingva instances remain excluded here.
+    before it can reach Telegram. Public Lingva instances are handled one layer
+    later by the optional-mode publisher and are subjected to the same gates.
     """
     raw = str(text or "").strip()
     if not raw:
@@ -149,8 +151,21 @@ class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
             translated = str(self.translator(raw) or "").strip()
         except Exception as exc:
             print(f"STRICT_TRANSLATION_CALL_FAILED type={type(exc).__name__}", flush=True)
-            return ""
-        if not translated:
-            return ""
-        translated = services._repair_news_idioms(raw, translated)
-        return _natural_persian_copy(raw, translated)
+            translated = ""
+
+        if translated:
+            translated = services._repair_news_idioms(raw, translated)
+            guarded = _natural_persian_copy(raw, translated)
+            if guarded:
+                return guarded
+
+        fallback = newsroom_publisher_module._lingva_translate(raw, session=self.session)
+        if fallback:
+            fallback = services._repair_news_idioms(raw, fallback)
+            guarded = _natural_persian_copy(raw, fallback)
+            if guarded:
+                print("STRICT_TRANSLATION_LINGVA_FALLBACK_OK", flush=True)
+                return guarded
+
+        print("STRICT_TRANSLATION_ALL_FALLBACKS_FAILED", flush=True)
+        return ""

@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from src import strict_translation
+from src import newsroom_publisher, strict_translation
 from src.ai_newsroom import AIServiceError, PersianEditDecision, TranslationDraft
 from src.newsroom_models import RawNewsItem
 from src.newsroom_normalize import normalize_item
@@ -156,3 +156,17 @@ def test_strict_translation_falls_back_to_guarded_mymemory_when_google_is_down(m
     translated = strict_translation.translate_to_fa_strict(SOURCE, session=object())
     assert translated == GOOD_FA
     assert calls == ["google", "mobile", "mymemory"]
+
+
+def test_optional_mode_uses_guarded_lingva_when_strict_backends_fail(monkeypatch):
+    monkeypatch.setattr(newsroom_publisher, "_lingva_translate", lambda text, session=None: GOOD_FA)
+    publisher = StrictTelegramNewsroomPublisher(
+        "token",
+        "@bikhabaar",
+        session=object(),
+        translator=lambda text: "",
+        ai=None,
+        ai_mode="optional",
+    )
+
+    assert publisher._translate_resilient(SOURCE) == GOOD_FA
