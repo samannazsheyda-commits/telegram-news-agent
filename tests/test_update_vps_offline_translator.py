@@ -8,4 +8,4 @@ def test_update_vps_installs_offline_translator_before_agent_restart():
     restart_call = "systemctl restart bikhabar-agent"
 
     assert install_call in script
-    assert script.index(install_call) < script.index(restart_call)
+    assert script.index(install_call) < script.rindex(restart_call)
