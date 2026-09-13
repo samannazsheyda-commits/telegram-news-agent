@@ -49,6 +49,8 @@ class NewsroomV3Store:
     cannot rewrite a story into a duplicate/rejected editorial state.
     """
 
+    _DECISION_STATES = {"ready", "waiting", "rejected", "duplicate"}
+
     def __init__(self, path: str | Path):
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -180,6 +182,40 @@ class NewsroomV3Store:
             (story_id,),
         ).fetchone()
         return self._story_from_row(row) if row is not None else None
+
+    def set_decision(
+        self,
+        story_id: str,
+        state: str,
+        *,
+        reason: str = "",
+        duplicate_of: str = "",
+    ) -> StoryRecord:
+        current = self.get_story(story_id)
+        if current is None:
+            raise KeyError(story_id)
+        resolved = str(state or "").strip().lower()
+        if resolved not in self._DECISION_STATES:
+            raise ValueError(f"invalid decision state: {state}")
+        resolved_duplicate = str(duplicate_of or "").strip()
+        if resolved == "duplicate" and not resolved_duplicate:
+            raise ValueError("duplicate_of is required for duplicate decision")
+        if resolved != "duplicate":
+            resolved_duplicate = ""
+        now = _utc_now()
+        with self._conn:
+            self._conn.execute(
+                """
+                UPDATE stories
+                SET decision_state=?, decision_reason=?, duplicate_of=?, updated_at=?
+                WHERE story_id=?
+                """,
+                (resolved, str(reason or ""), resolved_duplicate, now, story_id),
+            )
+        updated = self.get_story(story_id)
+        if updated is None:
+            raise RuntimeError("decision update did not persist")
+        return updated
 
     def find_canonical_story(
         self,
