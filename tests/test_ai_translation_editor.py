@@ -172,8 +172,18 @@ def test_optional_mode_uses_guarded_lingva_when_strict_backends_fail(monkeypatch
     assert publisher._translate_resilient(SOURCE) == GOOD_FA
 
 
-def test_guarded_copy_allows_small_source_owned_latin_residue():
-    source = "Iran says Patriot intercepted a missile near Tehran."
-    translated = "ایران می‌گوید سامانه Patriot یک موشک را در نزدیکی تهران رهگیری کرد."
+def test_guarded_copy_persianizes_known_residual_terms_from_clashreport_fallback():
+    source = (
+        "Vice President JD Vance privately sought direct assessments about the Iran war. "
+        "Commanders warned that U.S. Patriot interceptors were being depleted. Source: NYT"
+    )
+    translated = (
+        "معاون رئیس‌جمهور JD Vance به‌طور خصوصی درباره جنگ ایران ارزیابی مستقیم خواست. "
+        "فرماندهان هشدار دادند که رهگیرهای Patriot آمریکا در حال کاهش است. منبع: NYT"
+    )
+    expected = (
+        "معاون رئیس‌جمهور جی‌دی ونس به‌طور خصوصی درباره جنگ ایران ارزیابی مستقیم خواست. "
+        "فرماندهان هشدار دادند که رهگیرهای پاتریوت آمریکا در حال کاهش است. منبع: نیویورک تایمز"
+    )
 
-    assert strict_translation._natural_persian_copy(source, translated) == translated
+    assert strict_translation._natural_persian_copy(source, translated) == expected
