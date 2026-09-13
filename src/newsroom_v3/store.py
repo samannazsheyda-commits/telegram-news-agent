@@ -224,12 +224,6 @@ class NewsroomV3Store:
         fingerprint: str,
         exclude_story_id: str = "",
     ) -> StoryRecord | None:
-        """Find an already-eligible canonical story for exact V3 dedup.
-
-        Only `ready` stories can become canonical dedup anchors. Publication state
-        is intentionally ignored: a temporarily failed canonical publish remains
-        the same event and can be retried instead of creating a second send.
-        """
         url = str(source_url or "").strip()
         fp = str(fingerprint or "").strip()
         excluded = str(exclude_story_id or "").strip()
@@ -254,6 +248,25 @@ class NewsroomV3Store:
             (excluded, url, url, fp, fp, url, url),
         ).fetchone()
         return self._story_from_row(row) if row is not None else None
+
+    def list_publishable(self, *, limit: int = 10) -> list[StoryRecord]:
+        bounded = max(1, min(100, int(limit)))
+        rows = self._conn.execute(
+            """
+            SELECT *
+            FROM stories
+            WHERE decision_state='ready'
+              AND publish_state IN ('not_attempted', 'failed')
+              AND telegram_message_id IS NULL
+            ORDER BY
+                CASE WHEN publish_state='failed' THEN 0 ELSE 1 END,
+                created_at ASC,
+                story_id ASC
+            LIMIT ?
+            """,
+            (bounded,),
+        ).fetchall()
+        return [self._story_from_row(row) for row in rows]
 
     def begin_publish(self, story_id: str) -> PublishAttempt:
         story = self.get_story(story_id)
