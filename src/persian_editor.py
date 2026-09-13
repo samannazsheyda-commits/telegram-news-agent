@@ -38,6 +38,12 @@ _PERSIAN_REPAIRS = (
     ("ك", "ک"),
 )
 
+_MECHANICAL_PERSIAN_FRAGMENTS = (
+    "هواپیماهای بدون سرنشین دار",
+    "هواپیمای بدون سرنشین دار",
+    "وسایل نقلیه هوایی بدون سرنشین دار",
+)
+
 _KNOWN_LATIN = {
     "US": "آمریکا",
     "USA": "آمریکا",
@@ -94,6 +100,30 @@ def _normalize_persian(text: str) -> str:
     return value
 
 
+def _source_aware_repair(source: str, translated: str) -> str:
+    source_lower = (source or "").lower()
+    value = translated or ""
+
+    if re.search(r"\barmed\s+(?:drone|drones|uav|uavs)\b", source_lower):
+        value = value.replace("هواپیماهای بدون سرنشین دار", "پهپادهای مسلح")
+        value = value.replace("هواپیمای بدون سرنشین دار", "پهپاد مسلح")
+        value = value.replace("وسایل نقلیه هوایی بدون سرنشین دار", "پهپادهای مسلح")
+
+    if re.search(r"\b(?:requested|asked)\s+russia\b", source_lower):
+        value = re.sub(
+            r"\bتهران\s+درخواست\s+کرد\s+که\s+روسیه\s+",
+            "تهران از روسیه خواست ",
+            value,
+        )
+        value = re.sub(
+            r"\bایران\s+درخواست\s+کرد\s+که\s+روسیه\s+",
+            "ایران از روسیه خواست ",
+            value,
+        )
+
+    return _normalize_persian(value)
+
+
 def trim_to_complete_sentences(text: str, max_chars: int | None = None) -> str:
     value = re.sub(r"\s+", " ", (text or "").strip())
     if not value:
@@ -144,7 +174,9 @@ def edit_news_text(source_text: str, translated_text: str, *, max_chars: int = 7
     if is_promotional_news_text(source) or is_promotional_news_text(translated):
         return ""
 
-    value = _normalize_persian(translated)
+    value = _source_aware_repair(source, _normalize_persian(translated))
+    if any(fragment in value for fragment in _MECHANICAL_PERSIAN_FRAGMENTS):
+        return ""
     if len(value) > max_chars:
         value = trim_to_complete_sentences(value, max_chars=max_chars)
     if value.endswith(("...", "…")):
