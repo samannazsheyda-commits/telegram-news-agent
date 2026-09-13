@@ -145,3 +145,23 @@ def test_optional_mode_keeps_vetted_headline_when_summary_translation_is_unavail
 
     assert GOOD_FA in message
     assert summary not in message
+
+
+def test_optional_offline_translation_normalizes_dotted_us_abbreviation_before_entity_guard():
+    source = "Iranian officials say a peace agreement with the U.S. was sabotaged."
+    offline_fa = "مقام‌های ایرانی می‌گویند توافق صلح با U.S. خرابکاری شد."
+
+    publisher = StrictTelegramNewsroomPublisher(
+        "token",
+        "@bikhabaar",
+        ai=None,
+        ai_mode="optional",
+        translator=lambda text: "",
+        offline_translator=lambda text: offline_fa,
+        offline_translation_enabled=True,
+    )
+
+    result = publisher._translate_resilient(source)
+
+    assert "آمریکا" in result
+    assert "U.S." not in result
