@@ -84,6 +84,11 @@ def is_promotional_news_text(text: str) -> bool:
 
 def _replace_known_latin(text: str) -> str:
     value = text or ""
+    # Argos can preserve the dotted American abbreviation verbatim. Normalize
+    # that exact source-owned form before the generic word-boundary replacements;
+    # plain "US"/"USA" continue to be handled by _KNOWN_LATIN below.
+    value = re.sub(r"(?<![A-Za-z])U\.\s*S\.\s*A\.?(?![A-Za-z])", "آمریکا", value, flags=re.I)
+    value = re.sub(r"(?<![A-Za-z])U\.\s*S\.?(?![A-Za-z])", "آمریکا", value, flags=re.I)
     for latin, persian in sorted(_KNOWN_LATIN.items(), key=lambda item: len(item[0]), reverse=True):
         value = re.sub(rf"\b{re.escape(latin)}\b", persian, value, flags=re.I)
     return value
