@@ -181,6 +181,44 @@ class NewsroomV3Store:
         ).fetchone()
         return self._story_from_row(row) if row is not None else None
 
+    def find_canonical_story(
+        self,
+        *,
+        source_url: str,
+        fingerprint: str,
+        exclude_story_id: str = "",
+    ) -> StoryRecord | None:
+        """Find an already-eligible canonical story for exact V3 dedup.
+
+        Only `ready` stories can become canonical dedup anchors. Publication state
+        is intentionally ignored: a temporarily failed canonical publish remains
+        the same event and can be retried instead of creating a second send.
+        """
+        url = str(source_url or "").strip()
+        fp = str(fingerprint or "").strip()
+        excluded = str(exclude_story_id or "").strip()
+        if not url and not fp:
+            return None
+        row = self._conn.execute(
+            """
+            SELECT *
+            FROM stories
+            WHERE decision_state='ready'
+              AND story_id <> ?
+              AND (
+                    (? <> '' AND source_url = ?)
+                 OR (? <> '' AND fingerprint = ?)
+              )
+            ORDER BY
+                CASE WHEN ? <> '' AND source_url = ? THEN 0 ELSE 1 END,
+                created_at ASC,
+                story_id ASC
+            LIMIT 1
+            """,
+            (excluded, url, url, fp, fp, url, url),
+        ).fetchone()
+        return self._story_from_row(row) if row is not None else None
+
     def begin_publish(self, story_id: str) -> PublishAttempt:
         story = self.get_story(story_id)
         if story is None:
