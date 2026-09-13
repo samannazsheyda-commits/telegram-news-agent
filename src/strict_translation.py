@@ -77,6 +77,43 @@ def _preserves_key_entities(source: str, edited: str) -> bool:
     return True
 
 
+def _repair_irgc_navy_actor(source: str, translated: str) -> str:
+    """Restore IRGC Navy only when the English source explicitly names it.
+
+    The compact offline translator can collapse "Iran's IRGC Navy" into the
+    materially different generic actor "نیروی دریایی ایران". That must not be
+    published as-is, but the source gives enough information to repair the actor
+    deterministically without inventing a fact.
+    """
+    source_lower = str(source or "").lower()
+    value = services._polish_fa(str(translated or ""))
+    if not any(
+        phrase in source_lower
+        for phrase in (
+            "irgc navy",
+            "revolutionary guard navy",
+            "islamic revolutionary guard corps navy",
+        )
+    ):
+        return value
+    if "سپاه" in value:
+        return value
+
+    for generic_actor in (
+        "نیروی دریایی جمهوری اسلامی ایران",
+        "نیروی دریایی ایران",
+    ):
+        if generic_actor in value:
+            return services._polish_fa(
+                value.replace(
+                    generic_actor,
+                    "نیروی دریایی سپاه پاسداران انقلاب اسلامی ایران",
+                    1,
+                )
+            )
+    return value
+
+
 def _repair_struck_casualty_role_reversal(source: str, translated: str) -> str:
     """Repair one observed Argos role reversal only when the English source anchors it.
 
@@ -163,6 +200,7 @@ class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
         value = str(translated or "").strip()
         if not value:
             return ""
+        value = _repair_irgc_navy_actor(raw, value)
         value = _repair_struck_casualty_role_reversal(raw, value)
         value = services._repair_news_idioms(raw, value)
         return _natural_persian_copy(raw, value)
