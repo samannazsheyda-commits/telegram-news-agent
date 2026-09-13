@@ -138,7 +138,6 @@ def _urgency_score(raw: RawNewsItem, priority_terms: list[str] | tuple[str, ...]
     custom_rank = 0
     for index, term in enumerate(ordered_terms[:20]):
         if term in text:
-            # User-managed rules outrank fallback categories; earlier terms win.
             custom_rank = max(custom_rank, 1000 + (20 - index) * 10)
 
     war_hits = sum(1 for term in WAR_ALERT_TERMS if term in text)
@@ -304,7 +303,6 @@ def _event_text(record: EventRecord) -> str:
 
 
 def _semantic_relation(ai, ledger: EventLedger, item: NormalizedNewsItem, now: datetime):
-    """Return (closest event, relation decision, similarity) or all-None when no close event exists."""
     hours = int(getattr(ai.config, "event_memory_hours", 72) or 72)
     threshold = float(getattr(ai.config, "duplicate_threshold", 0.87) or 0.87)
     recent = [
@@ -598,7 +596,7 @@ def run_cycle(
         hourly_limit = _hourly_news_limit(settings)
         recent_publications = ledger.publication_count_since(now - timedelta(hours=1))
         critical_unique = effective_decision == "new_event" and _critical_breaking_event(item)
-        if recent_publications >= hourly_limit and not critical_unique:
+        if recent_publications >= hourly_limit and not critical_unique and not retry_unpublished_duplicate:
             summary.rate_limited += 1
             summary.review_items += 1
             _queue_item(editorial_store, item, "hourly_publish_limit", now)
