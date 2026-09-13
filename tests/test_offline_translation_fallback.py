@@ -85,3 +85,23 @@ def test_optional_mode_repairs_real_argos_role_reversal_without_network():
 
     assert publisher._translate_resilient(SOURCE) == REPAIRED_ARGOS_FA
     assert calls == ["offline"]
+
+
+def test_default_optional_path_does_not_enter_offline_translator_before_network():
+    offline_calls = []
+
+    def blocking_offline(text):
+        offline_calls.append(text)
+        raise RuntimeError("simulated_blocking_local_model")
+
+    publisher = StrictTelegramNewsroomPublisher(
+        "token",
+        "@bikhabaar",
+        ai=None,
+        ai_mode="optional",
+        translator=lambda text: GOOD_FA,
+        offline_translator=blocking_offline,
+    )
+
+    assert publisher._translate_resilient(SOURCE) == GOOD_FA
+    assert offline_calls == []
