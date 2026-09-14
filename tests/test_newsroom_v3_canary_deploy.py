@@ -25,10 +25,14 @@ def test_updater_runs_canary_with_v2_stopped_and_restores_v2_afterward():
     script = _read("deploy/update-vps.sh")
     assert 'install -m 644 "${APP_DIR}/deploy/bikhabar-newsroom-v3-canary.service"' in script
     assert 'CANARY_MARKER="${RUNTIME_DATA}/newsroom_v3_canary_once.json"' in script
-    stop_pos = script.index("systemctl stop bikhabar-agent", script.index("CANARY_MARKER="))
+    marker_pos = script.index("CANARY_MARKER=")
+    preflight_pos = script.index("--preflight", marker_pos)
+    stop_pos = script.index("systemctl stop bikhabar-agent", marker_pos)
     canary_pos = script.index("systemctl start bikhabar-newsroom-v3-canary.service", stop_pos)
     restore_pos = script.index("systemctl restart bikhabar-agent", canary_pos)
-    assert stop_pos < canary_pos < restore_pos
+    assert preflight_pos < stop_pos < canary_pos < restore_pos
+    preflight_block = script[marker_pos:stop_pos]
+    assert 'cd "${APP_DIR}"' in preflight_block
     assert 'if [[ ! -f "${CANARY_MARKER}" ]]' in script
     assert "newsroom_v3_canary_once.json" in script
 
