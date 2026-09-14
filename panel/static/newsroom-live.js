@@ -56,7 +56,7 @@
     const status = esc(story.status || 'new');
     const relative = esc(UI.relativeTime ? UI.relativeTime(story.discovered_at) : '');
     return `<article class="nr-story-card${priority ? ' is-priority' : ''}${isNew ? ' is-new' : ''}"
-      data-story-id="${id}" data-story-title="${title}" data-story-body="${body}"
+      data-story-id="${id}" data-news-id="${id}" data-story-title="${title}" data-story-body="${body}"
       data-story-source="${source}" data-story-source-url="${esc(url)}">
       <input class="live-select" type="checkbox" value="${id}" aria-label="انتخاب خبر">
       <div class="nr-story-rail"></div>
