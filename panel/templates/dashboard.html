@@ -4,10 +4,13 @@
 <section class="nr-hero">
   <div>
     <span class="nr-eyebrow"><i></i> اتاق خبر زنده ۲۴/۷</span>
-    <h1>مرکز فرمان بی‌خبر</h1>
+    <h1>اتاق خبر بی‌خبر</h1>
     <p>خبر تازه را ببین، همان‌جا تصمیم بگیر، و نتیجه واقعی V3 را دنبال کن.</p>
   </div>
-  <button id="soundToggle" class="nr-icon-button" type="button" aria-pressed="false" title="صدای خبر مهم">🔕</button>
+  <div class="nr-live-controls">
+    <span id="newNewsBadge" class="nr-new-news-badge" hidden>خبر جدید</span>
+    <button id="soundToggle" class="nr-icon-button" type="button" aria-pressed="false" title="صدای خبر مهم">🔕</button>
+  </div>
 </section>
 
 <section id="newsroomStatusBar" class="nr-status-bar" aria-label="وضعیت زنده سیستم">
@@ -19,11 +22,14 @@
 
 <div class="nr-workstation">
   <section class="nr-main-column">
-    <div class="nr-quick-actions">
-      <button id="scanNow" class="nr-button nr-button-primary" type="button" data-action="scan">⚡ اسکن فوری</button>
-      <button id="publishingToggle" class="nr-button nr-button-danger" type="button" data-confirm-action="publishing" data-action="publishing">توقف انتشار</button>
-      <span id="actionState" class="nr-action-state">آماده</span>
-    </div>
+    <section class="ops-fold">
+      <div class="nr-quick-actions">
+        <strong>ابزارهای عملیاتی</strong>
+        <button id="scanNow" class="nr-button nr-button-primary" type="button" data-action="scan">⚡ اسکن فوری</button>
+        <button id="publishingToggle" class="nr-button nr-button-danger" type="button" data-confirm-action="publishing" data-action="publishing">⛔ توقف کامل انتشار</button>
+        <span id="actionState" class="nr-action-state">آماده</span>
+      </div>
+    </section>
 
     <section class="nr-kpis" aria-label="آمار امروز">
       <article><span>ورودی زنده</span><b id="liveCount">{{ live_count }}</b></article>
@@ -34,9 +40,15 @@
 
     <section class="nr-card nr-live-desk">
       <header class="nr-section-head">
-        <div><span>LIVE DESK</span><h2>فید زنده</h2></div>
+        <div><span>LIVE DESK</span><h2>ورودی زنده</h2></div>
         <div class="nr-live-chip"><i></i> زنده</div>
       </header>
+      <div class="nr-bulk-toolbar">
+        <label><input id="liveSelectAll" type="checkbox"> انتخاب همه</label>
+        <button id="liveBulkDelete" class="nr-button nr-button-secondary" type="button" disabled>حذف انتخاب‌شده‌ها از پنل</button>
+        <button id="clearCurrentFeed" class="nr-button nr-button-secondary" type="button">پاک‌کردن ورودی‌های فعلی پنل</button>
+        <small id="liveBulkState">فقط از پنل؛ هیچ پیامی در تلگرام حذف نمی‌شود.</small>
+      </div>
       <div id="liveFeed" class="nr-story-list" aria-live="polite">
         {% if live %}
           {% for item in live[:60] %}
@@ -44,13 +56,14 @@
                    data-story-id="{{ item.id or item.item_id or item.news_key }}"
                    data-story-title="{{ item.display_title }}"
                    data-story-body="{{ item.persian_body or item.final_persian_body or '' }}"
-                   data-story-source="{{ item.source_display or item.source or '' }}"
+                   data-story-source="{{ item.source_display or 'منبع' }}"
                    data-story-source-url="{{ item.source_url or item.link or '' }}">
+            <input class="live-select" type="checkbox" value="{{ item.id or item.item_id or item.news_key }}" aria-label="انتخاب خبر">
             <div class="nr-story-rail"></div>
             <div class="nr-story-head">
               <div class="nr-story-meta">
                 {% if item.source_priority in ['high','critical','breaking'] %}<span class="nr-priority-badge">مهم</span>{% endif %}
-                <span>{{ item.source_display or item.source or 'منبع' }}</span>
+                <span>{{ item.source_display or 'منبع' }}</span>
                 <time>{{ item.discovered_at or item.updated_at or '' }}</time>
               </div>
               <span class="nr-story-status">{{ item.panel_status_fa }}</span>
@@ -71,11 +84,18 @@
         {% endif %}
       </div>
     </section>
+
+    <section class="nr-card nr-review-summary">
+      <header class="nr-section-head"><div><span>EDITORIAL</span><h2>نیازمند بررسی دستی</h2></div><a href="{{ url_for('review_queue') }}">مشاهده همه</a></header>
+      {% if pending %}
+        {% for item in pending[:4] %}<div class="nr-review-row"><strong>{{ item.persian_title or 'عنوان فارسی در حال آماده‌سازی' }}</strong><a href="{{ url_for('review_edit', item_id=item.id) }}">ویرایش / بررسی</a></div>{% endfor %}
+      {% else %}<p class="nr-empty-copy">نیاز به تصمیم دستی نیست؛ فعلاً موردی برای بررسی وجود ندارد.</p>{% endif %}
+    </section>
   </section>
 
   <aside class="nr-side-column">
     <section class="nr-card nr-health-card">
-      <header class="nr-section-head"><div><span>SYSTEM</span><h2>سلامت V3</h2></div><span id="healthDot" class="nr-health-dot"></span></header>
+      <header class="nr-section-head"><div><span>SYSTEM</span><h2>سلامت سیستم · V3</h2></div><span id="healthDot" class="nr-health-dot"></span></header>
       <dl class="nr-health-list">
         <div><dt>وضعیت چرخه</dt><dd id="cycleReason">—</dd></div>
         <div><dt>منابع سالم</dt><dd id="sourcesOk">—</dd></div>
@@ -89,25 +109,35 @@
     <section class="nr-card">
       <header class="nr-section-head"><div><span>OPERATIONS</span><h2>انتشارهای ویژه</h2></div></header>
       <div class="nr-module-grid newsroom-modules">
-        {% for name, icon, title in [
-          ('weather','☁','هواشناسی'),
-          ('air-traffic','✈','ترافیک هوایی'),
-          ('tanker','◈','نفتکش‌ها و هرمز'),
-          ('market','↗','بازار و دلار')
+        {% for name, preview_id, icon, title in [
+          ('weather','weatherPreview','☁','هواشناسی فردا'),
+          ('air-traffic','airTrafficPreview','✈','ترافیک هوایی ایران و منطقه'),
+          ('tanker','tankerPreview','◈','نفتکش‌ها و تنگه هرمز'),
+          ('market','marketPreview','↗','بازار و دلار')
         ] %}
         <article class="nr-module" data-module="{{ name }}">
           <span>{{ icon }}</span><strong>{{ title }}</strong>
-          <div><button type="button" data-module-preview="{{ name }}">پیش‌نمایش</button><button type="button" data-module-run="{{ name }}">انتشار</button></div>
-          <div class="nr-module-preview" data-preview="{{ name }}" hidden></div>
+          <div>
+            <button type="button" data-module-preview="{{ name }}" data-preview-toggle="{{ name }}">پیش‌نمایش</button>
+            <button type="button" data-module-run="{{ name }}">انتشار همین حالا</button>
+          </div>
+          <div id="{{ preview_id }}" class="nr-module-preview" data-preview="{{ name }}" data-preview-panel="{{ name }}" hidden></div>
         </article>
         {% endfor %}
       </div>
     </section>
 
-    <details class="nr-card nr-collapsible">
-      <summary><span><small>EDITORIAL</small><strong>اولویت‌ها و تنظیمات</strong></span><b>⌄</b></summary>
-      <div class="nr-details-body">
+    <details class="ops-fold" id="priorityEditor">
+      <summary><span><small>EDITORIAL</small><strong>اولویت قرمز ۲۴/۷</strong></span><b>⌄</b></summary>
+      <div class="nr-card nr-collapsible nr-details-body">
+        <p>اولویت‌ها و تنظیمات سردبیری</p>
         <div id="priorityList" class="nr-priority-list"><span>در حال دریافت…</span></div>
+      </div>
+    </details>
+
+    <details class="ops-fold" id="settingsHealthFold">
+      <summary><span><small>SETTINGS</small><strong>تنظیمات و سلامت</strong></span><b>⌄</b></summary>
+      <div class="nr-card nr-collapsible nr-details-body">
         <div id="agentSettingsMount"></div>
       </div>
     </details>
