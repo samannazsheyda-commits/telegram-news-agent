@@ -10,7 +10,6 @@ from flask import Blueprint, current_app, jsonify, request, session
 from .command_center import (
     _enqueue,
     _find_live_item,
-    _live_row_id,
     _normalise_priorities,
     _public_settings,
     _remove_from_queue,
@@ -209,6 +208,42 @@ def reject_live(item_id: str):
     _remove_from_queue(item_id)
     _remove_live_ids([item_id], mark_seen=True)
     return jsonify({"ok": True, "status": "succeeded", "command_id": "", "message": "خبر رد شد"})
+
+
+@bp.post("/api/newsroom/live/<item_id>/publish")
+def publish_live(item_id: str):
+    row = _find_live_item(item_id)
+    if row is None:
+        return jsonify({"ok": False, "status": "failed", "error": "live_item_not_found", "message": "خبر پیدا نشد"}), 404
+    if str(row.get("panel_status") or "") in _TERMINAL_LIVE_STATUSES:
+        return jsonify({"ok": False, "status": "failed", "error": "already_published", "message": "خبر قبلاً منتشر شده"}), 409
+    title = str(row.get("final_persian_title") or row.get("persian_title") or "").strip()
+    body = str(row.get("final_persian_body") or row.get("persian_body") or "").strip()
+    source = str(row.get("source") or "").strip()
+    source_url = str(row.get("source_url") or row.get("link") or "").strip()
+    if not title or not any("\u0600" <= char <= "\u06ff" for char in title):
+        return jsonify({"ok": False, "status": "failed", "error": "final_not_ready", "message": "تیتر نهایی فارسی آماده نیست"}), 409
+    if not source or not source_url:
+        return jsonify({"ok": False, "status": "failed", "error": "source_missing", "message": "منبع معتبر خبر موجود نیست"}), 409
+    record = _review_record_from_live(row, item_id)
+    record["persian_title"] = title
+    record["persian_body"] = body
+    _write_list(
+        "data/editorial_queue.json",
+        lambda queue: [record] + [existing for existing in queue if str(existing.get("id") or existing.get("item_id") or "") != item_id],
+        "panel: queue live item for V3 publication",
+    )
+    command_id = _enqueue(
+        "v3_publish",
+        item_id=item_id,
+        news_key=str(row.get("news_key") or item_id),
+        source=source,
+        source_url=source_url,
+        title=title,
+        body=body,
+        published_at=str(row.get("published_at_source") or row.get("published") or ""),
+    )
+    return jsonify({"ok": True, "status": "queued", "command_id": command_id, "message": "خبر برای انتشار امن V3 در صف قرار گرفت"}), 202
 
 
 @bp.get("/api/newsroom/command/<command_id>")
