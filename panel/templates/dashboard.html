@@ -24,7 +24,7 @@
   <section class="nr-main-column">
     <section class="ops-fold">
       <div class="nr-quick-actions">
-        <strong>ابزارهای عملیاتی</strong>
+        <strong>کنترل سریع</strong>
         <button id="scanNow" class="nr-button nr-button-primary" type="button" data-action="scan">⚡ اسکن فوری</button>
         <button id="publishingToggle" class="nr-button nr-button-danger" type="button" data-confirm-action="publishing" data-action="publishing">⛔ توقف کامل انتشار</button>
         <span id="actionState" class="nr-action-state">آماده</span>
@@ -54,6 +54,7 @@
           {% for item in live[:60] %}
           <article class="nr-story-card{% if item.source_priority in ['high','critical','breaking'] %} is-priority{% endif %}"
                    data-story-id="{{ item.id or item.item_id or item.news_key }}"
+                   data-news-id="{{ item.id or item.item_id or item.news_key }}"
                    data-story-title="{{ item.display_title }}"
                    data-story-body="{{ item.persian_body or item.final_persian_body or '' }}"
                    data-story-source="{{ item.source_display or 'منبع' }}"
@@ -107,7 +108,7 @@
     </section>
 
     <section class="nr-card">
-      <header class="nr-section-head"><div><span>OPERATIONS</span><h2>انتشارهای ویژه</h2></div></header>
+      <header class="nr-section-head"><div><span>OPERATIONS</span><h2>ابزارهای عملیاتی</h2></div></header>
       <div class="nr-module-grid newsroom-modules">
         {% for name, preview_id, icon, title in [
           ('weather','weatherPreview','☁','هواشناسی فردا'),
