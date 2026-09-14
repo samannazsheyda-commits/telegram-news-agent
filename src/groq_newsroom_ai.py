@@ -8,6 +8,7 @@ import requests
 
 from .ai_newsroom import AIServiceError, HuggingFaceNewsAI
 from .local_semantic_ai import LocalFirstNewsAI
+from .openrouter_newsroom_ai import _decode_openrouter_content
 
 
 GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions"
@@ -119,8 +120,7 @@ class GroqNewsAI(HuggingFaceNewsAI):
             content = payload["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
             raise AIServiceError("invalid_groq_chat_response") from exc
-        from .ai_newsroom import _clean_json_content
-        return _clean_json_content(content)
+        return _decode_openrouter_content(content)
 
 
 class LocalFirstGroqNewsAI(LocalFirstNewsAI, GroqNewsAI):
