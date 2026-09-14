@@ -20,6 +20,7 @@ from src.github_data import GitHubJsonRepository
 from src.services import send_telegram, translate_to_fa
 from src.sources import NewsItem
 
+from .command_center import _enqueue
 from .forms import LoginForm, ReviewEditForm, WebsiteSourceForm, XSourceForm
 
 
@@ -257,18 +258,21 @@ def create_app(config: dict | None = None):
                 flash("خبر رد نهایی شد.", "success"); return redirect(url_for("review_queue"))
             title_fa = (form.title_fa.data or "").strip(); body_fa = (form.body_fa.data or "").strip()
             if not record.get("source") or not record.get("source_url"): flash("این خبر منبع یا لینک معتبر ندارد و قابل انتشار نیست.", "error")
+            elif not title_fa or not _has_persian(title_fa): flash("تیتر نهایی فارسی برای انتشار لازم است.", "error")
             else:
-                message = _build_message(record, title_fa, body_fa)
-                if not message: flash("متن خبر برای انتشار معتبر نیست.", "error")
-                else:
-                    try: send_telegram(message, app.config["TELEGRAM_BOT_TOKEN"], app.config["TELEGRAM_CHAT_ID"])
-                    except Exception as exc: flash(f"ارسال تلگرام ناموفق بود: {exc}", "error")
-                    else:
-                        now = _now_iso(); final = dict(record); final.update(status="published_manual", final_persian_title=title_fa, final_persian_body=body_fa, final_message=message, decision_at=now, updated_at=now)
-                        _upsert_record(data, "data/editorial_history.json", final, "chore: record manual telegram publication")
-                        try: data.mark_news_seen(str(record.get("news_key") or ""))
-                        finally: _remove_record(data, "data/editorial_queue.json", item_id, "chore: remove manually published editorial item")
-                        flash("خبر با موفقیت در تلگرام منتشر شد.", "success"); return redirect(url_for("review_queue"))
+                now = _now_iso(); queued = dict(record); queued.update(persian_title=title_fa, persian_body=body_fa, final_persian_title=title_fa, final_persian_body=body_fa, status="pending", updated_at=now)
+                _upsert_record(data, "data/editorial_queue.json", queued, "panel: save final V3 editorial copy")
+                command_id = _enqueue(
+                    "v3_publish",
+                    item_id=item_id,
+                    news_key=str(record.get("news_key") or item_id),
+                    source=str(record.get("source") or ""),
+                    source_url=str(record.get("source_url") or ""),
+                    title=title_fa,
+                    body=body_fa,
+                    published_at=str(record.get("published_at_source") or ""),
+                )
+                flash(f"خبر برای انتشار امن V3 در صف قرار گرفت ({command_id[:8]}).", "success"); return redirect(url_for("review_queue"))
         return render_template("review_edit.html", item=record, form=form)
 
     @app.get("/history")

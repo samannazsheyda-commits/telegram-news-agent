@@ -47,6 +47,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
 
+      - name: Check newsroom JavaScript syntax
+        run: |
+          node --check docs/newsroom-v1.js
+          node --check panel/static/newsroom-ui.js
+          node --check panel/static/newsroom-live.js
+          node --check panel/static/newsroom-actions.js
+          node --check panel/static/newsroom-editor.js
+
       - name: Run test suite
         run: python -m pytest -q
 

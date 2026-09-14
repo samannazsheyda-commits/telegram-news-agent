@@ -20,7 +20,12 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
       - name: Check newsroom JavaScript syntax
-        run: node --check docs/newsroom-v1.js
+        run: |
+          node --check docs/newsroom-v1.js
+          node --check panel/static/newsroom-ui.js
+          node --check panel/static/newsroom-live.js
+          node --check panel/static/newsroom-actions.js
+          node --check panel/static/newsroom-editor.js
       - name: Run V2 focused tests
         if: github.head_ref == 'design/newsroom-v2-2026-09-07' || startsWith(github.head_ref, 'feat/newsroom-v2-cutover-')
         run: >-
