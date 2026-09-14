@@ -227,10 +227,10 @@ class TelegramNewsroomPublisher:
             detail = f"{detail}:{description}"
 
         status = int(getattr(response, "status_code", 0) or 0)
-        # Only an explicit Telegram/client rejection is safe to retry via a
-        # different representation. Server errors and malformed success replies
-        # remain ambiguous because the message may already exist remotely.
-        definitive = 400 <= status < 500 and isinstance(payload, dict) and payload.get("ok") is False
+        # Any explicit 4xx HTTP response is a definitive client-side rejection:
+        # Telegram did not accept the requested representation, so a text
+        # fallback is safe. No-response/network errors remain ambiguous.
+        definitive = 400 <= status < 500
         return detail, not definitive
 
     def _raw_post(self, endpoint: str, *, data: dict, files=None, timeout: int = 35) -> dict:
