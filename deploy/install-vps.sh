@@ -68,9 +68,11 @@ install -m 644 "${APP_DIR}/deploy/bikhabar-weather.service" /etc/systemd/system/
 install -m 644 "${APP_DIR}/deploy/bikhabar-weather.timer" /etc/systemd/system/bikhabar-weather.timer
 install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.service" /etc/systemd/system/bikhabar-air-traffic.service
 install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.timer" /etc/systemd/system/bikhabar-air-traffic.timer
+install -m 644 "${APP_DIR}/deploy/bikhabar-newsroom-v3-shadow.service" /etc/systemd/system/bikhabar-newsroom-v3-shadow.service
+install -m 644 "${APP_DIR}/deploy/bikhabar-newsroom-v3-shadow.timer" /etc/systemd/system/bikhabar-newsroom-v3-shadow.timer
 systemctl daemon-reload
-systemctl enable bikhabar-agent bikhabar-panel bikhabar-deploy.timer bikhabar-weather.timer bikhabar-air-traffic.timer >/dev/null
-systemctl enable --now bikhabar-deploy.timer bikhabar-weather.timer bikhabar-air-traffic.timer >/dev/null
+systemctl enable bikhabar-agent bikhabar-panel bikhabar-deploy.timer bikhabar-weather.timer bikhabar-air-traffic.timer bikhabar-newsroom-v3-shadow.timer >/dev/null
+systemctl enable --now bikhabar-deploy.timer bikhabar-weather.timer bikhabar-air-traffic.timer bikhabar-newsroom-v3-shadow.timer >/dev/null
 
 if ! grep -q '^TELEGRAM_BOT_TOKEN=replace_me$' "${ENV_DIR}/agent.env" && grep -q '^TELEGRAM_CHAT_ID=' "${ENV_DIR}/agent.env"; then
   systemctl restart bikhabar-agent
@@ -78,6 +80,7 @@ fi
 systemctl restart bikhabar-panel
 sleep 5
 systemctl is-active --quiet bikhabar-panel
+systemctl is-active --quiet bikhabar-newsroom-v3-shadow.timer
 curl -fsS --max-time 10 http://127.0.0.1/login >/dev/null
 
 if systemctl is-active --quiet bikhabar-agent; then
@@ -86,3 +89,4 @@ else
   echo "AGENT=not-started (set TELEGRAM_BOT_TOKEN in ${ENV_DIR}/agent.env)"
 fi
 echo "PANEL=$(systemctl is-active bikhabar-panel)"
+echo "V3_SHADOW_TIMER=$(systemctl is-active bikhabar-newsroom-v3-shadow.timer)"
