@@ -24,6 +24,12 @@ from .live_api import _public_row
 
 bp = Blueprint("newsroom_api", __name__)
 _TERMINAL_LIVE_STATUSES = {"auto_published", "published_auto", "published_manual"}
+_MODULE_PREVIEW_PATHS = {
+    "market": "data/market_preview.json",
+    "weather": "data/weather_preview.json",
+    "air-traffic": "data/air_traffic_preview.json",
+    "tanker": "data/tanker_preview.json",
+}
 
 
 def _data():
@@ -33,6 +39,35 @@ def _data():
 def _read(path: str, default):
     value, _ = _data().read_json(path, default)
     return value
+
+
+def build_module_card_preview(module_name: str) -> dict:
+    """Return only the persisted preview used by the panel card.
+
+    Building/fetching module data is deliberately handled by the runtime
+    command path. Snapshot GETs stay local and never trigger network work.
+    """
+    path = _MODULE_PREVIEW_PATHS.get(str(module_name or ""))
+    if not path:
+        return {"available": False, "message": "", "generated_at": ""}
+    preview = _read(path, {})
+    if not isinstance(preview, dict) or not preview:
+        return {"available": False, "message": "", "generated_at": ""}
+    public = dict(preview)
+    public["available"] = True
+    public["message"] = str(
+        preview.get("message") or preview.get("text") or preview.get("caption") or preview.get("body") or ""
+    )
+    public["generated_at"] = str(
+        preview.get("generated_at")
+        or preview.get("updated_at")
+        or preview.get("fetched_at")
+        or preview.get("as_of")
+        or ""
+    )
+    if module_name == "air-traffic" and preview.get("image_path"):
+        public["image_url"] = "/api/command-center/module/air-traffic/preview/image"
+    return public
 
 
 def _rows(path: str) -> list[dict]:
@@ -177,6 +212,7 @@ def snapshot():
             "rejected": sum(1 for row in history if str(row.get("status") or "") in {"rejected_manual", "superseded"}),
         },
         "live": live_public,
+        "modules": {name: build_module_card_preview(name) for name in _MODULE_PREVIEW_PATHS},
         "settings": public_settings,
     }
     return jsonify({"ok": True, **snapshot_core, "fingerprint": _fingerprint(snapshot_core), "snapshot_at": _now_iso()})
