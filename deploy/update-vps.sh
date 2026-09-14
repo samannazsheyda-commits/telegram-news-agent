@@ -146,6 +146,7 @@ install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.service" /etc/systemd/sys
 install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.timer" /etc/systemd/system/bikhabar-air-traffic.timer
 install -m 644 "${APP_DIR}/deploy/bikhabar-newsroom-v3-shadow.service" /etc/systemd/system/bikhabar-newsroom-v3-shadow.service
 install -m 644 "${APP_DIR}/deploy/bikhabar-newsroom-v3-shadow.timer" /etc/systemd/system/bikhabar-newsroom-v3-shadow.timer
+install -m 644 "${APP_DIR}/deploy/bikhabar-newsroom-v3-canary.service" /etc/systemd/system/bikhabar-newsroom-v3-canary.service
 systemctl daemon-reload
 systemctl enable bikhabar-agent bikhabar-panel bikhabar-weather.timer bikhabar-air-traffic.timer bikhabar-newsroom-v3-shadow.timer >/dev/null
 systemctl restart bikhabar-agent
@@ -154,9 +155,30 @@ systemctl enable --now bikhabar-weather.timer bikhabar-air-traffic.timer bikhaba
 # The timer units may already be active; restart them so schedule changes take effect immediately.
 systemctl restart bikhabar-air-traffic.timer
 systemctl restart bikhabar-newsroom-v3-shadow.timer
-# Produce immediate shadow evidence on every deploy. The V3 CLI is shadow-only
-# and structurally has no canary switch, so this cannot write to Telegram.
+# Produce immediate shadow evidence on every deploy. This path cannot write to Telegram.
 systemctl start bikhabar-newsroom-v3-shadow.service
+
+# A single V3 publication is allowed only after a read-only preflight finds a
+# safe candidate. V2 is then stopped before the canary re-checks its ledger,
+# closing the race where both engines could publish the same story. The canary
+# writes its one-shot marker before the external Telegram call, so an ambiguous
+# network response can never trigger an automatic second attempt.
+CANARY_MARKER="${RUNTIME_DATA}/newsroom_v3_canary_once.json"
+if [[ ! -f "${CANARY_MARKER}" ]]; then
+  if (
+    cd "${APP_DIR}"
+    runuser -u bikhabar -- "${VENV_DIR}/bin/python" -m src.newsroom_v3.canary --data-dir "${RUNTIME_DATA}" --preflight
+  ); then
+    systemctl stop bikhabar-agent
+    CANARY_RC=0
+    systemctl start bikhabar-newsroom-v3-canary.service || CANARY_RC=$?
+    systemctl restart bikhabar-agent
+    if [[ "${CANARY_RC}" -ne 0 ]]; then
+      echo "V3_CANARY_SERVICE_FAILED rc=${CANARY_RC}" >&2
+    fi
+  fi
+fi
+
 sleep 6
 systemctl is-active --quiet bikhabar-agent
 systemctl is-active --quiet bikhabar-panel
@@ -184,6 +206,7 @@ from pathlib import Path
 state_path = Path("${RUNTIME_ROOT}/state.json")
 feed_path = Path("${RUNTIME_DATA}/panel_live_feed.json")
 v3_shadow_path = Path("${RUNTIME_DATA}/newsroom_v3_shadow_status.json")
+v3_canary_path = Path("${RUNTIME_DATA}/newsroom_v3_canary_once.json")
 
 if state_path.exists():
     try:
@@ -227,6 +250,17 @@ if v3_shadow_path.exists():
 else:
     print("V3_SHADOW missing")
 
+if v3_canary_path.exists():
+    try:
+        canary = json.loads(v3_canary_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        print(f"V3_CANARY_READ_FAILED={type(exc).__name__}:{exc}")
+    else:
+        keys = ("state", "story_id", "source", "telegram_message_id", "telegram_writes", "error")
+        print("V3_CANARY " + " ".join(f"{key}={canary.get(key)!r}" for key in keys))
+else:
+    print("V3_CANARY not_attempted")
+
 if feed_path.exists():
     try:
         rows = json.loads(feed_path.read_text(encoding="utf-8"))
@@ -257,4 +291,5 @@ journalctl -u bikhabar-agent --since "3 minutes ago" --no-pager \
   | grep -E 'TELEGRAM_PUBLISH_FAILED|STRICT_TRANSLATION|OFFLINE_TRANSLATION|AI_TRANSLATION|published|telegram_writes|publish_failed' \
   | tail -n 40 || true
 journalctl -u bikhabar-newsroom-v3-shadow.service --since "3 minutes ago" --no-pager | tail -n 30 || true
+journalctl -u bikhabar-newsroom-v3-canary.service --since "3 minutes ago" --no-pager | tail -n 30 || true
 echo "===== END NEWSROOM HEALTH ====="

@@ -1,0 +1,19 @@
+[Unit]
+Description=Run one guarded Bikhabar Newsroom V3 Telegram canary
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=bikhabar
+Group=bikhabar
+WorkingDirectory=/opt/bikhabar/app
+EnvironmentFile=/etc/bikhabar/agent.env
+Environment=OFFLINE_TRANSLATION_ENABLED=0
+ExecStart=/opt/bikhabar/venv/bin/python -m src.newsroom_v3.canary --data-dir /var/lib/bikhabar/runtime/data --confirm-one-shot
+TimeoutStartSec=180
+MemoryMax=256M
+CPUQuota=80%
+Nice=5
+NoNewPrivileges=true
+PrivateTmp=true

@@ -70,6 +70,7 @@ install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.service" /etc/systemd/sys
 install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.timer" /etc/systemd/system/bikhabar-air-traffic.timer
 install -m 644 "${APP_DIR}/deploy/bikhabar-newsroom-v3-shadow.service" /etc/systemd/system/bikhabar-newsroom-v3-shadow.service
 install -m 644 "${APP_DIR}/deploy/bikhabar-newsroom-v3-shadow.timer" /etc/systemd/system/bikhabar-newsroom-v3-shadow.timer
+install -m 644 "${APP_DIR}/deploy/bikhabar-newsroom-v3-canary.service" /etc/systemd/system/bikhabar-newsroom-v3-canary.service
 systemctl daemon-reload
 systemctl enable bikhabar-agent bikhabar-panel bikhabar-deploy.timer bikhabar-weather.timer bikhabar-air-traffic.timer bikhabar-newsroom-v3-shadow.timer >/dev/null
 systemctl enable --now bikhabar-deploy.timer bikhabar-weather.timer bikhabar-air-traffic.timer bikhabar-newsroom-v3-shadow.timer >/dev/null
