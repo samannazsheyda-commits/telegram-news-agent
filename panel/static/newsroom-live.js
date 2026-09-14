@@ -2,6 +2,7 @@
   if (!document.getElementById('liveFeed')) return;
   const UI = window.BikhabarUI || {};
   const feed = document.getElementById('liveFeed');
+  const newNewsBadge = document.getElementById('newNewsBadge');
   const fields = {
     engine: document.getElementById('engineState'),
     telegram: document.getElementById('telegramState'),
@@ -23,6 +24,7 @@
   let fingerprint = '';
   let controller = null;
   let timer = 0;
+  let badgeTimer = 0;
   let initial = true;
   let knownIds = new Set([...feed.querySelectorAll('[data-story-id]')].map(node => node.dataset.storyId));
 
@@ -56,6 +58,7 @@
     return `<article class="nr-story-card${priority ? ' is-priority' : ''}${isNew ? ' is-new' : ''}"
       data-story-id="${id}" data-story-title="${title}" data-story-body="${body}"
       data-story-source="${source}" data-story-source-url="${esc(url)}">
+      <input class="live-select" type="checkbox" value="${id}" aria-label="انتخاب خبر">
       <div class="nr-story-rail"></div>
       <div class="nr-story-head"><div class="nr-story-meta">
         ${priority ? '<span class="nr-priority-badge">مهم</span>' : ''}<span>${source}</span><time>${relative}</time>
@@ -70,22 +73,35 @@
     </article>`;
   }
 
+  function showNewNewsBadge(count) {
+    if (!newNewsBadge || count <= 0) return;
+    newNewsBadge.textContent = count > 1 ? `${count.toLocaleString('fa-IR')} خبر جدید` : 'خبر جدید';
+    newNewsBadge.hidden = false;
+    window.clearTimeout(badgeTimer);
+    badgeTimer = window.setTimeout(() => { newNewsBadge.hidden = true; }, 5000);
+  }
+
   function renderFeed(stories) {
     if (!Array.isArray(stories) || stories.length === 0) {
       feed.innerHTML = '<div class="nr-empty"><span>◌</span><strong>فعلاً خبر تازه‌ای نیست</strong><small>فید به‌صورت خودکار به‌روز می‌شود.</small></div>';
       knownIds = new Set();
+      window.dispatchEvent(new Event('newsroom:feed-rendered'));
       return;
     }
     let importantNew = false;
+    let newCount = 0;
     const nextIds = new Set(stories.map(story => String(story.id || '')));
     feed.innerHTML = stories.map(story => {
       const id = String(story.id || '');
       const isNew = !initial && id && !knownIds.has(id);
+      if (isNew) newCount += 1;
       if (isNew && ['high','critical','breaking'].includes(String(story.priority || '').toLowerCase())) importantNew = true;
       return storyCard(story, isNew);
     }).join('');
     knownIds = nextIds;
+    if (newCount) showNewNewsBadge(newCount);
     if (importantNew && UI.ping) UI.ping();
+    window.dispatchEvent(new Event('newsroom:feed-rendered'));
   }
 
   function render(snapshot) {
