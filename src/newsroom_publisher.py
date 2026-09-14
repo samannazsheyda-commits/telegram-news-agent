@@ -207,6 +207,32 @@ class TelegramNewsroomPublisher:
         candidates = sorted(Path(directory).glob("telegram-video.*"), key=lambda p: p.stat().st_size, reverse=True)
         return candidates[0] if candidates and candidates[0].stat().st_size > 0 else None
 
+    @staticmethod
+    def _telegram_error_detail(response, exc: Exception) -> tuple[str, bool]:
+        detail = f"telegram_request_failed:{type(exc).__name__}"
+        # No HTTP response means the client cannot know whether Telegram accepted
+        # the request before the connection/timeout failed. Treat it as ambiguous
+        # so no automatic second write is attempted.
+        if response is None:
+            return detail, True
+
+        description = ""
+        payload = None
+        try:
+            payload = response.json()
+            description = str(payload.get("description") or "") if isinstance(payload, dict) else ""
+        except Exception:
+            description = str(getattr(response, "text", "") or "")[:300]
+        if description:
+            detail = f"{detail}:{description}"
+
+        status = int(getattr(response, "status_code", 0) or 0)
+        # Only an explicit Telegram/client rejection is safe to retry via a
+        # different representation. Server errors and malformed success replies
+        # remain ambiguous because the message may already exist remotely.
+        definitive = 400 <= status < 500 and isinstance(payload, dict) and payload.get("ok") is False
+        return detail, not definitive
+
     def _raw_post(self, endpoint: str, *, data: dict, files=None, timeout: int = 35) -> dict:
         response = None
         try:
@@ -218,23 +244,24 @@ class TelegramNewsroomPublisher:
                 timeout=timeout,
             )
             response.raise_for_status()
+        except Exception as exc:
+            detail, ambiguous = self._telegram_error_detail(response, exc)
+            return {"ok": False, "error": detail, "ambiguous": ambiguous}
+
+        try:
             payload = response.json()
         except Exception as exc:
-            detail = f"telegram_request_failed:{type(exc).__name__}"
-            if response is not None:
-                try:
-                    payload = response.json()
-                    description = str(payload.get("description") or "") if isinstance(payload, dict) else ""
-                except Exception:
-                    description = str(getattr(response, "text", "") or "")[:300]
-                if description:
-                    detail = f"{detail}:{description}"
-            return {"ok": False, "error": detail}
+            detail = f"telegram_response_unreadable:{type(exc).__name__}"
+            return {"ok": False, "error": detail, "ambiguous": True}
+
         result = payload.get("result") if isinstance(payload, dict) else None
         message_id = result.get("message_id") if isinstance(result, dict) else None
+        if isinstance(payload, dict) and payload.get("ok") is False:
+            description = str(payload.get("description") or "telegram_rejected")
+            return {"ok": False, "error": description, "ambiguous": False}
         if not isinstance(payload, dict) or payload.get("ok") is not True or not isinstance(message_id, int):
             description = str(payload.get("description") or "telegram_unverified_response") if isinstance(payload, dict) else "telegram_unverified_response"
-            return {"ok": False, "error": description}
+            return {"ok": False, "error": description, "ambiguous": True}
         return {"ok": True, "message_id": message_id}
 
     def _post(self, endpoint: str, *, data: dict, files=None, timeout: int = 35) -> dict:
@@ -242,7 +269,12 @@ class TelegramNewsroomPublisher:
         if result.get("ok") is True:
             return result
         error = str(result.get("error") or "")
-        if endpoint == "sendMessage" and "parse" in error.lower() and data.get("text"):
+        if (
+            endpoint == "sendMessage"
+            and result.get("ambiguous") is not True
+            and "parse" in error.lower()
+            and data.get("text")
+        ):
             retry = dict(data)
             retry.pop("parse_mode", None)
             retry["text"] = _plain_text(str(data.get("text") or ""))
@@ -261,6 +293,12 @@ class TelegramNewsroomPublisher:
         )
 
     def _fallback_to_text(self, message: str, failed_endpoint: str, result: dict) -> dict:
+        if result.get("ambiguous") is True:
+            print(
+                f"TELEGRAM_MEDIA_FALLBACK_SUPPRESSED endpoint={failed_endpoint} reason='ambiguous_remote_state'",
+                flush=True,
+            )
+            return result
         print(
             f"TELEGRAM_MEDIA_FALLBACK_TO_TEXT endpoint={failed_endpoint} error={str(result.get('error') or '')!r}",
             flush=True,
