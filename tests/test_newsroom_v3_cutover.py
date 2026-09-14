@@ -260,8 +260,8 @@ def test_hybrid_refuses_v3_without_verified_canary_and_keeps_v2_primary(monkeypa
     assert result["v3_gate_reason"] == "canary_missing"
 
 
-def test_deploy_switches_off_standalone_shadow_timer_after_v3_cutover():
-    script = Path("deploy/update-vps.sh").read_text(encoding="utf-8")
-    assert "NEWSROOM_ENGINE" in script
-    assert "disable --now bikhabar-newsroom-v3-shadow.timer" in script
-    assert "enable --now bikhabar-newsroom-v3-shadow.timer" in script
+def test_standalone_shadow_service_skips_when_v3_is_primary():
+    service = Path("deploy/bikhabar-newsroom-v3-shadow.service").read_text(encoding="utf-8")
+    assert "ExecCondition=" in service
+    assert "NEWSROOM_ENGINE:-v2" in service
+    assert '!= "v3"' in service
