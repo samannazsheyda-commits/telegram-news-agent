@@ -212,3 +212,134 @@ def test_canary_requires_explicit_publisher_and_never_uses_shadow_cli_implicitly
     _healthy_shadow(data_dir / "newsroom_v3_shadow_status.json")
     with pytest.raises(ValueError, match="publisher"):
         run_one_shot_canary(data_dir=data_dir, publisher=None)
+
+
+def test_production_publisher_fails_over_from_openrouter_daily_quota_to_groq(monkeypatch):
+    from types import SimpleNamespace
+
+    import src.newsroom_v3.canary as canary_module
+    from src.ai_newsroom import AIServiceError
+
+    calls: list[str] = []
+
+    class FakeOpenRouter:
+        def __init__(self, config):
+            self.available = True
+
+        def translate_to_fa(self, text):
+            calls.append("openrouter.translate")
+            raise AIServiceError(
+                "openrouter_http_429:Rate limit exceeded: free-models-per-day"
+            )
+
+        def edit_persian(self, source_text, draft_text):
+            calls.append("openrouter.edit")
+            raise AssertionError("quota-exhausted OpenRouter must not be retried for edit")
+
+    class FakeGroq:
+        def __init__(self, config):
+            self.available = True
+
+        def translate_to_fa(self, text):
+            calls.append("groq.translate")
+            return SimpleNamespace(text="ترجمه گروک", faithful=True)
+
+        def edit_persian(self, source_text, draft_text):
+            calls.append("groq.edit")
+            return SimpleNamespace(
+                text="متن نهایی گروک",
+                faithful=True,
+                natural=True,
+                reason="ok",
+            )
+
+    class FakeHF:
+        def __init__(self, config):
+            self.available = True
+
+        def translate_to_fa(self, text):
+            calls.append("hf.translate")
+            raise AssertionError("HF should not run when Groq succeeds")
+
+        def edit_persian(self, source_text, draft_text):
+            calls.append("hf.edit")
+            raise AssertionError("HF should not run when Groq succeeds")
+
+    monkeypatch.setenv("AI_NEWSROOM_MODE", "required")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-test")
+    monkeypatch.setenv("GROQ_API_KEY", "groq-test")
+    monkeypatch.setenv("HF_TOKEN", "hf-test")
+    monkeypatch.setattr(canary_module, "LocalFirstOpenRouterNewsAI", FakeOpenRouter)
+    monkeypatch.setattr(canary_module, "LocalFirstGroqNewsAI", FakeGroq)
+    monkeypatch.setattr(canary_module, "LocalFirstNewsAI", FakeHF)
+
+    publisher = canary_module.build_production_publisher().publisher
+    draft = publisher.ai.translate_to_fa("Iran launched two missiles")
+    edit = publisher.ai.edit_persian("Iran launched two missiles", draft.text)
+
+    assert draft.text == "ترجمه گروک"
+    assert edit.text == "متن نهایی گروک"
+    assert calls == ["openrouter.translate", "groq.translate", "groq.edit"]
+
+
+def test_production_publisher_fails_over_from_groq_to_hf_when_needed(monkeypatch):
+    from types import SimpleNamespace
+
+    import src.newsroom_v3.canary as canary_module
+    from src.ai_newsroom import AIServiceError
+
+    calls: list[str] = []
+
+    class FakeOpenRouter:
+        def __init__(self, config):
+            self.available = True
+
+        def translate_to_fa(self, text):
+            calls.append("openrouter.translate")
+            raise AIServiceError("openrouter_network_error")
+
+    class FakeGroq:
+        def __init__(self, config):
+            self.available = True
+
+        def translate_to_fa(self, text):
+            calls.append("groq.translate")
+            raise AIServiceError("groq_http_503")
+
+    class FakeHF:
+        def __init__(self, config):
+            self.available = True
+
+        def translate_to_fa(self, text):
+            calls.append("hf.translate")
+            return SimpleNamespace(text="ترجمه اچ اف", faithful=True)
+
+        def edit_persian(self, source_text, draft_text):
+            calls.append("hf.edit")
+            return SimpleNamespace(
+                text="متن نهایی اچ اف",
+                faithful=True,
+                natural=True,
+                reason="ok",
+            )
+
+    monkeypatch.setenv("AI_NEWSROOM_MODE", "required")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-test")
+    monkeypatch.setenv("GROQ_API_KEY", "groq-test")
+    monkeypatch.setenv("HF_TOKEN", "hf-test")
+    monkeypatch.setattr(canary_module, "LocalFirstOpenRouterNewsAI", FakeOpenRouter)
+    monkeypatch.setattr(canary_module, "LocalFirstGroqNewsAI", FakeGroq)
+    monkeypatch.setattr(canary_module, "LocalFirstNewsAI", FakeHF)
+
+    publisher = canary_module.build_production_publisher().publisher
+    draft = publisher.ai.translate_to_fa("Iran launched two missiles")
+    edit = publisher.ai.edit_persian("Iran launched two missiles", draft.text)
+
+    assert draft.text == "ترجمه اچ اف"
+    assert edit.text == "متن نهایی اچ اف"
+    assert calls == [
+        "openrouter.translate",
+        "groq.translate",
+        "hf.translate",
+        "hf.edit",
+    ]
