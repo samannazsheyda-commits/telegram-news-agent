@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import src.newsroom_hybrid_runtime as hybrid
+from src.newsroom_v3 import shadow_gate
 from src.newsroom_v3.outbox import NewsroomV3PublisherWorker
 from src.newsroom_v3.production import cutover_gate, run_once as run_v3_production_once
 from src.newsroom_v3.store import NewsroomV3Store
@@ -260,8 +261,12 @@ def test_hybrid_refuses_v3_without_verified_canary_and_keeps_v2_primary(monkeypa
     assert result["v3_gate_reason"] == "canary_missing"
 
 
-def test_standalone_shadow_service_skips_when_v3_is_primary():
+def test_standalone_shadow_service_skips_when_v3_is_primary(monkeypatch):
     service = Path("deploy/bikhabar-newsroom-v3-shadow.service").read_text(encoding="utf-8")
-    assert "ExecCondition=" in service
-    assert "NEWSROOM_ENGINE:-v2" in service
-    assert '!= "v3"' in service
+    assert "ExecCondition=/opt/bikhabar/venv/bin/python -m src.newsroom_v3.shadow_gate" in service
+    assert "/bin/sh" not in service
+
+    monkeypatch.setenv("NEWSROOM_ENGINE", "v3")
+    assert shadow_gate.main() == 1
+    monkeypatch.setenv("NEWSROOM_ENGINE", "v2")
+    assert shadow_gate.main() == 0
