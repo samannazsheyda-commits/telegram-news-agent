@@ -9,7 +9,7 @@ User=bikhabar
 Group=bikhabar
 WorkingDirectory=/opt/bikhabar/app
 EnvironmentFile=/etc/bikhabar/agent.env
-ExecCondition=/bin/sh -c '[ "${NEWSROOM_ENGINE:-v2}" != "v3" ]'
+ExecCondition=/opt/bikhabar/venv/bin/python -m src.newsroom_v3.shadow_gate
 ExecStart=/opt/bikhabar/venv/bin/python -m src.newsroom_v3.runtime --data-dir /var/lib/bikhabar/runtime/data --status-file /var/lib/bikhabar/runtime/data/newsroom_v3_shadow_status.json
 TimeoutStartSec=150
 MemoryMax=192M
