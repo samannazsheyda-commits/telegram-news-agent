@@ -24,11 +24,11 @@
       <span class="nr-brand-copy"><strong>بی‌خبر</strong><small>Newsroom V3</small></span>
     </a>
     {% if session.get('admin') %}
-    <nav class="nr-desktop-nav" aria-label="ناوبری اتاق خبر">
-      <a class="{% if request.path == '/' %}is-active{% endif %}" href="{{ url_for('dashboard') }}">اتاق خبر</a>
-      <a class="{% if request.path.startswith('/review') %}is-active{% endif %}" href="{{ url_for('review_queue') }}">بررسی</a>
-      <a class="{% if request.path.startswith('/history') %}is-active{% endif %}" href="{{ url_for('history') }}">منتشرشده</a>
-      <a class="{% if request.path.startswith('/source-manager') or request.path.startswith('/sources') %}is-active{% endif %}" href="/source-manager">منابع</a>
+    <nav class="nr-desktop-nav newsroom-nav" aria-label="ناوبری اتاق خبر">
+      <a class="newsroom-nav-item{% if request.path == '/' %} is-active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon" aria-hidden="true">●</span><span class="nav-label">اتاق خبر</span></a>
+      <a class="newsroom-nav-item{% if request.path.startswith('/review') %} is-active{% endif %}" href="{{ url_for('review_queue') }}"><span class="nav-icon" aria-hidden="true">✓</span><span class="nav-label">بررسی</span></a>
+      <a class="newsroom-nav-item{% if request.path.startswith('/history') %} is-active{% endif %}" href="{{ url_for('history') }}"><span class="nav-icon" aria-hidden="true">↗</span><span class="nav-label">منتشرشده</span></a>
+      <a class="newsroom-nav-item{% if request.path.startswith('/source-manager') or request.path.startswith('/sources') %} is-active{% endif %}" href="/source-manager"><span class="nav-icon" aria-hidden="true">⌁</span><span class="nav-label">منابع</span></a>
     </nav>
     <div class="nr-topbar-actions">
       <span class="nr-private-pill"><i></i> خصوصی</span>
@@ -51,10 +51,10 @@
 
   {% if session.get('admin') %}
   <nav id="mobileBottomNav" class="nr-mobile-nav" aria-label="منوی موبایل">
-    <a class="{% if request.path == '/' %}is-active{% endif %}" href="{{ url_for('dashboard') }}"><span>●</span><b>اتاق خبر</b></a>
-    <a class="{% if request.path.startswith('/review') %}is-active{% endif %}" href="{{ url_for('review_queue') }}"><span>✓</span><b>بررسی</b></a>
-    <a class="{% if request.path.startswith('/history') %}is-active{% endif %}" href="{{ url_for('history') }}"><span>↗</span><b>منتشرشده</b></a>
-    <a class="{% if request.path.startswith('/source-manager') or request.path.startswith('/sources') %}is-active{% endif %}" href="/source-manager"><span>⌁</span><b>منابع</b></a>
+    <a class="newsroom-nav-item{% if request.path == '/' %} is-active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon">●</span><b class="nav-label">اتاق خبر</b></a>
+    <a class="newsroom-nav-item{% if request.path.startswith('/review') %} is-active{% endif %}" href="{{ url_for('review_queue') }}"><span class="nav-icon">✓</span><b class="nav-label">بررسی</b></a>
+    <a class="newsroom-nav-item{% if request.path.startswith('/history') %} is-active{% endif %}" href="{{ url_for('history') }}"><span class="nav-icon">↗</span><b class="nav-label">منتشرشده</b></a>
+    <a class="newsroom-nav-item{% if request.path.startswith('/source-manager') or request.path.startswith('/sources') %} is-active{% endif %}" href="/source-manager"><span class="nav-icon">⌁</span><b class="nav-label">منابع</b></a>
   </nav>
   {% endif %}
 
