@@ -1,0 +1,13 @@
+[Unit]
+Description=Run Bikhabar Newsroom V3 shadow cycle periodically
+
+[Timer]
+OnBootSec=90s
+OnUnitActiveSec=180s
+Persistent=true
+AccuracySec=15s
+RandomizedDelaySec=30s
+Unit=bikhabar-newsroom-v3-shadow.service
+
+[Install]
+WantedBy=timers.target
