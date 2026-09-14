@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -9,6 +11,22 @@ from ..newsroom_raw_intake import build_raw_fetchers
 from .outbox import NewsroomV3PublisherWorker
 from .shadow import NewsroomV3ShadowPipeline
 from .store import NewsroomV3Store
+
+
+def _atomic_write_json(path: str | Path, payload: dict) -> None:
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(prefix=f".{target.name}.", dir=str(target.parent))
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, ensure_ascii=False, sort_keys=True)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_name, target)
+    finally:
+        if os.path.exists(tmp_name):
+            os.unlink(tmp_name)
 
 
 def _collect(fetchers) -> tuple[list, int, int]:
@@ -83,8 +101,11 @@ def run_once(
 def main() -> int:
     parser = argparse.ArgumentParser(description="Newsroom V3 shadow runtime")
     parser.add_argument("--data-dir", default="data")
+    parser.add_argument("--status-file")
     args = parser.parse_args()
     result = run_once(data_dir=args.data_dir, shadow=True)
+    if args.status_file:
+        _atomic_write_json(args.status_file, result)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     return 0
 

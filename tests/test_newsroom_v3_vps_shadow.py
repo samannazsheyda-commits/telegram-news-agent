@@ -13,8 +13,12 @@ def test_v3_shadow_service_is_one_shot_and_cannot_publish():
     assert "Type=oneshot" in service
     assert "User=bikhabar" in service
     assert "EnvironmentFile=/etc/bikhabar/agent.env" in service
-    assert "python -m src.newsroom_v3.runtime" in service
+    assert "ExecStart=/opt/bikhabar/venv/bin/python -m src.newsroom_v3.runtime" in service
     assert "--data-dir /var/lib/bikhabar/runtime/data" in service
+    assert "--status-file /var/lib/bikhabar/runtime/data/newsroom_v3_shadow_status.json" in service
+    assert "/bin/sh" not in service
+    assert ".json.tmp" not in service
+    assert " && mv " not in service
     assert "--canary" not in service
     assert "MemoryMax=" in service
 
