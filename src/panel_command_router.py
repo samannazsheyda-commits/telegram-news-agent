@@ -8,11 +8,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .newsroom_v3.manual_publish import publish_manual_story
 from .panel_command_file import apply_command as apply_legacy_command
 
-TERMINAL = {"succeeded", "failed", "reconciled"}
+TERMINAL = {"succeeded", "failed", "reconciled", "ambiguous"}
 NEWSROOM_ACTIONS = {
-    "clear", "settings_save",
+    "clear", "settings_save", "v3_publish",
     "weather_now", "air_traffic_now", "tanker_now", "market_now",
     "weather_preview", "air_traffic_preview", "tanker_preview", "market_preview",
 }
@@ -56,15 +57,22 @@ def _write_result(
     *,
     scope: str = "",
     ids: list[str] | None = None,
+    item_id: str = "",
+    story_id: str = "",
+    telegram_message_id: int | None = None,
+    error: str = "",
 ) -> dict:
     payload = {
         "command_id": command_id,
-        "item_id": "",
+        "item_id": item_id,
         "action": action,
         "status": status,
         "message": message,
         "scope": scope,
         "ids": list(ids or []),
+        "story_id": story_id,
+        "telegram_message_id": telegram_message_id,
+        "error": error,
         "updated_at": _now(),
     }
     _atomic_write(_result_path(command_id), payload)
@@ -239,6 +247,95 @@ def _apply_module(payload: dict[str, Any]) -> dict:
     raise ValueError("unsupported_module_action")
 
 
+def _row_id(row: Any) -> str:
+    if not isinstance(row, dict):
+        return ""
+    return str(row.get("id") or row.get("item_id") or row.get("news_key") or "").strip()
+
+
+def _finalize_editorial_publish(payload: dict[str, Any], result: dict) -> None:
+    item_id = str(payload.get("item_id") or "").strip()
+    queue_path = Path("data/editorial_queue.json")
+    history_path = Path("data/editorial_history.json")
+    live_path = Path("data/panel_live_feed.json")
+    queue = _read_json(queue_path, [])
+    queue = [dict(row) for row in queue if isinstance(row, dict)] if isinstance(queue, list) else []
+    current = next((row for row in queue if _row_id(row) == item_id), None)
+    if current is None:
+        current = {
+            "id": item_id,
+            "item_id": item_id,
+            "news_key": str(payload.get("news_key") or item_id),
+            "source": str(payload.get("source") or ""),
+            "source_url": str(payload.get("source_url") or ""),
+            "persian_title": str(payload.get("title") or ""),
+            "persian_body": str(payload.get("body") or ""),
+        }
+    now = _now()
+    final = dict(current)
+    final.update(
+        status="published_manual",
+        final_persian_title=str(payload.get("title") or current.get("persian_title") or ""),
+        final_persian_body=str(payload.get("body") or current.get("persian_body") or ""),
+        decision_at=now,
+        updated_at=now,
+        telegram_message_id=result.get("telegram_message_id"),
+        v3_story_id=str(result.get("story_id") or ""),
+    )
+    _atomic_write(queue_path, [row for row in queue if _row_id(row) != item_id])
+    history = _read_json(history_path, [])
+    history = [dict(row) for row in history if isinstance(row, dict)] if isinstance(history, list) else []
+    _atomic_write(history_path, [final] + [row for row in history if _row_id(row) != item_id])
+    live = _read_json(live_path, [])
+    if isinstance(live, list):
+        _atomic_write(live_path, [row for row in live if _row_id(row) != item_id])
+
+
+def _apply_v3_publish(payload: dict[str, Any]) -> dict:
+    command_id = payload["command_id"]
+    item_id = str(payload.get("item_id") or "").strip()
+    source = str(payload.get("source") or "").strip()
+    source_url = str(payload.get("source_url") or "").strip()
+    title = str(payload.get("title") or "").strip()
+    if not item_id:
+        raise ValueError("missing_item_id")
+    if not source or not source_url:
+        raise ValueError("missing_source")
+    if not title:
+        raise ValueError("missing_title")
+
+    result = publish_manual_story(
+        data_dir=Path(os.environ.get("DATA_DIR", "data")),
+        item_id=item_id,
+        news_key=str(payload.get("news_key") or item_id),
+        source=source,
+        source_url=source_url,
+        title=title,
+        body=str(payload.get("body") or ""),
+        published_at=str(payload.get("published_at") or ""),
+    )
+    status = str(result.get("status") or "failed")
+    if status in {"succeeded", "reconciled"}:
+        _finalize_editorial_publish(payload, result)
+    messages = {
+        "succeeded": "خبر با مسیر امن V3 در تلگرام منتشر شد",
+        "reconciled": "انتشار قبلی V3 تأیید و همگام شد",
+        "ambiguous": "وضعیت ارسال تلگرام نامشخص است؛ انتشار دوباره خودکار مسدود شد",
+        "processing": "انتشار V3 در حال پردازش است",
+        "failed": "انتشار V3 ناموفق بود",
+    }
+    return _write_result(
+        command_id,
+        "v3_publish",
+        status,
+        messages.get(status, "وضعیت انتشار V3 ثبت شد"),
+        item_id=item_id,
+        story_id=str(result.get("story_id") or ""),
+        telegram_message_id=result.get("telegram_message_id") if isinstance(result.get("telegram_message_id"), int) else None,
+        error=str(result.get("error") or ""),
+    )
+
+
 def apply_command(path: str | Path) -> dict:
     command_path = Path(path)
     if not command_path.exists():
@@ -257,12 +354,14 @@ def apply_command(path: str | Path) -> dict:
         _consume(command_path)
         return existing
 
-    _write_result(payload["command_id"], action, "processing", "در حال پردازش")
+    _write_result(payload["command_id"], action, "processing", "در حال پردازش", item_id=str(payload.get("item_id") or ""))
     try:
         if action == "clear":
             result = _apply_clear(payload)
         elif action == "settings_save":
             result = _apply_settings(payload)
+        elif action == "v3_publish":
+            result = _apply_v3_publish(payload)
         else:
             result = _apply_module(payload)
         _consume(command_path)
@@ -275,6 +374,8 @@ def apply_command(path: str | Path) -> dict:
             str(exc),
             scope=str(payload.get("scope") or ""),
             ids=list(payload.get("ids") or []),
+            item_id=str(payload.get("item_id") or ""),
+            error=str(exc),
         )
         _consume(command_path)
         return result
