@@ -80,6 +80,41 @@ def _published_by_v2(story: StoryRecord, ledger: EventLedger) -> bool:
     return False
 
 
+def _safe_candidate(store: NewsroomV3Store, ledger: EventLedger) -> StoryRecord | None:
+    for story in store.list_publishable(limit=100):
+        if not _published_by_v2(story, ledger):
+            return story
+    return None
+
+
+def canary_preflight(*, data_dir: str | Path) -> dict:
+    """Read-only gate used before briefly stopping V2 for the real canary."""
+    directory = Path(data_dir)
+    marker_path = directory / CANARY_MARKER
+    if marker_path.exists():
+        return {"ready": False, "reason": "already_attempted"}
+    if not _shadow_is_healthy(_read_json(directory / SHADOW_STATUS)):
+        return {"ready": False, "reason": "shadow_not_healthy"}
+    store_path = directory / "newsroom_v3.sqlite3"
+    if not store_path.exists():
+        return {"ready": False, "reason": "store_missing"}
+
+    store = NewsroomV3Store(store_path)
+    try:
+        story = _safe_candidate(store, EventLedger(directory / V2_LEDGER))
+        if story is None:
+            return {"ready": False, "reason": "no_safe_candidate"}
+        return {
+            "ready": True,
+            "reason": "safe_candidate",
+            "story_id": story.story_id,
+            "source": story.source,
+            "source_url": story.source_url,
+        }
+    finally:
+        store.close()
+
+
 def build_production_publisher() -> V3TelegramPublisherAdapter:
     """Build the same guarded translation/publish stack used by V2 production."""
     hf_config = AIConfig.from_env()
@@ -144,14 +179,7 @@ def run_one_shot_canary(
 
     store = NewsroomV3Store(store_path)
     try:
-        ledger = EventLedger(directory / V2_LEDGER)
-        safe_story = None
-        for story in store.list_publishable(limit=100):
-            if _published_by_v2(story, ledger):
-                continue
-            safe_story = story
-            break
-
+        safe_story = _safe_candidate(store, EventLedger(directory / V2_LEDGER))
         if safe_story is None:
             return {"state": "no_candidate", "telegram_writes": 0}
 
@@ -186,7 +214,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Newsroom V3 guarded one-shot canary")
     parser.add_argument("--data-dir", default="data")
     parser.add_argument("--confirm-one-shot", action="store_true")
+    parser.add_argument("--preflight", action="store_true")
     args = parser.parse_args()
+
+    if args.preflight:
+        result = canary_preflight(data_dir=args.data_dir)
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+        return 0 if result.get("ready") is True else 3
+
     if not args.confirm_one_shot:
         parser.error("--confirm-one-shot is required")
     result = run_one_shot_canary(
