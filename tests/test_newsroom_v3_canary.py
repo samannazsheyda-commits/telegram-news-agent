@@ -146,6 +146,41 @@ def test_canary_preflight_only_becomes_ready_for_a_safe_unpublished_candidate(tm
     assert result["story_id"] == "story-safe"
 
 
+def test_canary_never_selects_a_stale_ready_story_left_in_sqlite(tmp_path):
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    _healthy_shadow(data_dir / "newsroom_v3_shadow_status.json")
+    store = NewsroomV3Store(data_dir / "newsroom_v3.sqlite3")
+    store.upsert_story(
+        story_id="stale-story",
+        source_item_id="stale-story",
+        source="Reuters",
+        source_url="https://example.com/stale",
+        title="Old Iran story left in the V3 store",
+        summary="This was fresh several days ago.",
+        published_at="2026-09-10T07:00:00+00:00",
+        fetched_at="2026-09-10T07:01:00+00:00",
+        media=[],
+        source_priority="protected",
+        fingerprint="fp-stale",
+        decision_state="ready",
+        decision_reason="eligible",
+    )
+    store.close()
+
+    preflight = canary_preflight(data_dir=data_dir)
+    assert preflight["ready"] is False
+    assert preflight["reason"] == "no_safe_candidate"
+
+    calls = []
+    result = run_one_shot_canary(
+        data_dir=data_dir,
+        publisher=lambda story: calls.append(story.story_id) or {"ok": True, "message_id": 777},
+    )
+    assert result["state"] == "no_candidate"
+    assert calls == []
+
+
 def test_canary_marker_makes_the_external_attempt_strictly_one_shot(tmp_path):
     data_dir = tmp_path / "data"
     data_dir.mkdir()
