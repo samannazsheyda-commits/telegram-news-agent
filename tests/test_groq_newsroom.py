@@ -29,17 +29,21 @@ class FakeSession:
         return self.responses.pop(0)
 
 
-def editorial_payload():
+def editorial_data():
     return {
-        "choices": [{"message": {"content": json.dumps({
-            "importance": 94,
-            "topic": "missile_attack",
-            "publish": True,
-            "reason": "active kinetic event",
-            "new_fact": True,
-            "priority_class": "critical",
-        })}}]
+        "importance": 94,
+        "topic": "missile_attack",
+        "publish": True,
+        "reason": "active kinetic event",
+        "new_fact": True,
+        "priority_class": "critical",
     }
+
+
+def editorial_payload(content=None):
+    if content is None:
+        content = json.dumps(editorial_data())
+    return {"choices": [{"message": {"content": content}}]}
 
 
 def test_config_reads_groq_credentials_and_qwen36_model(monkeypatch):
@@ -72,6 +76,34 @@ def test_groq_editor_uses_openai_compatible_endpoint_and_json_mode():
     assert kwargs["json"]["model"] == "qwen/qwen3.6-27b"
     assert kwargs["json"]["response_format"] == {"type": "json_object"}
     assert kwargs["json"]["reasoning_format"] == "hidden"
+
+
+def test_groq_accepts_single_item_json_array_content():
+    content = json.dumps([editorial_data()])
+    session = FakeSession([FakeResponse(editorial_payload(content))])
+    ai = GroqNewsAI(
+        GroqConfig(api_key="gsk_test", mode="required", request_min_interval_ms=0),
+        session=session,
+    )
+
+    decision = ai.score_story("Iran launched missiles toward Israel")
+
+    assert decision.publish is True
+    assert decision.priority_class == "critical"
+
+
+def test_groq_accepts_content_part_array():
+    content = [{"type": "text", "text": json.dumps(editorial_data())}]
+    session = FakeSession([FakeResponse(editorial_payload(content))])
+    ai = GroqNewsAI(
+        GroqConfig(api_key="gsk_test", mode="required", request_min_interval_ms=0),
+        session=session,
+    )
+
+    decision = ai.score_story("Iran launched missiles toward Israel")
+
+    assert decision.publish is True
+    assert decision.priority_class == "critical"
 
 
 def test_local_first_groq_never_calls_remote_embedding_endpoint():
