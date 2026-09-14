@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <meta name="theme-color" content="#0b0d10">
+  <meta name="theme-color" content="#090a0d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="بی‌خبر">
@@ -14,53 +14,51 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='panel.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='settings.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='source_manager.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='light-newsroom.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-nav-v2.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-compact.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-shell.css') }}">
+  {% block extra_head %}{% endblock %}
 </head>
-<body>
-  <header class="topbar newsroom-topbar">
-    <a href="{{ url_for('dashboard') if session.get('admin') else url_for('login') }}" class="brand-lockup">
-      <span class="brand-mark">ب</span>
-      <span class="brand-copy"><strong>بی‌خبر</strong><small>اتاق خبر زنده</small></span>
+<body data-newsroom-shell="v3">
+  <header class="nr-topbar">
+    <a href="{{ url_for('dashboard') if session.get('admin') else url_for('login') }}" class="nr-brand" aria-label="بی‌خبر">
+      <span class="nr-brand-mark">ب</span>
+      <span class="nr-brand-copy"><strong>بی‌خبر</strong><small>Newsroom V3</small></span>
     </a>
     {% if session.get('admin') %}
-    <div class="topbar-actions">
-      <span class="secure-pill"><i></i> پنل خصوصی</span>
+    <nav class="nr-desktop-nav" aria-label="ناوبری اتاق خبر">
+      <a class="{% if request.path == '/' %}is-active{% endif %}" href="{{ url_for('dashboard') }}">اتاق خبر</a>
+      <a class="{% if request.path.startswith('/review') %}is-active{% endif %}" href="{{ url_for('review_queue') }}">بررسی</a>
+      <a class="{% if request.path.startswith('/history') %}is-active{% endif %}" href="{{ url_for('history') }}">منتشرشده</a>
+      <a class="{% if request.path.startswith('/source-manager') or request.path.startswith('/sources') %}is-active{% endif %}" href="/source-manager">منابع</a>
+    </nav>
+    <div class="nr-topbar-actions">
+      <span class="nr-private-pill"><i></i> خصوصی</span>
       <form method="post" action="{{ url_for('logout') }}" class="inline-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button class="link-button" type="submit">خروج</button>
+        <button class="nr-ghost-button" type="submit">خروج</button>
       </form>
     </div>
     {% endif %}
   </header>
 
-  {% if session.get('admin') %}
-  <nav class="nav newsroom-nav" aria-label="منوی اصلی اتاق خبر">
-    <a class="newsroom-nav-item{% if request.path == '/' %} is-active{% endif %}" href="{{ url_for('dashboard') }}">
-      <span class="nav-icon" aria-hidden="true">◉</span><span class="nav-label">اتاق خبر</span>
-    </a>
-    <a class="newsroom-nav-item{% if request.path.startswith('/review') %} is-active{% endif %}" href="{{ url_for('review_queue') }}">
-      <span class="nav-icon" aria-hidden="true">✓</span><span class="nav-label">بررسی خبرها</span>
-    </a>
-    <a class="newsroom-nav-item{% if request.path.startswith('/history') %} is-active{% endif %}" href="{{ url_for('history') }}">
-      <span class="nav-icon" aria-hidden="true">↗</span><span class="nav-label">منتشرشده‌ها</span>
-    </a>
-    <a class="newsroom-nav-item{% if request.path.startswith('/source-manager') or request.path.startswith('/sources') %} is-active{% endif %}" href="/source-manager">
-      <span class="nav-icon" aria-hidden="true">⌁</span><span class="nav-label">منابع</span>
-    </a>
-  </nav>
-  {% endif %}
-
-  <main class="page">
+  <main class="nr-page">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
+        <div class="nr-flash {{ category }}">{{ message }}</div>
       {% endfor %}
     {% endwith %}
     {% block content %}{% endblock %}
   </main>
+
+  {% if session.get('admin') %}
+  <nav id="mobileBottomNav" class="nr-mobile-nav" aria-label="منوی موبایل">
+    <a class="{% if request.path == '/' %}is-active{% endif %}" href="{{ url_for('dashboard') }}"><span>●</span><b>اتاق خبر</b></a>
+    <a class="{% if request.path.startswith('/review') %}is-active{% endif %}" href="{{ url_for('review_queue') }}"><span>✓</span><b>بررسی</b></a>
+    <a class="{% if request.path.startswith('/history') %}is-active{% endif %}" href="{{ url_for('history') }}"><span>↗</span><b>منتشرشده</b></a>
+    <a class="{% if request.path.startswith('/source-manager') or request.path.startswith('/sources') %}is-active{% endif %}" href="/source-manager"><span>⌁</span><b>منابع</b></a>
+  </nav>
+  {% endif %}
+
+  <div id="nrToastStack" class="nr-toast-stack" aria-live="polite" aria-atomic="true"></div>
 
   <script src="{{ url_for('static', filename='settings.js') }}" defer></script>
   <script>
@@ -68,5 +66,6 @@
       window.addEventListener('load', () => navigator.serviceWorker.register('{{ url_for('static', filename='sw.js') }}').catch(() => {}));
     }
   </script>
+  {% block scripts %}{% endblock %}
 </body>
 </html>
