@@ -171,9 +171,17 @@ def _within_publish_interval(
     now: datetime,
     min_publish_interval_seconds: int,
 ) -> bool:
-    previous = _parse_time(state.get("last_published_at"))
-    if previous is None:
+    timestamps = [
+        parsed
+        for parsed in (
+            _parse_time(state.get("last_published_at")),
+            _parse_time(state.get("last_publish_attempt_at")),
+        )
+        if parsed is not None
+    ]
+    if not timestamps:
         return False
+    previous = max(timestamps)
     return (now - previous).total_seconds() < max(0, int(min_publish_interval_seconds))
 
 
