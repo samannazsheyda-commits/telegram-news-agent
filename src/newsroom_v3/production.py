@@ -236,6 +236,7 @@ def run_once(
             "story_id": "",
             "telegram_message_id": None,
             "reason": "",
+            "error": "",
             "last_cycle_at": current_time.isoformat(),
         }
 
