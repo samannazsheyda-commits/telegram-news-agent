@@ -187,3 +187,64 @@ def test_newsroom_command_result_preserves_ambiguous_state():
     payload = response.get_json()
     assert payload["status"] == "ambiguous"
     assert "نامشخص" in payload["message"]
+
+
+def test_inline_editor_save_persists_edited_persian_copy_to_review_queue():
+    data = FakeData()
+    client = _app(data).test_client()
+    csrf = _login(client)
+
+    response = client.post(
+        "/api/newsroom/live/live-1/review",
+        headers={"X-CSRFToken": csrf},
+        json={"title": "تیتر نهایی ویرایش‌شده", "body": "متن نهایی ویرایش‌شده برای بررسی."},
+    )
+
+    assert response.status_code == 200
+    queued = next(row for row in data.files["data/editorial_queue.json"] if row.get("id") == "live-1")
+    assert queued["persian_title"] == "تیتر نهایی ویرایش‌شده"
+    assert queued["persian_body"] == "متن نهایی ویرایش‌شده برای بررسی."
+    assert data.commands == []
+
+
+def test_inline_editor_publish_uses_edited_copy_in_v3_command():
+    data = FakeData()
+    client = _app(data).test_client()
+    csrf = _login(client)
+
+    response = client.post(
+        "/api/newsroom/live/live-1/publish",
+        headers={"X-CSRFToken": csrf},
+        json={"title": "تیتر ویرایش‌شده برای انتشار", "body": "متن ویرایش‌شده‌ای که باید به V3 برسد."},
+    )
+
+    assert response.status_code == 202
+    command = data.commands[-1]
+    assert command["action"] == "v3_publish"
+    assert command["title"] == "تیتر ویرایش‌شده برای انتشار"
+    assert command["body"] == "متن ویرایش‌شده‌ای که باید به V3 برسد."
+    queued = next(row for row in data.files["data/editorial_queue.json"] if row.get("id") == "live-1")
+    assert queued["persian_title"] == command["title"]
+    assert queued["persian_body"] == command["body"]
+
+
+def test_inline_editor_rejects_non_persian_or_oversized_final_title():
+    data = FakeData()
+    client = _app(data).test_client()
+    csrf = _login(client)
+
+    non_persian = client.post(
+        "/api/newsroom/live/live-1/publish",
+        headers={"X-CSRFToken": csrf},
+        json={"title": "Final English title", "body": "متن"},
+    )
+    assert non_persian.status_code == 409
+    assert non_persian.get_json()["error"] == "final_not_ready"
+
+    oversized = client.post(
+        "/api/newsroom/live/live-1/review",
+        headers={"X-CSRFToken": csrf},
+        json={"title": "خ" * 281, "body": "متن"},
+    )
+    assert oversized.status_code == 400
+    assert oversized.get_json()["error"] == "invalid_editor_payload"
