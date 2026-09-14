@@ -130,6 +130,50 @@ def test_v3_production_skips_v2_published_and_stale_and_publishes_only_one(tmp_p
     assert calls == ["safe-new"]
 
 
+def test_successful_v3_cycle_clears_stale_error_from_persisted_status(tmp_path):
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    store = NewsroomV3Store(data_dir / "newsroom_v3.sqlite3")
+    _ready_story(
+        store,
+        "fresh-after-error",
+        "https://example.com/fresh-after-error",
+        published_at="2026-09-14T09:58:00+00:00",
+    )
+    store.close()
+
+    status_path = data_dir / "newsroom_v3_production_status.json"
+    status_path.write_text(
+        json.dumps(
+            {
+                "mode": "production",
+                "reason": "failed",
+                "error": "translation_or_format_failed",
+                "last_published_at": "2026-09-14T09:00:00+00:00",
+                "last_published_story_id": "older-story",
+                "last_telegram_message_id": 1400,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_v3_production_once(
+        data_dir=data_dir,
+        fetchers=[],
+        publisher=lambda story: {"ok": True, "message_id": 1501},
+        now=datetime(2026, 9, 14, 10, 0, tzinfo=timezone.utc),
+        publish_enabled=True,
+        min_publish_interval_seconds=0,
+    )
+
+    persisted = json.loads(status_path.read_text(encoding="utf-8"))
+    assert result["reason"] == "published"
+    assert persisted["reason"] == "published"
+    assert persisted["error"] == ""
+    assert persisted["telegram_message_id"] == 1501
+    assert persisted["last_telegram_message_id"] == 1501
+
+
 def test_v3_production_does_not_retry_a_recent_failed_publish(tmp_path):
     data_dir = tmp_path / "data"
     data_dir.mkdir()
