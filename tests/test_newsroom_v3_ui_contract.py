@@ -86,7 +86,8 @@ def test_server_rendered_story_card_exposes_direct_editorial_actions():
     assert 'data-action="reject"' in html
     assert 'data-action="source"' in html
     assert "تیتر مهم برای تست اتاق خبر" in html
-    assert "Reuters" in html
+    assert "رویترز" in html
+    assert "Reuters" not in html
 
 
 def test_sensitive_actions_have_confirmation_and_inline_editor_hooks():
