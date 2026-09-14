@@ -17,7 +17,7 @@ from .canary import (
     _still_fresh,
     build_production_publisher,
 )
-from .outbox import NewsroomV3PublisherWorker
+from .outbox import AMBIGUOUS_ERROR_PREFIX, NewsroomV3PublisherWorker
 from .shadow import NewsroomV3ShadowPipeline
 from .store import NewsroomV3Store, StoryRecord
 
@@ -133,9 +133,13 @@ def _candidate_for_publish(
     if not candidates:
         return None, "no_safe_candidate"
 
+    saw_ambiguous = False
     saw_cooldown = False
     saw_attempt_limit = False
     for story in candidates:
+        if str(story.last_publish_error or "").startswith(AMBIGUOUS_ERROR_PREFIX):
+            saw_ambiguous = True
+            continue
         attempts = store.list_publish_attempts(story.story_id)
         if len(attempts) >= max(1, int(max_attempts)):
             saw_attempt_limit = True
@@ -152,6 +156,8 @@ def _candidate_for_publish(
                 continue
         return story, "safe_candidate"
 
+    if saw_ambiguous:
+        return None, "ambiguous_remote_state"
     if saw_cooldown:
         return None, "retry_cooldown"
     if saw_attempt_limit:
@@ -286,7 +292,11 @@ def run_once(
             **base,
             "publish_failed": 1 if publish_result.state == "failed" else 0,
             "story_id": story.story_id,
-            "reason": publish_result.state,
+            "reason": (
+                "ambiguous_remote_state"
+                if publish_result.ambiguous
+                else publish_result.state
+            ),
             "error": publish_result.error,
         }
         _atomic_json(status_path, {**prior_status, **result})
