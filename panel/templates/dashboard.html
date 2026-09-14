@@ -26,6 +26,7 @@
       <div class="nr-quick-actions">
         <strong>کنترل سریع</strong>
         <button id="scanNow" class="nr-button nr-button-primary" type="button" data-action="scan">⚡ اسکن فوری</button>
+        <a class="nr-button nr-button-secondary" href="{{ url_for('source_manager.index') }}">＋ افزودن منبع</a>
         <button id="publishingToggle" class="nr-button nr-button-danger" type="button" data-confirm-action="publishing" data-action="publishing">⛔ توقف کامل انتشار</button>
         <span id="actionState" class="nr-action-state">آماده</span>
       </div>
@@ -168,6 +169,7 @@
     <label><span>تیتر فارسی</span><textarea id="editorTitle" rows="3" maxlength="280"></textarea></label>
     <label><span>متن خبر</span><textarea id="editorBody" rows="8" maxlength="4000"></textarea></label>
     <div class="nr-editor-source" id="editorSource">—</div>
+    <a id="editorSourceLink" class="nr-button nr-button-secondary" href="#" target="_blank" rel="noopener" hidden>بازکردن منبع اصلی</a>
     <div class="nr-sheet-actions">
       <button id="editorSave" class="nr-button nr-button-secondary" type="button">ذخیره برای بررسی</button>
       <button id="editorPublish" class="nr-button nr-button-primary" type="button">انتشار نسخه ویرایش‌شده</button>
