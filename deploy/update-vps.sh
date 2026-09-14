@@ -88,9 +88,9 @@ else
   fi
 fi
 
-# The newsroom must retain a local Persian translation path when remote AI or
-# public translation services are unavailable. The installer is idempotent: it
-# exits immediately when the compact Argos EN→FA model is already present.
+# Keep the compact offline translator installed for explicit/manual use. The
+# production service decides whether local MT is enabled; installation alone
+# does not activate it in the live newsroom path.
 bash "${APP_DIR}/deploy/install-offline-translator.sh"
 
 seed_once() {
@@ -144,18 +144,25 @@ install -m 644 "${APP_DIR}/deploy/bikhabar-weather.service" /etc/systemd/system/
 install -m 644 "${APP_DIR}/deploy/bikhabar-weather.timer" /etc/systemd/system/bikhabar-weather.timer
 install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.service" /etc/systemd/system/bikhabar-air-traffic.service
 install -m 644 "${APP_DIR}/deploy/bikhabar-air-traffic.timer" /etc/systemd/system/bikhabar-air-traffic.timer
+install -m 644 "${APP_DIR}/deploy/bikhabar-newsroom-v3-shadow.service" /etc/systemd/system/bikhabar-newsroom-v3-shadow.service
+install -m 644 "${APP_DIR}/deploy/bikhabar-newsroom-v3-shadow.timer" /etc/systemd/system/bikhabar-newsroom-v3-shadow.timer
 systemctl daemon-reload
-systemctl enable bikhabar-agent bikhabar-panel bikhabar-weather.timer bikhabar-air-traffic.timer >/dev/null
+systemctl enable bikhabar-agent bikhabar-panel bikhabar-weather.timer bikhabar-air-traffic.timer bikhabar-newsroom-v3-shadow.timer >/dev/null
 systemctl restart bikhabar-agent
 systemctl restart bikhabar-panel
-systemctl enable --now bikhabar-weather.timer bikhabar-air-traffic.timer >/dev/null
-# The timer unit may already be active; restart it so changed OnCalendar lines take effect immediately.
+systemctl enable --now bikhabar-weather.timer bikhabar-air-traffic.timer bikhabar-newsroom-v3-shadow.timer >/dev/null
+# The timer units may already be active; restart them so schedule changes take effect immediately.
 systemctl restart bikhabar-air-traffic.timer
+systemctl restart bikhabar-newsroom-v3-shadow.timer
+# Produce immediate shadow evidence on every deploy. The V3 CLI is shadow-only
+# and structurally has no canary switch, so this cannot write to Telegram.
+systemctl start bikhabar-newsroom-v3-shadow.service
 sleep 6
 systemctl is-active --quiet bikhabar-agent
 systemctl is-active --quiet bikhabar-panel
 systemctl is-active --quiet bikhabar-weather.timer
 systemctl is-active --quiet bikhabar-air-traffic.timer
+systemctl is-active --quiet bikhabar-newsroom-v3-shadow.timer
 curl -fsS --max-time 10 http://127.0.0.1/login >/dev/null
 trap - ERR
 
@@ -164,6 +171,7 @@ echo "AGENT=$(systemctl is-active bikhabar-agent)"
 echo "PANEL=$(systemctl is-active bikhabar-panel)"
 echo "WEATHER_TIMER=$(systemctl is-active bikhabar-weather.timer)"
 echo "AIR_TRAFFIC_TIMER=$(systemctl is-active bikhabar-air-traffic.timer)"
+echo "V3_SHADOW_TIMER=$(systemctl is-active bikhabar-newsroom-v3-shadow.timer)"
 
 # Print the newsroom evidence automatically so the operator does not have to
 # paste and run a separate chain of diagnostic commands after every update.
@@ -175,6 +183,7 @@ from pathlib import Path
 
 state_path = Path("${RUNTIME_ROOT}/state.json")
 feed_path = Path("${RUNTIME_DATA}/panel_live_feed.json")
+v3_shadow_path = Path("${RUNTIME_DATA}/newsroom_v3_shadow_status.json")
 
 if state_path.exists():
     try:
@@ -196,6 +205,27 @@ if state_path.exists():
         print("STATE " + " ".join(f"{key}={state.get(key)!r}" for key in keys))
 else:
     print("STATE missing")
+
+if v3_shadow_path.exists():
+    try:
+        v3 = json.loads(v3_shadow_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        print(f"V3_SHADOW_READ_FAILED={type(exc).__name__}:{exc}")
+    else:
+        keys = (
+            "mode",
+            "sources_ok",
+            "sources_failed",
+            "processed",
+            "ready",
+            "waiting",
+            "rejected",
+            "duplicates",
+            "telegram_writes",
+        )
+        print("V3_SHADOW " + " ".join(f"{key}={v3.get(key)!r}" for key in keys))
+else:
+    print("V3_SHADOW missing")
 
 if feed_path.exists():
     try:
@@ -226,4 +256,5 @@ PY
 journalctl -u bikhabar-agent --since "3 minutes ago" --no-pager \
   | grep -E 'TELEGRAM_PUBLISH_FAILED|STRICT_TRANSLATION|OFFLINE_TRANSLATION|AI_TRANSLATION|published|telegram_writes|publish_failed' \
   | tail -n 40 || true
+journalctl -u bikhabar-newsroom-v3-shadow.service --since "3 minutes ago" --no-pager | tail -n 30 || true
 echo "===== END NEWSROOM HEALTH ====="
