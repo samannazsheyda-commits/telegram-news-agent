@@ -5,6 +5,10 @@
   const actionState = document.getElementById('actionState');
   const scanNow = document.getElementById('scanNow');
   const publishingToggle = document.getElementById('publishingToggle');
+  const liveSelectAll = document.getElementById('liveSelectAll');
+  const liveBulkDelete = document.getElementById('liveBulkDelete');
+  const clearCurrentFeed = document.getElementById('clearCurrentFeed');
+  const liveBulkState = document.getElementById('liveBulkState');
 
   async function requestJSON(url, options = {}) {
     const headers = UI.csrfHeaders ? UI.csrfHeaders(options.headers || {}) : (options.headers || {});
@@ -52,6 +56,8 @@
     throw new Error('پاسخ runtime دیرتر از حد انتظار شد؛ وضعیت را دوباره بررسی کن.');
   }
 
+  window.BikhabarActions = {requestJSON, pollCommand, storyProgress};
+
   async function publishCard(card) {
     const id = card?.dataset.storyId;
     if (!id) return;
@@ -89,6 +95,7 @@
     try {
       await requestJSON(`/api/newsroom/live/${encodeURIComponent(id)}/reject`, {method:'POST'});
       card.remove();
+      syncBulkControls();
       UI.toast?.('خبر رد شد.', 'success');
       window.dispatchEvent(new Event('newsroom:refresh'));
     } catch (error) {
@@ -96,6 +103,63 @@
       UI.toast?.(error.message, 'error');
     }
   }
+
+  function liveCheckboxes() {
+    return [...feed.querySelectorAll('.live-select')];
+  }
+
+  function selectedLiveIds() {
+    return liveCheckboxes().filter(box => box.checked).map(box => String(box.value || '')).filter(Boolean);
+  }
+
+  function syncBulkControls() {
+    const boxes = liveCheckboxes();
+    const selected = boxes.filter(box => box.checked).length;
+    if (liveBulkDelete) liveBulkDelete.disabled = selected === 0;
+    if (liveSelectAll) {
+      liveSelectAll.checked = boxes.length > 0 && selected === boxes.length;
+      liveSelectAll.indeterminate = selected > 0 && selected < boxes.length;
+    }
+    if (liveBulkState) liveBulkState.textContent = selected ? `${selected.toLocaleString('fa-IR')} خبر انتخاب شده · فقط از پنل` : 'فقط از پنل؛ هیچ پیامی در تلگرام حذف نمی‌شود.';
+  }
+
+  async function clearLiveIds(ids, label) {
+    if (!ids.length) return;
+    const accepted = await UI.confirmAction?.({
+      title: label,
+      text: 'این کار فقط آیتم‌های انتخاب‌شده را از فید پنل پاک می‌کند و هیچ پیام تلگرامی حذف نمی‌شود.',
+      accept: 'حذف از پنل',
+    });
+    if (!accepted) return;
+    if (liveBulkDelete) liveBulkDelete.disabled = true;
+    if (clearCurrentFeed) clearCurrentFeed.disabled = true;
+    try {
+      const result = await requestJSON('/api/command-center/clear', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({scope:'live', ids}),
+      });
+      UI.toast?.(result.message || 'از پنل پاک شد.', 'success');
+      window.dispatchEvent(new Event('newsroom:refresh'));
+    } catch (error) {
+      UI.toast?.(error.message, 'error');
+    } finally {
+      if (clearCurrentFeed) clearCurrentFeed.disabled = false;
+      syncBulkControls();
+    }
+  }
+
+  feed.addEventListener('change', event => {
+    if (event.target.matches('.live-select')) syncBulkControls();
+  });
+
+  liveSelectAll?.addEventListener('change', () => {
+    liveCheckboxes().forEach(box => { box.checked = liveSelectAll.checked; });
+    syncBulkControls();
+  });
+  liveBulkDelete?.addEventListener('click', () => clearLiveIds(selectedLiveIds(), 'خبرهای انتخاب‌شده از پنل پاک شوند؟'));
+  clearCurrentFeed?.addEventListener('click', () => {
+    const ids = [...feed.querySelectorAll('[data-story-id]')].map(card => card.dataset.storyId).filter(Boolean);
+    clearLiveIds(ids, 'کل ورودی فعلی پنل پاک شود؟');
+  });
 
   feed.addEventListener('click', event => {
     const target = event.target.closest('[data-action]');
@@ -129,11 +193,14 @@
     if (!publishingToggle || !snapshot) return;
     const active = Boolean(snapshot.publishing);
     publishingToggle.dataset.enabled = active ? '1' : '0';
-    publishingToggle.textContent = active ? 'توقف انتشار' : 'فعال‌کردن انتشار';
+    publishingToggle.textContent = active ? '⛔ توقف کامل انتشار' : 'فعال‌کردن انتشار';
     publishingToggle.classList.toggle('nr-button-danger', active);
     publishingToggle.classList.toggle('nr-button-primary', !active);
   }
-  window.addEventListener('newsroom:snapshot', event => syncPublishing(event.detail));
+  window.addEventListener('newsroom:snapshot', event => {
+    syncPublishing(event.detail);
+    syncBulkControls();
+  });
 
   publishingToggle?.addEventListener('click', async () => {
     const currentlyEnabled = publishingToggle.dataset.enabled !== '0';
@@ -162,14 +229,21 @@
     const button = previewButton || runButton;
     const moduleName = previewButton?.dataset.modulePreview || runButton?.dataset.moduleRun;
     if (!moduleName) return;
+    const panel = document.querySelector(`[data-preview-panel="${CSS.escape(moduleName)}"]`) || document.querySelector(`[data-preview="${CSS.escape(moduleName)}"]`);
+    if (previewButton && panel && !panel.hidden) {
+      panel.hidden = true;
+      return;
+    }
     button.disabled = true;
     try {
       if (previewButton) {
         const queued = await requestJSON(`/api/command-center/module/${encodeURIComponent(moduleName)}/preview`, {method:'POST'});
         if (queued.command_id) await pollCommand(queued.command_id, {timeoutMs:45000});
         const preview = await requestJSON(`/api/command-center/module/${encodeURIComponent(moduleName)}/preview`);
-        const panel = document.querySelector(`[data-preview="${CSS.escape(moduleName)}"]`);
-        if (panel) { panel.textContent = preview.message || 'پیش‌نمایش آماده است.'; panel.hidden = false; }
+        if (panel) {
+          panel.textContent = preview.message || 'پیش‌نمایش آماده است.';
+          panel.hidden = false;
+        }
       } else {
         const accepted = await UI.confirmAction?.({title:'انتشار گزارش ویژه؟', text:'این فرمان می‌تواند یک پیام واقعی در تلگرام منتشر کند.', accept:'انتشار'});
         if (!accepted) return;
@@ -180,4 +254,6 @@
     } catch (error) { UI.toast?.(error.message, error.ambiguous ? 'warn' : 'error'); }
     finally { button.disabled = false; }
   });
+
+  syncBulkControls();
 })();
