@@ -165,7 +165,10 @@ systemctl start bikhabar-newsroom-v3-shadow.service
 # network response can never trigger an automatic second attempt.
 CANARY_MARKER="${RUNTIME_DATA}/newsroom_v3_canary_once.json"
 if [[ ! -f "${CANARY_MARKER}" ]]; then
-  if runuser -u bikhabar -- "${VENV_DIR}/bin/python" -m src.newsroom_v3.canary --data-dir "${RUNTIME_DATA}" --preflight; then
+  if (
+    cd "${APP_DIR}"
+    runuser -u bikhabar -- "${VENV_DIR}/bin/python" -m src.newsroom_v3.canary --data-dir "${RUNTIME_DATA}" --preflight
+  ); then
     systemctl stop bikhabar-agent
     CANARY_RC=0
     systemctl start bikhabar-newsroom-v3-canary.service || CANARY_RC=$?
