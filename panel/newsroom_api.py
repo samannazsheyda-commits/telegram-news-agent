@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 
 from flask import Blueprint, current_app, jsonify, request, session
 
+from src.formatters import _source_label
+
 from .command_center import (
     _enqueue,
     _find_live_item,
@@ -54,13 +56,35 @@ def _story_id(row: dict) -> str:
     return str(row.get("item_id") or row.get("id") or row.get("news_key") or "").strip()
 
 
+def _has_persian(value: str) -> bool:
+    return any("\u0600" <= char <= "\u06ff" for char in str(value or ""))
+
+
+def _editor_copy(row: dict) -> tuple[str, str, tuple[dict, int] | None]:
+    title = str(row.get("final_persian_title") or row.get("persian_title") or "").strip()
+    body = str(row.get("final_persian_body") or row.get("persian_body") or "").strip()
+    payload = request.get_json(silent=True)
+    if payload is None:
+        return title, body, None
+    if not isinstance(payload, dict):
+        return title, body, ({"ok": False, "status": "failed", "error": "invalid_editor_payload", "message": "متن ویرایش معتبر نیست"}, 400)
+    if "title" in payload:
+        title = str(payload.get("title") or "").strip()
+    if "body" in payload:
+        body = str(payload.get("body") or "").strip()
+    if len(title) > 280 or len(body) > 4000:
+        return title, body, ({"ok": False, "status": "failed", "error": "invalid_editor_payload", "message": "متن ویرایش از حد مجاز طولانی‌تر است"}, 400)
+    return title, body, None
+
+
 def _live_public(row: dict) -> dict:
+    source = str(row.get("source") or "")
     return {
         "id": _story_id(row),
         "news_key": str(row.get("news_key") or ""),
         "title": str(row.get("final_persian_title") or row.get("persian_title") or row.get("display_title") or row.get("title") or ""),
         "body": str(row.get("final_persian_body") or row.get("persian_body") or ""),
-        "source": str(row.get("source") or ""),
+        "source": _source_label(source) or "منبع",
         "source_url": str(row.get("source_url") or row.get("link") or ""),
         "status": str(row.get("panel_status") or "new"),
         "priority": str(row.get("source_priority") or row.get("priority") or "normal"),
@@ -77,13 +101,16 @@ def _normalize_result(payload: dict, *, default_status: str = "queued") -> dict:
     status = str(payload.get("status") or default_status)
     if status not in {"queued", "processing", "succeeded", "failed", "ambiguous", "reconciled"}:
         status = default_status
-    return {
+    result = {
         "ok": bool(payload.get("ok", status not in {"failed"})),
         "status": status,
         "command_id": str(payload.get("command_id") or ""),
         "message": str(payload.get("message") or ""),
         **({"review_url": payload["review_url"]} if payload.get("review_url") else {}),
     }
+    if isinstance(payload.get("telegram_message_id"), int):
+        result["telegram_message_id"] = payload["telegram_message_id"]
+    return result
 
 
 @bp.before_request
@@ -185,13 +212,19 @@ def review_live(item_id: str):
         return jsonify({"ok": False, "status": "failed", "error": "live_item_not_found", "message": "خبر پیدا نشد"}), 404
     if str(row.get("panel_status") or "") in _TERMINAL_LIVE_STATUSES:
         return jsonify({"ok": False, "status": "failed", "error": "already_published", "message": "خبر قبلاً منتشر شده"}), 409
+    title, body, error = _editor_copy(row)
+    if error:
+        payload, status = error
+        return jsonify(payload), status
     record = _review_record_from_live(row, item_id)
+    record["persian_title"] = title
+    record["persian_body"] = body
     _write_list(
         "data/editorial_queue.json",
         lambda queue: [record] + [existing for existing in queue if str(existing.get("id") or existing.get("item_id") or "") != item_id],
         "panel: promote live item to review",
     )
-    return jsonify({"ok": True, "status": "succeeded", "command_id": "", "review_url": f"/review/{item_id}", "message": "خبر برای ویرایش آماده شد"})
+    return jsonify({"ok": True, "status": "succeeded", "command_id": "", "review_url": f"/review/{item_id}", "message": "نسخه ویرایش‌شده برای بررسی ذخیره شد"})
 
 
 @bp.post("/api/newsroom/live/<item_id>/reject")
@@ -217,11 +250,13 @@ def publish_live(item_id: str):
         return jsonify({"ok": False, "status": "failed", "error": "live_item_not_found", "message": "خبر پیدا نشد"}), 404
     if str(row.get("panel_status") or "") in _TERMINAL_LIVE_STATUSES:
         return jsonify({"ok": False, "status": "failed", "error": "already_published", "message": "خبر قبلاً منتشر شده"}), 409
-    title = str(row.get("final_persian_title") or row.get("persian_title") or "").strip()
-    body = str(row.get("final_persian_body") or row.get("persian_body") or "").strip()
+    title, body, error = _editor_copy(row)
+    if error:
+        payload, status = error
+        return jsonify(payload), status
     source = str(row.get("source") or "").strip()
     source_url = str(row.get("source_url") or row.get("link") or "").strip()
-    if not title or not any("\u0600" <= char <= "\u06ff" for char in title):
+    if not title or not _has_persian(title):
         return jsonify({"ok": False, "status": "failed", "error": "final_not_ready", "message": "تیتر نهایی فارسی آماده نیست"}), 409
     if not source or not source_url:
         return jsonify({"ok": False, "status": "failed", "error": "source_missing", "message": "منبع معتبر خبر موجود نیست"}), 409
