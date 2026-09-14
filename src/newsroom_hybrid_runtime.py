@@ -10,6 +10,8 @@ from pathlib import Path
 
 from . import runtime_v13 as v13
 from .newsroom_runtime_v2 import run_once as run_v2_once
+from .newsroom_v3.production import cutover_gate as v3_cutover_gate
+from .newsroom_v3.production import run_once as run_v3_production_once
 from .panel_command_router import apply_command as apply_panel_command
 
 
@@ -69,6 +71,12 @@ def _record_runtime_heartbeat(
             "last_panel_commands": panel_commands,
         }
     )
+    if result.get("newsroom_engine"):
+        state["newsroom_engine"] = str(result.get("newsroom_engine"))
+    if result.get("v3_gate_reason"):
+        state["v3_gate_reason"] = str(result.get("v3_gate_reason"))
+    if result.get("reason"):
+        state["newsroom_reason"] = str(result.get("reason"))
 
     if published > 0 or telegram_writes > 0:
         state["last_publication_at"] = stamp
@@ -82,6 +90,8 @@ def _record_runtime_heartbeat(
         state["last_error"] = f"چرخه ایجنت با کد {rc} متوقف شد"
     elif sources_failed > 0:
         state["last_error"] = f"{sources_failed} منبع در چرخه اخیر خطا داشت"
+    elif result.get("reason") == "v3_cycle_error":
+        state["last_error"] = str(result.get("error") or "V3 production cycle failed")
     else:
         state["last_error"] = ""
 
@@ -135,6 +145,11 @@ def run_ancillary_cycle(now: datetime) -> int:
         v13.base.agent.fetch_truth_posts = original_truth
 
 
+def _requested_newsroom_engine() -> str:
+    value = str(os.environ.get("NEWSROOM_ENGINE", "v2") or "v2").strip().lower()
+    return "v3" if value == "v3" else "v2"
+
+
 def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
     resolved_now = now or datetime.now(timezone.utc)
     commands_processed = 0 if shadow else _process_panel_commands()
@@ -152,19 +167,88 @@ def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
         return result
 
     newsroom_settings = dict(v13.load_newsroom_settings())
-    # The V2 newsroom consumes auto_publish directly. Convert emergency lock and
-    # quiet-mode policy into that flag so controls from the panel affect the
-    # actual production publisher rather than only the legacy runtime.
+    # Convert emergency lock and quiet-mode policy into the same auto-publish
+    # switch consumed by both production engines.
     if v13.newsroom_publish_paused(newsroom_settings, resolved_now):
         newsroom_settings["auto_publish"] = False
+
+    data_dir = os.environ.get("DATA_DIR", "data")
+    requested_engine = _requested_newsroom_engine()
+
+    # Explicit shadow runs remain V2-compatible diagnostics and can never publish.
+    if not shadow and requested_engine == "v3":
+        gate = v3_cutover_gate(data_dir=data_dir)
+        if gate.get("ready") is True:
+            # Keep V2 shadow-only during the transition so the existing panel/live
+            # feed remains populated. This call is structurally incapable of a
+            # Telegram write; V3 is the only production publisher in this mode.
+            v2_shadow = run_v2_once(
+                shadow=True,
+                now=resolved_now,
+                data_dir=data_dir,
+                settings=newsroom_settings,
+            )
+            try:
+                v3_result = run_v3_production_once(
+                    data_dir=data_dir,
+                    now=resolved_now,
+                    publish_enabled=bool(newsroom_settings.get("auto_publish", True)),
+                )
+            except Exception as exc:
+                print(
+                    f"V3_PRODUCTION_CYCLE_FAILED error={type(exc).__name__}:{exc}",
+                    flush=True,
+                )
+                v3_result = {
+                    "mode": "production",
+                    "published": 0,
+                    "telegram_writes": 0,
+                    "publish_failed": 0,
+                    "reason": "v3_cycle_error",
+                    "error": f"{type(exc).__name__}: {exc}",
+                }
+
+            combined = {
+                "rc": 0,
+                "panel_commands": commands_processed,
+                **v3_result,
+                "newsroom_engine": "v3",
+                "v3_gate_reason": str(gate.get("reason") or "verified_canary"),
+                "v2_shadow_telegram_writes": int(v2_shadow.get("telegram_writes") or 0),
+            }
+            _record_runtime_heartbeat(combined, now=resolved_now)
+            return combined
+
+        # A requested cutover without verified canary evidence fails safely back
+        # to the already-running V2 production path instead of creating an outage.
+        result = run_v2_once(
+            shadow=False,
+            now=resolved_now,
+            data_dir=data_dir,
+            settings=newsroom_settings,
+        )
+        combined = {
+            "rc": 0,
+            "panel_commands": commands_processed,
+            **result,
+            "newsroom_engine": "v2_fallback",
+            "v3_gate_reason": str(gate.get("reason") or "cutover_gate_failed"),
+        }
+        _record_runtime_heartbeat(combined, now=resolved_now)
+        return combined
 
     result = run_v2_once(
         shadow=shadow,
         now=resolved_now,
-        data_dir=os.environ.get("DATA_DIR", "data"),
+        data_dir=data_dir,
         settings=newsroom_settings,
     )
-    combined = {"rc": 0, "panel_commands": commands_processed, **result}
+    combined = {
+        "rc": 0,
+        "panel_commands": commands_processed,
+        **result,
+        "newsroom_engine": "v2",
+    }
     if not shadow:
         _record_runtime_heartbeat(combined, now=resolved_now)
     return combined
@@ -201,7 +285,7 @@ def monitor(*, shadow: bool, poll_seconds: int, session_seconds: int) -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Hybrid production runtime: V13 ancillary services + Newsroom V2 news")
+    parser = argparse.ArgumentParser(description="Hybrid production runtime: V13 ancillary services + guarded Newsroom V2/V3 news")
     parser.add_argument("--shadow", action="store_true")
     parser.add_argument("--monitor", action="store_true")
     args = parser.parse_args()
