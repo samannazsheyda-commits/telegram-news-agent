@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import panel.app as panel_app_module
 import src.panel_command_router as router
@@ -82,16 +81,16 @@ def test_newsroom_live_publish_enqueues_v3_publish_not_legacy_publish():
     assert command["source_url"] == "https://example.com/1"
 
 
-def test_legacy_command_center_publish_alias_also_routes_to_v3():
+def test_legacy_command_center_publish_alias_is_absorbed_by_safe_v3_router():
     data = FakeData()
     response = _client(data).post("/api/command-center/live/live-1/publish")
 
     assert response.status_code == 202
-    assert data.commands[-1]["action"] == "v3_publish"
+    assert data.commands[-1]["action"] == "publish"
+    assert "publish" in router.NEWSROOM_ACTIONS
 
 
-def test_runtime_router_handles_v3_publish_without_legacy_telegram_path(tmp_path, monkeypatch):
-    root = tmp_path
+def _exercise_router_publish_alias(root, monkeypatch, *, action: str):
     (root / "data").mkdir()
     (root / "panel_commands").mkdir()
     queue = [
@@ -114,7 +113,7 @@ def test_runtime_router_handles_v3_publish_without_legacy_telegram_path(tmp_path
         json.dumps(
             {
                 "command_id": "cmd-v3",
-                "action": "v3_publish",
+                "action": action,
                 "item_id": "live-1",
                 "news_key": "key-1",
                 "source": "Reuters",
@@ -140,7 +139,7 @@ def test_runtime_router_handles_v3_publish_without_legacy_telegram_path(tmp_path
         }
 
     monkeypatch.chdir(root)
-    monkeypatch.setattr(router, "publish_manual_story", fake_publish_manual_story, raising=False)
+    monkeypatch.setattr(router, "publish_manual_story", fake_publish_manual_story)
     monkeypatch.setattr(
         router,
         "apply_legacy_command",
@@ -148,7 +147,6 @@ def test_runtime_router_handles_v3_publish_without_legacy_telegram_path(tmp_path
     )
 
     result = router.apply_command(command_path)
-
     assert result["status"] == "succeeded"
     assert result["telegram_message_id"] == 1777
     assert len(calls) == 1
@@ -158,6 +156,14 @@ def test_runtime_router_handles_v3_publish_without_legacy_telegram_path(tmp_path
     assert history[0]["status"] == "published_manual"
     remaining = json.loads((root / "data" / "editorial_queue.json").read_text(encoding="utf-8"))
     assert remaining == []
+
+
+def test_runtime_router_handles_v3_publish_without_legacy_telegram_path(tmp_path, monkeypatch):
+    _exercise_router_publish_alias(tmp_path, monkeypatch, action="v3_publish")
+
+
+def test_runtime_router_absorbs_old_publish_command_without_legacy_telegram_path(tmp_path, monkeypatch):
+    _exercise_router_publish_alias(tmp_path, monkeypatch, action="publish")
 
 
 def test_review_form_never_calls_telegram_directly_and_enqueues_v3(tmp_path, monkeypatch):
