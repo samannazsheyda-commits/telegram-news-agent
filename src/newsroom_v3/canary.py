@@ -12,6 +12,9 @@ from ..ai_newsroom import AIConfig
 from ..event_ledger import EventLedger
 from ..groq_newsroom_ai import GroqConfig, LocalFirstGroqNewsAI
 from ..local_semantic_ai import LocalFirstNewsAI
+from ..newsroom_eligibility import evaluate_eligibility
+from ..newsroom_models import RawNewsItem
+from ..newsroom_normalize import normalize_item
 from ..openrouter_newsroom_ai import OpenRouterConfig, LocalFirstOpenRouterNewsAI
 from ..strict_translation import StrictTelegramNewsroomPublisher
 from .outbox import NewsroomV3PublisherWorker
@@ -80,11 +83,53 @@ def _published_by_v2(story: StoryRecord, ledger: EventLedger) -> bool:
     return False
 
 
-def _safe_candidate(store: NewsroomV3Store, ledger: EventLedger) -> StoryRecord | None:
-    for story in store.list_publishable(limit=100):
-        if not _published_by_v2(story, ledger):
-            return story
-    return None
+def _raw_from_story(story: StoryRecord) -> RawNewsItem:
+    return RawNewsItem(
+        source=story.source,
+        source_url=story.source_url,
+        source_item_id=story.source_item_id,
+        published_at=story.published_at,
+        fetched_at=story.fetched_at,
+        title=story.title,
+        summary=story.summary,
+        media=list(story.media or []),
+        source_priority=story.source_priority,
+    )
+
+
+def _published_time(story: StoryRecord) -> datetime:
+    try:
+        value = datetime.fromisoformat(str(story.published_at or "").replace("Z", "+00:00"))
+    except ValueError:
+        return datetime.min.replace(tzinfo=timezone.utc)
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc)
+
+
+def _still_eligible(story: StoryRecord, *, now: datetime) -> bool:
+    try:
+        decision = evaluate_eligibility(normalize_item(_raw_from_story(story)), now)
+    except Exception:
+        return False
+    return bool(decision.eligible)
+
+
+def _safe_candidate(
+    store: NewsroomV3Store,
+    ledger: EventLedger,
+    *,
+    now: datetime | None = None,
+) -> StoryRecord | None:
+    resolved_now = now or datetime.now(timezone.utc)
+    candidates = [
+        story
+        for story in store.list_publishable(limit=100)
+        if not _published_by_v2(story, ledger) and _still_eligible(story, now=resolved_now)
+    ]
+    if not candidates:
+        return None
+    return max(candidates, key=_published_time)
 
 
 def canary_preflight(*, data_dir: str | Path) -> dict:
