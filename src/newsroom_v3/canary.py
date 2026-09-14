@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import tempfile
@@ -7,8 +8,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
 
+from ..ai_newsroom import AIConfig
 from ..event_ledger import EventLedger
+from ..groq_newsroom_ai import GroqConfig, LocalFirstGroqNewsAI
+from ..local_semantic_ai import LocalFirstNewsAI
+from ..openrouter_newsroom_ai import OpenRouterConfig, LocalFirstOpenRouterNewsAI
+from ..strict_translation import StrictTelegramNewsroomPublisher
 from .outbox import NewsroomV3PublisherWorker
+from .publisher_adapter import V3TelegramPublisherAdapter
 from .store import NewsroomV3Store, StoryRecord
 
 
@@ -71,6 +78,35 @@ def _published_by_v2(story: StoryRecord, ledger: EventLedger) -> bool:
         if fingerprint and str(record.fingerprint or "").strip() == fingerprint:
             return True
     return False
+
+
+def build_production_publisher() -> V3TelegramPublisherAdapter:
+    """Build the same guarded translation/publish stack used by V2 production."""
+    hf_config = AIConfig.from_env()
+    groq_config = GroqConfig.from_env()
+    openrouter_config = OpenRouterConfig.from_env()
+
+    ai = None
+    ai_mode = openrouter_config.mode
+    if ai_mode != "off" and openrouter_config.api_key:
+        ai = LocalFirstOpenRouterNewsAI(openrouter_config)
+    elif groq_config.mode != "off" and groq_config.api_key:
+        ai = LocalFirstGroqNewsAI(groq_config)
+        ai_mode = groq_config.mode
+    elif hf_config.mode != "off" and hf_config.token:
+        ai = LocalFirstNewsAI(hf_config)
+        ai_mode = hf_config.mode
+
+    offline_raw = str(os.environ.get("OFFLINE_TRANSLATION_ENABLED", "0") or "0").strip().lower()
+    offline_enabled = offline_raw not in {"0", "false", "no", "off"}
+    strict = StrictTelegramNewsroomPublisher(
+        os.environ.get("TELEGRAM_BOT_TOKEN", ""),
+        os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"),
+        ai=ai,
+        ai_mode=ai_mode,
+        offline_translation_enabled=offline_enabled,
+    )
+    return V3TelegramPublisherAdapter(strict)
 
 
 def run_one_shot_canary(
@@ -144,3 +180,22 @@ def run_one_shot_canary(
         return final_marker
     finally:
         store.close()
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Newsroom V3 guarded one-shot canary")
+    parser.add_argument("--data-dir", default="data")
+    parser.add_argument("--confirm-one-shot", action="store_true")
+    args = parser.parse_args()
+    if not args.confirm_one_shot:
+        parser.error("--confirm-one-shot is required")
+    result = run_one_shot_canary(
+        data_dir=args.data_dir,
+        publisher=build_production_publisher(),
+    )
+    print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
