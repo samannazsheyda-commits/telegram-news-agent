@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from src.newsroom_v3.canary import run_one_shot_canary
+from src.newsroom_v3.canary import canary_preflight, run_one_shot_canary
 from src.newsroom_v3.store import NewsroomV3Store
 
 
@@ -105,6 +105,45 @@ def test_canary_skips_story_already_published_by_v2_and_publishes_only_one_safe_
     assert result["telegram_message_id"] == 555
     assert result["telegram_writes"] == 1
     assert calls == ["story-safe"]
+
+
+def test_canary_preflight_only_becomes_ready_for_a_safe_unpublished_candidate(tmp_path):
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    _healthy_shadow(data_dir / "newsroom_v3_shadow_status.json")
+    store = NewsroomV3Store(data_dir / "newsroom_v3.sqlite3")
+    _ready_story(store, "story-old", "https://example.com/already-live")
+    store.close()
+    (data_dir / "event_ledger.json").write_text(
+        json.dumps(
+            [
+                {
+                    "event_id": "v2-event",
+                    "fingerprint": "fp-story-old",
+                    "canonical_title": "Already live",
+                    "first_seen": "2026-09-14T07:00:00+00:00",
+                    "last_updated": "2026-09-14T07:00:00+00:00",
+                    "primary_source": "Reuters",
+                    "source_variants": ["https://example.com/already-live"],
+                    "key_facts": [],
+                    "published_message_ids": [444],
+                    "status": "published",
+                    "fingerprint_data": {"source_item_id": "story-old"},
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert canary_preflight(data_dir=data_dir)["ready"] is False
+
+    store = NewsroomV3Store(data_dir / "newsroom_v3.sqlite3")
+    _ready_story(store, "story-safe", "https://example.com/safe")
+    store.close()
+
+    result = canary_preflight(data_dir=data_dir)
+    assert result["ready"] is True
+    assert result["story_id"] == "story-safe"
 
 
 def test_canary_marker_makes_the_external_attempt_strictly_one_shot(tmp_path):
