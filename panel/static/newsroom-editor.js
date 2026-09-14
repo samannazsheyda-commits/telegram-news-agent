@@ -9,6 +9,7 @@
   const title = document.getElementById('editorTitle');
   const body = document.getElementById('editorBody');
   const source = document.getElementById('editorSource');
+  const sourceLink = document.getElementById('editorSourceLink');
   const save = document.getElementById('editorSave');
   const publish = document.getElementById('editorPublish');
   let activeCard = null;
@@ -26,6 +27,11 @@
     title.value = card.dataset.storyTitle || card.querySelector('h3')?.textContent?.trim() || '';
     body.value = card.dataset.storyBody || card.querySelector('p')?.textContent?.trim() || '';
     source.textContent = card.dataset.storySource || 'منبع';
+    const storySourceUrl = String(card.dataset.storySourceUrl || '').trim();
+    if (sourceLink) {
+      sourceLink.href = storySourceUrl || '#';
+      sourceLink.hidden = !storySourceUrl;
+    }
     sheet.hidden = false;
     document.body.style.overflow = 'hidden';
     window.setTimeout(() => title.focus(), 0);
