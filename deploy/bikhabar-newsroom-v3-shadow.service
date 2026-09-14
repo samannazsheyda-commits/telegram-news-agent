@@ -9,11 +9,10 @@ User=bikhabar
 Group=bikhabar
 WorkingDirectory=/opt/bikhabar/app
 EnvironmentFile=/etc/bikhabar/agent.env
-ExecStart=/bin/sh -lc '/opt/bikhabar/venv/bin/python -m src.newsroom_v3.runtime --data-dir /var/lib/bikhabar/runtime/data > /var/lib/bikhabar/runtime/data/newsroom_v3_shadow_status.json.tmp && mv /var/lib/bikhabar/runtime/data/newsroom_v3_shadow_status.json.tmp /var/lib/bikhabar/runtime/data/newsroom_v3_shadow_status.json'
+ExecStart=/opt/bikhabar/venv/bin/python -m src.newsroom_v3.runtime --data-dir /var/lib/bikhabar/runtime/data --status-file /var/lib/bikhabar/runtime/data/newsroom_v3_shadow_status.json
 TimeoutStartSec=150
 MemoryMax=192M
 CPUQuota=60%
 Nice=10
 NoNewPrivileges=true
 PrivateTmp=true
-
