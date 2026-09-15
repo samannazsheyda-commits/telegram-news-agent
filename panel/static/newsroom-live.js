@@ -31,6 +31,8 @@
   const localizedCache = new Map();
   const localizationInFlight = new Set();
   const localizationFailures = new Map();
+  const localizationQueuedAt = new Map();
+  const LOCALIZATION_REQUEUE_MS = 15000;
 
   const esc = value => String(value ?? '')
     .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -89,9 +91,9 @@
     const originalBody = esc(story.original_body || '');
     const originalText = [originalTitle, originalBody].filter(Boolean).join('\n\n');
     const localizationError = localizationFailures.get(rawId) === 'localization_failed';
-    const preparing = localizationError ? 'خطا در آماده‌سازی نسخه فارسی.' : (story.needs_localization ? 'نسخه فارسی هنوز آماده نشده.' : 'نسخه نهایی هنوز آماده نیست.');
+    const preparing = localizationError ? 'خطا در آماده‌سازی نسخه فارسی.' : (story.needs_localization ? 'نسخه فارسی در پس‌زمینه در حال آماده‌سازی است.' : 'نسخه نهایی هنوز آماده نیست.');
     const localizationAction = story.needs_localization || localizationError
-      ? `<button class="nr-localization-retry" type="button" data-action="retry-localization">${localizationError ? 'تلاش دوباره' : 'آماده‌سازی فارسی'}</button>`
+      ? `<button class="nr-localization-retry" type="button" data-action="retry-localization">${localizationError ? 'تلاش دوباره' : 'آماده‌سازی دوباره'}</button>`
       : '';
     return `<article class="nr-story-card${priority ? ' is-priority' : ''}${isNew ? ' is-new' : ''}${localizationError ? ' has-localization-error' : ''}"
       data-story-id="${id}" data-news-id="${id}" data-story-title="${title}" data-story-body="${body}"
@@ -145,31 +147,32 @@
   }
 
   async function localizeMissing(stories) {
+    const now = Date.now();
     const ids = stories
       .filter(story => story.needs_localization)
       .map(story => String(story.id || story.item_id || ''))
-      .filter(id => id && !localizedCache.has(id) && !localizationInFlight.has(id) && !localizationFailures.has(id))
+      .filter(id => {
+        const queuedAt = Number(localizationQueuedAt.get(id) || 0);
+        return id && !localizedCache.has(id) && !localizationInFlight.has(id) && !localizationFailures.has(id)
+          && (!queuedAt || now - queuedAt >= LOCALIZATION_REQUEUE_MS);
+      })
       .slice(0, 2);
     if (!ids.length) return;
     ids.forEach(id => localizationInFlight.add(id));
     try {
       const data = await postJSON('/api/live-feed/localize', {ids});
-      const rows = Array.isArray(data.items) ? data.items : [];
-      const localizedIds = new Set();
-      rows.forEach(item => {
-        const id = String(item.id || item.item_id || '');
-        if (id) {
-          localizedCache.set(id, item);
-          localizationFailures.delete(id);
-          localizedIds.add(id);
-        }
+      const queuedIds = Array.isArray(data.queued_ids) ? data.queued_ids.map(String) : [];
+      queuedIds.forEach(id => {
+        localizationQueuedAt.set(id, Date.now());
+        localizationFailures.delete(id);
       });
-      ids.filter(id => !localizedIds.has(id)).forEach(id => localizationFailures.set(id, 'localization_failed'));
-      renderFeed(currentStories);
+      if (data.status !== 'queued' && queuedIds.length === 0) {
+        window.dispatchEvent(new Event('newsroom:refresh'));
+      }
     } catch (error) {
       ids.forEach(id => localizationFailures.set(id, 'localization_failed'));
       renderFeed(currentStories);
-      if (UI.toast) UI.toast('خطا در آماده‌سازی نسخه فارسی؛ می‌توانی دوباره تلاش کنی.', 'error');
+      if (UI.toast) UI.toast('خطا در صف آماده‌سازی فارسی؛ می‌توانی دوباره تلاش کنی.', 'error');
     } finally {
       ids.forEach(id => localizationInFlight.delete(id));
     }
@@ -184,6 +187,7 @@
     const id = String(card?.dataset.storyId || '');
     if (!id) return;
     localizationFailures.delete(id);
+    localizationQueuedAt.delete(id);
     retry.disabled = true;
     const stories = currentStories.filter(story => String(story.id || story.item_id || '') === id);
     void localizeMissing(stories);
@@ -209,6 +213,13 @@
     if (fields.healthDot) fields.healthDot.className = `nr-health-dot ${engineOk && !v3.error ? 'is-ok' : 'is-bad'}`;
     if (fields.priorities) fields.priorities.innerHTML = (snapshot.settings?.priority_terms || []).map(term => `<span>${esc(term)}</span>`).join('') || '<span>بدون اولویت اختصاصی</span>';
     currentStories = Array.isArray(snapshot.live) ? snapshot.live : [];
+    currentStories.forEach(story => {
+      if (!story.needs_localization) {
+        const id = String(story.id || story.item_id || '');
+        localizationQueuedAt.delete(id);
+        localizationFailures.delete(id);
+      }
+    });
     renderFeed(currentStories);
   }
 
@@ -224,7 +235,10 @@
         render(snapshot);
         fingerprint = snapshot.fingerprint || '';
         window.dispatchEvent(new CustomEvent('newsroom:snapshot', {detail:snapshot}));
+      } else {
+        currentStories = Array.isArray(snapshot.live) ? snapshot.live : currentStories;
       }
+      void localizeMissing(currentStories);
       initial = false;
     } catch (error) {
       if (error.name !== 'AbortError') {
