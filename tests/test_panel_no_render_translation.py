@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from panel.app import create_app
+from panel.live_api import bp as live_api_bp
 
 
 class FakeData:
@@ -49,6 +50,7 @@ def _client(data: FakeData, translator):
             "LIVE_FEED_TRANSLATOR": translator,
         }
     )
+    app.register_blueprint(live_api_bp)
     client = app.test_client()
     with client.session_transaction() as session:
         session["admin"] = True
