@@ -6,6 +6,8 @@ from panel.app import create_app
 from panel.live_api import bp as live_api_bp
 from panel.newsroom_api import bp as newsroom_api_bp
 
+# Live production screenshot regression coverage. Keep these assertions behavior-focused.
+
 
 class FakeData:
     def __init__(self):
