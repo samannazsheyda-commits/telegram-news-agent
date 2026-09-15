@@ -90,6 +90,18 @@ def _has_persian(value: str) -> bool:
     return any("\u0600" <= char <= "\u06ff" for char in str(value or ""))
 
 
+def _telegram_state(engine: str, state: dict, v3_public: dict) -> str:
+    """Prefer current V3 publication truth over stale legacy panel state."""
+    if engine == "v3":
+        if _safe_int(v3_public.get("publish_failed")) > 0:
+            return "error"
+        if isinstance(v3_public.get("telegram_message_id"), int) or _safe_int(v3_public.get("telegram_writes")) > 0:
+            return "ok"
+        return "unknown"
+    legacy = str(state.get("telegram_state") or "").strip().lower()
+    return legacy if legacy in {"ok", "error", "unknown"} else "unknown"
+
+
 def _editor_copy(row: dict) -> tuple[str, str, tuple[dict, int] | None]:
     title = str(row.get("final_persian_title") or row.get("persian_title") or "").strip()
     body = str(row.get("final_persian_body") or row.get("persian_body") or "").strip()
@@ -165,6 +177,12 @@ def snapshot():
     if engine not in {"v3", "v2", "v2_fallback"}:
         engine = "unknown"
 
+    telegram_message_id = v3.get("telegram_message_id")
+    if not isinstance(telegram_message_id, int):
+        telegram_message_id = v3.get("last_telegram_message_id")
+    if not isinstance(telegram_message_id, int):
+        telegram_message_id = None
+
     v3_public = {
         "mode": str(v3.get("mode") or ""),
         "reason": str(v3.get("reason") or ""),
@@ -183,7 +201,7 @@ def snapshot():
         "telegram_writes": _safe_int(v3.get("telegram_writes")),
         "publish_failed": _safe_int(v3.get("publish_failed")),
         "story_id": str(v3.get("story_id") or ""),
-        "telegram_message_id": v3.get("telegram_message_id") if isinstance(v3.get("telegram_message_id"), int) else None,
+        "telegram_message_id": telegram_message_id,
     }
 
     public_settings = _public_settings(settings)
@@ -201,7 +219,7 @@ def snapshot():
     snapshot_core = {
         "engine": engine,
         "agent_state": "active" if v3_public["last_cycle_at"] else "unknown",
-        "telegram_state": str(state.get("telegram_state") or ("ok" if v3_public["telegram_writes"] else "unknown")),
+        "telegram_state": _telegram_state(engine, state, v3_public),
         "publishing": bool(settings.get("auto_publish", True)) and not bool(settings.get("emergency_lock", False)),
         "emergency_lock": bool(settings.get("emergency_lock", False)),
         "v3": v3_public,
