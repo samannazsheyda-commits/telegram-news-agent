@@ -13,6 +13,7 @@ from ..event_ledger import EventLedger
 from ..groq_newsroom_ai import GroqConfig, LocalFirstGroqNewsAI
 from ..local_semantic_ai import LocalFirstNewsAI
 from ..newsroom_eligibility import _fresh_enough, _parse_published
+from ..one_x_ai_newsroom import OneXAIConfig, LocalFirstOneXAINewsAI
 from ..openrouter_newsroom_ai import OpenRouterConfig, LocalFirstOpenRouterNewsAI
 from ..strict_translation import StrictTelegramNewsroomPublisher
 from .outbox import NewsroomV3PublisherWorker
@@ -190,13 +191,16 @@ class _ProviderFailoverNewsAI:
 
 def build_production_publisher() -> V3TelegramPublisherAdapter:
     """Build the guarded V3 publisher with ordered remote-AI failover."""
+    one_x_config = OneXAIConfig.from_env()
     hf_config = AIConfig.from_env()
     groq_config = GroqConfig.from_env()
     openrouter_config = OpenRouterConfig.from_env()
 
-    ai_mode = openrouter_config.mode
+    ai_mode = one_x_config.mode
     providers: list[tuple[str, object]] = []
-    if ai_mode != "off" and openrouter_config.api_key:
+    if ai_mode != "off" and one_x_config.api_key:
+        providers.append(("1xai", LocalFirstOneXAINewsAI(one_x_config)))
+    if openrouter_config.mode != "off" and openrouter_config.api_key:
         providers.append(("openrouter", LocalFirstOpenRouterNewsAI(openrouter_config)))
     if groq_config.mode != "off" and groq_config.api_key:
         providers.append(("groq", LocalFirstGroqNewsAI(groq_config)))
