@@ -62,5 +62,5 @@ def test_one_x_ai_chat_uses_configured_openai_compatible_endpoint_and_luna_model
     assert call["url"] == "https://1xai.ir/v1/chat/completions"
     assert call["headers"]["Authorization"] == "Bearer 1xai-test-key"
     assert call["json"]["model"] == "gpt-5.6-luna"
-    assert call["json"]["temperature"] == 0
+    assert "temperature" not in call["json"]
     assert call["json"]["response_format"] == {"type": "json_object"}
