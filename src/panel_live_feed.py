@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -45,21 +46,36 @@ class LiveFeedStore:
     def records(self) -> list[LiveFeedRecord]:
         return self._read()
 
+    @staticmethod
+    def _preserve_panel_enrichment(current: LiveFeedRecord, incoming: LiveFeedRecord) -> LiveFeedRecord:
+        if current.title != incoming.title or current.source_url != incoming.source_url:
+            return incoming
+        return replace(
+            incoming,
+            persian_title=incoming.persian_title or current.persian_title,
+            persian_body=incoming.persian_body or current.persian_body,
+            final_message=incoming.final_message or current.final_message,
+            localized_at=incoming.localized_at or current.localized_at,
+        )
+
     def upsert(self, record: LiveFeedRecord) -> LiveFeedRecord:
         rows = self._read()
         result: list[LiveFeedRecord] = []
         newer_existing = False
+        resolved = record
         for current in rows:
             if current.item_id == record.item_id:
                 if current.updated_at > record.updated_at:
                     result.append(current)
                     newer_existing = True
+                else:
+                    resolved = self._preserve_panel_enrichment(current, resolved)
                 continue
             result.append(current)
         if not newer_existing:
-            result.append(record)
+            result.append(resolved)
         self._write(result)
-        return record
+        return resolved
 
     @staticmethod
     def _record_time(row: LiveFeedRecord) -> datetime | None:
