@@ -10,6 +10,7 @@ from src.formatters import _source_label, format_news
 from src.sources import NewsItem
 
 from .app import PANEL_STATUS_FA, REASON_FA
+from .command_center import _enqueue
 
 
 bp = Blueprint("live_api", __name__)
@@ -278,25 +279,31 @@ def localize_live_feed():
         if len(ids) >= _LOCALIZE_BATCH_LIMIT:
             break
     if not ids:
-        return jsonify({"ok": True, "items": []})
+        return jsonify({"ok": True, "status": "succeeded", "queued_ids": [], "command_ids": []})
 
-    rows, queued_ids = _raw_rows(100)
+    rows, _ = _raw_rows(100)
     by_id = {_row_id(row): row for row in rows if _row_id(row)}
-    localized: list[dict] = []
+    queued_ids: list[str] = []
+    command_ids: list[str] = []
     for item_id in ids:
         row = by_id.get(item_id)
         if row is None:
             continue
-        raw_title, raw_body = _raw_fields(row)
-        title_fa = _translate_persian(raw_title)
-        if not title_fa:
+        persisted_title = str(row.get("final_persian_title") or row.get("persian_title") or row.get("display_title") or "").strip()
+        persisted_final = str(row.get("final_message") or row.get("telegram_message") or "").strip()
+        if _has_persian(persisted_title) and persisted_final:
             continue
-        body_fa = _translate_persian(raw_body) if raw_body else ""
-        final_message = _final_message(row, title_fa, body_fa)
-        _cache_put(row, title=title_fa, body=body_fa, final_message=final_message)
-        _persist_localization(item_id, title_fa, body_fa, final_message)
-        persisted = dict(row)
-        persisted.update(persian_title=title_fa, persian_body=body_fa, final_message=final_message)
-        localized.append(_public_row(persisted, queued_ids))
+        raw_title, _ = _raw_fields(row)
+        if not raw_title:
+            continue
+        command_ids.append(_enqueue("live_localize", item_id=item_id))
+        queued_ids.append(item_id)
 
-    return jsonify({"ok": True, "items": localized})
+    return jsonify(
+        {
+            "ok": True,
+            "status": "queued" if queued_ids else "succeeded",
+            "queued_ids": queued_ids,
+            "command_ids": command_ids,
+        }
+    )
