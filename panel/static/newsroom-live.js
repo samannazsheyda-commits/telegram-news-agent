@@ -30,6 +30,7 @@
   let knownIds = new Set([...feed.querySelectorAll('[data-story-id]')].map(node => node.dataset.storyId));
   const localizedCache = new Map();
   const localizationInFlight = new Set();
+  const localizationFailures = new Map();
 
   const esc = value => String(value ?? '')
     .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -39,7 +40,7 @@
     try {
       const url = new URL(String(value || ''), window.location.origin);
       return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
-    } catch (_) { return ''; }
+    } catch (error) { return ''; }
   }
 
   function setState(node, text, state = '') {
@@ -74,7 +75,8 @@
 
   function storyCard(rawStory, isNew) {
     const story = mergeLocalized(rawStory);
-    const id = esc(story.id || story.item_id || '');
+    const rawId = String(story.id || story.item_id || '');
+    const id = esc(rawId);
     const title = esc(story.title || 'عنوان فارسی در حال آماده‌سازی');
     const body = esc(story.body || '');
     const source = esc(story.source || 'منبع');
@@ -86,8 +88,9 @@
     const originalTitle = esc(story.original_title || '');
     const originalBody = esc(story.original_body || '');
     const originalText = [originalTitle, originalBody].filter(Boolean).join('\n\n');
-    const preparing = story.needs_localization ? 'در حال آماده‌سازی نسخه نهایی فارسی…' : 'نسخه نهایی هنوز آماده نیست.';
-    return `<article class="nr-story-card${priority ? ' is-priority' : ''}${isNew ? ' is-new' : ''}"
+    const localizationError = localizationFailures.get(rawId) === 'localization_failed';
+    const preparing = localizationError ? 'خطا در آماده‌سازی نسخه فارسی.' : (story.needs_localization ? 'در حال آماده‌سازی نسخه نهایی فارسی…' : 'نسخه نهایی هنوز آماده نیست.');
+    return `<article class="nr-story-card${priority ? ' is-priority' : ''}${isNew ? ' is-new' : ''}${localizationError ? ' has-localization-error' : ''}"
       data-story-id="${id}" data-news-id="${id}" data-story-title="${title}" data-story-body="${body}"
       data-story-source="${source}" data-story-source-url="${esc(url)}">
       <input class="live-select" type="checkbox" value="${id}" aria-label="انتخاب خبر">
@@ -96,7 +99,7 @@
         ${priority ? '<span class="nr-priority-badge">مهم</span>' : ''}<span>${source}</span><time>${relative}</time>
       </div><span class="nr-story-status">${status}</span></div>
       <h3>${title}</h3>${body ? `<p>${body}</p>` : ''}
-      <details class="nr-final-output"><summary>نسخه نهایی تلگرام</summary><pre>${finalMessage || esc(preparing)}</pre></details>
+      <details class="nr-final-output"><summary>نسخه نهایی تلگرام</summary><pre>${finalMessage || esc(preparing)}</pre>${localizationError ? '<button class="nr-localization-retry" type="button" data-action="retry-localization">تلاش دوباره</button>' : ''}</details>
       ${originalText ? `<details class="nr-original-source"><summary>متن اصلی منبع</summary><pre>${originalText}</pre></details>` : ''}
       <div class="nr-story-actions">
         <button class="nr-story-action publish" type="button" data-action="publish"${story.needs_localization ? ' disabled' : ''}>انتشار</button>
@@ -142,24 +145,46 @@
     const ids = stories
       .filter(story => story.needs_localization)
       .map(story => String(story.id || story.item_id || ''))
-      .filter(id => id && !localizedCache.has(id) && !localizationInFlight.has(id))
-      .slice(0, 8);
+      .filter(id => id && !localizedCache.has(id) && !localizationInFlight.has(id) && !localizationFailures.has(id))
+      .slice(0, 2);
     if (!ids.length) return;
     ids.forEach(id => localizationInFlight.add(id));
     try {
       const data = await postJSON('/api/live-feed/localize', {ids});
       const rows = Array.isArray(data.items) ? data.items : [];
+      const localizedIds = new Set();
       rows.forEach(item => {
         const id = String(item.id || item.item_id || '');
-        if (id) localizedCache.set(id, item);
+        if (id) {
+          localizedCache.set(id, item);
+          localizationFailures.delete(id);
+          localizedIds.add(id);
+        }
       });
-      if (rows.length) renderFeed(currentStories);
-    } catch (_) {
-      // Keep the desk responsive; failed translations are retried on a later poll.
+      ids.filter(id => !localizedIds.has(id)).forEach(id => localizationFailures.set(id, 'localization_failed'));
+      renderFeed(currentStories);
+    } catch (error) {
+      ids.forEach(id => localizationFailures.set(id, 'localization_failed'));
+      renderFeed(currentStories);
+      if (UI.toast) UI.toast('خطا در آماده‌سازی نسخه فارسی؛ می‌توانی دوباره تلاش کنی.', 'error');
     } finally {
       ids.forEach(id => localizationInFlight.delete(id));
     }
   }
+
+  feed.addEventListener('click', event => {
+    const retry = event.target.closest('[data-action="retry-localization"]');
+    if (!retry) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const card = retry.closest('[data-story-id]');
+    const id = String(card?.dataset.storyId || '');
+    if (!id) return;
+    localizationFailures.delete(id);
+    retry.disabled = true;
+    const stories = currentStories.filter(story => String(story.id || story.item_id || '') === id);
+    void localizeMissing(stories);
+  });
 
   function render(snapshot) {
     const v3 = snapshot.v3 || {};
