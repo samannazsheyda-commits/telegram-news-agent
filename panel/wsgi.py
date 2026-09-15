@@ -1,6 +1,7 @@
 import os
 
 from src.local_json_repository import LocalJsonRepository
+from src.services import translate_to_fa
 
 from .app import create_app
 from .command_center import bp as command_center_bp
@@ -19,6 +20,7 @@ config = {"SESSION_COOKIE_SECURE": cookie_secure}
 local_root = str(os.environ.get("PANEL_LOCAL_ROOT") or "").strip()
 if local_root:
     config["DATA_BACKEND"] = LocalJsonRepository(local_root)
+config["LIVE_FEED_TRANSLATOR"] = translate_to_fa
 
 app = create_app(config)
 app.register_blueprint(command_center_bp)
