@@ -111,3 +111,7 @@ class LiveFeedRecord(_Serializable):
     telegram_message_id: int | None
     panel_status: str
     updated_at: str
+    persian_title: str = ""
+    persian_body: str = ""
+    final_message: str = ""
+    localized_at: str = ""

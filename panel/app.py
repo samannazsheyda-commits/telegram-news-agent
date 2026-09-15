@@ -121,23 +121,29 @@ def _has_persian(value: str) -> bool:
     return bool(re.search(r"[\u0600-\u06ff]", str(value or "")))
 
 
-def _live_feed(data, translator=translate_to_fa) -> list[dict]:
+def _live_feed(data) -> list[dict]:
     rows = sorted(
         _read_list(data, "data/panel_live_feed.json"),
         key=lambda r: str(r.get("updated_at") or r.get("discovered_at") or ""),
         reverse=True,
     )
     localized: list[dict] = []
-    for index, row in enumerate(rows):
+    for row in rows:
         item = dict(row)
-        title = str(item.get("persian_title") or item.get("title") or "").strip()
-        if index < 20 and title and not _has_persian(title):
-            try:
-                translated = str(translator(title) or "").strip()
-            except Exception:
-                translated = ""
-            title = translated if _has_persian(translated) else "عنوان فارسی در حال آماده‌سازی"
-        item["display_title"] = title or "بدون عنوان"
+        candidate = str(
+            item.get("final_persian_title")
+            or item.get("persian_title")
+            or item.get("display_title")
+            or ""
+        ).strip()
+        raw_title = str(item.get("original_title") or item.get("title") or "").strip()
+        if _has_persian(candidate):
+            title = candidate
+        elif raw_title:
+            title = "عنوان فارسی در حال آماده‌سازی"
+        else:
+            title = "بدون عنوان"
+        item["display_title"] = title
         item["source_display"] = _source_label(str(item.get("source") or ""))
         item["panel_status_fa"] = PANEL_STATUS_FA.get(str(item.get("panel_status") or ""), "در حال پردازش")
         item["decision_reason_fa"] = REASON_FA.get(str(item.get("decision_reason") or ""), "")
@@ -231,7 +237,7 @@ def create_app(config: dict | None = None):
     @app.get("/")
     @login_required
     def dashboard():
-        queue = _effective_queue(data); live = _live_feed(data, app.config["LIVE_FEED_TRANSLATOR"]); published = _published_history(data); history = _read_list(data, "data/editorial_history.json")
+        queue = _effective_queue(data); live = _live_feed(data); published = _published_history(data); history = _read_list(data, "data/editorial_history.json")
         published_today = sum(1 for r in published if _same_tehran_day(str(r.get("decision_at") or r.get("updated_at") or "")))
         rejected_today = sum(1 for r in history if r.get("status") in {"rejected_manual", "superseded"} and _same_tehran_day(str(r.get("decision_at") or r.get("updated_at") or "")))
         state, _ = data.read_json("state.json", {}); last_publication = next((r.get("decision_at") or r.get("updated_at") for r in published), "")
