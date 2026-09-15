@@ -7,8 +7,6 @@ from datetime import datetime, timezone
 
 from flask import Blueprint, current_app, jsonify, request, session
 
-from src.formatters import _source_label
-
 from .command_center import (
     _enqueue,
     _find_live_item,
@@ -21,10 +19,17 @@ from .command_center import (
     _upsert_history,
     _write_list,
 )
+from .live_api import _public_row
 
 
 bp = Blueprint("newsroom_api", __name__)
 _TERMINAL_LIVE_STATUSES = {"auto_published", "published_auto", "published_manual"}
+_MODULE_PREVIEW_PATHS = {
+    "market": "data/market_preview.json",
+    "weather": "data/weather_preview.json",
+    "air-traffic": "data/air_traffic_preview.json",
+    "tanker": "data/tanker_preview.json",
+}
 
 
 def _data():
@@ -34,6 +39,35 @@ def _data():
 def _read(path: str, default):
     value, _ = _data().read_json(path, default)
     return value
+
+
+def build_module_card_preview(module_name: str) -> dict:
+    """Return only the persisted preview used by the panel card.
+
+    Building/fetching module data is deliberately handled by the runtime
+    command path. Snapshot GETs stay local and never trigger network work.
+    """
+    path = _MODULE_PREVIEW_PATHS.get(str(module_name or ""))
+    if not path:
+        return {"available": False, "message": "", "generated_at": ""}
+    preview = _read(path, {})
+    if not isinstance(preview, dict) or not preview:
+        return {"available": False, "message": "", "generated_at": ""}
+    public = dict(preview)
+    public["available"] = True
+    public["message"] = str(
+        preview.get("message") or preview.get("text") or preview.get("caption") or preview.get("body") or ""
+    )
+    public["generated_at"] = str(
+        preview.get("generated_at")
+        or preview.get("updated_at")
+        or preview.get("fetched_at")
+        or preview.get("as_of")
+        or ""
+    )
+    if module_name == "air-traffic" and preview.get("image_path"):
+        public["image_url"] = "/api/command-center/module/air-traffic/preview/image"
+    return public
 
 
 def _rows(path: str) -> list[dict]:
@@ -50,10 +84,6 @@ def _safe_int(value) -> int:
         return int(value or 0)
     except (TypeError, ValueError):
         return 0
-
-
-def _story_id(row: dict) -> str:
-    return str(row.get("item_id") or row.get("id") or row.get("news_key") or "").strip()
 
 
 def _has_persian(value: str) -> bool:
@@ -77,19 +107,19 @@ def _editor_copy(row: dict) -> tuple[str, str, tuple[dict, int] | None]:
     return title, body, None
 
 
-def _live_public(row: dict) -> dict:
-    source = str(row.get("source") or "")
-    return {
-        "id": _story_id(row),
-        "news_key": str(row.get("news_key") or ""),
-        "title": str(row.get("final_persian_title") or row.get("persian_title") or row.get("display_title") or row.get("title") or ""),
-        "body": str(row.get("final_persian_body") or row.get("persian_body") or ""),
-        "source": _source_label(source) or "منبع",
-        "source_url": str(row.get("source_url") or row.get("link") or ""),
-        "status": str(row.get("panel_status") or "new"),
-        "priority": str(row.get("source_priority") or row.get("priority") or "normal"),
-        "discovered_at": str(row.get("updated_at") or row.get("discovered_at") or row.get("fetched_at") or ""),
-    }
+def _live_public(row: dict, queued_ids: set[str]) -> dict:
+    """Use the same Persian/final-copy projection as the proven live-feed API.
+
+    The dashboard snapshot must never fall back to raw English as its primary
+    display copy. Raw source text is still exposed explicitly for inspection.
+    """
+    public = _public_row(row, queued_ids)
+    public["status"] = str(public.get("panel_status") or "new")
+    public["priority"] = str(row.get("source_priority") or row.get("priority") or "normal")
+    public["discovered_at"] = str(
+        row.get("updated_at") or row.get("discovered_at") or row.get("fetched_at") or ""
+    )
+    return public
 
 
 def _fingerprint(payload: dict) -> str:
@@ -162,7 +192,12 @@ def snapshot():
     except ValueError:
         public_settings["priority_terms"] = []
 
-    live_public = [_live_public(row) for row in live[:60]]
+    queued_ids = {
+        str(row.get("id") or row.get("item_id") or "")
+        for row in queue
+        if isinstance(row, dict)
+    }
+    live_public = [_live_public(row, queued_ids) for row in live[:60]]
     snapshot_core = {
         "engine": engine,
         "agent_state": "active" if v3_public["last_cycle_at"] else "unknown",
@@ -177,6 +212,7 @@ def snapshot():
             "rejected": sum(1 for row in history if str(row.get("status") or "") in {"rejected_manual", "superseded"}),
         },
         "live": live_public,
+        "modules": {name: build_module_card_preview(name) for name in _MODULE_PREVIEW_PATHS},
         "settings": public_settings,
     }
     return jsonify({"ok": True, **snapshot_core, "fingerprint": _fingerprint(snapshot_core), "snapshot_at": _now_iso()})

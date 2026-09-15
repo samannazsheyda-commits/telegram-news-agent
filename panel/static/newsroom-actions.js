@@ -222,6 +222,67 @@
     finally { publishingToggle.disabled = false; }
   });
 
+  function previewText(value) {
+    return String(value || '')
+      .replace(/<a\b[^>]*>(.*?)<\/a>/gi, '$1')
+      .replace(/<\/?(?:b|strong|i|em|u|s|code|pre)>/gi, '')
+      .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  }
+
+  function renderModulePreview(panel, preview) {
+    if (!panel) return;
+    panel.replaceChildren();
+    if (preview.image_url) {
+      const image = document.createElement('img');
+      image.className = 'module-preview-image';
+      image.alt = 'پیش‌نمایش گزارش';
+      image.loading = 'eager';
+      image.src = `${preview.image_url}?t=${encodeURIComponent(preview.generated_at || Date.now())}`;
+      panel.appendChild(image);
+    }
+    const message = previewText(preview.message || preview.text || preview.caption || '');
+    if (message) {
+      const pre = document.createElement('pre');
+      pre.textContent = message;
+      panel.appendChild(pre);
+    }
+    if (preview.available_for_publish === false) {
+      const warning = document.createElement('small');
+      warning.className = 'preview-warning';
+      warning.textContent = 'داده برای مشاهده موجود است، اما برای انتشار هنوز کافی نیست.';
+      panel.appendChild(warning);
+    }
+    if (preview.generated_at) {
+      const time = document.createElement('small');
+      time.textContent = `به‌روزرسانی: ${UI.relativeTime ? UI.relativeTime(preview.generated_at) : preview.generated_at}`;
+      panel.appendChild(time);
+    }
+    if (!panel.childNodes.length) panel.textContent = 'داده واقعی کافی برای پیش‌نمایش موجود نیست.';
+    panel.hidden = false;
+  }
+
+  async function loadModulePreview(moduleName, panel) {
+    let preview = await requestJSON(`/api/command-center/module/${encodeURIComponent(moduleName)}/preview`);
+    const hasCached = Boolean(preview.available && (preview.message || preview.text || preview.caption || preview.image_url));
+    if (hasCached) {
+      renderModulePreview(panel, preview);
+      return preview;
+    }
+
+    if (panel) {
+      panel.textContent = 'در حال ساخت پیش‌نمایش واقعی…';
+      panel.hidden = false;
+    }
+    const queued = await requestJSON(`/api/command-center/module/${encodeURIComponent(moduleName)}/preview`, {method:'POST'});
+    if (queued.command_id) {
+      const result = await pollCommand(queued.command_id, {timeoutMs:45000});
+      if (!result || result.status === 'failed') throw new Error(result?.message || 'ساخت پیش‌نمایش ناموفق بود.');
+    }
+    preview = await requestJSON(`/api/command-center/module/${encodeURIComponent(moduleName)}/preview`);
+    renderModulePreview(panel, preview);
+    return preview;
+  }
+
   document.addEventListener('click', async event => {
     const previewButton = event.target.closest('[data-module-preview]');
     const runButton = event.target.closest('[data-module-run]');
@@ -237,13 +298,7 @@
     button.disabled = true;
     try {
       if (previewButton) {
-        const queued = await requestJSON(`/api/command-center/module/${encodeURIComponent(moduleName)}/preview`, {method:'POST'});
-        if (queued.command_id) await pollCommand(queued.command_id, {timeoutMs:45000});
-        const preview = await requestJSON(`/api/command-center/module/${encodeURIComponent(moduleName)}/preview`);
-        if (panel) {
-          panel.textContent = preview.message || 'پیش‌نمایش آماده است.';
-          panel.hidden = false;
-        }
+        await loadModulePreview(moduleName, panel);
       } else {
         const accepted = await UI.confirmAction?.({title:'انتشار گزارش ویژه؟', text:'این فرمان می‌تواند یک پیام واقعی در تلگرام منتشر کند.', accept:'انتشار'});
         if (!accepted) return;

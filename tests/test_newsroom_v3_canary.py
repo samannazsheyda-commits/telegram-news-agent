@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -10,6 +11,7 @@ from src.newsroom_v3.store import NewsroomV3Store
 
 
 def _ready_story(store: NewsroomV3Store, story_id: str, url: str) -> None:
+    now = datetime.now(timezone.utc)
     store.upsert_story(
         story_id=story_id,
         source_item_id=story_id,
@@ -17,8 +19,8 @@ def _ready_story(store: NewsroomV3Store, story_id: str, url: str) -> None:
         source_url=url,
         title=f"Fresh Iran story {story_id}",
         summary="Fresh verified detail.",
-        published_at="2026-09-14T07:00:00+00:00",
-        fetched_at="2026-09-14T07:01:00+00:00",
+        published_at=(now - timedelta(minutes=10)).isoformat(),
+        fetched_at=(now - timedelta(minutes=9)).isoformat(),
         media=[],
         source_priority="protected",
         fingerprint=f"fp-{story_id}",

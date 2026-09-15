@@ -26,7 +26,10 @@
   let timer = 0;
   let badgeTimer = 0;
   let initial = true;
+  let currentStories = [];
   let knownIds = new Set([...feed.querySelectorAll('[data-story-id]')].map(node => node.dataset.storyId));
+  const localizedCache = new Map();
+  const localizationInFlight = new Set();
 
   const esc = value => String(value ?? '')
     .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -46,15 +49,44 @@
     if (state) node.classList.add(`nr-state-${state}`);
   }
 
-  function storyCard(story, isNew) {
-    const id = esc(story.id);
-    const title = esc(story.title || 'بدون عنوان');
+  function telegramPreviewText(value) {
+    return String(value || '')
+      .replace(/<a\b[^>]*>(.*?)<\/a>/gi, '$1')
+      .replace(/<\/?(?:b|strong|i|em|u|s|code|pre)>/gi, '')
+      .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+  }
+
+  async function postJSON(url, payload) {
+    const headers = UI.csrfHeaders ? UI.csrfHeaders({'Content-Type':'application/json'}) : {'Content-Type':'application/json'};
+    const response = await fetch(url, {
+      method:'POST', credentials:'same-origin', cache:'no-store', headers, body:JSON.stringify(payload || {}),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.ok === false) throw new Error(data.message || data.error || `HTTP ${response.status}`);
+    return data;
+  }
+
+  function mergeLocalized(story) {
+    const id = String(story.id || story.item_id || '');
+    const cached = localizedCache.get(id);
+    return cached ? {...story, ...cached, needs_localization:false} : story;
+  }
+
+  function storyCard(rawStory, isNew) {
+    const story = mergeLocalized(rawStory);
+    const id = esc(story.id || story.item_id || '');
+    const title = esc(story.title || 'عنوان فارسی در حال آماده‌سازی');
     const body = esc(story.body || '');
     const source = esc(story.source || 'منبع');
     const url = safeUrl(story.source_url);
     const priority = ['high','critical','breaking','manual'].includes(String(story.priority || '').toLowerCase());
-    const status = esc(story.status || 'new');
-    const relative = esc(UI.relativeTime ? UI.relativeTime(story.discovered_at) : '');
+    const status = esc(story.panel_status_fa || story.status || story.panel_status || 'تازه');
+    const relative = esc(UI.relativeTime ? UI.relativeTime(story.discovered_at || story.updated_at) : '');
+    const finalMessage = esc(telegramPreviewText(story.final_message || ''));
+    const originalTitle = esc(story.original_title || '');
+    const originalBody = esc(story.original_body || '');
+    const originalText = [originalTitle, originalBody].filter(Boolean).join('\n\n');
+    const preparing = story.needs_localization ? 'در حال آماده‌سازی نسخه نهایی فارسی…' : 'نسخه نهایی هنوز آماده نیست.';
     return `<article class="nr-story-card${priority ? ' is-priority' : ''}${isNew ? ' is-new' : ''}"
       data-story-id="${id}" data-news-id="${id}" data-story-title="${title}" data-story-body="${body}"
       data-story-source="${source}" data-story-source-url="${esc(url)}">
@@ -64,8 +96,10 @@
         ${priority ? '<span class="nr-priority-badge">مهم</span>' : ''}<span>${source}</span><time>${relative}</time>
       </div><span class="nr-story-status">${status}</span></div>
       <h3>${title}</h3>${body ? `<p>${body}</p>` : ''}
+      <details class="nr-final-output"><summary>نسخه نهایی تلگرام</summary><pre>${finalMessage || esc(preparing)}</pre></details>
+      ${originalText ? `<details class="nr-original-source"><summary>متن اصلی منبع</summary><pre>${originalText}</pre></details>` : ''}
       <div class="nr-story-actions">
-        <button class="nr-story-action publish" type="button" data-action="publish">انتشار</button>
+        <button class="nr-story-action publish" type="button" data-action="publish"${story.needs_localization ? ' disabled' : ''}>انتشار</button>
         <button class="nr-story-action" type="button" data-action="edit">ویرایش</button>
         <button class="nr-story-action reject" type="button" data-action="reject">رد</button>
         ${url ? `<a class="nr-story-action source" data-action="source" href="${esc(url)}" target="_blank" rel="noopener">منبع</a>` : '<span></span>'}
@@ -90,9 +124,9 @@
     }
     let importantNew = false;
     let newCount = 0;
-    const nextIds = new Set(stories.map(story => String(story.id || '')));
+    const nextIds = new Set(stories.map(story => String(story.id || story.item_id || '')));
     feed.innerHTML = stories.map(story => {
-      const id = String(story.id || '');
+      const id = String(story.id || story.item_id || '');
       const isNew = !initial && id && !knownIds.has(id);
       if (isNew) newCount += 1;
       if (isNew && ['high','critical','breaking'].includes(String(story.priority || '').toLowerCase())) importantNew = true;
@@ -102,6 +136,29 @@
     if (newCount) showNewNewsBadge(newCount);
     if (importantNew && UI.ping) UI.ping();
     window.dispatchEvent(new Event('newsroom:feed-rendered'));
+  }
+
+  async function localizeMissing(stories) {
+    const ids = stories
+      .filter(story => story.needs_localization)
+      .map(story => String(story.id || story.item_id || ''))
+      .filter(id => id && !localizedCache.has(id) && !localizationInFlight.has(id))
+      .slice(0, 8);
+    if (!ids.length) return;
+    ids.forEach(id => localizationInFlight.add(id));
+    try {
+      const data = await postJSON('/api/live-feed/localize', {ids});
+      const rows = Array.isArray(data.items) ? data.items : [];
+      rows.forEach(item => {
+        const id = String(item.id || item.item_id || '');
+        if (id) localizedCache.set(id, item);
+      });
+      if (rows.length) renderFeed(currentStories);
+    } catch (_) {
+      // Keep the desk responsive; failed translations are retried on a later poll.
+    } finally {
+      ids.forEach(id => localizationInFlight.delete(id));
+    }
   }
 
   function render(snapshot) {
@@ -123,7 +180,9 @@
     if (fields.error) fields.error.textContent = v3.error || 'بدون خطا';
     if (fields.healthDot) fields.healthDot.className = `nr-health-dot ${engineOk && !v3.error ? 'is-ok' : 'is-bad'}`;
     if (fields.priorities) fields.priorities.innerHTML = (snapshot.settings?.priority_terms || []).map(term => `<span>${esc(term)}</span>`).join('') || '<span>بدون اولویت اختصاصی</span>';
-    renderFeed(snapshot.live || []);
+    currentStories = Array.isArray(snapshot.live) ? snapshot.live : [];
+    renderFeed(currentStories);
+    void localizeMissing(currentStories);
   }
 
   async function refresh({force = false} = {}) {
@@ -138,6 +197,8 @@
         render(snapshot);
         fingerprint = snapshot.fingerprint || '';
         window.dispatchEvent(new CustomEvent('newsroom:snapshot', {detail:snapshot}));
+      } else if (currentStories.some(story => story.needs_localization)) {
+        void localizeMissing(currentStories);
       }
       initial = false;
     } catch (error) {
