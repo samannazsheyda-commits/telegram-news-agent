@@ -200,3 +200,10 @@ def test_mobile_status_bar_is_compact_non_sticky_horizontal_strip():
     assert "position: static" in status_css
     assert "display: flex" in status_css
     assert "overflow-x: auto" in status_css
+
+
+def test_production_wsgi_wires_live_feed_translator():
+    wsgi = Path("panel/wsgi.py").read_text(encoding="utf-8")
+
+    assert "from src.services import translate_to_fa" in wsgi
+    assert 'config["LIVE_FEED_TRANSLATOR"] = translate_to_fa' in wsgi
