@@ -10,10 +10,12 @@ from typing import Any
 
 from .newsroom_v3.manual_publish import publish_manual_story
 from .panel_command_file import apply_command as apply_legacy_command
+from .panel_live_localization import localize_live_row
+from .services import translate_to_fa
 
 TERMINAL = {"succeeded", "failed", "reconciled", "ambiguous"}
 NEWSROOM_ACTIONS = {
-    "clear", "settings_save", "publish", "v3_publish",
+    "clear", "settings_save", "publish", "v3_publish", "live_localize",
     "weather_now", "air_traffic_now", "tanker_now", "market_now",
     "weather_preview", "air_traffic_preview", "tanker_preview", "market_preview",
 }
@@ -144,6 +146,32 @@ def _apply_clear(payload: dict[str, Any]) -> dict:
         raise ValueError("invalid_clear_scope")
     count = _clear_live(ids)
     return _write_result(command_id, "clear", "succeeded", f"{count} خبر فقط از فید پنل پاک شد؛ تلگرام دست‌نخورده ماند", scope=scope, ids=ids)
+
+
+def _apply_live_localize(payload: dict[str, Any]) -> dict:
+    command_id = payload["command_id"]
+    item_id = str(payload.get("item_id") or "").strip()
+    if not item_id:
+        raise ValueError("missing_item_id")
+
+    path = Path("data/panel_live_feed.json")
+    value = _read_json(path, [])
+    rows = [dict(row) for row in value if isinstance(row, dict)] if isinstance(value, list) else []
+    index = next((i for i, row in enumerate(rows) if _row_id(row) == item_id), None)
+    if index is None:
+        raise ValueError("live_item_not_found")
+
+    localized, changed = localize_live_row(rows[index], translator=translate_to_fa, localized_at=_now())
+    if changed:
+        rows[index] = localized
+        _atomic_write(path, rows)
+    return _write_result(
+        command_id,
+        "live_localize",
+        "succeeded",
+        "نسخه فارسی و خروجی نهایی خبر آماده شد" if changed else "نسخه فارسی خبر از قبل آماده بود",
+        item_id=item_id,
+    )
 
 
 def _normalise_settings(value: Any) -> dict[str, Any]:
@@ -280,6 +308,7 @@ def apply_command(path: str | Path) -> dict:
     try:
         if action == "clear": result = _apply_clear(payload)
         elif action == "settings_save": result = _apply_settings(payload)
+        elif action == "live_localize": result = _apply_live_localize(payload)
         elif action in {"publish", "v3_publish"}: result = _apply_v3_publish(payload)
         else: result = _apply_module(payload)
         _consume(command_path); return result
