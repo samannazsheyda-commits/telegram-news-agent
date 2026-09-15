@@ -152,7 +152,7 @@ def test_pwa_assets_exist_and_do_not_cache_api_routes():
     assert "settings.css" in worker
 
 
-def test_dashboard_shows_live_items_in_persian_when_pending_queue_is_empty():
+def test_dashboard_marks_live_items_pending_when_persian_copy_is_missing():
     data = FakeData()
     data.files["data/panel_live_feed.json"] = [
         {
@@ -179,7 +179,8 @@ def test_dashboard_shows_live_items_in_persian_when_pending_queue_is_empty():
     assert response.status_code == 200
     assert "ورودی زنده" in text
     assert ">5<" in text
-    assert "خبر زنده صفر" in text
+    assert "عنوان فارسی در حال آماده‌سازی" in text
+    assert "خبر زنده صفر" not in text
     assert "Live story 0" not in text
     assert "تازه" in text
     assert "نیاز به تصمیم دستی نیست" in text
