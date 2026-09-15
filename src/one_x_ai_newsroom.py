@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from typing import Any
 
 import requests
 
-from .ai_newsroom import HuggingFaceNewsAI
+from .ai_newsroom import AIServiceError, HuggingFaceNewsAI
 from .local_semantic_ai import LocalFirstNewsAI
+from .openrouter_newsroom_ai import _decode_openrouter_content
 
 
 _DEFAULT_BASE_URL = "https://1xai.ir/v1"
@@ -82,6 +84,44 @@ class OneXAINewsAI(HuggingFaceNewsAI):
     @property
     def available(self) -> bool:
         return bool(self.config.api_key) and self.config.mode != "off"
+
+    def _headers(self) -> dict[str, str]:
+        if not self.config.api_key:
+            raise AIServiceError("missing_1xai_api_key")
+        return {
+            "Authorization": f"Bearer {self.config.api_key}",
+            "Content-Type": "application/json",
+            "User-Agent": "BikhabarNewsroom/3.0",
+        }
+
+    def _post_json(self, url: str, payload: dict[str, Any], *, timeout: int | None = None) -> Any:
+        try:
+            return super()._post_json(url, payload, timeout=timeout)
+        except AIServiceError as exc:
+            message = str(exc)
+            if message.startswith("hf_"):
+                raise AIServiceError("1xai_" + message[3:]) from exc
+            raise
+
+    def _chat_json(self, *, model: str, system: str, user: str, max_tokens: int = 500) -> dict[str, Any]:
+        payload = self._post_json(
+            f"{self.config.base_url.rstrip('/')}/chat/completions",
+            {
+                "model": model or self.config.model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user},
+                ],
+                "temperature": 0,
+                "max_tokens": max_tokens,
+                "response_format": {"type": "json_object"},
+            },
+        )
+        try:
+            content = payload["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError) as exc:
+            raise AIServiceError("invalid_1xai_chat_response") from exc
+        return _decode_openrouter_content(content)
 
 
 class LocalFirstOneXAINewsAI(LocalFirstNewsAI, OneXAINewsAI):
