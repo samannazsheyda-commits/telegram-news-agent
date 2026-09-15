@@ -112,7 +112,6 @@ class OneXAINewsAI(HuggingFaceNewsAI):
                     {"role": "system", "content": system},
                     {"role": "user", "content": user},
                 ],
-                "temperature": 0,
                 "max_tokens": max_tokens,
                 "response_format": {"type": "json_object"},
             },
