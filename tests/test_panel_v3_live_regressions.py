@@ -156,3 +156,45 @@ def test_module_preview_uses_cached_result_before_build_and_renders_rich_preview
     assert "image_url" in renderer
     assert "available_for_publish" in renderer
     assert "generated_at" in renderer
+
+
+def test_v3_snapshot_uses_current_v3_telegram_truth_over_stale_legacy_error():
+    data = FakeData()
+    data.files["state.json"] = {
+        "newsroom_engine": "v3",
+        "telegram_state": "error",
+    }
+    data.files["data/newsroom_v3_production_status.json"].update(
+        {
+            "error": "",
+            "publish_failed": 0,
+            "last_telegram_message_id": 1457,
+            "reason": "no_safe_candidate",
+        }
+    )
+
+    payload = _client(data).get("/api/newsroom/snapshot").get_json()
+
+    assert payload["engine"] == "v3"
+    assert payload["telegram_state"] == "ok"
+
+
+def test_localization_failure_is_visible_and_retryable_instead_of_silent_forever():
+    js = Path("panel/static/newsroom-live.js").read_text(encoding="utf-8")
+
+    assert "خطا در آماده‌سازی" in js
+    assert "retry-localization" in js
+    assert "localization_failed" in js
+    assert "catch (_)" not in js
+
+
+def test_mobile_status_bar_is_compact_non_sticky_horizontal_strip():
+    css = Path("panel/static/newsroom-shell.css").read_text(encoding="utf-8")
+    mobile_start = css.index("@media (max-width: 640px)")
+    mobile_css = css[mobile_start:]
+    status_start = mobile_css.index(".nr-status-bar")
+    status_css = mobile_css[status_start: status_start + 360]
+
+    assert "position: static" in status_css
+    assert "display: flex" in status_css
+    assert "overflow-x: auto" in status_css
