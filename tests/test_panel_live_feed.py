@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, timedelta, timezone
 
 from src.newsroom_models import LiveFeedRecord
@@ -69,3 +70,24 @@ def test_auto_published_item_remains_visible_in_live_feed(tmp_path):
     store = LiveFeedStore(tmp_path / "feed.json")
     store.upsert(record("published", status="auto_published"))
     assert [row.panel_status for row in store.records()] == ["auto_published"]
+
+
+def test_runtime_upsert_preserves_panel_localization_fields(tmp_path):
+    path = tmp_path / "feed.json"
+    existing = record("localized", status="new", updated_at="2026-09-15T19:00:00+00:00").to_dict()
+    existing.update(
+        persian_title="تیتر فارسی آماده",
+        persian_body="متن فارسی آماده",
+        final_message="نسخه نهایی تلگرام",
+        localized_at="2026-09-15T19:00:10+00:00",
+    )
+    path.write_text(json.dumps([existing], ensure_ascii=False), encoding="utf-8")
+
+    store = LiveFeedStore(path)
+    store.upsert(record("localized", status="waiting", updated_at="2026-09-15T19:01:00+00:00"))
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    assert payload[0]["persian_title"] == "تیتر فارسی آماده"
+    assert payload[0]["persian_body"] == "متن فارسی آماده"
+    assert payload[0]["final_message"] == "نسخه نهایی تلگرام"
+    assert payload[0]["localized_at"] == "2026-09-15T19:00:10+00:00"
