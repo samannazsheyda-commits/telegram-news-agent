@@ -137,20 +137,22 @@ def test_dashboard_has_obvious_add_source_entry_point():
     dashboard = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
 
     assert "افزودن منبع" in dashboard
-    assert "source_manager.index" in dashboard
+    assert 'href="/source-manager"' in dashboard
 
 
 def test_module_preview_uses_cached_result_before_build_and_renders_rich_preview():
     js = Path("panel/static/newsroom-actions.js").read_text(encoding="utf-8")
-    start = js.index("async function loadModulePreview")
-    end = js.index("document.addEventListener('click'", start)
-    preview_flow = js[start:end]
+    load_start = js.index("async function loadModulePreview")
+    load_end = js.index("document.addEventListener('click'", load_start)
+    preview_flow = js[load_start:load_end]
+    render_start = js.index("function renderModulePreview")
+    renderer = js[render_start:load_start]
 
     cached_get = "requestJSON(`/api/command-center/module/${encodeURIComponent(moduleName)}/preview`)"
     build_post = "requestJSON(`/api/command-center/module/${encodeURIComponent(moduleName)}/preview`, {method:'POST'})"
     assert cached_get in preview_flow
     assert build_post in preview_flow
     assert preview_flow.index(cached_get) < preview_flow.index(build_post)
-    assert "image_url" in preview_flow
-    assert "available_for_publish" in preview_flow
-    assert "generated_at" in preview_flow
+    assert "image_url" in renderer
+    assert "available_for_publish" in renderer
+    assert "generated_at" in renderer
