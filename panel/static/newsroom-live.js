@@ -89,7 +89,10 @@
     const originalBody = esc(story.original_body || '');
     const originalText = [originalTitle, originalBody].filter(Boolean).join('\n\n');
     const localizationError = localizationFailures.get(rawId) === 'localization_failed';
-    const preparing = localizationError ? 'خطا در آماده‌سازی نسخه فارسی.' : (story.needs_localization ? 'در حال آماده‌سازی نسخه نهایی فارسی…' : 'نسخه نهایی هنوز آماده نیست.');
+    const preparing = localizationError ? 'خطا در آماده‌سازی نسخه فارسی.' : (story.needs_localization ? 'نسخه فارسی هنوز آماده نشده.' : 'نسخه نهایی هنوز آماده نیست.');
+    const localizationAction = story.needs_localization || localizationError
+      ? `<button class="nr-localization-retry" type="button" data-action="retry-localization">${localizationError ? 'تلاش دوباره' : 'آماده‌سازی فارسی'}</button>`
+      : '';
     return `<article class="nr-story-card${priority ? ' is-priority' : ''}${isNew ? ' is-new' : ''}${localizationError ? ' has-localization-error' : ''}"
       data-story-id="${id}" data-news-id="${id}" data-story-title="${title}" data-story-body="${body}"
       data-story-source="${source}" data-story-source-url="${esc(url)}">
@@ -99,7 +102,7 @@
         ${priority ? '<span class="nr-priority-badge">مهم</span>' : ''}<span>${source}</span><time>${relative}</time>
       </div><span class="nr-story-status">${status}</span></div>
       <h3>${title}</h3>${body ? `<p>${body}</p>` : ''}
-      <details class="nr-final-output"><summary>نسخه نهایی تلگرام</summary><pre>${finalMessage || esc(preparing)}</pre>${localizationError ? '<button class="nr-localization-retry" type="button" data-action="retry-localization">تلاش دوباره</button>' : ''}</details>
+      <details class="nr-final-output"><summary>نسخه نهایی تلگرام</summary><pre>${finalMessage || esc(preparing)}</pre>${localizationAction}</details>
       ${originalText ? `<details class="nr-original-source"><summary>متن اصلی منبع</summary><pre>${originalText}</pre></details>` : ''}
       <div class="nr-story-actions">
         <button class="nr-story-action publish" type="button" data-action="publish"${story.needs_localization ? ' disabled' : ''}>انتشار</button>
@@ -207,7 +210,6 @@
     if (fields.priorities) fields.priorities.innerHTML = (snapshot.settings?.priority_terms || []).map(term => `<span>${esc(term)}</span>`).join('') || '<span>بدون اولویت اختصاصی</span>';
     currentStories = Array.isArray(snapshot.live) ? snapshot.live : [];
     renderFeed(currentStories);
-    void localizeMissing(currentStories);
   }
 
   async function refresh({force = false} = {}) {
@@ -222,8 +224,6 @@
         render(snapshot);
         fingerprint = snapshot.fingerprint || '';
         window.dispatchEvent(new CustomEvent('newsroom:snapshot', {detail:snapshot}));
-      } else if (currentStories.some(story => story.needs_localization)) {
-        void localizeMissing(currentStories);
       }
       initial = false;
     } catch (error) {
