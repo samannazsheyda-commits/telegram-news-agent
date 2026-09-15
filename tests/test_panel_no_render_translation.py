@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from pathlib import Path
 
 from panel.app import create_app
@@ -8,6 +9,7 @@ from panel.live_api import bp as live_api_bp
 
 class FakeData:
     def __init__(self):
+        now = datetime.now(timezone.utc).isoformat()
         self.files = {
             "data/editorial_queue.json": [],
             "data/editorial_history.json": [],
@@ -20,8 +22,8 @@ class FakeData:
                     "title": "Raw English headline must not trigger translation during dashboard render",
                     "summary": "Raw English summary",
                     "panel_status": "new",
-                    "published_at_source": "2026-09-15T19:00:00+00:00",
-                    "updated_at": "2026-09-15T19:00:00+00:00",
+                    "published_at_source": now,
+                    "updated_at": now,
                 }
             ],
             "state.json": {"newsroom_engine": "v3", "telegram_state": "ok"},
