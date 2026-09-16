@@ -183,6 +183,10 @@ def snapshot():
     if not isinstance(telegram_message_id, int):
         telegram_message_id = None
 
+    daily_limit = max(1, _safe_int(v3.get("daily_limit")) or 35)
+    daily_published = max(0, _safe_int(v3.get("daily_published")))
+    daily_remaining = max(0, _safe_int(v3.get("daily_remaining")) if "daily_remaining" in v3 else daily_limit - daily_published)
+
     v3_public = {
         "mode": str(v3.get("mode") or ""),
         "reason": str(v3.get("reason") or ""),
@@ -202,6 +206,9 @@ def snapshot():
         "publish_failed": _safe_int(v3.get("publish_failed")),
         "story_id": str(v3.get("story_id") or ""),
         "telegram_message_id": telegram_message_id,
+        "daily_published": daily_published,
+        "daily_limit": daily_limit,
+        "daily_remaining": daily_remaining,
     }
 
     public_settings = _public_settings(settings)
