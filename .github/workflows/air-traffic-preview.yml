@@ -1,0 +1,30 @@
+name: Air Traffic Strict Live Preview
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".air-traffic-preview-now"
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install renderer dependencies
+        run: pip install -r requirements.txt
+      - name: Build strict live preview
+        run: python -m src.air_traffic_publish_guard --preview --output /tmp/iran-region-live-air-traffic-preview.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iran-region-strict-live-air-traffic-preview
+          path: /tmp/iran-region-live-air-traffic-preview.png
+          if-no-files-found: error
