@@ -304,23 +304,26 @@ def publish_live(item_id: str):
         return jsonify({"ok": False, "status": "failed", "error": "live_item_not_found", "message": "خبر پیدا نشد"}), 404
     if str(row.get("panel_status") or "") in _TERMINAL_LIVE_STATUSES:
         return jsonify({"ok": False, "status": "failed", "error": "already_published", "message": "خبر قبلاً منتشر شده"}), 409
-    title, body, error = _editor_copy(row)
-    if error:
-        payload, status = error
-        return jsonify(payload), status
+
     source = str(row.get("source") or "").strip()
     source_url = str(row.get("source_url") or row.get("link") or "").strip()
-    if not title or not _has_persian(title):
-        return jsonify({"ok": False, "status": "failed", "error": "final_not_ready", "message": "تیتر نهایی فارسی آماده نیست"}), 409
+    original_title = str(row.get("original_title") or row.get("title") or "").strip()
+    original_body = str(row.get("original_summary") or row.get("summary") or row.get("body") or "").strip()
+    if not original_title:
+        return jsonify({"ok": False, "status": "failed", "error": "source_text_missing", "message": "متن اصلی خبر موجود نیست"}), 409
     if not source or not source_url:
         return jsonify({"ok": False, "status": "failed", "error": "source_missing", "message": "منبع معتبر خبر موجود نیست"}), 409
+
+    # Store immutable source fields for the worker. The offline Argos preview is
+    # deliberately excluded from the publish command; Luna creates final copy
+    # only after this one-tap editor approval.
     record = _review_record_from_live(row, item_id)
-    record["persian_title"] = title
-    record["persian_body"] = body
+    record["original_title"] = original_title
+    record["original_summary"] = original_body
     _write_list(
         "data/editorial_queue.json",
         lambda queue: [record] + [existing for existing in queue if str(existing.get("id") or existing.get("item_id") or "") != item_id],
-        "panel: queue live item for V3 publication",
+        "panel: queue original source for Luna + V3 publication",
     )
     command_id = _enqueue(
         "v3_publish",
@@ -328,11 +331,11 @@ def publish_live(item_id: str):
         news_key=str(row.get("news_key") or item_id),
         source=source,
         source_url=source_url,
-        title=title,
-        body=body,
+        original_title=original_title,
+        original_body=original_body,
         published_at=str(row.get("published_at_source") or row.get("published") or ""),
     )
-    return jsonify({"ok": True, "status": "queued", "command_id": command_id, "message": "خبر برای انتشار امن V3 در صف قرار گرفت"}), 202
+    return jsonify({"ok": True, "status": "queued", "command_id": command_id, "message": "خبر برای ترجمه و ویرایش نهایی با لونا در صف قرار گرفت"}), 202
 
 
 @bp.get("/api/newsroom/command/<command_id>")
