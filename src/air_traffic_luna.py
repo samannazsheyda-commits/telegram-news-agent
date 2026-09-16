@@ -11,7 +11,7 @@ Use only the structured live facts supplied by the caller.
 Do not invent routes, closures, incidents, causes, military activity, airport status, destinations, or aircraft identities.
 Describe only visible traffic density/distribution that is supported by the supplied counts.
 Do not call an area empty unless its supplied count is zero. Do not imply the data is complete beyond the stated provider coverage.
-Return only the final concise Persian sentence, with no JSON, markdown, labels, or explanation.
+Return only the final concise Persian sentence, with no structured wrapper, markdown, labels, or explanation.
 """
 
 
