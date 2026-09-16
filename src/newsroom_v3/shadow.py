@@ -5,10 +5,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Iterable
 
-from ..newsroom_eligibility import evaluate_eligibility
+from ..newsroom_eligibility import EligibilityResult, evaluate_eligibility
 from ..newsroom_fingerprint import build_fingerprint
+from ..newsroom_hard_filters import hard_editorial_rejection
 from ..newsroom_models import RawNewsItem
 from ..newsroom_normalize import normalize_item
+from ..newsroom_source_identity import canonical_news_source
 from .store import NewsroomV3Store
 
 
@@ -26,7 +28,7 @@ class ShadowCycleResult:
 def _story_id(raw: RawNewsItem) -> str:
     identity = "\x1f".join(
         (
-            str(raw.source or "").strip(),
+            canonical_news_source(raw.source),
             str(raw.source_item_id or "").strip(),
             str(raw.source_url or "").strip(),
         )
@@ -52,7 +54,12 @@ class NewsroomV3ShadowPipeline:
             processed += 1
             item = normalize_item(raw)
             fingerprint = build_fingerprint(item)
-            eligibility = evaluate_eligibility(item, now)
+            hard_reason = hard_editorial_rejection(raw.title, raw.summary)
+            eligibility = (
+                EligibilityResult(False, hard_reason)
+                if hard_reason
+                else evaluate_eligibility(item, now)
+            )
             story_id = _story_id(raw)
             duplicate_of = ""
 
@@ -87,7 +94,7 @@ class NewsroomV3ShadowPipeline:
             self.store.upsert_story(
                 story_id=story_id,
                 source_item_id=raw.source_item_id,
-                source=raw.source,
+                source=canonical_news_source(raw.source),
                 source_url=raw.source_url,
                 title=raw.title,
                 summary=raw.summary,

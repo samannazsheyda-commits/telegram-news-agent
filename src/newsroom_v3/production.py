@@ -17,13 +17,16 @@ from .canary import (
     _still_fresh,
     build_production_publisher,
 )
+from .final_gate import FinalGateDecision, LunaFinalPublishGate
 from .outbox import AMBIGUOUS_ERROR_PREFIX, NewsroomV3PublisherWorker
+from .publication_policy import count_successful_publications, list_recent_published
 from .shadow import NewsroomV3ShadowPipeline
 from .store import NewsroomV3Store, StoryRecord
 
 
 PRODUCTION_STATE = "newsroom_v3_production_status.json"
 _cached_publisher = None
+_TRANSIENT_GATE_REASONS = {"luna_unavailable", "luna_error", "invalid_luna_decision"}
 
 
 def _read_json(path: Path) -> dict:
@@ -185,16 +188,23 @@ def _within_publish_interval(
     return (now - previous).total_seconds() < max(0, int(min_publish_interval_seconds))
 
 
+def _persist_result(status_path: Path, prior_status: dict, result: dict) -> dict:
+    _atomic_json(status_path, {**prior_status, **result})
+    return result
+
+
 def run_once(
     *,
     data_dir: str | Path = "data",
     fetchers=None,
     publisher: Callable[[StoryRecord], object] | None = None,
+    final_gate: Callable[[StoryRecord, list[StoryRecord]], FinalGateDecision] | None = None,
     now: datetime | None = None,
     publish_enabled: bool = True,
     min_publish_interval_seconds: int | None = None,
     retry_cooldown_seconds: int | None = None,
     max_attempts: int | None = None,
+    daily_limit: int | None = None,
 ) -> dict:
     """Run one guarded V3 production cycle with at most one Telegram write."""
     current_time = now or datetime.now(timezone.utc)
@@ -217,6 +227,12 @@ def run_once(
         if max_attempts is None
         else int(max_attempts)
     )
+    resolved_daily_limit = (
+        int(os.environ.get("NEWSROOM_V3_DAILY_LIMIT", "25"))
+        if daily_limit is None
+        else int(daily_limit)
+    )
+    resolved_daily_limit = max(1, resolved_daily_limit)
 
     directory = Path(data_dir)
     directory.mkdir(parents=True, exist_ok=True)
@@ -227,6 +243,7 @@ def run_once(
         resolved_fetchers = build_raw_fetchers() if fetchers is None else fetchers
         items, sources_ok, sources_failed = _collect(resolved_fetchers)
         shadow_result = NewsroomV3ShadowPipeline(store).run(items, now=current_time)
+        daily_published = count_successful_publications(store, now=current_time)
 
         base = {
             "mode": "production",
@@ -241,26 +258,29 @@ def run_once(
             "published": 0,
             "telegram_writes": 0,
             "publish_failed": 0,
+            "final_gate_rejected": 0,
             "story_id": "",
             "telegram_message_id": None,
+            "daily_published": daily_published,
+            "daily_limit": resolved_daily_limit,
+            "daily_remaining": max(0, resolved_daily_limit - daily_published),
             "reason": "",
             "error": "",
             "last_cycle_at": current_time.isoformat(),
         }
 
         if not publish_enabled:
-            result = {**base, "reason": "publish_paused"}
-            _atomic_json(status_path, {**prior_status, **result})
-            return result
+            return _persist_result(status_path, prior_status, {**base, "reason": "publish_paused"})
+
+        if daily_published >= resolved_daily_limit:
+            return _persist_result(status_path, prior_status, {**base, "reason": "daily_limit"})
 
         if _within_publish_interval(
             prior_status,
             now=current_time,
             min_publish_interval_seconds=interval,
         ):
-            result = {**base, "reason": "publish_interval"}
-            _atomic_json(status_path, {**prior_status, **result})
-            return result
+            return _persist_result(status_path, prior_status, {**base, "reason": "publish_interval"})
 
         story, reason = _candidate_for_publish(
             store,
@@ -270,19 +290,75 @@ def run_once(
             max_attempts=attempts_limit,
         )
         if story is None:
-            result = {**base, "reason": reason}
-            _atomic_json(status_path, {**prior_status, **result})
-            return result
+            return _persist_result(status_path, prior_status, {**base, "reason": reason})
+
+        active_gate = final_gate
+        if active_gate is None and publisher is None:
+            active_gate = LunaFinalPublishGate()
+        if active_gate is not None:
+            recent = list_recent_published(store, limit=25)
+            try:
+                decision = active_gate(story, recent)
+            except Exception as exc:
+                return _persist_result(
+                    status_path,
+                    prior_status,
+                    {
+                        **base,
+                        "story_id": story.story_id,
+                        "reason": "final_gate_error",
+                        "error": f"{type(exc).__name__}",
+                    },
+                )
+            if not isinstance(decision, FinalGateDecision):
+                return _persist_result(
+                    status_path,
+                    prior_status,
+                    {
+                        **base,
+                        "story_id": story.story_id,
+                        "reason": "final_gate_error",
+                        "error": "invalid_final_gate_contract",
+                    },
+                )
+            if not decision.approved:
+                gate_reason = str(decision.reason or "rejected").strip() or "rejected"
+                if gate_reason in _TRANSIENT_GATE_REASONS:
+                    return _persist_result(
+                        status_path,
+                        prior_status,
+                        {
+                            **base,
+                            "story_id": story.story_id,
+                            "reason": "final_gate_error",
+                            "error": gate_reason,
+                        },
+                    )
+                store.set_decision(story.story_id, "rejected", reason=f"final_gate:{gate_reason}")
+                return _persist_result(
+                    status_path,
+                    prior_status,
+                    {
+                        **base,
+                        "story_id": story.story_id,
+                        "final_gate_rejected": 1,
+                        "reason": "final_gate_rejected",
+                        "error": gate_reason,
+                    },
+                )
 
         active_publisher = publisher if publisher is not None else _production_publisher()
         publish_result = NewsroomV3PublisherWorker(store, active_publisher).publish_story(story.story_id)
         if publish_result.state == "published" and publish_result.telegram_message_id is not None:
+            next_daily_count = daily_published + 1
             result = {
                 **base,
                 "published": 1,
                 "telegram_writes": 1,
                 "story_id": story.story_id,
                 "telegram_message_id": publish_result.telegram_message_id,
+                "daily_published": next_daily_count,
+                "daily_remaining": max(0, resolved_daily_limit - next_daily_count),
                 "reason": "published",
             }
             _atomic_json(
@@ -308,7 +384,6 @@ def run_once(
             ),
             "error": publish_result.error,
         }
-        _atomic_json(status_path, {**prior_status, **result})
-        return result
+        return _persist_result(status_path, prior_status, result)
     finally:
         store.close()

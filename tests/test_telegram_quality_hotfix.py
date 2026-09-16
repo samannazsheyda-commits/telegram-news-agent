@@ -104,9 +104,11 @@ def test_strict_translation_uses_mymemory_only_through_the_quality_gate_after_go
     assert any("mymemory" in url for url in calls)
 
 
-def test_scheduled_air_traffic_job_publishes_only_the_approved_validated_renderer():
+def test_scheduled_air_traffic_job_uses_freshness_guard_and_approved_renderer():
     service = Path("deploy/bikhabar-air-traffic.service").read_text(encoding="utf-8")
-    assert "-m src.air_traffic --publish" in service
+    guard = Path("src/air_traffic_publish_guard.py").read_text(encoding="utf-8")
+    assert "-m src.air_traffic_publish_guard --publish" in service
+    assert "air_traffic_reference as reference" in guard
     assert "iran-region-live-air-traffic.png" in service
     assert "Temporary safety gate" not in service
 
