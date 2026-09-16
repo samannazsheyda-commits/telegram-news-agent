@@ -75,10 +75,12 @@ def test_newsroom_live_publish_enqueues_v3_publish_not_legacy_publish():
     command = data.commands[-1]
     assert command["action"] == "v3_publish"
     assert command["item_id"] == "live-1"
-    assert command["title"] == "تیتر نهایی"
-    assert command["body"] == "متن نهایی"
+    assert command["original_title"] == "Original"
+    assert command["original_body"] == ""
     assert command["source"] == "Reuters"
     assert command["source_url"] == "https://example.com/1"
+    assert "title" not in command
+    assert "body" not in command
 
 
 def test_legacy_command_center_publish_alias_is_absorbed_by_safe_v3_router():
@@ -100,8 +102,10 @@ def _exercise_router_publish_alias(root, monkeypatch, *, action: str):
             "news_key": "key-1",
             "source": "Reuters",
             "source_url": "https://example.com/1",
-            "persian_title": "تیتر نهایی",
-            "persian_body": "متن نهایی",
+            "original_title": "Original source headline",
+            "original_summary": "Original source body",
+            "persian_title": "پیش‌نمایش فارسی که نباید منتشر شود",
+            "persian_body": "پیش‌نمایش بدنه",
             "status": "pending",
         }
     ]
@@ -118,8 +122,8 @@ def _exercise_router_publish_alias(root, monkeypatch, *, action: str):
                 "news_key": "key-1",
                 "source": "Reuters",
                 "source_url": "https://example.com/1",
-                "title": "تیتر نهایی",
-                "body": "متن نهایی",
+                "original_title": "Original source headline",
+                "original_body": "Original source body",
                 "published_at": "2026-09-14T11:00:00+00:00",
             },
             ensure_ascii=False,
@@ -139,6 +143,7 @@ def _exercise_router_publish_alias(root, monkeypatch, *, action: str):
         }
 
     monkeypatch.chdir(root)
+    monkeypatch.setattr(router, "_finalize_manual_copy_with_luna", lambda title, body: ("تیتر نهایی لونا", "متن نهایی لونا"))
     monkeypatch.setattr(router, "publish_manual_story", fake_publish_manual_story)
     monkeypatch.setattr(
         router,
@@ -150,10 +155,13 @@ def _exercise_router_publish_alias(root, monkeypatch, *, action: str):
     assert result["status"] == "succeeded"
     assert result["telegram_message_id"] == 1777
     assert len(calls) == 1
+    assert calls[0]["title"] == "تیتر نهایی لونا"
+    assert calls[0]["body"] == "متن نهایی لونا"
     assert not command_path.exists()
     history = json.loads((root / "data" / "editorial_history.json").read_text(encoding="utf-8"))
     assert history[0]["id"] == "live-1"
     assert history[0]["status"] == "published_manual"
+    assert history[0]["final_persian_title"] == "تیتر نهایی لونا"
     remaining = json.loads((root / "data" / "editorial_queue.json").read_text(encoding="utf-8"))
     assert remaining == []
 
