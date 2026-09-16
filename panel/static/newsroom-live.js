@@ -43,6 +43,12 @@
     } catch (error) { return ''; }
   }
 
+  function sourceLabel(value) {
+    const source = String(value || 'منبع').trim();
+    if (source === 'Clash Report') return 'کلش ریپورت';
+    return source;
+  }
+
   function setState(node, text, state = '') {
     if (!node) return;
     node.textContent = text;
@@ -79,7 +85,7 @@
     const id = esc(rawId);
     const title = esc(story.title || 'عنوان فارسی در حال آماده‌سازی');
     const body = esc(story.body || '');
-    const source = esc(story.source || 'منبع');
+    const source = esc(sourceLabel(story.source));
     const url = safeUrl(story.source_url);
     const priority = ['high','critical','breaking','manual'].includes(String(story.priority || '').toLowerCase());
     const status = esc(story.panel_status_fa || story.status || story.panel_status || 'تازه');
