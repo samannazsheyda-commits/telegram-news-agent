@@ -99,9 +99,9 @@
     const literalPreview = translationMode === 'offline_literal';
     const previewLabel = literalPreview
       ? '<span class="nr-translation-badge">ترجمه آفلاین · تحت‌اللفظی</span>'
-      : (story.needs_localization ? '<span class="nr-translation-badge is-loading">در حال ترجمه آفلاین…</span>' : '');
-    const localizationAction = localizationError
-      ? '<button class="nr-localization-retry" type="button" data-action="retry-localization">تلاش دوباره برای ترجمه آفلاین</button>'
+      : (story.needs_localization ? '<span class="nr-translation-badge is-loading">ترجمه آفلاین آماده نیست</span>' : '');
+    const localizationAction = story.needs_localization || localizationError
+      ? `<button class="nr-localization-retry" type="button" data-action="retry-localization">${localizationError ? 'تلاش دوباره برای ترجمه آفلاین' : 'ترجمه آفلاین'}</button>`
       : '';
     const finalCopy = finalMessage
       ? `<details class="nr-final-output"><summary>نسخه نهایی تلگرام</summary><pre>${finalMessage}</pre></details>`
@@ -117,7 +117,7 @@
       </div><span class="nr-story-status">${status}</span></div>
       ${previewLabel}
       <h3>${title}</h3>${body ? `<p>${body}</p>` : ''}
-      ${localizationError ? '<div class="nr-localization-error">ترجمه آفلاین آماده نشد؛ متن اصلی پایین در دسترس است.</div>' : ''}
+      ${localizationError ? '<div class="nr-localization-error">خطا در آماده‌سازی ترجمه آفلاین؛ متن اصلی پایین در دسترس است.</div>' : ''}
       ${localizationAction}
       ${finalCopy}
       ${originalText ? `<details class="nr-original-source"><summary>متن اصلی منبع</summary><pre>${originalText}</pre></details>` : ''}
@@ -227,7 +227,6 @@
     if (fields.priorities) fields.priorities.innerHTML = (snapshot.settings?.priority_terms || []).map(term => `<span>${esc(term)}</span>`).join('') || '<span>بدون اولویت اختصاصی</span>';
     currentStories = Array.isArray(snapshot.live) ? snapshot.live : [];
     renderFeed(currentStories);
-    void localizeMissing(currentStories);
   }
 
   async function refresh({force = false} = {}) {
