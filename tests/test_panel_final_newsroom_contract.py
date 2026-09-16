@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from src.formatters import _source_label
-
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -71,5 +69,6 @@ def test_mobile_nav_has_safe_area_and_high_stable_layer():
     assert "z-index: 90" in mobile
 
 
-def test_canonical_clash_report_label_is_persian():
-    assert _source_label("Clash Report") == "کلش ریپورت"
+def test_clash_report_label_is_persian_in_live_newsroom():
+    source = _text("panel/static/newsroom-live.js")
+    assert "if (source === 'Clash Report') return 'کلش ریپورت';" in source
