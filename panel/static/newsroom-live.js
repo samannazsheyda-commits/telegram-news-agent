@@ -227,6 +227,7 @@
     if (fields.priorities) fields.priorities.innerHTML = (snapshot.settings?.priority_terms || []).map(term => `<span>${esc(term)}</span>`).join('') || '<span>بدون اولویت اختصاصی</span>';
     currentStories = Array.isArray(snapshot.live) ? snapshot.live : [];
     renderFeed(currentStories);
+    void localizeMissing(currentStories);
   }
 
   async function refresh({force = false} = {}) {
