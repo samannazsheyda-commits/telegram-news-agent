@@ -11,7 +11,7 @@ from ..newsroom_hard_filters import hard_editorial_rejection
 from ..newsroom_models import RawNewsItem
 from ..newsroom_normalize import normalize_item
 from ..newsroom_source_identity import canonical_news_source
-from .store import NewsroomV3Store
+from .store import NewsroomV3Store, StoryRecord
 
 
 @dataclass(frozen=True)
@@ -34,6 +34,13 @@ def _story_id(raw: RawNewsItem) -> str:
         )
     )
     return hashlib.sha256(identity.encode("utf-8")).hexdigest()[:32]
+
+
+def _terminal_rejection(story: StoryRecord | None) -> bool:
+    if story is None or story.decision_state != "rejected":
+        return False
+    reason = str(story.decision_reason or "").strip()
+    return reason.startswith("final_gate:") or reason.startswith("publisher:")
 
 
 class NewsroomV3ShadowPipeline:
@@ -62,8 +69,13 @@ class NewsroomV3ShadowPipeline:
             )
             story_id = _story_id(raw)
             duplicate_of = ""
+            existing = self.store.get_story(story_id)
 
-            if eligibility.eligible:
+            if _terminal_rejection(existing):
+                decision_state = "rejected"
+                decision_reason = existing.decision_reason
+                rejected += 1
+            elif eligibility.eligible:
                 canonical = self.store.find_canonical_story(
                     source_url=raw.source_url,
                     fingerprint=fingerprint.key,
