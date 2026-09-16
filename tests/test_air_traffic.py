@@ -172,12 +172,10 @@ def test_render_is_bright_1080x1920_with_timestamp_strip_and_yellow_aircraft(tmp
     assert yellowish >= 20
     assert red_dots == 0
 
-    # The approved output is a bright map, not the dimmed Airplanes.live browser UI.
     map_crop = image.crop((0, 0, 1080, 1640))
     average_map_luma = sum(sum(pixel) / 3 for pixel in map_crop.getdata()) / (1080 * 1640)
     assert average_map_luma > 115
 
-    # A dedicated light information strip must be physically embedded under the map.
     footer = image.crop((0, 1640, 1080, 1920))
     footer_pixels = list(footer.getdata())
     bright_footer = sum(1 for r, g, b in footer_pixels if r > 225 and g > 225 and b > 225)
@@ -185,7 +183,6 @@ def test_render_is_bright_1080x1920_with_timestamp_strip_and_yellow_aircraft(tmp
     assert bright_footer > len(footer_pixels) * 0.55
     assert dark_ink > 500
 
-    # Text must not collide with the left divider or the physical bottom edge.
     title_guard = image.crop((155, 1655, 178, 1735))
     title_guard_dark = sum(1 for r, g, b in title_guard.getdata() if r < 90 and g < 110 and b < 140)
     assert title_guard_dark == 0
@@ -208,19 +205,20 @@ def test_publish_refuses_implausibly_sparse_snapshot(monkeypatch, tmp_path):
     assert sent == []
 
 
-def test_vps_timer_runs_exactly_at_20_00_00_00_and_02_00_tehran():
+def test_vps_timer_runs_once_at_midnight_tehran():
     timer = Path("deploy/bikhabar-air-traffic.timer").read_text(encoding="utf-8")
-    assert "OnCalendar=*-*-* 16:30:00 UTC" in timer
     assert "OnCalendar=*-*-* 20:30:00 UTC" in timer
-    assert "OnCalendar=*-*-* 22:30:00 UTC" in timer
-    assert timer.count("OnCalendar=") == 3
+    assert timer.count("OnCalendar=") == 1
+    assert "16:30:00 UTC" not in timer
+    assert "22:30:00 UTC" not in timer
+    assert "00:00 Tehran" in timer
     assert "AccuracySec=1s" in timer
     assert "RandomizedDelaySec=30" not in timer
 
 
-def test_vps_air_traffic_service_publishes_instead_of_preview_only():
+def test_vps_air_traffic_service_uses_freshness_guard():
     service = Path("deploy/bikhabar-air-traffic.service").read_text(encoding="utf-8")
-    assert "-m src.air_traffic --publish" in service
+    assert "-m src.air_traffic_publish_guard --publish" in service
     assert "Temporary safety gate" not in service
 
 
