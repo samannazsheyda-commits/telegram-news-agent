@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 
-from ..ai_newsroom import AIServiceError
 from ..one_x_ai_newsroom import OneXAIConfig, OneXAINewsAI
 from .store import StoryRecord
 
@@ -60,7 +59,7 @@ class LunaFinalPublishGate:
                 user=json.dumps(user_payload, ensure_ascii=False, separators=(",", ":")),
                 max_tokens=180,
             )
-        except (AIServiceError, Exception):
+        except Exception:
             return FinalGateDecision(False, "luna_error")
 
         approved = payload.get("approve")
