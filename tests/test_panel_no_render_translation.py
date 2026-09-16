@@ -67,9 +67,9 @@ def test_dashboard_get_never_calls_translation_backend():
     assert "Raw English headline" not in response.get_data(as_text=True)
 
 
-def test_live_ui_only_localizes_after_explicit_retry_action():
+def test_live_ui_automatically_requests_offline_preview_after_render():
     js = Path("panel/static/newsroom-live.js").read_text(encoding="utf-8")
 
+    assert "/api/live-feed/localize" in js
     assert "retry-localization" in js
-    assert "void localizeMissing(currentStories);" not in js
-    assert "currentStories.some(story => story.needs_localization)" not in js
+    assert "void localizeMissing(currentStories);" in js
