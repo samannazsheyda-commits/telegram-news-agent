@@ -66,6 +66,15 @@ def _normalize_visible_fragment(value: str) -> str:
     text = re.sub(r"(?i)(?<![A-Za-z])Telegram(?![A-Za-z])", "تلگرام", text)
     text = re.sub(r"(?i)(?<![A-Za-z])/\s*X(?![A-Za-z])", "/ ایکس", text)
 
+    # Clash Report is an editorially approved canonical source identity. Preserve
+    # it before the generic unknown-aggregator guard below can reduce it to
+    # "منبع". Both feed spellings (ClashReport and Clash Report) are accepted.
+    text = re.sub(
+        r"(?i)(?:\bClash\s*Report|کلش ریپورت)\s*/\s*تلگرام(?=\s*:)",
+        "Clash Report",
+        text,
+    )
+
     # Never leak an unknown ASCII aggregator label into the Persian final post.
     # The platform is metadata, not the public source name.
     text = re.sub(
