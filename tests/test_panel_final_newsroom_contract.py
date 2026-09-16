@@ -44,6 +44,16 @@ def test_story_publish_and_reject_are_one_tap_without_confirmation():
     assert "confirmAction" in publishing_toggle_block
 
 
+def test_live_publish_queues_original_source_for_luna_not_literal_preview():
+    source = _text("panel/newsroom_api.py")
+    publish_block = _between(source, "def publish_live", "def command_result")
+    assert "original_title" in publish_block
+    assert "original_body" in publish_block
+    assert 'original_title=original_title' in publish_block
+    assert 'original_body=original_body' in publish_block
+    assert "final_not_ready" not in publish_block
+
+
 def test_newsroom_shell_is_light_slate_and_topbar_has_no_backdrop_blur():
     base = _text("panel/templates/base.html")
     css = _text("panel/static/newsroom-shell.css")
