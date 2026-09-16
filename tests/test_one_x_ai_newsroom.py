@@ -158,3 +158,20 @@ def test_one_x_ai_rejects_response_without_a_json_object():
             user="Judge this story.",
             max_tokens=160,
         )
+
+
+def test_one_x_ai_chat_text_returns_plain_content_without_json_contract():
+    session = _FakeSession("ترافیک هوایی فعلی منطقه بر پایه داده زنده نمایش داده شده است.")
+    ai = OneXAINewsAI(_config(), session=session)
+
+    result = ai._chat_text(
+        model="gpt-5.6-luna",
+        system="Write one concise Persian sentence.",
+        user="Summarize live air traffic.",
+        max_tokens=160,
+    )
+
+    assert result == "ترافیک هوایی فعلی منطقه بر پایه داده زنده نمایش داده شده است."
+    call = session.calls[0]
+    assert call["json"]["model"] == "gpt-5.6-luna"
+    assert "response_format" not in call["json"]

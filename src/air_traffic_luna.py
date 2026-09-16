@@ -11,7 +11,7 @@ Use only the structured live facts supplied by the caller.
 Do not invent routes, closures, incidents, causes, military activity, airport status, destinations, or aircraft identities.
 Describe only visible traffic density/distribution that is supported by the supplied counts.
 Do not call an area empty unless its supplied count is zero. Do not imply the data is complete beyond the stated provider coverage.
-Return JSON only: {"summary":"one concise Persian sentence"}.
+Return only the final concise Persian sentence, with no structured wrapper, markdown, labels, or explanation.
 """
 
 
@@ -74,7 +74,7 @@ class LunaAirTrafficReporter:
             "captured_at_utc": snapshot.captured_at.isoformat(),
         }
         try:
-            payload = self.ai._chat_json(
+            summary = self.ai._chat_text(
                 model=self.ai.config.model,
                 system=_SYSTEM_PROMPT,
                 user=json.dumps(facts, ensure_ascii=False, separators=(",", ":")),
@@ -83,7 +83,7 @@ class LunaAirTrafficReporter:
         except Exception as exc:
             raise RuntimeError("luna_air_traffic_error") from exc
 
-        summary = str(payload.get("summary") or "").strip()
+        summary = str(summary or "").strip()
         if not summary or len(summary) > 260:
             raise RuntimeError("invalid_luna_air_traffic_summary")
         return summary

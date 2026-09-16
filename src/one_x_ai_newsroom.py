@@ -183,6 +183,27 @@ class OneXAINewsAI(HuggingFaceNewsAI):
 
         raise AIServiceError("invalid_1xai_json")
 
+    def _chat_text(self, *, model: str, system: str, user: str, max_tokens: int = 500) -> str:
+        endpoint = f"{self.config.base_url.rstrip('/')}/chat/completions"
+        payload = self._post_json(
+            endpoint,
+            {
+                "model": model or self.config.model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user},
+                ],
+                "max_tokens": max_tokens,
+            },
+        )
+        try:
+            content = payload["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError) as exc:
+            raise AIServiceError("invalid_1xai_chat_response") from exc
+        if not isinstance(content, str):
+            raise AIServiceError("invalid_1xai_chat_response")
+        return content.strip()
+
 
 class LocalFirstOneXAINewsAI(LocalFirstNewsAI, OneXAINewsAI):
     """Local duplicate shortlisting plus 1xAI Luna language decisions."""
