@@ -10,6 +10,7 @@ User=bikhabar
 Group=bikhabar
 WorkingDirectory=/opt/bikhabar/app
 EnvironmentFile=/etc/bikhabar/agent.env
+Environment=NEWSROOM_V3_DAILY_LIMIT=35
 Environment=OFFLINE_TRANSLATION_ENABLED=0
 Environment=PYTHONUNBUFFERED=1
 Environment=BIKHABAR_RUNTIME_ROOT=/var/lib/bikhabar/runtime
