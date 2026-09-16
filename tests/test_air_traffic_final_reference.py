@@ -20,8 +20,10 @@ def test_final_reference_uses_bright_keyless_basemap_and_high_res_render():
     assert air_traffic.RENDER_HEIGHT > air_traffic.MAP_HEIGHT
 
 
-def test_publish_workflow_and_vps_service_use_final_reference_renderer():
+def test_publish_workflow_and_vps_service_keep_final_reference_renderer():
     workflow = Path(".github/workflows/air-traffic.yml").read_text(encoding="utf-8")
     service = Path("deploy/bikhabar-air-traffic.service").read_text(encoding="utf-8")
+    guard = Path("src/air_traffic_publish_guard.py").read_text(encoding="utf-8")
     assert "python -m src.air_traffic_reference --publish" in workflow
-    assert "-m src.air_traffic_reference --publish" in service
+    assert "-m src.air_traffic_publish_guard --publish" in service
+    assert "air_traffic_reference as reference" in guard
