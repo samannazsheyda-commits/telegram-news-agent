@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from panel.app import create_app
@@ -192,14 +193,15 @@ def test_localization_failure_is_visible_and_retryable_instead_of_silent_forever
 
 def test_mobile_status_bar_is_compact_non_sticky_horizontal_strip():
     css = Path("panel/static/newsroom-shell.css").read_text(encoding="utf-8")
-    mobile_start = css.index("@media (max-width: 640px)")
-    mobile_css = css[mobile_start:]
+    match = re.search(r"@media\s*\(max-width:\s*640px\)", css)
+    assert match is not None
+    mobile_css = css[match.start():]
     status_start = mobile_css.index(".nr-status-bar")
     status_css = mobile_css[status_start: status_start + 360]
 
-    assert "position: static" in status_css
-    assert "display: flex" in status_css
-    assert "overflow-x: auto" in status_css
+    assert "position:static" in status_css.replace(" ", "")
+    assert "display:flex" in status_css.replace(" ", "")
+    assert "overflow-x:auto" in status_css.replace(" ", "")
 
 
 def test_production_wsgi_wires_live_feed_translator():
