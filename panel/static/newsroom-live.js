@@ -43,6 +43,12 @@
     } catch (error) { return ''; }
   }
 
+  function sourceLabel(value) {
+    const source = String(value || 'منبع').trim();
+    if (source === 'Clash Report') return 'کلش ریپورت';
+    return source;
+  }
+
   function setState(node, text, state = '') {
     if (!node) return;
     node.textContent = text;
@@ -79,7 +85,7 @@
     const id = esc(rawId);
     const title = esc(story.title || 'عنوان فارسی در حال آماده‌سازی');
     const body = esc(story.body || '');
-    const source = esc(story.source || 'منبع');
+    const source = esc(sourceLabel(story.source));
     const url = safeUrl(story.source_url);
     const priority = ['high','critical','breaking','manual'].includes(String(story.priority || '').toLowerCase());
     const status = esc(story.panel_status_fa || story.status || story.panel_status || 'تازه');
@@ -89,10 +95,18 @@
     const originalBody = esc(story.original_body || '');
     const originalText = [originalTitle, originalBody].filter(Boolean).join('\n\n');
     const localizationError = localizationFailures.get(rawId) === 'localization_failed';
-    const preparing = localizationError ? 'خطا در آماده‌سازی نسخه فارسی.' : (story.needs_localization ? 'نسخه فارسی هنوز آماده نشده.' : 'نسخه نهایی هنوز آماده نیست.');
+    const translationMode = String(story.translation_mode || '');
+    const literalPreview = translationMode === 'offline_literal';
+    const previewLabel = literalPreview
+      ? '<span class="nr-translation-badge">ترجمه آفلاین · تحت‌اللفظی</span>'
+      : (story.needs_localization ? '<span class="nr-translation-badge is-loading">ترجمه آفلاین آماده نیست</span>' : '');
     const localizationAction = story.needs_localization || localizationError
-      ? `<button class="nr-localization-retry" type="button" data-action="retry-localization">${localizationError ? 'تلاش دوباره' : 'آماده‌سازی فارسی'}</button>`
+      ? `<button class="nr-localization-retry" type="button" data-action="retry-localization">${localizationError ? 'تلاش دوباره برای ترجمه آفلاین' : 'ترجمه آفلاین'}</button>`
       : '';
+    const finalCopy = finalMessage
+      ? `<details class="nr-final-output"><summary>نسخه نهایی تلگرام</summary><pre>${finalMessage}</pre></details>`
+      : '<div class="nr-final-hint">نسخه نهایی فقط هنگام انتشار توسط لونا ساخته می‌شود.</div>';
+
     return `<article class="nr-story-card${priority ? ' is-priority' : ''}${isNew ? ' is-new' : ''}${localizationError ? ' has-localization-error' : ''}"
       data-story-id="${id}" data-news-id="${id}" data-story-title="${title}" data-story-body="${body}"
       data-story-source="${source}" data-story-source-url="${esc(url)}">
@@ -101,11 +115,14 @@
       <div class="nr-story-head"><div class="nr-story-meta">
         ${priority ? '<span class="nr-priority-badge">مهم</span>' : ''}<span>${source}</span><time>${relative}</time>
       </div><span class="nr-story-status">${status}</span></div>
+      ${previewLabel}
       <h3>${title}</h3>${body ? `<p>${body}</p>` : ''}
-      <details class="nr-final-output"><summary>نسخه نهایی تلگرام</summary><pre>${finalMessage || esc(preparing)}</pre>${localizationAction}</details>
+      ${localizationError ? '<div class="nr-localization-error">خطا در آماده‌سازی ترجمه آفلاین؛ متن اصلی پایین در دسترس است.</div>' : ''}
+      ${localizationAction}
+      ${finalCopy}
       ${originalText ? `<details class="nr-original-source"><summary>متن اصلی منبع</summary><pre>${originalText}</pre></details>` : ''}
       <div class="nr-story-actions">
-        <button class="nr-story-action publish" type="button" data-action="publish"${story.needs_localization ? ' disabled' : ''}>انتشار</button>
+        <button class="nr-story-action publish" type="button" data-action="publish">انتشار با لونا</button>
         <button class="nr-story-action" type="button" data-action="edit">ویرایش</button>
         <button class="nr-story-action reject" type="button" data-action="reject">رد</button>
         ${url ? `<a class="nr-story-action source" data-action="source" href="${esc(url)}" target="_blank" rel="noopener">منبع</a>` : '<span></span>'}
@@ -159,7 +176,7 @@
       rows.forEach(item => {
         const id = String(item.id || item.item_id || '');
         if (id) {
-          localizedCache.set(id, item);
+          localizedCache.set(id, {...item, translation_mode:'offline_literal'});
           localizationFailures.delete(id);
           localizedIds.add(id);
         }
@@ -169,7 +186,7 @@
     } catch (error) {
       ids.forEach(id => localizationFailures.set(id, 'localization_failed'));
       renderFeed(currentStories);
-      if (UI.toast) UI.toast('خطا در آماده‌سازی نسخه فارسی؛ می‌توانی دوباره تلاش کنی.', 'error');
+      if (UI.toast) UI.toast('ترجمه آفلاین آماده نشد؛ متن اصلی همچنان در دسترس است.', 'error');
     } finally {
       ids.forEach(id => localizationInFlight.delete(id));
     }
@@ -210,6 +227,7 @@
     if (fields.priorities) fields.priorities.innerHTML = (snapshot.settings?.priority_terms || []).map(term => `<span>${esc(term)}</span>`).join('') || '<span>بدون اولویت اختصاصی</span>';
     currentStories = Array.isArray(snapshot.live) ? snapshot.live : [];
     renderFeed(currentStories);
+    void localizeMissing(currentStories);
   }
 
   async function refresh({force = false} = {}) {
@@ -239,7 +257,7 @@
 
   function schedule() {
     window.clearTimeout(timer);
-    timer = window.setTimeout(() => refresh(), document.hidden ? 15000 : 3000);
+    timer = window.setTimeout(() => refresh(), document.hidden ? 30000 : 5000);
   }
 
   document.addEventListener('visibilitychange', () => {

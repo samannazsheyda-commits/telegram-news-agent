@@ -53,6 +53,8 @@ class FakeData:
                     "news_key": "news-live-1",
                     "source": "Reuters",
                     "source_url": "https://example.com/live-1",
+                    "original_title": "Original Reuters headline",
+                    "original_summary": "Original Reuters body",
                     "persian_title": "تیتر فارسی زنده",
                     "persian_body": "متن کوتاه خبر",
                     "panel_status": "new",
@@ -207,7 +209,7 @@ def test_inline_editor_save_persists_edited_persian_copy_to_review_queue():
     assert data.commands == []
 
 
-def test_inline_editor_publish_uses_edited_copy_in_v3_command():
+def test_publish_queues_original_source_for_luna_not_editor_copy():
     data = FakeData()
     client = _app(data).test_client()
     csrf = _login(client)
@@ -215,31 +217,36 @@ def test_inline_editor_publish_uses_edited_copy_in_v3_command():
     response = client.post(
         "/api/newsroom/live/live-1/publish",
         headers={"X-CSRFToken": csrf},
-        json={"title": "تیتر ویرایش‌شده برای انتشار", "body": "متن ویرایش‌شده‌ای که باید به V3 برسد."},
+        json={"title": "تیتر ویرایش‌شده برای انتشار", "body": "متن ویرایش‌شده‌ای که نباید جای منبع را بگیرد."},
     )
 
     assert response.status_code == 202
     command = data.commands[-1]
     assert command["action"] == "v3_publish"
-    assert command["title"] == "تیتر ویرایش‌شده برای انتشار"
-    assert command["body"] == "متن ویرایش‌شده‌ای که باید به V3 برسد."
+    assert command["original_title"] == "Original Reuters headline"
+    assert command["original_body"] == "Original Reuters body"
+    assert command["source"] == "Reuters"
+    assert command["source_url"] == "https://example.com/live-1"
+    assert "title" not in command
+    assert "body" not in command
     queued = next(row for row in data.files["data/editorial_queue.json"] if row.get("id") == "live-1")
-    assert queued["persian_title"] == command["title"]
-    assert queued["persian_body"] == command["body"]
+    assert queued["original_title"] == command["original_title"]
+    assert queued["original_summary"] == command["original_body"]
 
 
-def test_inline_editor_rejects_non_persian_or_oversized_final_title():
+def test_publish_ignores_untrusted_editor_payload_and_review_rejects_oversized_copy():
     data = FakeData()
     client = _app(data).test_client()
     csrf = _login(client)
 
-    non_persian = client.post(
+    publish = client.post(
         "/api/newsroom/live/live-1/publish",
         headers={"X-CSRFToken": csrf},
         json={"title": "Final English title", "body": "متن"},
     )
-    assert non_persian.status_code == 409
-    assert non_persian.get_json()["error"] == "final_not_ready"
+    assert publish.status_code == 202
+    assert data.commands[-1]["original_title"] == "Original Reuters headline"
+    assert "title" not in data.commands[-1]
 
     oversized = client.post(
         "/api/newsroom/live/live-1/review",

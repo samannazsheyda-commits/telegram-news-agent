@@ -8,8 +8,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .ai_newsroom import AIServiceError
 from .newsroom_v3.manual_publish import publish_manual_story
+from .one_x_ai_newsroom import OneXAINewsAI
 from .panel_command_file import apply_command as apply_legacy_command
+from .strict_translation import _natural_persian_copy
 
 TERMINAL = {"succeeded", "failed", "reconciled", "ambiguous"}
 NEWSROOM_ACTIONS = {
@@ -221,6 +224,57 @@ def _apply_module(payload: dict[str, Any]) -> dict:
     raise ValueError("unsupported_module_action")
 
 
+def _has_persian(value: str) -> bool:
+    return any("\u0600" <= char <= "\u06ff" for char in str(value or ""))
+
+
+def _luna_finalize_piece(ai: OneXAINewsAI, source_text: str) -> str:
+    source = str(source_text or "").strip()
+    if not source:
+        return ""
+
+    if _has_persian(source):
+        draft_text = source
+    else:
+        draft = ai.translate_to_fa(source)
+        draft_text = str(getattr(draft, "text", "") or "").strip()
+        if not draft_text or getattr(draft, "faithful", False) is not True:
+            raise AIServiceError("luna_manual_translation_rejected")
+
+    edit = ai.edit_persian(source, draft_text)
+    if getattr(edit, "faithful", False) is not True or getattr(edit, "natural", False) is not True:
+        raise AIServiceError("luna_manual_edit_rejected")
+    edited_text = str(getattr(edit, "text", "") or "").strip()
+    if not edited_text:
+        raise AIServiceError("luna_manual_edit_empty")
+
+    guarded = _natural_persian_copy(source, edited_text)
+    if not guarded or not _has_persian(guarded):
+        raise AIServiceError("luna_manual_guard_rejected")
+    return guarded
+
+
+def _finalize_manual_copy_with_luna(original_title: str, original_body: str) -> tuple[str, str]:
+    """Create the only publishable manual copy from immutable source text.
+
+    The offline Argos preview intentionally never enters this function. Manual
+    publish is fail-closed: if 1xAI/Luna is unavailable or its translation/edit
+    does not pass the existing deterministic guards, Telegram is never called.
+    """
+    source_title = str(original_title or "").strip()
+    source_body = str(original_body or "").strip()
+    if not source_title:
+        raise AIServiceError("missing_original_title")
+
+    ai = OneXAINewsAI()
+    if not ai.available:
+        raise AIServiceError("luna_manual_unavailable")
+
+    final_title = _luna_finalize_piece(ai, source_title)
+    final_body = _luna_finalize_piece(ai, source_body) if source_body else ""
+    return final_title, final_body
+
+
 def _finalize_editorial_publish(payload: dict[str, Any], result: dict) -> None:
     item_id = str(payload.get("item_id") or "").strip()
     queue_path = Path("data/editorial_queue.json")
@@ -250,17 +304,36 @@ def _apply_v3_publish(payload: dict[str, Any]) -> dict:
     queued = next((dict(row) for row in queue if isinstance(row, dict) and _row_id(row) == item_id), {}) if isinstance(queue, list) else {}
     source = str(payload.get("source") or queued.get("source") or "").strip()
     source_url = str(payload.get("source_url") or queued.get("source_url") or "").strip()
-    title = str(payload.get("title") or queued.get("final_persian_title") or queued.get("persian_title") or "").strip()
-    body = str(payload.get("body") or queued.get("final_persian_body") or queued.get("persian_body") or "").strip()
+    original_title = str(payload.get("original_title") or queued.get("original_title") or queued.get("title") or "").strip()
+    original_body = str(payload.get("original_body") or queued.get("original_summary") or queued.get("summary") or queued.get("body") or "").strip()
     news_key = str(payload.get("news_key") or queued.get("news_key") or item_id).strip()
     published_at = str(payload.get("published_at") or queued.get("published_at_source") or "").strip()
     if not source or not source_url: raise ValueError("missing_source")
-    if not title: raise ValueError("missing_title")
-    normalized = {**payload, "item_id": item_id, "source": source, "source_url": source_url, "title": title, "body": body, "news_key": news_key, "published_at": published_at}
+    if not original_title: raise ValueError("missing_original_title")
+
+    title, body = _finalize_manual_copy_with_luna(original_title, original_body)
+    normalized = {
+        **payload,
+        "item_id": item_id,
+        "source": source,
+        "source_url": source_url,
+        "original_title": original_title,
+        "original_body": original_body,
+        "title": title,
+        "body": body,
+        "news_key": news_key,
+        "published_at": published_at,
+    }
     result = publish_manual_story(data_dir=Path(os.environ.get("DATA_DIR", "data")), item_id=item_id, news_key=news_key, source=source, source_url=source_url, title=title, body=body, published_at=published_at)
     status = str(result.get("status") or "failed")
     if status in {"succeeded", "reconciled"}: _finalize_editorial_publish(normalized, result)
-    messages = {"succeeded": "خبر با مسیر امن V3 در تلگرام منتشر شد", "reconciled": "انتشار قبلی V3 تأیید و همگام شد", "ambiguous": "وضعیت ارسال تلگرام نامشخص است؛ انتشار دوباره خودکار مسدود شد", "processing": "انتشار V3 در حال پردازش است", "failed": "انتشار V3 ناموفق بود"}
+    messages = {
+        "succeeded": "خبر پس از ترجمه و ویرایش لونا با مسیر امن V3 در تلگرام منتشر شد",
+        "reconciled": "انتشار قبلی V3 تأیید و همگام شد",
+        "ambiguous": "وضعیت ارسال تلگرام نامشخص است؛ انتشار دوباره خودکار مسدود شد",
+        "processing": "انتشار V3 در حال پردازش است",
+        "failed": "انتشار V3 ناموفق بود",
+    }
     return _write_result(command_id, "v3_publish", status, messages.get(status, "وضعیت انتشار V3 ثبت شد"), item_id=item_id, story_id=str(result.get("story_id") or ""), telegram_message_id=result.get("telegram_message_id") if isinstance(result.get("telegram_message_id"), int) else None, error=str(result.get("error") or ""))
 
 

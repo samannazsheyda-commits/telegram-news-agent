@@ -6,8 +6,8 @@ from datetime import datetime, timedelta, timezone
 
 from flask import Blueprint, current_app, jsonify, request, session
 
-from src.formatters import _source_label, format_news
-from src.sources import NewsItem
+from src.formatters import _source_label
+from src.offline_translation import translate_to_fa_offline
 
 from .app import PANEL_STATUS_FA, REASON_FA
 
@@ -65,7 +65,8 @@ def _is_fresh_for_live_panel(row: dict, now: datetime | None = None) -> bool:
 
 def _cache_signature(row: dict) -> str:
     title, body = _raw_fields(row)
-    return f"{title}\u241f{body}"
+    payload = f"{title}\u241f{body}".encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def _cache_get(row: dict) -> dict | None:
@@ -76,13 +77,13 @@ def _cache_get(row: dict) -> dict | None:
     return cached
 
 
-def _cache_put(row: dict, *, title: str, body: str, final_message: str) -> dict:
+def _cache_put(row: dict, *, title: str, body: str) -> dict:
     row_id = _row_id(row)
     value = {
         "signature": _cache_signature(row),
         "title": title,
         "body": body,
-        "final_message": final_message,
+        "translation_mode": "offline_literal",
     }
     _LOCALIZATION_CACHE[row_id] = value
     while len(_LOCALIZATION_CACHE) > _LOCALIZATION_CACHE_LIMIT:
@@ -94,66 +95,27 @@ def _cache_put(row: dict, *, title: str, body: str, final_message: str) -> dict:
 
 
 def _translate_persian(value: str) -> str:
+    """Create a panel-only literal preview with the local Argos model.
+
+    This intentionally never calls a network translator or Luna. The result is
+    for operator comprehension only and is never persisted as final copy.
+    """
     text = str(value or "").strip()
     if not text:
         return ""
     if _has_persian(text):
         return text
-    translator = current_app.config.get("LIVE_FEED_TRANSLATOR")
-    if not callable(translator):
-        return ""
     try:
-        translated = str(translator(text) or "").strip()
-    except Exception:
+        translated = str(translate_to_fa_offline(text) or "").strip()
+    except Exception as exc:
+        print(f"PANEL_OFFLINE_TRANSLATION_FAILED type={type(exc).__name__}", flush=True)
         return ""
     return translated if _has_persian(translated) else ""
 
 
-def _final_message(row: dict, title_fa: str, body_fa: str) -> str:
-    persisted = str(row.get("final_message") or row.get("telegram_message") or "").strip()
-    if persisted:
-        return persisted
-    if not title_fa or not _has_persian(title_fa):
-        return ""
-    item = NewsItem(
-        key=str(row.get("news_key") or row.get("item_id") or row.get("id") or ""),
-        source=str(row.get("source") or ""),
-        title=str(row.get("original_title") or row.get("title") or ""),
-        summary=str(row.get("original_summary") or row.get("summary") or ""),
-        link=str(row.get("source_url") or row.get("link") or ""),
-        published=str(row.get("published_at_source") or row.get("published") or ""),
-    )
-    try:
-        return format_news(item, title_fa, body_fa, marker_override=None)
-    except Exception:
-        return ""
-
-
-def _persist_localization(item_id: str, title_fa: str, body_fa: str, final_message: str) -> None:
-    data = current_app.extensions["editorial_data"]
-    for _ in range(3):
-        value, sha = data.read_json("data/panel_live_feed.json", [])
-        rows = [dict(row) for row in value if isinstance(row, dict)] if isinstance(value, list) else []
-        changed = False
-        for row in rows:
-            if _row_id(row) != item_id:
-                continue
-            row["persian_title"] = title_fa
-            row["persian_body"] = body_fa
-            row["final_message"] = final_message
-            row["localized_at"] = datetime.now(timezone.utc).isoformat()
-            changed = True
-            break
-        if not changed:
-            return
-        try:
-            data.write_json("data/panel_live_feed.json", rows, sha, "panel: persist Persian live output")
-            return
-        except Exception as exc:
-            status = getattr(getattr(exc, "response", None), "status_code", None)
-            if status != 409:
-                raise
-    raise RuntimeError("live_localization_write_conflict")
+def _final_message(row: dict) -> str:
+    """Return only a final message that was already persisted by a publish/edit path."""
+    return str(row.get("final_message") or row.get("telegram_message") or "").strip()
 
 
 def _public_row(row: dict, queued_ids: set[str]) -> dict:
@@ -163,20 +125,27 @@ def _public_row(row: dict, queued_ids: set[str]) -> dict:
     persisted_body = str(row.get("final_persian_body") or row.get("persian_body") or "").strip()
     cached = _cache_get(row)
 
-    if _has_persian(persisted_title):
-        title_fa = persisted_title
-        body_fa = persisted_body
-        final_message = _final_message(row, title_fa, body_fa)
-        needs_localization = False
-    elif cached and _has_persian(str(cached.get("title") or "")):
+    if cached and _has_persian(str(cached.get("title") or "")):
         title_fa = str(cached.get("title") or "")
         body_fa = str(cached.get("body") or "")
-        final_message = str(cached.get("final_message") or "")
+        translation_mode = "offline_literal"
+        needs_localization = False
+    elif _has_persian(raw_title):
+        title_fa = raw_title
+        body_fa = raw_body
+        translation_mode = "source_persian"
+        needs_localization = False
+    elif _has_persian(persisted_title):
+        # Existing human/final Persian remains visible when present, but panel
+        # localization never creates or overwrites these persisted fields.
+        title_fa = persisted_title
+        body_fa = persisted_body
+        translation_mode = "persisted_persian"
         needs_localization = False
     else:
         title_fa = "عنوان فارسی در حال آماده‌سازی"
         body_fa = ""
-        final_message = ""
+        translation_mode = "pending_offline"
         needs_localization = bool(row_id and raw_title)
 
     status = str(row.get("panel_status") or "new")
@@ -203,7 +172,8 @@ def _public_row(row: dict, queued_ids: set[str]) -> dict:
         "can_review": bool(row_id) and status not in _TERMINAL_LIVE_STATUSES,
         "can_publish": bool(row_id) and status not in _TERMINAL_LIVE_STATUSES,
         "can_reject": bool(row_id) and status not in _TERMINAL_LIVE_STATUSES,
-        "final_message": final_message,
+        "final_message": _final_message(row),
+        "translation_mode": translation_mode,
         "needs_localization": needs_localization,
     }
 
@@ -292,11 +262,9 @@ def localize_live_feed():
         if not title_fa:
             continue
         body_fa = _translate_persian(raw_body) if raw_body else ""
-        final_message = _final_message(row, title_fa, body_fa)
-        _cache_put(row, title=title_fa, body=body_fa, final_message=final_message)
-        _persist_localization(item_id, title_fa, body_fa, final_message)
-        persisted = dict(row)
-        persisted.update(persian_title=title_fa, persian_body=body_fa, final_message=final_message)
-        localized.append(_public_row(persisted, queued_ids))
+        _cache_put(row, title=title_fa, body=body_fa)
+        localized_row = _public_row(row, queued_ids)
+        localized_row["translation_mode"] = "offline_literal"
+        localized.append(localized_row)
 
-    return jsonify({"ok": True, "items": localized})
+    return jsonify({"ok": True, "items": localized, "translation_mode": "offline_literal"})

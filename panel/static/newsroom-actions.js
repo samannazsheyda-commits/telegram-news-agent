@@ -41,7 +41,7 @@
     while (Date.now() - started < timeoutMs) {
       const result = await requestJSON(`/api/newsroom/command/${encodeURIComponent(commandId)}`);
       if (result.status === 'queued' || result.status === 'processing') {
-        if (card) storyProgress(card, result.status === 'queued' ? 'در صف انتشار V3…' : 'در حال انتشار V3…');
+        if (card) storyProgress(card, result.status === 'queued' ? 'در صف لونا…' : 'لونا در حال آماده‌سازی نسخه نهایی…');
         await new Promise(resolve => window.setTimeout(resolve, 900));
         continue;
       }
@@ -60,23 +60,15 @@
 
   async function publishCard(card) {
     const id = card?.dataset.storyId;
-    if (!id) return;
-    const title = card.dataset.storyTitle || card.querySelector('h3')?.textContent || 'این خبر';
-    const source = card.dataset.storySource || 'منبع خبر';
-    const accepted = await UI.confirmAction?.({
-      title: 'انتشار در تلگرام؟',
-      text: `${title}\n\nمنبع: ${source}\nنتیجه فقط بعد از تأیید runtime موفق اعلام می‌شود.`,
-      accept: 'انتشار خبر',
-    });
-    if (!accepted) return;
+    if (!id || card.classList.contains('is-busy')) return;
     card.classList.add('is-busy');
-    storyProgress(card, 'در حال ارسال فرمان…');
+    storyProgress(card, 'در حال ارسال خبر به لونا…');
     try {
       const queued = await requestJSON(`/api/newsroom/live/${encodeURIComponent(id)}/publish`, {method:'POST'});
-      storyProgress(card, 'در صف انتشار V3…');
+      storyProgress(card, 'در صف لونا…');
       const result = await pollCommand(queued.command_id, {card});
-      storyProgress(card, `انجام شد · Message ID ${result.telegram_message_id || 'ثبت شد'}`, 'success');
-      UI.toast?.('خبر با تأیید V3 منتشر شد.', 'success');
+      storyProgress(card, `منتشر شد · Message ID ${result.telegram_message_id || 'ثبت شد'}`, 'success');
+      UI.toast?.('نسخه نهایی لونا منتشر شد.', 'success');
       window.dispatchEvent(new Event('newsroom:refresh'));
     } catch (error) {
       storyProgress(card, error.message, error.ambiguous ? 'warn' : 'error');
@@ -88,10 +80,9 @@
 
   async function rejectCard(card) {
     const id = card?.dataset.storyId;
-    if (!id) return;
-    const accepted = await UI.confirmAction?.({title:'رد این خبر؟', text:'خبر از صف اقدام سردبیری کنار می‌رود. چیزی از تلگرام حذف نمی‌شود.', accept:'رد خبر'});
-    if (!accepted) return;
+    if (!id || card.classList.contains('is-busy')) return;
     card.classList.add('is-busy');
+    storyProgress(card, 'در حال رد خبر…');
     try {
       await requestJSON(`/api/newsroom/live/${encodeURIComponent(id)}/reject`, {method:'POST'});
       card.remove();
@@ -100,6 +91,7 @@
       window.dispatchEvent(new Event('newsroom:refresh'));
     } catch (error) {
       card.classList.remove('is-busy');
+      storyProgress(card, error.message, 'error');
       UI.toast?.(error.message, 'error');
     }
   }
@@ -165,11 +157,11 @@
     const target = event.target.closest('[data-action]');
     if (!target) return;
     const action = target.dataset.action;
-    if (action === 'source' || action === 'edit') return;
+    if (action === 'source' || action === 'edit' || action === 'retry-localization') return;
     event.preventDefault();
     const card = target.closest('[data-story-id]');
-    if (action === 'publish') publishCard(card);
-    if (action === 'reject') rejectCard(card);
+    if (action === 'publish') void publishCard(card);
+    if (action === 'reject') void rejectCard(card);
   });
 
   scanNow?.addEventListener('click', async () => {
