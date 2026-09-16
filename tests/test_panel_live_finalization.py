@@ -84,16 +84,19 @@ def test_live_feed_get_stays_fast_and_marks_missing_persian_translation():
     assert payload["items"][0]["needs_localization"] is True
 
 
-def test_live_localize_endpoint_returns_persian_title_body_and_final_message():
+def test_live_localize_endpoint_queues_agent_command_instead_of_translating():
     data = FakeData(); client = _app(data).test_client(); csrf = _login(client)
     response = client.post("/api/live-feed/localize", json={"ids": ["n1"]}, headers={"X-CSRFToken": csrf})
     assert response.status_code == 200
-    item = response.get_json()["items"][0]
-    assert item["id"] == "n1"
-    assert item["title"] == "ایران یک موشک شلیک کرد"
-    assert item["body"] == "این موشک به سوی یک هدف نظامی شلیک شد."
-    assert "ایران یک موشک شلیک کرد" in item["final_message"]
-    assert "Reuters" not in item["final_message"]
+    payload = response.get_json()
+    assert payload["status"] == "queued"
+    assert payload["queued_ids"] == ["n1"]
+    assert len(payload["command_ids"]) == 1
+    assert data.commands[-1]["action"] == "live_localize"
+    assert data.commands[-1]["item_id"] == "n1"
+    row = data.files["data/panel_live_feed.json"][0]
+    assert "persian_title" not in row
+    assert "final_message" not in row
 
 
 def test_preview_generation_endpoint_queues_non_publishing_preview_command():

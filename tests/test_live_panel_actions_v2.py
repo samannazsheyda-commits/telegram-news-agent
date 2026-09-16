@@ -104,15 +104,18 @@ def test_live_feed_hides_stale_source_items_even_if_updated_recently():
     assert "old" not in ids
 
 
-def test_localization_is_persisted_with_final_telegram_output():
+def test_localization_is_queued_for_background_agent_not_run_in_panel():
     data = FakeData()
     response = _client(data).post("/api/live-feed/localize", json={"ids": ["fresh"]})
     assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["status"] == "queued"
+    assert payload["queued_ids"] == ["fresh"]
+    assert data.commands[-1]["action"] == "live_localize"
+    assert data.commands[-1]["item_id"] == "fresh"
     row = next(row for row in data.files["data/panel_live_feed.json"] if row["item_id"] == "fresh")
-    assert row["persian_title"] == "تیتر تازه"
-    assert row["persian_body"] == "متن تازه"
-    assert "تیتر تازه" in row["final_message"]
-    assert "لینک منبع خبر" in row["final_message"]
+    assert "persian_title" not in row
+    assert "final_message" not in row
 
 
 def test_delete_live_item_is_immediate_not_dependent_on_agent_cycle():
@@ -136,11 +139,16 @@ def test_reject_live_item_is_immediate_and_recorded():
     assert "fresh-key" in data.files["state.json"]["news_seen"]
 
 
-def test_publish_live_item_queues_exact_persian_version_for_agent():
+def test_publish_live_item_queues_exact_persian_version_after_background_localization():
     data = FakeData()
-    client = _client(data)
-    client.post("/api/live-feed/localize", json={"ids": ["fresh"]})
-    response = client.post("/api/command-center/live/fresh/publish")
+    row = next(row for row in data.files["data/panel_live_feed.json"] if row["item_id"] == "fresh")
+    row.update(
+        persian_title="تیتر تازه",
+        persian_body="متن تازه",
+        final_message="تیتر تازه\n\nمتن تازه",
+        localized_at=datetime.now(timezone.utc).isoformat(),
+    )
+    response = _client(data).post("/api/command-center/live/fresh/publish")
     assert response.status_code == 202
     payload = response.get_json()
     assert payload["status"] == "queued"
