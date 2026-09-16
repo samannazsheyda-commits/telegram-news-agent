@@ -70,14 +70,9 @@ def _caption_with_luna_summary(captured_at: datetime, summary: str) -> str:
     return "\n".join([lines[0], summary, *lines[1:]])
 
 
-def publish_fresh_air_traffic_snapshot(
-    *,
-    now: datetime | None = None,
-    output_path: str | Path = "/tmp/iran-region-live-air-traffic.png",
-    state_path: str | Path | None = None,
+def _prepare_live_snapshot(
     snapshot: LiveAirTrafficSnapshot | None = None,
-    reporter: LunaAirTrafficReporter | None = None,
-) -> Path | None:
+) -> tuple[LiveAirTrafficSnapshot, list[dict]]:
     live_snapshot = snapshot or fetch_strict_live_snapshot()
     visible = reference.filter_visible_aircraft(
         live_snapshot.aircraft,
@@ -87,10 +82,38 @@ def publish_fresh_air_traffic_snapshot(
         raise RuntimeError(
             f"insufficient fresh live aircraft for safe publication: {len(visible)} < {reference.MIN_PUBLISH_AIRCRAFT}"
         )
+    return live_snapshot, visible
 
+
+def render_strict_live_preview(
+    *,
+    now: datetime | None = None,
+    output_path: str | Path = "/tmp/iran-region-live-air-traffic.png",
+    snapshot: LiveAirTrafficSnapshot | None = None,
+) -> Path:
+    """Render the exact strict-live map path without Luna or Telegram side effects."""
+    live_snapshot, visible = _prepare_live_snapshot(snapshot)
     captured_at = now or live_snapshot.captured_at
-    summary = (reporter or LunaAirTrafficReporter()).build_summary(live_snapshot)
-    caption = _caption_with_luna_summary(captured_at, summary)
+    path = reference.render_air_traffic_map(visible, output_path, now=captured_at)
+    reference._validate_rendered_image(path)
+    print(
+        "AIR_TRAFFIC_PREVIEW_READY "
+        f"aircraft={len(visible)} coverage={live_snapshot.healthy_centers}/{live_snapshot.total_centers}",
+        flush=True,
+    )
+    return path
+
+
+def publish_fresh_air_traffic_snapshot(
+    *,
+    now: datetime | None = None,
+    output_path: str | Path = "/tmp/iran-region-live-air-traffic.png",
+    state_path: str | Path | None = None,
+    snapshot: LiveAirTrafficSnapshot | None = None,
+    reporter: LunaAirTrafficReporter | None = None,
+) -> Path | None:
+    live_snapshot, visible = _prepare_live_snapshot(snapshot)
+    captured_at = now or live_snapshot.captured_at
 
     path = reference.render_air_traffic_map(visible, output_path, now=captured_at)
     reference._validate_rendered_image(path)
@@ -99,6 +122,8 @@ def publish_fresh_air_traffic_snapshot(
         print("AIR_TRAFFIC_SKIP reason=duplicate_map_snapshot", flush=True)
         return None
 
+    summary = (reporter or LunaAirTrafficReporter()).build_summary(live_snapshot)
+    caption = _caption_with_luna_summary(captured_at, summary)
     base.send_telegram_photo(
         path,
         caption,
@@ -116,11 +141,14 @@ def publish_fresh_air_traffic_snapshot(
 
 def _cli() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--publish", action="store_true")
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--publish", action="store_true")
+    mode.add_argument("--preview", action="store_true")
     parser.add_argument("--output", default="/tmp/iran-region-live-air-traffic.png")
     args = parser.parse_args()
-    if not args.publish:
-        raise SystemExit("air_traffic_publish_guard only supports --publish")
+    if args.preview:
+        render_strict_live_preview(output_path=args.output)
+        return 0
     publish_fresh_air_traffic_snapshot(output_path=args.output)
     return 0
 
