@@ -104,6 +104,10 @@ def test_legacy_failed_duplicate_event_is_terminalized_without_publisher_call(tm
     store.begin_publish("story-1")
     store.mark_publish_failed("story-1", "duplicate_event")
 
+    # A row created by the pre-fix runtime must be removed from the automatic
+    # publish queue immediately, before it gets another external attempt.
+    assert store.list_publishable(limit=10) == []
+
     calls = []
     result = Worker(store, lambda _story: calls.append(True)).publish_story("story-1")
 
