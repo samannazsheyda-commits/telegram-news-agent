@@ -7,6 +7,7 @@ from .store import NewsroomV3Store, StoryRecord
 
 
 AMBIGUOUS_ERROR_PREFIX = "ambiguous_remote_state:"
+TERMINAL_PUBLISH_ERRORS = {"duplicate_event"}
 
 
 @dataclass(frozen=True)
@@ -38,6 +39,11 @@ def _publisher_result(payload) -> tuple[bool, int | None, str, bool]:
     )
 
 
+def _terminal_error(value: object) -> str:
+    resolved = str(value or "").strip().lower()
+    return resolved if resolved in TERMINAL_PUBLISH_ERRORS else ""
+
+
 class NewsroomV3PublisherWorker:
     """Publish one durable V3 story without mutating its editorial decision."""
 
@@ -55,6 +61,19 @@ class NewsroomV3PublisherWorker:
                 story_id=story.story_id,
                 state="already_published",
                 telegram_message_id=story.telegram_message_id,
+            )
+
+        legacy_terminal = _terminal_error(story.last_publish_error)
+        if story.decision_state == "ready" and story.publish_state == "failed" and legacy_terminal:
+            self.store.set_decision(
+                story.story_id,
+                "rejected",
+                reason=f"publisher:{legacy_terminal}",
+            )
+            return PublishResult(
+                story_id=story.story_id,
+                state=legacy_terminal,
+                error=legacy_terminal,
             )
 
         if story.decision_state != "ready":
@@ -90,6 +109,22 @@ class NewsroomV3PublisherWorker:
             else error
         )
         self.store.mark_publish_failed(story.story_id, persisted_error)
+
+        terminal = "" if ambiguous else _terminal_error(error)
+        if terminal:
+            self.store.set_decision(
+                story.story_id,
+                "rejected",
+                reason=f"publisher:{terminal}",
+            )
+            return PublishResult(
+                story_id=story.story_id,
+                state=terminal,
+                attempt_no=attempt.attempt_no,
+                error=persisted_error,
+                ambiguous=False,
+            )
+
         return PublishResult(
             story_id=story.story_id,
             state="failed",
