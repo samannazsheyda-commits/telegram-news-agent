@@ -41,29 +41,31 @@ def test_point_query_falls_back_from_rate_limited_adsblol_to_adsbone():
     assert not any("airplanes.live" in url for url in session.calls)
 
 
-def test_snapshot_fails_closed_when_point_coverage_is_incomplete(monkeypatch):
-    monkeypatch.setattr(live, "KEY_CENTERS", ((35.7, 51.4), (29.0, 52.0), (32.0, 48.0), (36.0, 58.0)))
-    monkeypatch.setattr(live, "MIN_HEALTHY_CENTER_RATIO", 0.75)
-    monkeypatch.setattr(live, "_fetch_opensky", lambda session=None: [{"hex": "open", "lat": 35.0, "lon": 52.0, "seen_pos": 1}])
-
-    calls = {"n": 0}
-
-    def flaky(_lat, _lon, *, session=None):
-        calls["n"] += 1
-        if calls["n"] <= 2:
-            return [{"hex": f"p{calls['n']}", "lat": 35.0, "lon": 52.0, "seen_pos": 1}]
-        raise RuntimeError("provider unavailable")
-
-    monkeypatch.setattr(live, "fetch_point_with_fallback", flaky)
+def test_snapshot_fails_closed_when_primary_live_feed_is_incomplete(monkeypatch):
+    monkeypatch.setattr(live, "KEY_CENTERS", ((35.7, 51.4), (29.0, 52.0)))
+    monkeypatch.setattr(live, "MIN_PRIMARY_AIRCRAFT", 3)
+    monkeypatch.setattr(
+        live,
+        "_fetch_opensky",
+        lambda session=None: [
+            {"hex": "open1", "lat": 35.0, "lon": 52.0, "seen_pos": 1},
+            {"hex": "open2", "lat": 34.0, "lon": 52.0, "seen_pos": 2},
+        ],
+    )
+    monkeypatch.setattr(
+        live,
+        "fetch_point_with_fallback",
+        lambda _lat, _lon, session=None: [{"hex": "point", "lat": 35.7, "lon": 51.4, "seen_pos": 1}],
+    )
     monkeypatch.setattr(live.time, "sleep", lambda _seconds: None)
 
-    with pytest.raises(RuntimeError, match="insufficient live provider coverage"):
+    with pytest.raises(RuntimeError, match="insufficient primary live coverage"):
         live.fetch_strict_live_snapshot(session=object())
 
 
 def test_snapshot_accepts_only_fresh_positions(monkeypatch):
     monkeypatch.setattr(live, "KEY_CENTERS", ((35.7, 51.4),))
-    monkeypatch.setattr(live, "MIN_HEALTHY_CENTER_RATIO", 1.0)
+    monkeypatch.setattr(live, "MIN_PRIMARY_AIRCRAFT", 1)
     monkeypatch.setattr(
         live,
         "_fetch_opensky",
