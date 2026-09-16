@@ -147,23 +147,41 @@ class OneXAINewsAI(HuggingFaceNewsAI):
             raise
 
     def _chat_json(self, *, model: str, system: str, user: str, max_tokens: int = 500) -> dict[str, Any]:
-        payload = self._post_json(
-            f"{self.config.base_url.rstrip('/')}/chat/completions",
-            {
-                "model": model or self.config.model,
-                "messages": [
-                    {"role": "system", "content": system},
-                    {"role": "user", "content": user},
-                ],
-                "max_tokens": max_tokens,
-                "response_format": {"type": "json_object"},
-            },
-        )
-        try:
-            content = payload["choices"][0]["message"]["content"]
-        except (KeyError, IndexError, TypeError) as exc:
-            raise AIServiceError("invalid_1xai_chat_response") from exc
-        return _decode_one_x_ai_content(content)
+        endpoint = f"{self.config.base_url.rstrip('/')}/chat/completions"
+        current_system = system
+        current_max_tokens = max_tokens
+
+        for attempt in range(2):
+            payload = self._post_json(
+                endpoint,
+                {
+                    "model": model or self.config.model,
+                    "messages": [
+                        {"role": "system", "content": current_system},
+                        {"role": "user", "content": user},
+                    ],
+                    "max_tokens": current_max_tokens,
+                    "response_format": {"type": "json_object"},
+                },
+            )
+            try:
+                content = payload["choices"][0]["message"]["content"]
+            except (KeyError, IndexError, TypeError) as exc:
+                raise AIServiceError("invalid_1xai_chat_response") from exc
+
+            try:
+                return _decode_one_x_ai_content(content)
+            except AIServiceError:
+                if attempt >= 1:
+                    raise
+                current_system = (
+                    system
+                    + "\nCRITICAL RETRY: Return exactly one JSON object and nothing else. "
+                    + "No prose, no markdown fences, no acknowledgement."
+                )
+                current_max_tokens = max(320, max_tokens * 2)
+
+        raise AIServiceError("invalid_1xai_json")
 
 
 class LocalFirstOneXAINewsAI(LocalFirstNewsAI, OneXAINewsAI):
