@@ -68,6 +68,35 @@ def test_failed_publish_is_retried_then_success_is_idempotent(tmp_path):
     ]
 
 
+def test_duplicate_event_is_terminal_and_never_requeued(tmp_path):
+    Worker = _worker_class()
+    store = NewsroomV3Store(tmp_path / "newsroom-v3.sqlite3")
+    _seed_ready_story(store)
+
+    calls = []
+
+    def publisher(story):
+        calls.append(story.story_id)
+        return {"ok": False, "error": "duplicate_event"}
+
+    worker = Worker(store, publisher)
+    first = worker.publish_story("story-1")
+
+    assert first.state == "duplicate_event"
+    story = store.get_story("story-1")
+    assert story.decision_state == "rejected"
+    assert story.decision_reason == "publisher:duplicate_event"
+    assert story.publish_state == "failed"
+    assert store.list_publishable(limit=10) == []
+
+    second = worker.publish_story("story-1")
+    assert second.state == "not_publishable"
+    assert calls == ["story-1"]
+    assert [(a.attempt_no, a.state, a.error) for a in store.list_publish_attempts("story-1")] == [
+        (1, "failed", "duplicate_event"),
+    ]
+
+
 def test_publisher_exception_is_persisted_without_changing_decision(tmp_path):
     Worker = _worker_class()
     store = NewsroomV3Store(tmp_path / "newsroom-v3.sqlite3")
