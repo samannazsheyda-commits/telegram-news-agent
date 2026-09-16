@@ -68,6 +68,59 @@ def test_failed_publish_is_retried_then_success_is_idempotent(tmp_path):
     ]
 
 
+def test_duplicate_event_is_terminal_and_never_requeued(tmp_path):
+    Worker = _worker_class()
+    store = NewsroomV3Store(tmp_path / "newsroom-v3.sqlite3")
+    _seed_ready_story(store)
+
+    calls = []
+
+    def publisher(story):
+        calls.append(story.story_id)
+        return {"ok": False, "error": "duplicate_event"}
+
+    worker = Worker(store, publisher)
+    first = worker.publish_story("story-1")
+
+    assert first.state == "duplicate_event"
+    story = store.get_story("story-1")
+    assert story.decision_state == "rejected"
+    assert story.decision_reason == "publisher:duplicate_event"
+    assert story.publish_state == "failed"
+    assert store.list_publishable(limit=10) == []
+
+    second = worker.publish_story("story-1")
+    assert second.state == "not_publishable"
+    assert calls == ["story-1"]
+    assert [(a.attempt_no, a.state, a.error) for a in store.list_publish_attempts("story-1")] == [
+        (1, "failed", "duplicate_event"),
+    ]
+
+
+def test_legacy_failed_duplicate_event_is_terminalized_without_publisher_call(tmp_path):
+    Worker = _worker_class()
+    store = NewsroomV3Store(tmp_path / "newsroom-v3.sqlite3")
+    _seed_ready_story(store)
+    store.begin_publish("story-1")
+    store.mark_publish_failed("story-1", "duplicate_event")
+
+    # A row created by the pre-fix runtime must be removed from the automatic
+    # publish queue immediately, before it gets another external attempt.
+    assert store.list_publishable(limit=10) == []
+
+    calls = []
+    result = Worker(store, lambda _story: calls.append(True)).publish_story("story-1")
+
+    assert result.state == "duplicate_event"
+    story = store.get_story("story-1")
+    assert story.decision_state == "rejected"
+    assert story.decision_reason == "publisher:duplicate_event"
+    assert story.last_publish_error == "duplicate_event"
+    assert calls == []
+    assert store.list_publishable(limit=10) == []
+    assert len(store.list_publish_attempts("story-1")) == 1
+
+
 def test_publisher_exception_is_persisted_without_changing_decision(tmp_path):
     Worker = _worker_class()
     store = NewsroomV3Store(tmp_path / "newsroom-v3.sqlite3")
@@ -109,7 +162,7 @@ def test_worker_refuses_non_ready_editorial_state(tmp_path):
     )
 
     calls = []
-    result = Worker(store, lambda _story: calls.append(True)) .publish_story("story-1")
+    result = Worker(store, lambda _story: calls.append(True)).publish_story("story-1")
 
     assert result.state == "not_publishable"
     assert calls == []
