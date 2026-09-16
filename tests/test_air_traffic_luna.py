@@ -10,18 +10,18 @@ from src.air_traffic_luna import LunaAirTrafficReporter
 
 
 class _FakeAI:
-    def __init__(self, payload=None, *, available=True, error=None):
+    def __init__(self, text=None, *, available=True, error=None):
         self.available = available
-        self.payload = payload
+        self.text = text
         self.error = error
         self.config = SimpleNamespace(model="gpt-5.6-luna")
         self.calls = []
 
-    def _chat_json(self, **kwargs):
+    def _chat_text(self, **kwargs):
         self.calls.append(kwargs)
         if self.error:
             raise self.error
-        return self.payload
+        return self.text
 
 
 def _snapshot():
@@ -37,8 +37,8 @@ def _snapshot():
     )
 
 
-def test_luna_report_uses_only_structured_live_facts():
-    ai = _FakeAI({"summary": "ترافیک هوایی در خلیج فارس متراکم‌تر از بخش مرکزی ایران دیده می‌شود."})
+def test_luna_report_uses_plain_text_and_only_structured_live_facts():
+    ai = _FakeAI("ترافیک هوایی در خلیج فارس متراکم‌تر از بخش مرکزی ایران دیده می‌شود.")
     reporter = LunaAirTrafficReporter(ai)
     text = reporter.build_summary(_snapshot())
 
@@ -56,17 +56,18 @@ def test_luna_report_fails_closed_when_unavailable_invalid_or_error():
         LunaAirTrafficReporter(_FakeAI(available=False)).build_summary(_snapshot())
 
     with pytest.raises(RuntimeError, match="invalid_luna_air_traffic_summary"):
-        LunaAirTrafficReporter(_FakeAI({"summary": ""})).build_summary(_snapshot())
+        LunaAirTrafficReporter(_FakeAI("")).build_summary(_snapshot())
 
     with pytest.raises(RuntimeError, match="luna_air_traffic_error"):
         LunaAirTrafficReporter(_FakeAI(error=RuntimeError("timeout"))).build_summary(_snapshot())
 
 
 def test_luna_prompt_forbids_inventing_routes_closures_or_incidents():
-    ai = _FakeAI({"summary": "وضعیت بر پایه داده زنده دریافت‌شده گزارش شده است."})
+    ai = _FakeAI("وضعیت بر پایه داده زنده دریافت‌شده گزارش شده است.")
     LunaAirTrafficReporter(ai).build_summary(_snapshot())
     system = ai.calls[0]["system"].lower()
     assert "do not invent" in system
     assert "route" in system
     assert "closure" in system
     assert "incident" in system
+    assert "json" not in system
