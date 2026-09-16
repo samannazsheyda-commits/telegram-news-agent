@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from src.newsroom_eligibility import evaluate_eligibility
+from src.newsroom_hard_filters import hard_editorial_rejection
 from src.newsroom_models import RawNewsItem
 from src.newsroom_normalize import normalize_item
 
@@ -20,14 +21,17 @@ def _item(title: str, summary: str = "Iran missile forces announced a concrete o
     return normalize_item(raw)
 
 
-def test_obvious_report_analysis_question_and_teaser_formats_are_rejected_before_ai():
+def test_report_formats_are_hard_rejected_before_ai():
+    assert hard_editorial_rejection("Report: What we know about Iran's missile forces") == "filtered_question_or_article"
+    assert hard_editorial_rejection("گزارش: آنچه درباره تحولات موشکی ایران می‌دانیم") == "filtered_question_or_article"
+
+
+def test_existing_analysis_question_and_teaser_filters_remain_active():
     now = datetime.now(timezone.utc)
     titles = [
         "Analysis: Why Iran's missile strategy is changing",
-        "Report: What we know about Iran's missile forces",
         "Why is Iran changing its missile posture?",
         "Iran missile update — read more",
-        "گزارش: آنچه درباره تحولات موشکی ایران می‌دانیم",
     ]
     for title in titles:
         result = evaluate_eligibility(_item(title), now)
