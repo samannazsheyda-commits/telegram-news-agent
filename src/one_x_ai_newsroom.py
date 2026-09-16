@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from dataclasses import dataclass
 from typing import Any
@@ -75,6 +76,48 @@ def _env_float(name: str, default: float, minimum: float, maximum: float) -> flo
     return max(minimum, min(maximum, value))
 
 
+def _decode_one_x_ai_content(content: Any) -> dict[str, Any]:
+    """Decode Luna JSON while tolerating harmless prose around exactly one object.
+
+    The normal structured decoder remains the first path. Some 1xAI/Luna
+    responses have nevertheless returned a short acknowledgement before or
+    after an otherwise valid JSON object. For this provider only, recover one
+    complete top-level object with ``JSONDecoder.raw_decode``. More than one
+    valid object is ambiguous and therefore fails closed.
+    """
+    try:
+        return _decode_openrouter_content(content)
+    except AIServiceError as strict_error:
+        if not isinstance(content, str):
+            raise AIServiceError("invalid_1xai_json") from strict_error
+
+    text = content.strip()
+    decoder = json.JSONDecoder()
+    found: dict[str, Any] | None = None
+    cursor = 0
+
+    while cursor < len(text):
+        start = text.find("{", cursor)
+        if start < 0:
+            break
+        try:
+            value, consumed = decoder.raw_decode(text[start:])
+        except json.JSONDecodeError:
+            cursor = start + 1
+            continue
+        if isinstance(value, dict):
+            if found is not None:
+                raise AIServiceError("invalid_1xai_json_multiple_objects")
+            found = value
+            cursor = start + consumed
+            continue
+        cursor = start + max(1, consumed)
+
+    if found is None:
+        raise AIServiceError("invalid_1xai_json")
+    return found
+
+
 class OneXAINewsAI(HuggingFaceNewsAI):
     """1xAI/OpenAI-compatible provider using the shared newsroom contracts."""
 
@@ -120,7 +163,7 @@ class OneXAINewsAI(HuggingFaceNewsAI):
             content = payload["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
             raise AIServiceError("invalid_1xai_chat_response") from exc
-        return _decode_openrouter_content(content)
+        return _decode_one_x_ai_content(content)
 
 
 class LocalFirstOneXAINewsAI(LocalFirstNewsAI, OneXAINewsAI):
