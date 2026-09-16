@@ -301,6 +301,7 @@ class NewsroomV3Store:
             WHERE decision_state='ready'
               AND publish_state IN ('not_attempted', 'failed')
               AND telegram_message_id IS NULL
+              AND lower(trim(COALESCE(last_publish_error, ''))) <> 'duplicate_event'
             ORDER BY
                 CASE WHEN publish_state='failed' THEN 0 ELSE 1 END,
                 created_at ASC,
