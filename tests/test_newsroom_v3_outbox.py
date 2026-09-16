@@ -97,6 +97,26 @@ def test_duplicate_event_is_terminal_and_never_requeued(tmp_path):
     ]
 
 
+def test_legacy_failed_duplicate_event_is_terminalized_without_publisher_call(tmp_path):
+    Worker = _worker_class()
+    store = NewsroomV3Store(tmp_path / "newsroom-v3.sqlite3")
+    _seed_ready_story(store)
+    store.begin_publish("story-1")
+    store.mark_publish_failed("story-1", "duplicate_event")
+
+    calls = []
+    result = Worker(store, lambda _story: calls.append(True)).publish_story("story-1")
+
+    assert result.state == "duplicate_event"
+    story = store.get_story("story-1")
+    assert story.decision_state == "rejected"
+    assert story.decision_reason == "publisher:duplicate_event"
+    assert story.last_publish_error == "duplicate_event"
+    assert calls == []
+    assert store.list_publishable(limit=10) == []
+    assert len(store.list_publish_attempts("story-1")) == 1
+
+
 def test_publisher_exception_is_persisted_without_changing_decision(tmp_path):
     Worker = _worker_class()
     store = NewsroomV3Store(tmp_path / "newsroom-v3.sqlite3")
@@ -138,7 +158,7 @@ def test_worker_refuses_non_ready_editorial_state(tmp_path):
     )
 
     calls = []
-    result = Worker(store, lambda _story: calls.append(True)) .publish_story("story-1")
+    result = Worker(store, lambda _story: calls.append(True)).publish_story("story-1")
 
     assert result.state == "not_publishable"
     assert calls == []
