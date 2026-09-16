@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -19,9 +18,9 @@ POINT_PROVIDERS = (
 KEY_CENTERS = reference.QUERY_CENTERS
 POINT_RADIUS_NM = reference.QUERY_RADIUS_NM
 POINT_QUERY_INTERVAL_SECONDS = 2.05
-MIN_HEALTHY_CENTER_RATIO = 0.75
+MIN_PRIMARY_AIRCRAFT = 20
 MAX_POSITION_AGE_SECONDS = 60
-USER_AGENT = "bikhabaar-air-traffic-live/2.0"
+USER_AGENT = "bikhabaar-air-traffic-live/2.1"
 
 
 @dataclass(frozen=True)
@@ -72,6 +71,20 @@ def fetch_strict_live_snapshot(
     except Exception as exc:
         raise RuntimeError(f"opensky live coverage unavailable: {exc}") from exc
 
+    fresh_opensky = reference.filter_visible_aircraft(
+        opensky_rows,
+        max_seen_seconds=max_position_age_seconds,
+    )
+    if len(fresh_opensky) < MIN_PRIMARY_AIRCRAFT:
+        raise RuntimeError(
+            "insufficient live provider coverage: insufficient primary live coverage: "
+            f"opensky_fresh={len(fresh_opensky)} minimum={MIN_PRIMARY_AIRCRAFT}"
+        )
+
+    # OpenSky's single full-frame bbox is the mandatory live source. The point
+    # APIs are enrichment only: public endpoints can legitimately rate-limit or
+    # block a VPS IP, so their failure must not invalidate a healthy primary
+    # snapshot.
     point_groups: list[list[dict]] = []
     healthy_centers = 0
     total_centers = len(KEY_CENTERS)
@@ -86,17 +99,6 @@ def fetch_strict_live_snapshot(
         if index + 1 < total_centers and POINT_QUERY_INTERVAL_SECONDS > 0:
             time.sleep(POINT_QUERY_INTERVAL_SECONDS)
 
-    minimum_healthy = max(1, math.ceil(total_centers * MIN_HEALTHY_CENTER_RATIO))
-    if healthy_centers < minimum_healthy:
-        raise RuntimeError(
-            "insufficient live provider coverage: "
-            f"healthy_centers={healthy_centers}/{total_centers} minimum={minimum_healthy}"
-        )
-
-    fresh_opensky = reference.filter_visible_aircraft(
-        opensky_rows,
-        max_seen_seconds=max_position_age_seconds,
-    )
     fresh_points = reference.filter_visible_aircraft(
         _merge(point_groups),
         max_seen_seconds=max_position_age_seconds,
@@ -121,8 +123,8 @@ def fetch_strict_live_snapshot(
     print(
         "AIR_TRAFFIC_LIVE_OK "
         f"aircraft={len(snapshot.aircraft)} "
-        f"healthy_centers={snapshot.healthy_centers}/{snapshot.total_centers} "
-        f"opensky={snapshot.source_counts['opensky']} "
+        f"primary=opensky:{len(fresh_opensky)} "
+        f"enrichment_centers={snapshot.healthy_centers}/{snapshot.total_centers} "
         f"point_network={snapshot.source_counts['point_network']}",
         flush=True,
     )
