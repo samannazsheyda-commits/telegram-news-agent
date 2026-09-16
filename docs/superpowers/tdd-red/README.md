@@ -1,0 +1,1 @@
+This directory records intentional failing-test phases for safety-critical newsroom changes.
