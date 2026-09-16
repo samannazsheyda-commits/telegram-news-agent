@@ -85,3 +85,54 @@ def test_snapshot_accepts_only_fresh_positions(monkeypatch):
     assert {row["hex"] for row in snapshot.aircraft} == {"fresh-open", "fresh-point"}
     assert snapshot.healthy_centers == 1
     assert snapshot.total_centers == 1
+
+
+def test_snapshot_fetches_authoritative_opensky_after_enrichment(monkeypatch):
+    events: list[str] = []
+    monkeypatch.setattr(live, "KEY_CENTERS", ((35.7, 51.4), (29.0, 52.0)))
+    monkeypatch.setattr(live, "MIN_PRIMARY_AIRCRAFT", 1)
+    monkeypatch.setattr(live.time, "sleep", lambda _seconds: None)
+    monkeypatch.setattr(
+        live,
+        "fetch_point_with_fallback",
+        lambda lat, _lon, session=None: events.append(f"point:{lat}") or [
+            {"hex": f"point-{lat}", "lat": lat, "lon": 51.4, "seen_pos": 1}
+        ],
+    )
+    monkeypatch.setattr(
+        live,
+        "_fetch_opensky",
+        lambda session=None: events.append("opensky") or [
+            {"hex": "open-final", "lat": 35.0, "lon": 52.0, "seen_pos": 1}
+        ],
+    )
+
+    live.fetch_strict_live_snapshot(session=object())
+
+    assert events[-1] == "opensky"
+
+
+def test_snapshot_ages_early_enrichment_against_final_capture(monkeypatch):
+    monkeypatch.setattr(live, "KEY_CENTERS", ((35.7, 51.4),))
+    monkeypatch.setattr(live, "MIN_PRIMARY_AIRCRAFT", 1)
+    monkeypatch.setattr(live.time, "sleep", lambda _seconds: None)
+    moments = iter((100.0, 170.0))
+    monkeypatch.setattr(live.time, "monotonic", lambda: next(moments))
+    monkeypatch.setattr(
+        live,
+        "fetch_point_with_fallback",
+        lambda _lat, _lon, session=None: [
+            {"hex": "old-point", "lat": 35.7, "lon": 51.4, "seen_pos": 1}
+        ],
+    )
+    monkeypatch.setattr(
+        live,
+        "_fetch_opensky",
+        lambda session=None: [
+            {"hex": "open-final", "lat": 35.0, "lon": 52.0, "seen_pos": 1}
+        ],
+    )
+
+    snapshot = live.fetch_strict_live_snapshot(session=object(), max_position_age_seconds=60)
+
+    assert {row["hex"] for row in snapshot.aircraft} == {"open-final"}
