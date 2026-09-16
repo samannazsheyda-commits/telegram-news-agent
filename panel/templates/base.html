@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='settings.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='source_manager.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-shell.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-final.css') }}">
   {% block extra_head %}{% endblock %}
 </head>
 <body data-newsroom-shell="v3">
@@ -61,6 +62,7 @@
   <div id="nrToastStack" class="nr-toast-stack" aria-live="polite" aria-atomic="true"></div>
 
   <script src="{{ url_for('static', filename='settings.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='newsroom-final.js') }}" defer></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('{{ url_for('static', filename='sw.js') }}').catch(() => {}));
