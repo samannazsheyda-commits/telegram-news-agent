@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import pytest
+
+from src.ai_newsroom import AIServiceError
 from src.one_x_ai_newsroom import OneXAIConfig, OneXAINewsAI
 
 
@@ -8,12 +11,15 @@ class _FakeResponse:
     headers = {}
     text = ""
 
+    def __init__(self, content: str = '{"text":"متن آزمایشی","faithful":true}'):
+        self.content = content
+
     def json(self):
         return {
             "choices": [
                 {
                     "message": {
-                        "content": '{"text":"متن آزمایشی","faithful":true}'
+                        "content": self.content
                     }
                 }
             ]
@@ -21,8 +27,9 @@ class _FakeResponse:
 
 
 class _FakeSession:
-    def __init__(self):
+    def __init__(self, content: str = '{"text":"متن آزمایشی","faithful":true}'):
         self.calls = []
+        self.content = content
 
     def post(self, url, *, headers, json, timeout):
         self.calls.append(
@@ -33,12 +40,11 @@ class _FakeSession:
                 "timeout": timeout,
             }
         )
-        return _FakeResponse()
+        return _FakeResponse(self.content)
 
 
-def test_one_x_ai_chat_uses_configured_openai_compatible_endpoint_and_luna_model():
-    session = _FakeSession()
-    config = OneXAIConfig(
+def _config() -> OneXAIConfig:
+    return OneXAIConfig(
         api_key="1xai-test-key",
         base_url="https://1xai.ir/v1",
         mode="required",
@@ -47,7 +53,11 @@ def test_one_x_ai_chat_uses_configured_openai_compatible_endpoint_and_luna_model
         persian_editor_model="gpt-5.6-luna",
         translation_model="gpt-5.6-luna",
     )
-    ai = OneXAINewsAI(config, session=session)
+
+
+def test_one_x_ai_chat_uses_configured_openai_compatible_endpoint_and_luna_model():
+    session = _FakeSession()
+    ai = OneXAINewsAI(_config(), session=session)
 
     result = ai._chat_json(
         model="gpt-5.6-luna",
@@ -64,3 +74,47 @@ def test_one_x_ai_chat_uses_configured_openai_compatible_endpoint_and_luna_model
     assert call["json"]["model"] == "gpt-5.6-luna"
     assert "temperature" not in call["json"]
     assert call["json"]["response_format"] == {"type": "json_object"}
+
+
+def test_one_x_ai_accepts_one_json_object_wrapped_in_luna_prose():
+    session = _FakeSession(
+        'حتماً. خروجی JSON:\n{"summary":"ترافیک هوایی بر پایه داده زنده دریافت‌شده گزارش شده است."}\nپایان.'
+    )
+    ai = OneXAINewsAI(_config(), session=session)
+
+    result = ai._chat_json(
+        model="gpt-5.6-luna",
+        system="Return JSON only.",
+        user="Summarize live air traffic.",
+        max_tokens=160,
+    )
+
+    assert result == {"summary": "ترافیک هوایی بر پایه داده زنده دریافت‌شده گزارش شده است."}
+
+
+def test_one_x_ai_rejects_multiple_json_objects_in_one_response():
+    session = _FakeSession(
+        '{"approve":true,"reason":"unique"}\n{"approve":false,"reason":"duplicate"}'
+    )
+    ai = OneXAINewsAI(_config(), session=session)
+
+    with pytest.raises(AIServiceError, match="invalid_1xai_json"):
+        ai._chat_json(
+            model="gpt-5.6-luna",
+            system="Return JSON only.",
+            user="Judge this story.",
+            max_tokens=160,
+        )
+
+
+def test_one_x_ai_rejects_response_without_a_json_object():
+    session = _FakeSession("بله، این خبر مناسب انتشار است.")
+    ai = OneXAINewsAI(_config(), session=session)
+
+    with pytest.raises(AIServiceError, match="invalid_1xai_json"):
+        ai._chat_json(
+            model="gpt-5.6-luna",
+            system="Return JSON only.",
+            user="Judge this story.",
+            max_tokens=160,
+        )
