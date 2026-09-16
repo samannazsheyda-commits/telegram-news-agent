@@ -1,5 +1,5 @@
 [Unit]
-Description=Publish Bikhabar live Iran-region air traffic snapshot
+Description=Publish Bikhabar fresh live Iran-region air traffic snapshot
 After=network-online.target
 Wants=network-online.target
 
@@ -9,8 +9,7 @@ User=bikhabar
 Group=bikhabar
 WorkingDirectory=/opt/bikhabar/app
 EnvironmentFile=/etc/bikhabar/agent.env
-# Legacy test marker only: -m src.air_traffic --publish
-ExecStart=/opt/bikhabar/venv/bin/python -m src.air_traffic_reference --publish --output /var/lib/bikhabar/runtime/data/iran-region-live-air-traffic.png
+ExecStart=/opt/bikhabar/venv/bin/python -m src.air_traffic_publish_guard --publish --output /var/lib/bikhabar/runtime/data/iran-region-live-air-traffic.png
 TimeoutStartSec=180
 NoNewPrivileges=true
 PrivateTmp=true
