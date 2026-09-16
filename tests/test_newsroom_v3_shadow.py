@@ -72,3 +72,32 @@ def test_shadow_pipeline_records_rejection_without_starting_publish(tmp_path):
     assert story.decision_reason == "stale"
     assert story.publish_state == "not_attempted"
     assert store.list_publish_attempts(story.story_id) == []
+
+
+def test_shadow_pipeline_does_not_resurrect_final_gate_rejection(tmp_path):
+    NewsroomV3ShadowPipeline = _pipeline_class()
+    store = NewsroomV3Store(tmp_path / "newsroom-v3.sqlite3")
+    now = datetime(2026, 9, 16, 19, 0, tzinfo=timezone.utc)
+    raw = RawNewsItem(
+        source="Reuters",
+        source_url="https://www.reuters.com/world/middle-east/houthi-update/",
+        source_item_id="reuters-houthi-update",
+        published_at="2026-09-16T18:58:00+00:00",
+        fetched_at="2026-09-16T18:59:00+00:00",
+        title="Houthi blitz leaves Saudi Arabia exposed, Iran emboldened",
+        summary="A material update about the conflict.",
+    )
+
+    first = NewsroomV3ShadowPipeline(store).run([raw], now=now)
+    story_id = first.story_ids[0]
+    store.set_decision(story_id, "rejected", reason="final_gate:duplicate_event")
+
+    second = NewsroomV3ShadowPipeline(store).run([raw], now=now)
+    story = store.get_story(story_id)
+
+    assert second.ready == 0
+    assert second.rejected == 1
+    assert story is not None
+    assert story.decision_state == "rejected"
+    assert story.decision_reason == "final_gate:duplicate_event"
+    assert store.list_publishable(limit=10) == []
