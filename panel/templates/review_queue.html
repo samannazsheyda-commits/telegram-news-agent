@@ -1,18 +1,32 @@
 {% extends 'base.html' %}
-{% block title %}نیاز به بررسی | بی‌خبر{% endblock %}
+{% block title %}بررسی | مرکز کنترل بی‌خبر{% endblock %}
 {% block content %}
-<div class="heading-row"><h1>نیاز به بررسی</h1><span class="badge">{{ items|length }}</span></div>
-{% if not items %}
-  <section class="card empty">فعلاً خبری برای بررسی دستی نیست.</section>
-{% endif %}
-<div class="list">
-{% for item in items %}
-  <a class="news-card" href="{{ url_for('review_edit', item_id=item.id) }}">
-    <div class="meta"><span>{{ item.source }}</span><span>{{ reason_fa.get(item.rejection_reason, item.rejection_reason) }}</span></div>
-    <h2>{{ item.persian_title or item.original_title }}</h2>
-    {% if item.persian_body %}<p>{{ item.persian_body }}</p>{% elif item.original_summary %}<p>{{ item.original_summary }}</p>{% endif %}
-    <div class="meta"><span>{{ item.published_at_source or 'زمان نامشخص' }}</span><span>باز کردن ←</span></div>
-  </a>
-{% endfor %}
-</div>
+<section class="v4-page-head">
+  <div><h1>نیازمند بررسی</h1><p>فقط خبرهایی که واقعاً تصمیم انسانی می‌خواهند</p></div>
+  <div class="v4-live-pill"><i></i>{{ items|length }} مورد</div>
+</section>
+
+<section class="v4-panel">
+  <div class="v4-story-list">
+  {% for item in items[:100] %}
+    <article class="v4-story-card">
+      <div class="v4-story-meta">
+        <span class="v4-source-badge">{{ item.source or 'منبع' }}</span>
+        {% if item.rejection_reason %}<span>{{ reason_fa.get(item.rejection_reason, item.rejection_reason) }}</span>{% endif %}
+        <span class="v4-state-badge">منتظر تصمیم</span>
+      </div>
+      <div class="v4-original">
+        <h3>{{ item.final_persian_title or item.persian_title or item.original_title or 'بدون عنوان' }}</h3>
+        {% if item.final_persian_body or item.persian_body %}<p>{{ item.final_persian_body or item.persian_body }}</p>{% elif item.original_summary %}<p>{{ item.original_summary }}</p>{% endif %}
+      </div>
+      <div class="v4-story-actions">
+        <a class="v4-button v4-button-primary" href="{{ url_for('review_edit', item_id=item.id) }}">بازکردن و تصمیم</a>
+        {% if item.source_url %}<a class="v4-button v4-button-secondary" href="{{ item.source_url }}" target="_blank" rel="noopener">منبع</a>{% endif %}
+      </div>
+    </article>
+  {% else %}
+    <div class="v4-empty"><strong>صف بررسی خالی است</strong><span>فعلاً تصمیم دستی لازم نیست</span></div>
+  {% endfor %}
+  </div>
+</section>
 {% endblock %}
