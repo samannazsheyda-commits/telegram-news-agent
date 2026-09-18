@@ -68,13 +68,14 @@ def test_dashboard_get_never_calls_translation_backend_and_preserves_original():
     assert calls == []
     assert "Raw English headline" in text
     assert "Raw English summary" in text
-    assert "ترجمه ماشینی هنوز آماده نیست" in text
+    assert "ترجمه با Luna" in text
+    assert "ترجمه ماشینی" not in text
 
 
-def test_v4_ui_requests_machine_preview_lazily_after_render():
+def test_v41_ui_translates_only_on_explicit_luna_action():
     js = Path("panel/static/newsroom-v4-dashboard.js").read_text(encoding="utf-8")
 
-    assert "/api/panel/machine-preview/" in js
-    assert "IntersectionObserver" in js
-    assert "loadMachinePreview" in js
-    assert "rootMargin" in js
+    assert "/api/panel/luna/translate-story/" in js
+    assert "/api/panel/machine-preview/" not in js
+    assert "IntersectionObserver" not in js
+    assert "translateWithLuna" in js
