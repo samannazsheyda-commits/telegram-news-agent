@@ -64,23 +64,20 @@ def test_assistant_explains_low_publish_count_from_real_panel_state():
     assert "no_safe_candidate" in payload["reply_fa"]
 
 
-def test_assistant_quota_change_requires_confirmation_then_updates_setting():
+def test_assistant_does_not_claim_quota_changed_until_v3_runtime_bridge_exists():
     client, data = _client()
+    before = deepcopy(data.mapping["data/newsroom_settings.json"])
     response = client.post("/api/panel/luna/assistant", json={"message": "سهمیه امروز رو از 35 بکن 40"})
     payload = response.get_json()
 
     assert response.status_code == 200
-    assert payload["confirmation_required"] is True
-    assert payload["action"] == "update_daily_quota"
-    action_id = payload["action_id"]
-    assert data.mapping["data/newsroom_settings.json"]["daily_limit"] == 35
-
-    confirmed = client.post(f"/api/panel/luna/assistant/confirm/{action_id}")
-    confirmed_payload = confirmed.get_json()
-    assert confirmed.status_code == 200
-    assert confirmed_payload["ok"] is True
-    assert data.mapping["data/newsroom_settings.json"]["daily_limit"] == 40
-    assert data.mapping["data/panel_audit_log.json"][0]["action"] == "update_daily_quota"
+    assert payload["ok"] is True
+    assert payload["confirmation_required"] is False
+    assert payload["action"] == "quota_runtime_bridge_required"
+    assert "V3" in payload["reply_fa"]
+    assert "env" in payload["reply_fa"]
+    assert "35" in payload["reply_fa"]
+    assert data.mapping["data/newsroom_settings.json"] == before
 
 
 def test_assistant_lists_recent_published_news():
