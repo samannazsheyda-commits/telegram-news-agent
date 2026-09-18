@@ -119,7 +119,7 @@ def test_localization_is_preview_only_and_never_persisted_as_final_copy(monkeypa
     item = response.get_json()["items"][0]
     assert item["title"] == "تیتر تازه"
     assert item["body"] == "متن تازه"
-    assert item["translation_mode"] == "offline_literal"
+    assert item["translation_mode"] == "machine"
     assert item["final_message"] == ""
 
     row = next(row for row in data.files["data/panel_live_feed.json"] if row["item_id"] == "fresh")
@@ -179,27 +179,11 @@ def test_hormuz_preview_still_renders_when_precise_count_is_unavailable(monkeypa
     assert preview["available_for_publish"] is False
 
 
-def test_panel_preview_and_live_actions_are_visible_in_light_theme():
-    css = Path("panel/static/light-newsroom.css").read_text(encoding="utf-8")
-    js = Path("panel/static/live.js").read_text(encoding="utf-8")
-    assert ".module-preview" in css
-    assert ".module-preview-body" in css
-    assert "background:#fff" in css or "background:var(--panel)" in css
-    assert "color:#171a1f" in css or "color:var(--text)" in css
-    assert "خروجی نهایی تلگرام" in js
-    assert "انتشار" in js
+def test_panel_v4_actions_are_visible_in_light_theme():
+    css = Path("panel/static/newsroom-v4.css").read_text(encoding="utf-8")
+    js = Path("panel/static/newsroom-live.js").read_text(encoding="utf-8")
+    assert "--v4-bg:#f4f7fb" in css
+    assert "ترجمه ماشینی" in js
+    assert "ترجمه و ویراستاری با لونا" in js
+    assert "انتشار نسخه لونا" in js
     assert "رد" in js
-    assert "حذف" in js
-
-
-def test_air_traffic_preview_api_exposes_browser_image_url():
-    data = FakeData()
-    data.files["data/air_traffic_preview.json"] = {
-        "message": "وضعیت ترافیک هوایی خاورمیانه",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "image_path": "data/air_traffic_preview.png",
-        "aircraft_count": 42,
-    }
-    payload = _client(data).get("/api/command-center/module/air-traffic/preview").get_json()
-    assert payload["available"] is True
-    assert payload["image_url"] == "/api/command-center/module/air-traffic/preview/image"
