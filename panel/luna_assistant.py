@@ -5,6 +5,8 @@ from typing import Any
 
 import requests
 
+from src.managed_sources import system_source_definitions
+
 from .audit_log import append_audit
 
 
@@ -12,6 +14,8 @@ SETTINGS_PATH = "data/newsroom_settings.json"
 V3_STATUS_PATH = "data/newsroom_v3_production_status.json"
 STATE_PATH = "state.json"
 HISTORY_PATH = "data/editorial_history.json"
+CUSTOM_SOURCES_PATH = "data/custom_sources.json"
+SOURCE_OVERRIDES_PATH = "data/source_overrides.json"
 
 _PERSIAN_DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
 
@@ -33,19 +37,31 @@ def _numbers(text: str) -> list[int]:
     return [int(value) for value in re.findall(r"\d+", normalized)]
 
 
-def _mutate_settings(data, transform, message: str) -> tuple[dict, dict]:
+def _normalise_text(value: str) -> str:
+    return re.sub(r"\s+", " ", str(value or "").replace("@", "").strip().casefold())
+
+
+def _write_retry(data, path: str, transform, message: str):
     for attempt in range(3):
-        current, sha = data.read_json(SETTINGS_PATH, {})
-        before = dict(current) if isinstance(current, dict) else {}
-        after = transform(dict(before))
+        current, sha = data.read_json(path, {})
+        after = transform(current)
         try:
-            data.write_json(SETTINGS_PATH, after, sha, message)
-            return before, after
+            data.write_json(path, after, sha, message)
+            return current, after
         except requests.HTTPError as exc:
             if attempt < 2 and getattr(exc.response, "status_code", None) in {409, 422}:
                 continue
             raise
-    raise RuntimeError("assistant_settings_write_conflict")
+    raise RuntimeError("assistant_write_conflict")
+
+
+def _mutate_settings(data, transform, message: str) -> tuple[dict, dict]:
+    def apply(current):
+        before = dict(current) if isinstance(current, dict) else {}
+        return transform(dict(before))
+
+    before, after = _write_retry(data, SETTINGS_PATH, apply, message)
+    return (dict(before) if isinstance(before, dict) else {}), dict(after)
 
 
 def assistant_context(data) -> dict[str, Any]:
@@ -136,6 +152,98 @@ def _recent_publications(data, count: int) -> dict:
     }
 
 
+def _source_action(data, target: str, enabled: bool) -> dict:
+    wanted = _normalise_text(target)
+    if not wanted:
+        return {"intent": "source_toggle", "status": "failed", "requires_confirmation": False, "reply_fa": "اسم منبع مشخص نیست."}
+
+    custom = _read(data, CUSTOM_SOURCES_PATH, [])
+    custom = [dict(row) for row in custom if isinstance(row, dict)] if isinstance(custom, list) else []
+    system = [dict(row) for row in system_source_definitions()]
+    candidates: list[tuple[str, dict]] = [("custom", row) for row in custom] + [("system", row) for row in system]
+
+    def searchable(row: dict) -> str:
+        return _normalise_text(" ".join(str(row.get(key) or "") for key in ("name", "identity", "handle", "channel", "query", "feed_url", "website_url")))
+
+    exact = [(kind, row) for kind, row in candidates if wanted in {_normalise_text(str(row.get("name") or "")), _normalise_text(str(row.get("identity") or "")), _normalise_text(str(row.get("handle") or "")), _normalise_text(str(row.get("channel") or ""))}]
+    matches = exact or [(kind, row) for kind, row in candidates if wanted and wanted in searchable(row)]
+    if not matches:
+        return {"intent": "source_toggle", "status": "failed", "requires_confirmation": False, "reply_fa": f"منبع «{target}» را پیدا نکردم."}
+    if len(matches) > 1:
+        names = "، ".join(str(row.get("name") or row.get("identity") or row.get("id") or "") for _, row in matches[:5])
+        return {"intent": "source_toggle", "status": "failed", "requires_confirmation": False, "reply_fa": f"چند منبع مشابه پیدا شد: {names}. اسم دقیق‌تر را بگو."}
+
+    kind, row = matches[0]
+    source_id = str(row.get("id") or "").strip()
+    display = str(row.get("name") or row.get("identity") or source_id).strip()
+    old_active = bool(row.get("active", True))
+
+    if kind == "custom":
+        def transform(current):
+            rows = [dict(item) for item in current if isinstance(item, dict)] if isinstance(current, list) else []
+            for item in rows:
+                if str(item.get("id") or "") == source_id:
+                    item["active"] = enabled
+            return rows
+        _write_retry(data, CUSTOM_SOURCES_PATH, transform, "panel v4 luna: toggle custom source")
+    else:
+        def transform(current):
+            overrides = dict(current) if isinstance(current, dict) else {}
+            override = dict(overrides.get(source_id) or {})
+            override["active"] = enabled
+            overrides[source_id] = override
+            return overrides
+        _write_retry(data, SOURCE_OVERRIDES_PATH, transform, "panel v4 luna: toggle system source")
+
+    append_audit(
+        data,
+        actor="luna",
+        action="enable_source" if enabled else "disable_source",
+        target=source_id,
+        before={"active": old_active, "name": display},
+        after={"active": enabled, "name": display},
+        result="ok",
+    )
+    return {
+        "intent": "enable_source" if enabled else "disable_source",
+        "status": "succeeded",
+        "requires_confirmation": False,
+        "source_id": source_id,
+        "reply_fa": f"منبع {display} {'روشن' if enabled else 'خاموش'} شد.",
+    }
+
+
+def _priority_action(data, text: str) -> dict:
+    target = "ایران" if "ایران" in text else re.split(r"\s+(?:رو|را)\s+اولویت", text, maxsplit=1)[0].strip()
+    target = re.sub(r"^(?:اخبار|خبرهای|خبر|مهم)\s+", "", target).strip()
+    if not target or len(target) > 80:
+        return {"intent": "update_priority_terms", "status": "failed", "requires_confirmation": False, "reply_fa": "موضوع اولویت‌دار مشخص نیست."}
+
+    def transform(settings: dict) -> dict:
+        terms = [str(term).strip() for term in settings.get("priority_terms", []) if str(term).strip()] if isinstance(settings.get("priority_terms"), list) else []
+        if target.casefold() not in {term.casefold() for term in terms}:
+            terms.append(target)
+        settings["priority_terms"] = terms[:20]
+        return settings
+
+    before, after = _mutate_settings(data, transform, "panel v4 luna: update priority terms")
+    append_audit(
+        data,
+        actor="luna",
+        action="update_priority_terms",
+        target="settings",
+        before={"priority_terms": before.get("priority_terms", [])},
+        after={"priority_terms": after.get("priority_terms", [])},
+        result="ok",
+    )
+    return {
+        "intent": "update_priority_terms",
+        "status": "succeeded",
+        "requires_confirmation": False,
+        "reply_fa": f"«{target}» به اولویت‌های خبری اضافه شد.",
+    }
+
+
 def handle_control_message(data, message: str) -> dict:
     text = str(message or "").strip()
     if not text:
@@ -144,36 +252,48 @@ def handle_control_message(data, message: str) -> dict:
     lowered = text.casefold()
     nums = _numbers(text)
 
+    source_match = re.search(r"(.+?)(?:\s+(?:رو|را))?\s+(خاموش|روشن)\s+کن(?:ید)?$", text, flags=re.IGNORECASE)
+    if source_match:
+        return _source_action(data, source_match.group(1).strip(), enabled=source_match.group(2) == "روشن")
+
+    if "اولویت" in lowered and ("بده" in lowered or "اضافه" in lowered):
+        return _priority_action(data, text)
+
     if "سهمیه" in lowered and nums:
         value = nums[-1]
-        if not 1 <= value <= 200:
+        is_special = "ویژه" in lowered
+        max_value = 50 if is_special else 200
+        key = "special_quota" if is_special else "daily_quota"
+        label = "خبرهای ویژه Luna" if is_special else "خبرهای عادی"
+        intent = "update_special_quota" if is_special else "update_daily_quota"
+        if not (0 if is_special else 1) <= value <= max_value:
             return {
-                "intent": "update_daily_quota",
+                "intent": intent,
                 "status": "failed",
                 "requires_confirmation": False,
-                "reply_fa": "سهمیه خبر عادی باید بین ۱ تا ۲۰۰ باشد.",
+                "reply_fa": f"سهمیه {label} معتبر نیست.",
             }
 
         def transform(settings: dict) -> dict:
-            settings["daily_quota"] = value
+            settings[key] = value
             return settings
 
-        before, after = _mutate_settings(data, transform, "panel v4 luna: update daily quota")
+        before, after = _mutate_settings(data, transform, f"panel v4 luna: update {key}")
         append_audit(
             data,
             actor="luna",
-            action="update_daily_quota",
+            action=intent,
             target="settings",
-            before={"daily_quota": _safe_int(before.get("daily_quota"), 35)},
-            after={"daily_quota": value},
+            before={key: _safe_int(before.get(key), 5 if is_special else 35)},
+            after={key: value},
             result="ok",
         )
         return {
-            "intent": "update_daily_quota",
+            "intent": intent,
             "status": "succeeded",
             "requires_confirmation": False,
             "value": value,
-            "reply_fa": f"سهمیه خبرهای عادی روی {value} تنظیم شد.",
+            "reply_fa": f"سهمیه {label} روی {value} تنظیم شد.",
         }
 
     if "آخرین" in lowered and ("خبر" in lowered or "منتشر" in lowered):
