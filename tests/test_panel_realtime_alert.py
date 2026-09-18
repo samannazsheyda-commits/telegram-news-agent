@@ -1,4 +1,5 @@
 from panel.app import create_app
+from panel.v4 import bp as v4_bp
 from src.local_json_repository import LocalJsonRepository
 
 
@@ -15,13 +16,15 @@ def _app(tmp_path):
             "updated_at": "2026-09-09T00:00:00+00:00",
         }
     ], None, "seed")
-    return create_app({
+    app = create_app({
         "TESTING": True,
         "SECRET_KEY": "test-secret",
         "PANEL_PASSWORD_HASH": "x",
         "DATA_BACKEND": data,
         "LIVE_FEED_TRANSLATOR": lambda x: x,
     })
+    app.register_blueprint(v4_bp)
+    return app
 
 
 def _client(tmp_path):
@@ -32,24 +35,22 @@ def _client(tmp_path):
     return client
 
 
-def test_dashboard_has_realtime_feed_and_sound_toggle(tmp_path):
+def test_dashboard_is_lightweight_and_incoming_page_owns_story_cards(tmp_path):
+    client = _client(tmp_path)
+    dashboard = client.get("/").get_data(as_text=True)
+    incoming = client.get("/incoming").get_data(as_text=True)
+    assert 'id="incomingCount"' in dashboard
+    assert 'data-news-card="n1"' not in dashboard
+    assert 'data-news-card="n1"' in incoming
+    assert "خبر تازه" in incoming
+    assert "newsroom-v4.js" in dashboard
+    assert "live.js" not in dashboard
+
+
+def test_v4_dashboard_uses_lightweight_snapshot_polling_without_page_reload(tmp_path):
     client = _client(tmp_path)
     html = client.get("/").get_data(as_text=True)
-    assert 'id="liveFeed"' in html
-    assert 'id="soundToggle"' in html
-    assert 'id="newNewsBadge"' in html
-    assert 'data-news-id="n1"' in html
-    assert "live.js" in html
-
-
-def test_live_js_updates_feed_without_page_reload_and_keeps_sound_preference(tmp_path):
-    client = _client(tmp_path)
-    js = client.get("/static/live.js").get_data(as_text=True)
-    assert "setInterval(refreshLiveFeed, 1000)" in js
-    assert "refreshStatus(); refreshHealth(); }, 2000" in js
-    assert "AudioContext" in js
-    assert "localStorage" in js
-    assert "/api/live-feed" in js
-    assert "DOMParser" not in js
-    assert "replaceChildren" in js
-    assert "location.reload" not in js
+    assert "/api/v4/snapshot" in html
+    assert "15000" in html
+    assert "location.reload" not in html
+    assert "setInterval(refreshLiveFeed, 1000)" not in html
