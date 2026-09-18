@@ -11,6 +11,7 @@ from ..newsroom_hard_filters import hard_editorial_rejection
 from ..newsroom_models import RawNewsItem
 from ..newsroom_normalize import normalize_item
 from ..newsroom_source_identity import canonical_news_source
+from ..operator_blocks import find_operator_block
 from .store import NewsroomV3Store, StoryRecord
 
 
@@ -74,8 +75,18 @@ class NewsroomV3ShadowPipeline:
             story_id = _story_id(raw)
             duplicate_of = ""
             existing = self.store.get_story(story_id)
+            block = find_operator_block(
+                self.store.path.parent / "operator_blocks.json",
+                story_id=story_id,
+                source_url=raw.source_url,
+                fingerprint=fingerprint.key,
+            )
 
-            if _terminal_rejection(existing):
+            if block is not None:
+                decision_state = "rejected"
+                decision_reason = "operator_block:" + str(block.get("reason") or "requested_by_admin")
+                rejected += 1
+            elif _terminal_rejection(existing):
                 decision_state = "rejected"
                 decision_reason = existing.decision_reason
                 rejected += 1
