@@ -10,6 +10,8 @@ from flask import Blueprint, current_app, flash, redirect, render_template, requ
 from src.custom_sources import XSource, discover_feed_url, normalize_telegram_channel, validate_website_source
 from src.managed_sources import normalize_truth_handle, system_source_definitions
 
+from .audit_log import append_audit
+
 
 bp = Blueprint("source_manager", __name__)
 
@@ -92,6 +94,19 @@ def _rows():
     return rows
 
 
+def _source_snapshot(source_id: str) -> dict:
+    row = next((row for row in _rows() if str(row.get("id") or "") == source_id), None)
+    if not row:
+        return {"id": source_id}
+    return {
+        "id": source_id,
+        "name": str(row.get("name") or row.get("identity") or ""),
+        "kind": str(row.get("kind") or ""),
+        "active": bool(row.get("active", True)),
+        "identity": str(row.get("identity") or ""),
+    }
+
+
 @bp.get("/source-manager")
 def index():
     rows = _rows()
@@ -161,12 +176,22 @@ def add_source():
         return records
 
     _mutate("data/custom_sources.json", [], transform, "panel: add managed source")
+    append_audit(
+        _data(),
+        actor="user",
+        action="add_source",
+        target=str(record.get("id") or ""),
+        before={},
+        after=_source_snapshot(str(record.get("id") or "")),
+        result="ok",
+    )
     flash("منبع اضافه شد و از اسکن بعدی وارد رصد می‌شود.", "success")
     return redirect(url_for("source_manager.index"))
 
 
 @bp.post("/source-manager/<source_id>/toggle")
 def toggle(source_id: str):
+    before = _source_snapshot(source_id)
     system_ids = {row["id"] for row in system_source_definitions()}
     if source_id in system_ids:
         def transform(value):
@@ -187,11 +212,22 @@ def toggle(source_id: str):
                     break
             return records
         _mutate("data/custom_sources.json", [], transform, "panel: toggle custom source")
+    after = _source_snapshot(source_id)
+    append_audit(
+        _data(),
+        actor="user",
+        action="enable_source" if after.get("active") else "disable_source",
+        target=source_id,
+        before=before,
+        after=after,
+        result="ok",
+    )
     return redirect(url_for("source_manager.index"))
 
 
 @bp.post("/source-manager/<source_id>/delete")
 def delete(source_id: str):
+    before = _source_snapshot(source_id)
     system_ids = {row["id"] for row in system_source_definitions()}
     if source_id in system_ids:
         def transform(value):
@@ -201,10 +237,21 @@ def delete(source_id: str):
             overrides[source_id] = state
             return overrides
         _mutate("data/source_overrides.json", {}, transform, "panel: hide system source")
+        action = "disable_source"
     else:
         def transform(value):
             records = list(value) if isinstance(value, list) else []
             return [row for row in records if not isinstance(row, dict) or row.get("id") != source_id]
         _mutate("data/custom_sources.json", [], transform, "panel: delete custom source")
+        action = "delete_source"
+    append_audit(
+        _data(),
+        actor="user",
+        action=action,
+        target=source_id,
+        before=before,
+        after=_source_snapshot(source_id) if source_id in system_ids else {},
+        result="ok",
+    )
     flash("منبع از رصد حذف شد.", "success")
     return redirect(url_for("source_manager.index"))
