@@ -32,9 +32,7 @@
       <a class="newsroom-nav-item{% if request.path.startswith('/history') %} is-active{% endif %}" href="{{ url_for('history') }}"><span class="nav-icon" aria-hidden="true">↗</span><span class="nav-label">منتشرشده</span></a>
       <a class="newsroom-nav-item{% if request.path.startswith('/source-manager') or request.path.startswith('/sources') %} is-active{% endif %}" href="/source-manager"><span class="nav-icon" aria-hidden="true">⌁</span><span class="nav-label">منابع</span></a>
     </nav>
-    <div class="nr-topbar-actions">
-      <span class="nr-private-pill"><i></i> کنترل اتاق خبر</span>
-    </div>
+    <div class="nr-topbar-actions"><span class="nr-private-pill"><i></i> کنترل اتاق خبر</span></div>
     {% endif %}
   </header>
 
@@ -57,12 +55,8 @@
   {% endif %}
 
   <div id="nrToastStack" class="nr-toast-stack" aria-live="polite" aria-atomic="true"></div>
-
   <script src="{{ url_for('static', filename='settings.js') }}" defer></script>
-  <script src="{{ url_for('static', filename='newsroom-final.js') }}" defer></script>
   <script>
-    // V4 deliberately removes old service-worker caches; stale cached JS/CSS made
-    // navigation and action buttons appear frozen after deploys.
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(registrations => registrations.forEach(reg => reg.unregister())).catch(() => {});
     }
