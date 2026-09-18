@@ -6,8 +6,10 @@ from src.services import translate_to_fa
 from .app import create_app
 from .command_center import bp as command_center_bp
 from .live_api import bp as live_api_bp
+from .luna_assistant import bp as luna_assistant_bp
 from .newsroom_api import bp as newsroom_api_bp
 from .source_manager import bp as source_manager_bp
+from .v4 import bp as panel_v4_bp
 from .weather_preview import bp as weather_preview_bp
 
 
@@ -27,4 +29,6 @@ app.register_blueprint(command_center_bp)
 app.register_blueprint(live_api_bp)
 app.register_blueprint(newsroom_api_bp)
 app.register_blueprint(source_manager_bp)
+app.register_blueprint(panel_v4_bp)
+app.register_blueprint(luna_assistant_bp)
 app.register_blueprint(weather_preview_bp)

@@ -1,24 +1,42 @@
 {% extends 'base.html' %}
-{% block title %}بررسی خبر | بی‌خبر{% endblock %}
+{% block title %}ویرایش نهایی | مرکز کنترل بی‌خبر{% endblock %}
 {% block content %}
-<a class="back" href="{{ url_for('review_queue') }}">→ برگشت به صف</a>
-<section class="card source-card">
-  <div class="meta"><span>{{ item.source }}</span><span>{{ reason_fa.get(item.rejection_reason, item.rejection_reason) }}</span></div>
-  <h2>{{ item.original_title }}</h2>
-  {% if item.original_summary %}<p>{{ item.original_summary }}</p>{% endif %}
-  <div class="meta"><span>{{ item.published_at_source or 'زمان نامشخص' }}</span>{% if item.source_url %}<a target="_blank" rel="noopener" href="{{ item.source_url }}">لینک منبع</a>{% endif %}</div>
+<section class="v4-page-head">
+  <div><h1>ویرایش نهایی خبر</h1><p>متن نهایی را ببین، در صورت نیاز اصلاح کن و فقط بعد از تأیید منتشر کن</p></div>
+  <a class="v4-button v4-button-secondary" href="{{ url_for('review_queue') }}">بازگشت به بررسی</a>
 </section>
 
-<form method="post" class="stack-form editor-form">
-  {{ form.hidden_tag() }}
-  {{ form.title_fa.label }}
-  {{ form.title_fa() }}
-  {{ form.body_fa.label }}
-  {{ form.body_fa(rows=8) }}
-  <div class="danger-note">با زدن «تأیید و انتشار فوری»، همین متن بلافاصله در @bikhabaar منتشر می‌شود.</div>
-  <div class="split-actions">
-    {{ form.publish(class_='primary', onclick="return confirm('این خبر همین الان در تلگرام منتشر شود؟')") }}
-    {{ form.reject(class_='danger', onclick="return confirm('این خبر رد نهایی شود؟')") }}
-  </div>
-</form>
+<div class="v4-grid">
+  <section class="v4-panel">
+    <header class="v4-panel-head"><div><h2>متن منبع</h2><p>برای تطبیق معنی قبل از انتشار</p></div>{% if item.source_url %}<a class="v4-panel-link" target="_blank" rel="noopener" href="{{ item.source_url }}">بازکردن منبع</a>{% endif %}</header>
+    <div class="v4-story-card" style="margin:12px">
+      <div class="v4-story-meta">
+        <span class="v4-source-badge">{{ item.source_display or item.canonical_source_name or 'منبع خبری' }}</span>
+        {% if item.rejection_reason %}<span class="v4-state-badge">{{ reason_fa.get(item.rejection_reason, item.rejection_reason) }}</span>{% endif %}
+        {% if item.published_at_source %}<time datetime="{{ item.published_at_source }}" data-v4-relative-time>{{ item.published_at_source }}</time>{% endif %}
+      </div>
+      <div class="v4-original"><label>Original</label><h3>{{ item.original_title or 'بدون عنوان' }}</h3>{% if item.original_summary %}<p>{{ item.original_summary }}</p>{% endif %}</div>
+    </div>
+  </section>
+
+  <section class="v4-panel">
+    <header class="v4-panel-head"><div><h2>نسخه فارسی نهایی</h2><p>این متن پس از تأیید برای انتشار استفاده می‌شود</p></div></header>
+    <form method="post" class="v4-form-grid">
+      {{ form.hidden_tag() }}
+      <div class="v4-field-wide v4-field">
+        {{ form.title_fa.label }}
+        {{ form.title_fa(class_='v4-input') }}
+      </div>
+      <div class="v4-field-wide v4-field">
+        {{ form.body_fa.label }}
+        {{ form.body_fa(rows=10, class_='v4-input') }}
+      </div>
+      <div class="v4-field-wide v4-machine"><p>انتشار فقط بعد از تأیید صریح انجام می‌شود. قبل از زدن دکمه، تیتر، نام‌ها، اعداد و متن منبع را دوباره تطبیق بده.</p></div>
+      <div class="v4-field-wide v4-story-actions">
+        {{ form.publish(class_='v4-button v4-button-primary', onclick="return confirm('همین نسخه نهایی در تلگرام منتشر شود؟')") }}
+        {{ form.reject(class_='v4-button v4-button-danger', onclick="return confirm('این خبر رد نهایی شود؟')") }}
+      </div>
+    </form>
+  </section>
+</div>
 {% endblock %}

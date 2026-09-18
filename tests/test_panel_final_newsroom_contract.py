@@ -8,67 +8,44 @@ def _text(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
 
-def _between(text: str, start: str, end: str) -> str:
-    return text.split(start, 1)[1].split(end, 1)[0]
+def test_v4_machine_preview_avoids_legacy_argos_endpoint():
+    dashboard_js = _text("panel/static/newsroom-v4-dashboard.js")
+    v4 = _text("panel/v4.py")
+    assert "/api/panel/machine-preview/" in dashboard_js
+    assert "translate_to_fa_offline" not in v4
+    assert "PANEL_MACHINE_TRANSLATOR" in v4
 
 
-def test_live_panel_localization_is_offline_only_and_never_builds_final_copy():
-    source = _text("panel/live_api.py")
-    assert "from src.offline_translation import translate_to_fa_offline" in source
-    translate_block = _between(source, "def _translate_persian", "def _final_message")
-    assert "translate_to_fa_offline" in translate_block
-    assert "LIVE_FEED_TRANSLATOR" not in translate_block
-
-    endpoint_block = source.split('def localize_live_feed():', 1)[1]
-    assert '"translation_mode": "offline_literal"' in source
-    assert "final_message = _final_message" not in endpoint_block
-    assert "_persist_localization(item_id, title_fa, body_fa, final_message)" not in endpoint_block
+def test_v4_publish_requires_luna_preview_and_confirmation():
+    source = _text("panel/v4.py")
+    dashboard_js = _text("panel/static/newsroom-v4-dashboard.js")
+    assert "luna_preview_required" in source
+    assert "luna_preview_not_publishable" in source
+    assert '"v3_publish"' in source
+    assert "confirmAction" in dashboard_js
+    assert "نسخه نهایی Luna منتشر شود؟" in dashboard_js
 
 
-def test_live_cards_label_literal_preview_and_use_calmer_polling():
-    source = _text("panel/static/newsroom-live.js")
-    assert "ترجمه آفلاین · تحت‌اللفظی" in source
-    assert "document.hidden ? 30000 : 5000" in source
-
-
-def test_story_publish_and_reject_are_one_tap_without_confirmation():
-    source = _text("panel/static/newsroom-actions.js")
-    publish_block = _between(source, "async function publishCard", "async function rejectCard")
-    reject_block = _between(source, "async function rejectCard", "function liveCheckboxes")
-    assert "confirmAction" not in publish_block
-    assert "confirmAction" not in reject_block
-    # Whole-system publishing controls are still allowed to confirm.
-    publishing_toggle_block = source.split("publishingToggle?.addEventListener", 1)[1]
-    assert "confirmAction" in publishing_toggle_block
-
-
-def test_live_publish_queues_original_source_for_luna_not_literal_preview():
-    source = _text("panel/newsroom_api.py")
-    publish_block = _between(source, "def publish_live", "def command_result")
-    assert "original_title" in publish_block
-    assert "original_body" in publish_block
-    assert 'original_title=original_title' in publish_block
-    assert 'original_body=original_body' in publish_block
-    assert "final_not_ready" not in publish_block
-
-
-def test_newsroom_shell_is_light_slate_and_topbar_has_no_backdrop_blur():
+def test_newsroom_v4_shell_is_slate_and_topbar_has_no_backdrop_blur():
     base = _text("panel/templates/base.html")
-    css = _text("panel/static/newsroom-shell.css")
-    assert '<meta name="color-scheme" content="light">' in base
-    assert 'content="#eef2f6"' in base
-    assert "--nr-bg: #eef2f6" in css
-    topbar = _between(css, ".nr-topbar {", ".nr-brand {")
+    css = _text("panel/static/newsroom-v4.css")
+    assert '<meta name="color-scheme" content="dark light">' in base
+    assert 'content="#161d27"' in base
+    assert "--v4-bg:#111821" in css
+    topbar = css.split(".v4-topbar{", 1)[1].split(".v4-brand{", 1)[0]
     assert "backdrop-filter" not in topbar
 
 
-def test_mobile_nav_has_safe_area_and_high_stable_layer():
-    css = _text("panel/static/newsroom-shell.css")
-    mobile = _between(css, ".nr-mobile-nav {", ".nr-mobile-nav .newsroom-nav-item")
-    assert "env(safe-area-inset-bottom)" in mobile
-    assert "z-index: 90" in mobile
+def test_mobile_nav_has_safe_area_and_stable_layer():
+    css = _text("panel/static/newsroom-v4.css")
+    assert "safe-area-inset-bottom" in css
+    assert "z-index:70" in css
+    assert ".v4-mobile-nav" in css
 
 
-def test_clash_report_label_is_persian_in_live_newsroom():
-    source = _text("panel/static/newsroom-live.js")
-    assert "if (source === 'Clash Report') return 'کلش ریپورت';" in source
+def test_v4_keeps_original_and_machine_and_luna_copy_visually_separate():
+    dashboard = _text("panel/templates/dashboard.html")
+    assert "Original" in dashboard
+    assert "🌐 ترجمه ماشینی" in dashboard
+    assert "🧠 Luna" in dashboard
+    assert "ارسال به Luna" in dashboard

@@ -15,7 +15,7 @@ class FakeData:
     def __init__(self):
         self.files = {
             "data/panel_live_feed.json": [
-                {"item_id": f"n{i}", "title": f"Title {i}", "source": "Reuters", "updated_at": f"2026-09-09T11:{i:02d}:00+00:00", "panel_status": "new"}
+                {"item_id": f"n{i}", "title": f"Title {i}", "source": "Reuters", "source_display": "رویترز", "updated_at": f"2026-09-09T11:{i:02d}:00+00:00", "panel_status": "new"}
                 for i in range(60)
             ],
             "data/newsroom_settings.json": {"auto_publish": True, "emergency_lock": False},
@@ -100,7 +100,10 @@ def test_bulk_clear_supports_live_feed(tmp_path, monkeypatch):
     assert '"a"' not in text
 
 
-def test_dashboard_has_bulk_live_controls():
-    combined = Path("panel/templates/dashboard.html").read_text(encoding="utf-8") + Path("panel/static/live.js").read_text(encoding="utf-8")
-    assert 'id="liveSelectAll"' in combined
-    assert 'id="liveBulkDelete"' in combined
+def test_v4_dashboard_bounds_initial_dom_instead_of_bulk_rendering():
+    template = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
+    js = Path("panel/static/newsroom-v4-dashboard.js").read_text(encoding="utf-8")
+    assert "live[:30]" in template
+    assert "IntersectionObserver" in js
+    assert 'id="liveSelectAll"' not in template
+    assert 'id="liveBulkDelete"' not in template

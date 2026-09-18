@@ -87,29 +87,21 @@ def test_authenticated_dashboard_is_a_real_persian_newsroom():
     response = _login(client)
     text = response.get_data(as_text=True)
     assert response.status_code == 200
-    assert "اتاق خبر بی‌خبر" in text
-    assert "اتاق فرمان" not in text
-    assert "توقف کامل انتشار" in text
-    assert "اسکن فوری" in text
-    assert "اولویت قرمز ۲۴/۷" in text
-    assert "هواشناسی فردا" in text
-    assert "ترافیک هوایی ایران و منطقه" in text
-    assert "نفتکش‌ها و تنگه هرمز" in text
-    assert "بازار و دلار" in text
+    assert "مرکز کنترل بی‌خبر" in text
+    assert "Newsroom V4" in text
+    assert "داشبورد امروز" in text
+    assert "ورودی خبرها" in text
+    assert "🌐 ترجمه ماشینی" not in text  # no story rows in this fixture
+    assert "Luna" in text
     assert "سلامت سیستم" in text
-    assert "ورودی زنده" in text
-    assert 'id="liveFeed"' in text
-    assert 'id="soundToggle"' in text
-    assert 'data-preview-toggle="weather"' in text
-    assert 'data-preview-toggle="air-traffic"' in text
-    assert 'data-preview-toggle="tanker"' in text
-    assert 'data-preview-toggle="market"' in text
-    assert 'id="weatherPreview"' in text
-    assert 'hidden' in text
-    assert "پیش‌نمایش دقیق هواشناسی" not in text
+    assert "هواشناسی" in text
+    assert "نفتکش و هرمز" in text
+    assert "بازار و دلار" in text
+    assert "ترافیک هوایی" not in text
+    assert 'class="v4-mobile-nav"' in text
+    assert "newsroom-v4.css" in text
+    assert "newsroom-v4.js" in text
     assert 'rel="manifest"' in text
-    assert "settings.css" in text
-    assert "settings.js" in text
     assert "serviceWorker" in text
 
 
@@ -152,13 +144,14 @@ def test_pwa_assets_exist_and_do_not_cache_api_routes():
     assert "settings.css" in worker
 
 
-def test_dashboard_marks_live_items_pending_when_persian_copy_is_missing():
+def test_dashboard_shows_original_but_never_translates_during_get():
     data = FakeData()
     data.files["data/panel_live_feed.json"] = [
         {
             "item_id": f"live-{index}",
             "event_id": f"event-{index}",
             "source": "Reuters",
+            "source_display": "رویترز",
             "source_url": f"https://example.com/{index}",
             "title": f"Live story {index}",
             "published_at_source": "2026-09-08T12:00:00+00:00",
@@ -177,14 +170,12 @@ def test_dashboard_marks_live_items_pending_when_persian_copy_is_missing():
     response = _login(client)
     text = response.get_data(as_text=True)
     assert response.status_code == 200
-    assert "ورودی زنده" in text
-    assert ">5<" in text
-    assert "عنوان فارسی در حال آماده‌سازی" in text
+    assert text.count('data-v4-story-card="1"') == 5
+    assert "Live story 0" in text
+    assert "ترجمه ماشینی هنوز آماده نیست" in text
+    assert "ارسال به Luna" in text
+    assert 'data-action="publish"' not in text
     assert "خبر زنده صفر" not in text
-    assert "Live story 0" not in text
-    assert "تازه" in text
-    assert "نیاز به تصمیم دستی نیست" in text
-    assert ">0<" in text
 
 
 def test_mutation_without_csrf_is_rejected():

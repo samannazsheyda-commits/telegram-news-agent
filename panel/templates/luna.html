@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Luna | مرکز کنترل بی‌خبر{% endblock %}
+{% block content %}
+<section class="v4-page-head">
+  <div><h1>Luna Control</h1><p>نسخه‌های نهایی سردبیری و دستیار عملیاتی پنل</p></div>
+  <a class="v4-button v4-button-secondary" href="/intake">ورودی خبرها</a>
+</section>
+
+<div class="v4-grid">
+  <section class="v4-panel v4-assistant">
+    <div id="v4AssistantLog" class="v4-chat-log">
+      <div class="v4-chat-msg luna">من Luna هستم. می‌توانی بپرسی چرا امروز خبر کم منتشر شده، آخرین خبرها را بخواهی، یا تغییر کنترل‌شده‌ای مثل سهمیه را درخواست کنی.</div>
+    </div>
+    <form id="v4AssistantForm" class="v4-chat-form">
+      <textarea id="v4AssistantInput" rows="2" placeholder="مثلاً: چرا امروز خبر کم منتشر شده؟"></textarea>
+      <button class="v4-button v4-button-primary" type="submit">ارسال</button>
+    </form>
+  </section>
+
+  <aside class="v4-side-stack">
+    <section class="v4-panel">
+      <header class="v4-panel-head"><div><h2>نسخه‌های Luna</h2><p>آخرین ۵۰ تصمیم ذخیره‌شده</p></div></header>
+      {% if previews %}
+      <ul class="v4-mini-list">
+        {% for item in previews[:50] %}
+        <li class="v4-mini-row">
+          <span>{{ item.decision or '—' }} · {{ item.importance or 0 }}/10</span>
+          <strong>{{ item.title_fa or item.reason_fa or item.story_id }}</strong>
+          <a class="v4-panel-link" href="/review/{{ item.story_id }}">بازکردن</a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <div class="v4-empty"><strong>هنوز نسخه‌ای ثبت نشده</strong><span>از ورودی خبرها یک خبر را برای Luna بفرست</span></div>
+      {% endif %}
+    </section>
+
+    <section class="v4-panel">
+      <header class="v4-panel-head"><div><h2>فرمان‌های نمونه</h2><p>دستیار پنل</p></div></header>
+      <div class="v4-quick-grid">
+        <button class="v4-quick" type="button" data-v4-assistant-example="چرا امروز خبر کم منتشر شده؟"><strong>علت سکوت</strong><small>سلامت + سهمیه + صف‌ها</small></button>
+        <button class="v4-quick" type="button" data-v4-assistant-example="آخرین 20 خبر منتشرشده رو نشون بده"><strong>آخرین خبرها</strong><small>آرشیو انتشار</small></button>
+        <button class="v4-quick" type="button" data-v4-assistant-example="سهمیه امروز رو بکن 40"><strong>تغییر سهمیه</strong><small>با تأیید نهایی</small></button>
+      </div>
+    </section>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='luna-assistant.js') }}" defer></script>{% endblock %}
