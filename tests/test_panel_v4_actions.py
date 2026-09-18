@@ -62,7 +62,7 @@ def _make_client(*, finalizer=None, machine_translator=None):
     return client, data
 
 
-def test_luna_preview_is_saved_without_publishing():
+def test_luna_preview_is_saved_without_publishing_and_persists_on_live_story():
     def finalizer(row: dict) -> dict:
         assert row["id"] == "story-1"
         return {
@@ -83,6 +83,10 @@ def test_luna_preview_is_saved_without_publishing():
     assert payload["preview"]["decision"] == "PUBLISH"
     assert payload["preview"]["title_fa"] == "ایران اقدام تازه‌ای را اعلام کرد"
     assert data.mapping["data/panel_luna_previews.json"][0]["story_id"] == "story-1"
+    live = data.mapping["data/panel_live_feed.json"][0]
+    assert live["luna_decision"] == "PUBLISH"
+    assert live["final_persian_title"] == "ایران اقدام تازه‌ای را اعلام کرد"
+    assert live["final_persian_body"] == "مقام‌ها امروز از یک اقدام مشخص تازه خبر دادند"
     assert not any(path.startswith("panel_commands/") for path, _ in data.writes)
 
 
@@ -122,24 +126,31 @@ def test_publish_after_preview_uses_existing_v3_publish_command_shape():
     assert command["body"] == "متن نهایی لونا"
 
 
-def test_machine_preview_uses_lightweight_injected_translator():
+def test_machine_preview_is_cached_on_live_story_and_reused():
     calls: list[str] = []
 
     def translator(text: str) -> str:
         calls.append(text)
         return "ترجمه سبک پنل"
 
-    client, _ = _make_client(machine_translator=translator)
-    response = client.post("/api/panel/machine-preview/story-1")
-    payload = response.get_json()
+    client, data = _make_client(machine_translator=translator)
+    first = client.post("/api/panel/machine-preview/story-1")
+    first_payload = first.get_json()
+    second = client.post("/api/panel/machine-preview/story-1")
+    second_payload = second.get_json()
 
-    assert response.status_code == 200
-    assert payload["ok"] is True
-    assert payload["preview"] == "ترجمه سبک پنل"
-    assert calls and "Iran announces" in calls[0]
+    assert first.status_code == 200
+    assert first_payload["ok"] is True
+    assert first_payload["preview"] == "ترجمه سبک پنل"
+    assert first_payload["cached"] is False
+    assert second.status_code == 200
+    assert second_payload["cached"] is True
+    assert len(calls) == 1
+    assert "Iran announces" in calls[0]
+    assert data.mapping["data/panel_live_feed.json"][0]["machine_translation"] == "ترجمه سبک پنل"
 
 
-def test_rejected_luna_preview_cannot_be_published():
+def test_rejected_luna_preview_cannot_be_published_and_stays_reviewed():
     def finalizer(row: dict) -> dict:
         return {
             "decision": "REJECT",
@@ -150,8 +161,9 @@ def test_rejected_luna_preview_cannot_be_published():
             "confidence": 0.9,
         }
 
-    client, _ = _make_client(finalizer=finalizer)
+    client, data = _make_client(finalizer=finalizer)
     assert client.post("/api/panel/luna/preview/story-1").status_code == 200
+    assert data.mapping["data/panel_live_feed.json"][0]["luna_decision"] == "REJECT"
     response = client.post("/api/panel/luna/publish/story-1")
     assert response.status_code == 409
     assert response.get_json()["error"] == "luna_preview_not_publishable"
