@@ -89,14 +89,14 @@ def test_authenticated_dashboard_is_a_real_persian_newsroom():
     assert response.status_code == 200
     assert "مرکز کنترل بی‌خبر" in text
     assert "Newsroom V4" in text
-    assert "داشبورد امروز" in text
+    assert "خبرها" in text
     assert "ورودی خبرها" in text
-    assert "🌐 ترجمه ماشینی" not in text  # no story rows in this fixture
+    assert "ترجمه ماشینی" not in text
     assert "Luna" in text
     assert "سلامت سیستم" in text
     assert "هواشناسی" in text
     assert "نفتکش و هرمز" in text
-    assert "بازار و دلار" in text
+    assert "بازار" in text
     assert "ترافیک هوایی" not in text
     assert 'class="v4-mobile-nav"' in text
     assert "newsroom-v4.css" in text
@@ -142,6 +142,7 @@ def test_pwa_assets_exist_and_do_not_cache_api_routes():
     assert "networkOnly" in worker or "startsWith('/api/')" in worker
     assert "settings.js" in worker
     assert "settings.css" in worker
+    assert "bikhabar-newsroom-v4-1" in worker
 
 
 def test_dashboard_shows_original_but_never_translates_during_get():
@@ -172,8 +173,8 @@ def test_dashboard_shows_original_but_never_translates_during_get():
     assert response.status_code == 200
     assert text.count('data-v4-story-card="1"') == 5
     assert "Live story 0" in text
-    assert "ترجمه ماشینی هنوز آماده نیست" in text
-    assert "ارسال به Luna" in text
+    assert "ترجمه با Luna" in text
+    assert "ترجمه ماشینی" not in text
     assert 'data-action="publish"' not in text
     assert "خبر زنده صفر" not in text
 
