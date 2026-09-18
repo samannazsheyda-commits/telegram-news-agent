@@ -114,10 +114,6 @@ def run_ancillary_cycle(now: datetime) -> int:
     v13.install_production_policies()
     v13.expire_previous_day_queue(now)
 
-    # Complete the upper legacy install chain before replacing its news hooks.
-    # The deeper runtime_v2 layer still calls install_integrations() on every run,
-    # so guard that installer too: it may otherwise overwrite these no-news stubs
-    # immediately before agent.run() and wake the legacy news lane back up.
     legacy = v13.v12.v11.v10.v9.v8
     legacy.install_strict_dedup_policy()
     legacy_v2 = legacy.v7.v2
@@ -150,6 +146,15 @@ def _requested_newsroom_engine() -> str:
     return "v3" if value == "v3" else "v2"
 
 
+def _panel_daily_limit(settings: dict) -> int:
+    """Resolve the live quota from the panel settings, with env as fallback."""
+    try:
+        value = int(settings.get("daily_limit") or os.environ.get("NEWSROOM_V3_DAILY_LIMIT", "35"))
+    except (TypeError, ValueError):
+        value = 35
+    return max(1, min(100, value))
+
+
 def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
     resolved_now = now or datetime.now(timezone.utc)
     commands_processed = 0 if shadow else _process_panel_commands()
@@ -167,21 +172,16 @@ def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
         return result
 
     newsroom_settings = dict(v13.load_newsroom_settings())
-    # Convert emergency lock and quiet-mode policy into the same auto-publish
-    # switch consumed by both production engines.
     if v13.newsroom_publish_paused(newsroom_settings, resolved_now):
         newsroom_settings["auto_publish"] = False
 
     data_dir = os.environ.get("DATA_DIR", "data")
     requested_engine = _requested_newsroom_engine()
+    daily_limit = _panel_daily_limit(newsroom_settings)
 
-    # Explicit shadow runs remain V2-compatible diagnostics and can never publish.
     if not shadow and requested_engine == "v3":
         gate = v3_cutover_gate(data_dir=data_dir)
         if gate.get("ready") is True:
-            # Keep V2 shadow-only during the transition so the existing panel/live
-            # feed remains populated. This call is structurally incapable of a
-            # Telegram write; V3 is the only production publisher in this mode.
             v2_shadow = run_v2_once(
                 shadow=True,
                 now=resolved_now,
@@ -193,6 +193,7 @@ def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
                     data_dir=data_dir,
                     now=resolved_now,
                     publish_enabled=bool(newsroom_settings.get("auto_publish", True)),
+                    daily_limit=daily_limit,
                 )
             except Exception as exc:
                 print(
@@ -206,6 +207,7 @@ def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
                     "publish_failed": 0,
                     "reason": "v3_cycle_error",
                     "error": f"{type(exc).__name__}: {exc}",
+                    "daily_limit": daily_limit,
                 }
 
             combined = {
@@ -219,8 +221,6 @@ def run_cycle(*, shadow: bool, now: datetime | None = None) -> dict:
             _record_runtime_heartbeat(combined, now=resolved_now)
             return combined
 
-        # A requested cutover without verified canary evidence fails safely back
-        # to the already-running V2 production path instead of creating an outage.
         result = run_v2_once(
             shadow=False,
             now=resolved_now,

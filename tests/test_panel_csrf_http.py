@@ -30,10 +30,11 @@ def _csrf(html: str) -> str:
     return match.group(1)
 
 
-def _load_production_wsgi(monkeypatch, *, secure: str | None = None):
+def _load_production_wsgi(monkeypatch, *, secure: str | None = None, auth_disabled: str = "1"):
     monkeypatch.setenv("PANEL_SECRET_KEY", "csrf-http-test-secret")
     monkeypatch.setenv("PANEL_PASSWORD_HASH", generate_password_hash("panel-pass"))
     monkeypatch.setenv("GITHUB_DATA_TOKEN", "test-token")
+    monkeypatch.setenv("PANEL_AUTH_DISABLED", auth_disabled)
     monkeypatch.delenv("PANEL_LOCAL_ROOT", raising=False)
     monkeypatch.setattr(panel_app, "GitHubJsonRepository", lambda *args, **kwargs: FakeData())
     if secure is None:
@@ -44,15 +45,19 @@ def _load_production_wsgi(monkeypatch, *, secure: str | None = None):
     return importlib.import_module("panel.wsgi").app
 
 
-def test_plain_http_wsgi_login_keeps_session_cookie_and_accepts_csrf(monkeypatch):
+def test_plain_http_wsgi_is_passwordless_for_owner_operation(monkeypatch):
     app = _load_production_wsgi(monkeypatch)
     assert app.config["SESSION_COOKIE_SECURE"] is False
+    client = app.test_client()
+    response = client.get("/", base_url="http://panel.local", follow_redirects=False)
+    assert response.status_code == 200
+    assert "اتاق خبر بی‌خبر" in response.get_data(as_text=True)
 
+
+def test_password_auth_can_be_restored_by_env(monkeypatch):
+    app = _load_production_wsgi(monkeypatch, auth_disabled="0")
     client = app.test_client()
     page = client.get("/login", base_url="http://panel.local")
-    cookie = page.headers.get("Set-Cookie", "")
-    assert "Secure" not in cookie
-
     response = client.post(
         "/login",
         base_url="http://panel.local",

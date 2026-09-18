@@ -67,9 +67,10 @@ def test_dashboard_get_never_calls_translation_backend():
     assert "Raw English headline" not in response.get_data(as_text=True)
 
 
-def test_live_ui_automatically_requests_offline_preview_after_render():
+def test_live_ui_requests_machine_preview_only_after_fast_render():
     js = Path("panel/static/newsroom-live.js").read_text(encoding="utf-8")
 
-    assert "/api/live-feed/localize" in js
-    assert "retry-localization" in js
-    assert "void localizeMissing(currentStories);" in js
+    assert "/api/live-feed/machine-translate" in js
+    assert "machineTranslate(autoIds" in js
+    assert "stories.slice(0, 4)" in js
+    assert "خطا در آماده‌سازی ترجمه ماشینی" in js

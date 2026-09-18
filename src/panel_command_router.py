@@ -16,7 +16,7 @@ from .strict_translation import _natural_persian_copy
 
 TERMINAL = {"succeeded", "failed", "reconciled", "ambiguous"}
 NEWSROOM_ACTIONS = {
-    "clear", "settings_save", "publish", "v3_publish",
+    "clear", "settings_save", "publish", "v3_publish", "v3_prepare", "v3_publish_prepared",
     "weather_now", "air_traffic_now", "tanker_now", "market_now",
     "weather_preview", "air_traffic_preview", "tanker_preview", "market_preview",
 }
@@ -64,6 +64,8 @@ def _write_result(
     story_id: str = "",
     telegram_message_id: int | None = None,
     error: str = "",
+    title: str = "",
+    body: str = "",
 ) -> dict:
     payload = {
         "command_id": command_id,
@@ -76,6 +78,8 @@ def _write_result(
         "story_id": story_id,
         "telegram_message_id": telegram_message_id,
         "error": error,
+        "title": title,
+        "body": body,
         "updated_at": _now(),
     }
     _atomic_write(_result_path(command_id), payload)
@@ -156,6 +160,8 @@ def _normalise_settings(value: Any) -> dict[str, Any]:
     settings["updated_at"] = _now()
     settings["version"] = int(settings.get("version") or 1)
     settings["freshness_hours"] = max(1, min(48, int(settings.get("freshness_hours") or 3)))
+    settings["daily_limit"] = max(1, min(100, int(settings.get("daily_limit") or 35)))
+    settings["special_limit"] = max(0, min(10, int(settings.get("special_limit") or 5)))
     settings["earthquake_min"] = max(0.0, min(10.0, float(settings.get("earthquake_min") or 2.0)))
     settings["earthquake_breaking"] = max(settings["earthquake_min"], min(10.0, float(settings.get("earthquake_breaking") or 4.0)))
     if settings.get("dedup_mode") not in {"strict", "balanced", "loose"}:
@@ -232,7 +238,6 @@ def _luna_finalize_piece(ai: OneXAINewsAI, source_text: str) -> str:
     source = str(source_text or "").strip()
     if not source:
         return ""
-
     if _has_persian(source):
         draft_text = source
     else:
@@ -240,14 +245,12 @@ def _luna_finalize_piece(ai: OneXAINewsAI, source_text: str) -> str:
         draft_text = str(getattr(draft, "text", "") or "").strip()
         if not draft_text or getattr(draft, "faithful", False) is not True:
             raise AIServiceError("luna_manual_translation_rejected")
-
     edit = ai.edit_persian(source, draft_text)
     if getattr(edit, "faithful", False) is not True or getattr(edit, "natural", False) is not True:
         raise AIServiceError("luna_manual_edit_rejected")
     edited_text = str(getattr(edit, "text", "") or "").strip()
     if not edited_text:
         raise AIServiceError("luna_manual_edit_empty")
-
     guarded = _natural_persian_copy(source, edited_text)
     if not guarded or not _has_persian(guarded):
         raise AIServiceError("luna_manual_guard_rejected")
@@ -255,24 +258,98 @@ def _luna_finalize_piece(ai: OneXAINewsAI, source_text: str) -> str:
 
 
 def _finalize_manual_copy_with_luna(original_title: str, original_body: str) -> tuple[str, str]:
-    """Create the only publishable manual copy from immutable source text.
-
-    The offline Argos preview intentionally never enters this function. Manual
-    publish is fail-closed: if 1xAI/Luna is unavailable or its translation/edit
-    does not pass the existing deterministic guards, Telegram is never called.
-    """
     source_title = str(original_title or "").strip()
     source_body = str(original_body or "").strip()
     if not source_title:
         raise AIServiceError("missing_original_title")
-
     ai = OneXAINewsAI()
     if not ai.available:
         raise AIServiceError("luna_manual_unavailable")
-
     final_title = _luna_finalize_piece(ai, source_title)
     final_body = _luna_finalize_piece(ai, source_body) if source_body else ""
     return final_title, final_body
+
+
+def _queue_row(item_id: str) -> dict:
+    queue = _read_json(Path("data/editorial_queue.json"), [])
+    if not isinstance(queue, list):
+        return {}
+    return next((dict(row) for row in queue if isinstance(row, dict) and _row_id(row) == item_id), {})
+
+
+def _save_luna_preview(item_id: str, title: str, body: str) -> None:
+    path = Path("data/editorial_queue.json")
+    queue = _read_json(path, [])
+    queue = [dict(row) for row in queue if isinstance(row, dict)] if isinstance(queue, list) else []
+    now = _now()
+    updated = False
+    for row in queue:
+        if _row_id(row) == item_id:
+            row.update(
+                final_persian_title=title,
+                final_persian_body=body,
+                luna_preview_title=title,
+                luna_preview_body=body,
+                luna_preview_at=now,
+                status="luna_ready",
+                updated_at=now,
+            )
+            updated = True
+            break
+    if not updated:
+        queue.insert(0, {
+            "id": item_id,
+            "item_id": item_id,
+            "final_persian_title": title,
+            "final_persian_body": body,
+            "luna_preview_title": title,
+            "luna_preview_body": body,
+            "luna_preview_at": now,
+            "status": "luna_ready",
+            "updated_at": now,
+        })
+    _atomic_write(path, queue)
+
+
+def _story_context(payload: dict[str, Any]) -> dict[str, str]:
+    item_id = str(payload.get("item_id") or "").strip()
+    if not item_id:
+        raise ValueError("missing_item_id")
+    queued = _queue_row(item_id)
+    source = str(payload.get("source") or queued.get("source") or "").strip()
+    source_url = str(payload.get("source_url") or queued.get("source_url") or "").strip()
+    original_title = str(payload.get("original_title") or queued.get("original_title") or queued.get("title") or "").strip()
+    original_body = str(payload.get("original_body") or queued.get("original_summary") or queued.get("summary") or queued.get("body") or "").strip()
+    news_key = str(payload.get("news_key") or queued.get("news_key") or item_id).strip()
+    published_at = str(payload.get("published_at") or queued.get("published_at_source") or "").strip()
+    if not source or not source_url:
+        raise ValueError("missing_source")
+    if not original_title:
+        raise ValueError("missing_original_title")
+    return {
+        "item_id": item_id,
+        "source": source,
+        "source_url": source_url,
+        "original_title": original_title,
+        "original_body": original_body,
+        "news_key": news_key,
+        "published_at": published_at,
+    }
+
+
+def _apply_v3_prepare(payload: dict[str, Any]) -> dict:
+    context = _story_context(payload)
+    title, body = _finalize_manual_copy_with_luna(context["original_title"], context["original_body"])
+    _save_luna_preview(context["item_id"], title, body)
+    return _write_result(
+        payload["command_id"],
+        "v3_prepare",
+        "succeeded",
+        "نسخه نهایی لونا آماده شد؛ هنوز چیزی منتشر نشده",
+        item_id=context["item_id"],
+        title=title,
+        body=body,
+    )
 
 
 def _finalize_editorial_publish(payload: dict[str, Any], result: dict) -> None:
@@ -293,78 +370,100 @@ def _finalize_editorial_publish(payload: dict[str, Any], result: dict) -> None:
     history = [dict(row) for row in history if isinstance(row, dict)] if isinstance(history, list) else []
     _atomic_write(history_path, [final] + [row for row in history if _row_id(row) != item_id])
     live = _read_json(live_path, [])
-    if isinstance(live, list): _atomic_write(live_path, [row for row in live if _row_id(row) != item_id])
+    if isinstance(live, list):
+        _atomic_write(live_path, [row for row in live if _row_id(row) != item_id])
 
 
-def _apply_v3_publish(payload: dict[str, Any]) -> dict:
-    command_id = payload["command_id"]
-    item_id = str(payload.get("item_id") or "").strip()
-    if not item_id: raise ValueError("missing_item_id")
-    queue = _read_json(Path("data/editorial_queue.json"), [])
-    queued = next((dict(row) for row in queue if isinstance(row, dict) and _row_id(row) == item_id), {}) if isinstance(queue, list) else {}
-    source = str(payload.get("source") or queued.get("source") or "").strip()
-    source_url = str(payload.get("source_url") or queued.get("source_url") or "").strip()
-    original_title = str(payload.get("original_title") or queued.get("original_title") or queued.get("title") or "").strip()
-    original_body = str(payload.get("original_body") or queued.get("original_summary") or queued.get("summary") or queued.get("body") or "").strip()
-    news_key = str(payload.get("news_key") or queued.get("news_key") or item_id).strip()
-    published_at = str(payload.get("published_at") or queued.get("published_at_source") or "").strip()
-    if not source or not source_url: raise ValueError("missing_source")
-    if not original_title: raise ValueError("missing_original_title")
-
-    title, body = _finalize_manual_copy_with_luna(original_title, original_body)
-    normalized = {
-        **payload,
-        "item_id": item_id,
-        "source": source,
-        "source_url": source_url,
-        "original_title": original_title,
-        "original_body": original_body,
-        "title": title,
-        "body": body,
-        "news_key": news_key,
-        "published_at": published_at,
-    }
-    result = publish_manual_story(data_dir=Path(os.environ.get("DATA_DIR", "data")), item_id=item_id, news_key=news_key, source=source, source_url=source_url, title=title, body=body, published_at=published_at)
+def _publish_prepared(payload: dict[str, Any], *, action: str) -> dict:
+    context = _story_context(payload)
+    queued = _queue_row(context["item_id"])
+    title = str(payload.get("title") or queued.get("final_persian_title") or queued.get("luna_preview_title") or "").strip()
+    body = str(payload.get("body") or queued.get("final_persian_body") or queued.get("luna_preview_body") or "").strip()
+    if not title or not _has_persian(title):
+        raise ValueError("luna_preview_required")
+    result = publish_manual_story(
+        data_dir=Path(os.environ.get("DATA_DIR", "data")),
+        item_id=context["item_id"],
+        news_key=context["news_key"],
+        source=context["source"],
+        source_url=context["source_url"],
+        title=title,
+        body=body,
+        published_at=context["published_at"],
+    )
+    normalized = {**payload, **context, "title": title, "body": body}
     status = str(result.get("status") or "failed")
-    if status in {"succeeded", "reconciled"}: _finalize_editorial_publish(normalized, result)
+    if status in {"succeeded", "reconciled"}:
+        _finalize_editorial_publish(normalized, result)
     messages = {
-        "succeeded": "خبر پس از ترجمه و ویرایش لونا با مسیر امن V3 در تلگرام منتشر شد",
+        "succeeded": "نسخه تأییدشده لونا با مسیر امن V3 منتشر شد",
         "reconciled": "انتشار قبلی V3 تأیید و همگام شد",
-        "ambiguous": "وضعیت ارسال تلگرام نامشخص است؛ انتشار دوباره خودکار مسدود شد",
+        "ambiguous": "وضعیت ارسال تلگرام نامشخص است؛ دوباره منتشر نکن",
         "processing": "انتشار V3 در حال پردازش است",
         "failed": "انتشار V3 ناموفق بود",
     }
-    return _write_result(command_id, "v3_publish", status, messages.get(status, "وضعیت انتشار V3 ثبت شد"), item_id=item_id, story_id=str(result.get("story_id") or ""), telegram_message_id=result.get("telegram_message_id") if isinstance(result.get("telegram_message_id"), int) else None, error=str(result.get("error") or ""))
+    return _write_result(
+        payload["command_id"], action, status, messages.get(status, "وضعیت انتشار V3 ثبت شد"),
+        item_id=context["item_id"], story_id=str(result.get("story_id") or ""),
+        telegram_message_id=result.get("telegram_message_id") if isinstance(result.get("telegram_message_id"), int) else None,
+        error=str(result.get("error") or ""), title=title, body=body,
+    )
+
+
+def _apply_v3_publish(payload: dict[str, Any]) -> dict:
+    context = _story_context(payload)
+    title, body = _finalize_manual_copy_with_luna(context["original_title"], context["original_body"])
+    return _publish_prepared({**payload, **context, "title": title, "body": body}, action="v3_publish")
+
+
+def _apply_v3_publish_prepared(payload: dict[str, Any]) -> dict:
+    return _publish_prepared(payload, action="v3_publish_prepared")
 
 
 def apply_command(path: str | Path) -> dict:
     command_path = Path(path)
     if not command_path.exists():
         existing = _read_json(_result_path(command_path.stem), None)
-        if isinstance(existing, dict) and existing.get("status") in TERMINAL: return existing
+        if isinstance(existing, dict) and existing.get("status") in TERMINAL:
+            return existing
         raise FileNotFoundError(command_path)
     payload = _command_payload(command_path)
     action = payload["action"]
-    if action not in NEWSROOM_ACTIONS: return apply_legacy_command(command_path)
+    if action not in NEWSROOM_ACTIONS:
+        return apply_legacy_command(command_path)
     existing = _read_json(_result_path(payload["command_id"]), None)
     if isinstance(existing, dict) and existing.get("status") in TERMINAL:
-        _consume(command_path); return existing
+        _consume(command_path)
+        return existing
     _write_result(payload["command_id"], action, "processing", "در حال پردازش", item_id=str(payload.get("item_id") or ""))
     try:
-        if action == "clear": result = _apply_clear(payload)
-        elif action == "settings_save": result = _apply_settings(payload)
-        elif action in {"publish", "v3_publish"}: result = _apply_v3_publish(payload)
-        else: result = _apply_module(payload)
-        _consume(command_path); return result
+        if action == "clear":
+            result = _apply_clear(payload)
+        elif action == "settings_save":
+            result = _apply_settings(payload)
+        elif action == "v3_prepare":
+            result = _apply_v3_prepare(payload)
+        elif action == "v3_publish_prepared":
+            result = _apply_v3_publish_prepared(payload)
+        elif action in {"publish", "v3_publish"}:
+            result = _apply_v3_publish(payload)
+        else:
+            result = _apply_module(payload)
+        _consume(command_path)
+        return result
     except Exception as exc:
         result = _write_result(payload["command_id"], action, "failed", str(exc), scope=str(payload.get("scope") or ""), ids=list(payload.get("ids") or []), item_id=str(payload.get("item_id") or ""), error=str(exc))
-        _consume(command_path); return result
+        _consume(command_path)
+        return result
 
 
 def main() -> None:
-    if len(sys.argv) != 2: raise SystemExit("usage: python -m src.panel_command_router <command.json>")
-    result = apply_command(sys.argv[1]); print(json.dumps(result, ensure_ascii=False))
-    if result.get("status") == "failed": raise SystemExit(1)
+    if len(sys.argv) != 2:
+        raise SystemExit("usage: python -m src.panel_command_router <command.json>")
+    result = apply_command(sys.argv[1])
+    print(json.dumps(result, ensure_ascii=False))
+    if result.get("status") == "failed":
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ class FakeData:
             "data/editorial_history.json": [],
             "data/panel_live_feed.json": [],
             "data/custom_sources.json": [],
-            "data/newsroom_settings.json": {"auto_publish": True, "emergency_lock": False},
+            "data/newsroom_settings.json": {"auto_publish": True, "emergency_lock": False, "daily_limit": 35, "special_limit": 5},
             "state.json": {"news_seen": []},
         }
 
@@ -81,7 +81,7 @@ def test_invalid_password_is_rejected():
     assert "رمز ورود درست نیست" in response.get_data(as_text=True)
 
 
-def test_authenticated_dashboard_is_a_real_persian_newsroom():
+def test_authenticated_dashboard_is_a_real_persian_newsroom_v4():
     app = _app()
     client = app.test_client()
     response = _login(client)
@@ -91,37 +91,29 @@ def test_authenticated_dashboard_is_a_real_persian_newsroom():
     assert "اتاق فرمان" not in text
     assert "توقف کامل انتشار" in text
     assert "اسکن فوری" in text
-    assert "اولویت قرمز ۲۴/۷" in text
-    assert "هواشناسی فردا" in text
-    assert "ترافیک هوایی ایران و منطقه" in text
-    assert "نفتکش‌ها و تنگه هرمز" in text
-    assert "بازار و دلار" in text
-    assert "سلامت سیستم" in text
+    assert "منتشرشده امروز" in text
+    assert "خبر ویژه لونا" in text
+    assert "سهمیه خبر عادی روزانه" in text
     assert "ورودی زنده" in text
     assert 'id="liveFeed"' in text
-    assert 'id="soundToggle"' in text
-    assert 'data-preview-toggle="weather"' in text
-    assert 'data-preview-toggle="air-traffic"' in text
-    assert 'data-preview-toggle="tanker"' in text
-    assert 'data-preview-toggle="market"' in text
-    assert 'id="weatherPreview"' in text
-    assert 'hidden' in text
-    assert "پیش‌نمایش دقیق هواشناسی" not in text
+    assert 'id="dailyLimitInput"' in text
+    assert 'id="editorSheet"' in text
+    assert "ترافیک هوایی ایران و منطقه" not in text
     assert 'rel="manifest"' in text
-    assert "settings.css" in text
-    assert "settings.js" in text
-    assert "serviceWorker" in text
+    assert "newsroom-v4.css" in text
+    assert "newsroom-live.js" in text
+    assert "newsroom-actions.js" in text
 
 
-def test_live_js_is_fast_and_supports_ding_final_output_and_collapsible_previews():
-    script = Path("panel/static/live.js").read_text(encoding="utf-8")
-    assert "1000" in script
-    assert "2000" in script
-    assert "beep" in script
-    assert "final_message" in script
-    assert "data-preview-toggle" in script
-    assert "/api/command-center/command/" in script
-    assert "/api/command-center/health" in script
+def test_newsroom_v4_js_is_lightweight_and_preview_first():
+    live = Path("panel/static/newsroom-live.js").read_text(encoding="utf-8")
+    actions = Path("panel/static/newsroom-actions.js").read_text(encoding="utf-8")
+    assert "document.hidden ? 60000 : 15000" in live
+    assert "/api/live-feed/machine-translate" in live
+    assert "ترجمه ماشینی" in live
+    assert "ترجمه و ویراستاری با لونا" in live
+    assert "/publish-prepared" in actions
+    assert "همین متن لونا در کانال بی‌خبر منتشر می‌شود" in actions
 
 
 def test_panel_css_uses_doran_first_without_external_font_dependency():
@@ -141,18 +133,18 @@ def test_live_settings_assets_define_real_runtime_controls():
     assert ".agent-settings-card" in css
 
 
-def test_pwa_assets_exist_and_do_not_cache_api_routes():
+def test_pwa_assets_exist_but_v4_shell_clears_stale_caches():
     manifest = Path("panel/static/manifest.webmanifest").read_text(encoding="utf-8")
     worker = Path("panel/static/sw.js").read_text(encoding="utf-8")
+    base = Path("panel/templates/base.html").read_text(encoding="utf-8")
     assert "بی‌خبر" in manifest
     assert "standalone" in manifest
     assert "/api/" in worker
-    assert "networkOnly" in worker or "startsWith('/api/')" in worker
-    assert "settings.js" in worker
-    assert "settings.css" in worker
+    assert "serviceWorker.getRegistrations" in base
+    assert "caches.keys" in base
 
 
-def test_dashboard_marks_live_items_pending_when_persian_copy_is_missing():
+def test_dashboard_live_feed_is_client_rendered_and_does_not_translate_on_render():
     data = FakeData()
     data.files["data/panel_live_feed.json"] = [
         {
@@ -161,14 +153,14 @@ def test_dashboard_marks_live_items_pending_when_persian_copy_is_missing():
             "source": "Reuters",
             "source_url": f"https://example.com/{index}",
             "title": f"Live story {index}",
-            "published_at_source": "2026-09-08T12:00:00+00:00",
-            "discovered_at": "2026-09-08T12:01:00+00:00",
+            "published_at_source": "2026-09-18T12:00:00+00:00",
+            "discovered_at": "2026-09-18T12:01:00+00:00",
             "decision": "new_event",
             "decision_reason": "no_matching_event",
             "duplicate_of": "",
             "telegram_message_id": None,
             "panel_status": "new",
-            "updated_at": "2026-09-08T12:01:00+00:00",
+            "updated_at": "2026-09-18T12:01:00+00:00",
         }
         for index in range(5)
     ]
@@ -179,12 +171,9 @@ def test_dashboard_marks_live_items_pending_when_persian_copy_is_missing():
     assert response.status_code == 200
     assert "ورودی زنده" in text
     assert ">5<" in text
-    assert "عنوان فارسی در حال آماده‌سازی" in text
+    assert "در حال دریافت تازه‌ترین خبرها" in text
     assert "خبر زنده صفر" not in text
     assert "Live story 0" not in text
-    assert "تازه" in text
-    assert "نیاز به تصمیم دستی نیست" in text
-    assert ">0<" in text
 
 
 def test_mutation_without_csrf_is_rejected():
