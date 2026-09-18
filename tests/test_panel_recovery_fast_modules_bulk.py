@@ -100,10 +100,11 @@ def test_bulk_clear_supports_live_feed(tmp_path, monkeypatch):
     assert '"a"' not in text
 
 
-def test_v4_dashboard_bounds_initial_dom_instead_of_bulk_rendering():
+def test_v41_dashboard_bounds_initial_dom_without_background_translation_work():
     template = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
     js = Path("panel/static/newsroom-v4-dashboard.js").read_text(encoding="utf-8")
-    assert "live[:30]" in template
-    assert "IntersectionObserver" in js
+    assert "live[:40]" in template
+    assert "IntersectionObserver" not in js
+    assert "/api/panel/luna/translate-story/" in js
     assert 'id="liveSelectAll"' not in template
     assert 'id="liveBulkDelete"' not in template
