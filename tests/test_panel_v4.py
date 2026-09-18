@@ -83,9 +83,9 @@ def test_dashboard_binds_initial_intake_to_40_dense_cards():
     html = response.get_data(as_text=True)
 
     assert html.count('data-v4-story-card="1"') == 40
-    assert "Original headline 0" in html
-    assert "Original headline 39" in html
-    assert "Original headline 40" not in html
+    assert "Original headline 44" in html
+    assert "Original headline 5" in html
+    assert "Original headline 4" not in html
 
 
 def test_story_uses_guarded_luna_translation_without_machine_preview_or_judgment():
