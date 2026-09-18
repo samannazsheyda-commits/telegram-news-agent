@@ -13,15 +13,16 @@
   <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='panel.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-v4.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-v4-polish.css') }}">
   {% block extra_head %}{% endblock %}
 </head>
-<body class="v4-body" data-newsroom-shell="v4">
+<body class="v4-body" data-newsroom-shell="v4-1">
   <header class="v4-topbar">
     <a href="{{ url_for('dashboard') if session.get('admin') else url_for('login') }}" class="v4-brand" aria-label="مرکز کنترل بی‌خبر">
       <span class="v4-brand-mark">ب</span>
       <span class="v4-brand-copy">
         <strong>مرکز کنترل بی‌خبر</strong>
-        <small>Newsroom V4 · Luna Control</small>
+        <small>Newsroom V4.1 · Luna</small>
       </span>
     </a>
 
