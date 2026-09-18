@@ -40,7 +40,11 @@ def _terminal_rejection(story: StoryRecord | None) -> bool:
     if story is None or story.decision_state != "rejected":
         return False
     reason = str(story.decision_reason or "").strip()
-    return reason.startswith("final_gate:") or reason.startswith("publisher:")
+    return (
+        reason.startswith("final_gate:")
+        or reason.startswith("publisher:")
+        or reason.startswith("operator_block:")
+    )
 
 
 class NewsroomV3ShadowPipeline:
