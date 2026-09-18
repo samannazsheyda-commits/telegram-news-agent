@@ -1,0 +1,33 @@
+<button id="v4LunaLauncher" class="v4-luna-launcher" type="button" aria-controls="v4LunaAssistant" aria-expanded="false">
+  <span aria-hidden="true">✦</span>
+  <span>Luna</span>
+</button>
+
+<aside id="v4LunaAssistant" class="v4-luna-assistant" aria-hidden="true" aria-label="Luna Assistant">
+  <header class="v4-luna-head">
+    <div>
+      <strong>✦ Luna Assistant</strong>
+      <span>دستیار عملیاتی بی‌خبر</span>
+    </div>
+    <button id="v4LunaClose" class="v4-ghost-button" type="button" aria-label="بستن">×</button>
+  </header>
+
+  <div class="v4-luna-chips" aria-label="فرمان‌های پیشنهادی">
+    <button type="button" data-luna-prompt="چرا امروز خبر کم منتشر شده؟">چرا خبر کم بوده؟</button>
+    <button type="button" data-luna-prompt="آخرین 10 خبر منتشرشده رو نشون بده">۱۰ خبر آخر</button>
+    <button type="button" data-luna-prompt="از وضعیت امروز یک جمع‌بندی سردبیری بهم بده">جمع‌بندی امروز</button>
+  </div>
+
+  <div id="v4LunaThread" class="v4-luna-thread" aria-live="polite">
+    <div class="v4-luna-message is-luna">سلام. وضعیت پنل را می‌خوانم و برای کارهای مجاز می‌توانم مستقیم عمل کنم. انتشار یا عملیات حساس بدون تأیید انجام نمی‌شود.</div>
+  </div>
+
+  <form id="v4LunaForm" class="v4-luna-form">
+    <textarea id="v4LunaInput" rows="2" maxlength="1200" placeholder="مثلاً: سهمیه امروز رو بکن 40"></textarea>
+    <button id="v4LunaSend" class="v4-button" type="submit">ارسال</button>
+  </form>
+  <footer class="v4-luna-footer">
+    <a href="/audit">Audit Log</a>
+    <span>Actionهای حساس نیاز به تأیید دارند</span>
+  </footer>
+</aside>
