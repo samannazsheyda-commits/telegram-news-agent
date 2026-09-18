@@ -9,6 +9,7 @@ from uuid import uuid4
 import requests
 from flask import Blueprint, current_app, jsonify, request, session
 
+from .github_builder import BuilderError, GitHubBuilder
 from .luna_builder import is_builder_request
 from .luna_conversation import LunaConversationStore
 from .luna_tools import LunaToolbox, tool_schemas
@@ -27,6 +28,7 @@ _SYSTEM = """تو Luna، دستیار عملیاتی فارسی اتاق خبر 
 اگر کاربر می‌گوید «این خبر»، «همین منبع» یا مرجع مشابه و هدف از زمینه مکالمه روشن نیست، با ابزار جست‌وجو بررسی کن؛ اگر چند گزینه محتمل بود یک سؤال کوتاه برای رفع ابهام بپرس.
 عملیات حذف/مسدودسازی خبر و تغییر منبع باید به مرحله تأیید برسد؛ نتیجه confirmation_required یعنی هنوز هیچ تغییر حساسی اجرا نشده است.
 ترجمه خبر باید فقط ترجمه/ویرایش خبری باشد، بدون امتیازدهی، نظر سیاسی یا پیشنهاد PUBLISH/REJECT.
+اگر درخواست کاربر تغییر خود پنل، UI، ماژول یا کد است، این درخواست در Builder انجام می‌شود و مستقیم production دستکاری نمی‌شود.
 جواب نهایی را مختصر، دقیق و عملیاتی بنویس."""
 
 
@@ -74,11 +76,17 @@ def _conversation_store() -> LunaConversationStore:
     return LunaConversationStore(path)
 
 
-def _save_pending(tool_name: str, arguments: dict, summary_fa: str) -> str:
+def _save_pending(
+    tool_name: str,
+    arguments: dict,
+    summary_fa: str,
+    *,
+    action_type: str = "operator_tool",
+) -> str:
     action_id = uuid4().hex
     record = {
         "id": action_id,
-        "action": "operator_tool",
+        "action": action_type,
         "tool_name": str(tool_name),
         "payload": dict(arguments),
         "summary_fa": str(summary_fa or "این عملیات اجرا شود؟"),
@@ -88,7 +96,7 @@ def _save_pending(tool_name: str, arguments: dict, summary_fa: str) -> str:
         "data/panel_pending_actions.json",
         [],
         lambda rows: ([record] + [dict(row) for row in list(rows or []) if isinstance(row, dict)])[:100],
-        "panel v4.1: Luna operator pending action",
+        "panel v4.1: Luna pending action",
     )
     return action_id
 
@@ -105,7 +113,7 @@ def _finish_pending(action_id: str, *, status: str, result: dict) -> None:
                 row["result"] = dict(result)
             output.append(row)
         return output
-    _mutate("data/panel_pending_actions.json", [], transform, "panel v4.1: complete Luna operator action")
+    _mutate("data/panel_pending_actions.json", [], transform, "panel v4.1: complete Luna action")
 
 
 def _provider_error(exc: LunaProviderError):
@@ -168,13 +176,21 @@ def operator_chat():
         return jsonify({"ok": False, "error": "empty_message", "message": "پیام یا تصویر لازم است."}), 400
 
     if is_builder_request(message) and image is None:
+        action_id = _save_pending(
+            "builder_prepare",
+            {"request": message},
+            "Luna این تغییر کدنویسی را روی branch جدا بسازد، تست اضافه کند و Draft PR باز کند؟",
+            action_type="builder_prepare",
+        )
         return jsonify(
             {
                 "ok": True,
                 "mode": "builder",
                 "builder_request": message,
                 "confirmation_required": True,
-                "reply_fa": "این درخواست تغییر خود پنل/کد است. Luna می‌تواند آن را در Builder روی branch جدا شروع کند و قبل از merge نتیجه و تست‌ها را نشان بدهد.",
+                "action_id": action_id,
+                "summary_fa": "Luna تغییر را روی branch جدا می‌سازد؛ production مستقیم دستکاری نمی‌شود.",
+                "reply_fa": "این درخواست مربوط به تغییر خود پنل/کد است. آماده‌ام Builder را شروع کنم، تست بنویسم و Draft PR بسازم.",
             }
         )
 
@@ -261,14 +277,28 @@ def operator_confirm(action_id: str):
         (
             row
             for row in _rows("data/panel_pending_actions.json")
-            if str(row.get("id") or "") == action_id
-            and str(row.get("status") or "") == "pending"
-            and str(row.get("action") or "") == "operator_tool"
+            if str(row.get("id") or "") == action_id and str(row.get("status") or "") == "pending"
         ),
         None,
     )
     if record is None:
         return jsonify({"ok": False, "error": "pending_action_not_found", "message": "این تأیید دیگر معتبر نیست."}), 404
+
+    action_type = str(record.get("action") or "")
+    if action_type == "builder_prepare":
+        request_text = str((record.get("payload") or {}).get("request") or "").strip()
+        try:
+            result = GitHubBuilder.from_env().start_change(request_text)
+        except BuilderError as exc:
+            result = {"ok": False, "error": "builder_failed", "message": str(exc)}
+        except LunaProviderError as exc:
+            result = {"ok": False, "error": exc.code, "message": exc.message_fa}
+        _finish_pending(action_id, status="completed" if result.get("ok") else "failed", result=result)
+        return jsonify(result), (200 if result.get("ok") else 409)
+
+    if action_type != "operator_tool":
+        return jsonify({"ok": False, "error": "invalid_pending_action", "message": "این عملیات دیگر معتبر نیست."}), 409
+
     tool_name = str(record.get("tool_name") or "")
     arguments = record.get("payload") if isinstance(record.get("payload"), dict) else {}
     result = LunaToolbox(_data()).execute(tool_name, arguments, confirmed=True)
