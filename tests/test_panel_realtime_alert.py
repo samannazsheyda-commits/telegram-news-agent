@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from panel.app import create_app
 from src.local_json_repository import LocalJsonRepository
 
@@ -10,6 +12,7 @@ def _app(tmp_path):
             "title": "خبر تازه",
             "persian_title": "خبر تازه",
             "source": "Reuters",
+            "source_display": "رویترز",
             "source_url": "https://example.com/n1",
             "panel_status": "new",
             "updated_at": "2026-09-09T00:00:00+00:00",
@@ -32,24 +35,21 @@ def _client(tmp_path):
     return client
 
 
-def test_dashboard_has_realtime_feed_and_sound_toggle(tmp_path):
+def test_dashboard_has_bounded_v4_feed_without_legacy_sound_bundle(tmp_path):
     client = _client(tmp_path)
     html = client.get("/").get_data(as_text=True)
-    assert 'id="liveFeed"' in html
-    assert 'id="soundToggle"' in html
-    assert 'id="newNewsBadge"' in html
-    assert 'data-news-id="n1"' in html
-    assert "live.js" in html
+    assert 'id="v4LiveFeed"' in html
+    assert 'data-story-id="n1"' in html
+    assert "newsroom-v4-dashboard.js" in html
+    assert 'id="soundToggle"' not in html
+    assert "live.js" not in html
 
 
-def test_live_js_updates_feed_without_page_reload_and_keeps_sound_preference(tmp_path):
+def test_v4_dashboard_updates_story_actions_without_full_page_reload(tmp_path):
     client = _client(tmp_path)
-    js = client.get("/static/live.js").get_data(as_text=True)
-    assert "setInterval(refreshLiveFeed, 1000)" in js
-    assert "refreshStatus(); refreshHealth(); }, 2000" in js
-    assert "AudioContext" in js
-    assert "localStorage" in js
-    assert "/api/live-feed" in js
-    assert "DOMParser" not in js
+    js = client.get("/static/newsroom-v4-dashboard.js").get_data(as_text=True)
+    assert "/api/panel/luna/preview/" in js
+    assert "/api/panel/luna/publish/" in js
     assert "replaceChildren" in js
-    assert "location.reload" not in js
+    assert "window.location.reload" not in js
+    assert "DOMParser" not in js
