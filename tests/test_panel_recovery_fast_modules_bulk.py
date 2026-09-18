@@ -15,7 +15,7 @@ class FakeData:
     def __init__(self):
         self.files = {
             "data/panel_live_feed.json": [
-                {"item_id": f"n{i}", "title": f"Title {i}", "source": "Reuters", "updated_at": f"2026-09-09T11:{i:02d}:00+00:00", "panel_status": "new"}
+                {"item_id": f"n{i}", "title": f"Title {i}", "source": "Reuters", "updated_at": f"2026-09-18T11:{i:02d}:00+00:00", "panel_status": "new"}
                 for i in range(60)
             ],
             "data/newsroom_settings.json": {"auto_publish": True, "emergency_lock": False},
@@ -58,16 +58,18 @@ def test_live_feed_api_is_fast_json_and_never_calls_translator():
     assert response.status_code == 200
     payload = response.get_json()
     assert payload["ok"] is True
-    assert len(payload["items"]) <= 40
+    assert len(payload["items"]) <= 24
     assert calls == []
     assert payload["items"][0]["title"] == "عنوان فارسی در حال آماده‌سازی"
 
 
-def test_live_refresh_uses_json_endpoint_not_full_dashboard_html():
-    js = Path("panel/static/live.js").read_text(encoding="utf-8")
+def test_live_refresh_uses_small_json_endpoints_not_dashboard_html():
+    js = Path("panel/static/newsroom-live.js").read_text(encoding="utf-8")
     assert "/api/live-feed" in js
+    assert "/api/newsroom/v4/status" in js
     assert "fetch(window.location.pathname" not in js
     assert "DOMParser" not in js
+    assert "AbortController" in js
 
 
 def test_tanker_and_market_modules_are_real_and_available():
@@ -100,7 +102,10 @@ def test_bulk_clear_supports_live_feed(tmp_path, monkeypatch):
     assert '"a"' not in text
 
 
-def test_dashboard_has_bulk_live_controls():
-    combined = Path("panel/templates/dashboard.html").read_text(encoding="utf-8") + Path("panel/static/live.js").read_text(encoding="utf-8")
-    assert 'id="liveSelectAll"' in combined
-    assert 'id="liveBulkDelete"' in combined
+def test_dashboard_uses_incremental_feed_instead_of_heavy_bulk_dom():
+    html = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
+    js = Path("panel/static/newsroom-live.js").read_text(encoding="utf-8")
+    assert 'id="loadMoreFeed"' in html
+    assert "visibleCount = 10" in js
+    assert "visibleCount += 10" in js
+    assert 'id="liveSelectAll"' not in html
