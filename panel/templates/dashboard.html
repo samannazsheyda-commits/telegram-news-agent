@@ -1,185 +1,171 @@
 {% extends 'base.html' %}
-{% block title %}اتاق خبر V3 | بی‌خبر{% endblock %}
+{% block title %}داشبورد | بی‌خبر{% endblock %}
 {% block content %}
-<section class="nr-hero">
+<section class="v4-page-header">
   <div>
-    <span class="nr-eyebrow"><i></i> اتاق خبر زنده ۲۴/۷</span>
-    <h1>اتاق خبر بی‌خبر</h1>
-    <p>خبر تازه را ببین، همان‌جا تصمیم بگیر، و نتیجه واقعی V3 را دنبال کن.</p>
+    <h1 class="v4-page-title">مرکز کنترل بی‌خبر</h1>
+    <p class="v4-page-subtitle">وضعیت واقعی انتشار، Luna، منابع و تلگرام — بدون شلوغی و بدون آمار نمایشی</p>
   </div>
-  <div class="nr-live-controls">
-    <span id="newNewsBadge" class="nr-new-news-badge" hidden>خبر جدید</span>
-    <button id="soundToggle" class="nr-icon-button" type="button" aria-pressed="false" title="صدای خبر مهم">🔕</button>
+  <div class="v4-action-row">
+    <a class="v4-button is-secondary" href="/source-manager">＋ افزودن منبع</a>
+    <button id="v4Refresh" class="v4-button is-secondary" type="button">↻ تازه‌سازی</button>
+    <button id="v4Scan" class="v4-button" type="button">⚡ اسکن فوری</button>
   </div>
 </section>
 
-<section id="newsroomStatusBar" class="nr-status-bar" aria-label="وضعیت زنده سیستم">
-  <div><span>موتور</span><strong id="engineState">V3</strong></div>
-  <div><span>تلگرام</span><strong id="telegramState">در حال بررسی</strong></div>
-  <div><span>انتشار</span><strong id="publishingState">در حال بررسی</strong></div>
-  <div><span>آخرین چرخه</span><strong id="lastCycleAt">—</strong></div>
+<section class="v4-grid v4-grid-4" aria-label="آمار امروز">
+  <article class="v4-card v4-kpi">
+    <span class="v4-kpi-label">منتشرشده امروز</span>
+    <strong class="v4-kpi-value"><span id="regularPublished">{{ published_today }}</span> / <span id="regularLimit">35</span></strong>
+    <span class="v4-kpi-meta">سهمیه خبرهای عادی</span>
+  </article>
+  <article class="v4-card v4-kpi">
+    <span class="v4-kpi-label">باقی‌مانده</span>
+    <strong class="v4-kpi-value" id="regularRemaining">—</strong>
+    <span class="v4-kpi-meta">تا تکمیل سهمیه عادی</span>
+  </article>
+  <article class="v4-card v4-kpi">
+    <span class="v4-kpi-label">منتظر بررسی</span>
+    <strong class="v4-kpi-value" id="reviewCount">{{ queue_count }}</strong>
+    <span class="v4-kpi-meta">نیازمند تصمیم انسانی</span>
+  </article>
+  <article class="v4-card v4-kpi">
+    <span class="v4-kpi-label">خبر ویژه Luna</span>
+    <strong class="v4-kpi-value"><span id="specialUsed">0</span> / <span id="specialLimit">5</span></strong>
+    <span class="v4-kpi-meta">خارج از سهمیه عادی</span>
+  </article>
 </section>
 
-<div class="nr-workstation">
-  <section class="nr-main-column">
-    <section class="ops-fold">
-      <div class="nr-quick-actions">
-        <strong>کنترل سریع · صف فرمان</strong>
-        <button id="scanNow" class="nr-button nr-button-primary" type="button" data-action="scan">⚡ اسکن فوری</button>
-        <a class="nr-button nr-button-secondary" href="/source-manager">＋ افزودن منبع</a>
-        <button id="publishingToggle" class="nr-button nr-button-danger" type="button" data-confirm-action="publishing" data-action="publishing">⛔ توقف کامل انتشار</button>
-        <span id="actionState" class="nr-action-state">آماده</span>
-      </div>
-    </section>
-
-    <section class="nr-kpis" aria-label="آمار امروز">
-      <article><span>ورودی زنده</span><b id="liveCount">{{ live_count }}</b></article>
-      <article><span>نیازمند بررسی</span><b id="reviewCount">{{ queue_count }}</b></article>
-      <article><span>منتشرشده امروز</span><b id="publishedCount">{{ published_today }}</b></article>
-      <article><span>ردشده امروز</span><b id="rejectedCount">{{ rejected_today }}</b></article>
-    </section>
-
-    <section class="nr-card nr-live-desk">
-      <header class="nr-section-head">
-        <div><span>LIVE DESK</span><h2>ورودی زنده</h2></div>
-        <div class="nr-live-chip"><i></i> زنده</div>
-      </header>
-      <div class="nr-bulk-toolbar">
-        <label><input id="liveSelectAll" type="checkbox"> انتخاب همه</label>
-        <button id="liveBulkDelete" class="nr-button nr-button-secondary" type="button" disabled>حذف انتخاب‌شده‌ها از پنل</button>
-        <button id="clearCurrentFeed" class="nr-button nr-button-secondary" type="button">پاک‌کردن ورودی‌های فعلی پنل</button>
-        <small id="liveBulkState">فقط از پنل؛ هیچ پیامی در تلگرام حذف نمی‌شود.</small>
-      </div>
-      <div id="liveFeed" class="nr-story-list" aria-live="polite">
-        {% if live %}
-          {% for item in live[:60] %}
-          <article class="nr-story-card{% if item.source_priority in ['high','critical','breaking'] %} is-priority{% endif %}"
-                   data-story-id="{{ item.id or item.item_id or item.news_key }}"
-                   data-news-id="{{ item.id or item.item_id or item.news_key }}"
-                   data-story-title="{{ item.display_title }}"
-                   data-story-body="{{ item.persian_body or item.final_persian_body or '' }}"
-                   data-story-source="{{ item.source_display or 'منبع' }}"
-                   data-story-source-url="{{ item.source_url or item.link or '' }}">
-            <input class="live-select" type="checkbox" value="{{ item.id or item.item_id or item.news_key }}" aria-label="انتخاب خبر">
-            <div class="nr-story-rail"></div>
-            <div class="nr-story-head">
-              <div class="nr-story-meta">
-                {% if item.source_priority in ['high','critical','breaking'] %}<span class="nr-priority-badge">مهم</span>{% endif %}
-                <span>{{ item.source_display or 'منبع' }}</span>
-                <time>{{ item.discovered_at or item.updated_at or '' }}</time>
-              </div>
-              <span class="nr-story-status">{{ item.panel_status_fa }}</span>
-            </div>
-            <h3>{{ item.display_title }}</h3>
-            {% if item.persian_body or item.final_persian_body %}<p>{{ item.final_persian_body or item.persian_body }}</p>{% endif %}
-            <div class="nr-story-actions">
-              <button class="nr-story-action publish" type="button" data-action="publish">انتشار</button>
-              <button class="nr-story-action" type="button" data-action="edit">ویرایش</button>
-              <button class="nr-story-action reject" type="button" data-action="reject">رد</button>
-              {% if item.source_url %}<a class="nr-story-action source" data-action="source" href="{{ item.source_url }}" target="_blank" rel="noopener">منبع</a>{% endif %}
-            </div>
-            <div class="nr-story-progress" hidden></div>
-          </article>
-          {% endfor %}
-        {% else %}
-          <div class="nr-empty"><span>◌</span><strong>فعلاً خبر تازه‌ای نیست</strong><small>فید به‌صورت خودکار به‌روز می‌شود.</small></div>
-        {% endif %}
-      </div>
-    </section>
-
-    <section class="nr-card nr-review-summary">
-      <header class="nr-section-head"><div><span>EDITORIAL</span><h2>نیازمند بررسی دستی</h2></div><a href="{{ url_for('review_queue') }}">مشاهده همه</a></header>
-      {% if pending %}
-        {% for item in pending[:4] %}<div class="nr-review-row"><strong>{{ item.persian_title or 'عنوان فارسی در حال آماده‌سازی' }}</strong><a href="{{ url_for('review_edit', item_id=item.id) }}">ویرایش / بررسی</a></div>{% endfor %}
-      {% else %}<p class="nr-empty-copy">نیاز به تصمیم دستی نیست؛ فعلاً موردی برای بررسی وجود ندارد.</p>{% endif %}
-    </section>
-  </section>
-
-  <aside class="nr-side-column">
-    <section class="nr-card nr-health-card">
-      <header class="nr-section-head"><div><span>SYSTEM</span><h2>سلامت سیستم · V3</h2></div><span id="healthDot" class="nr-health-dot"></span></header>
-      <dl class="nr-health-list">
-        <div><dt>وضعیت چرخه</dt><dd id="cycleReason">—</dd></div>
-        <div><dt>منابع سالم</dt><dd id="sourcesOk">—</dd></div>
-        <div><dt>منابع خطادار</dt><dd id="sourcesFailed">—</dd></div>
-        <div><dt>ورودی چرخه</dt><dd id="itemsFetched">—</dd></div>
-        <div><dt>آخرین Message ID</dt><dd id="telegramMessageId">—</dd></div>
-        <div class="nr-health-error"><dt>آخرین خطا</dt><dd id="lastError">بدون خطا</dd></div>
-      </dl>
-    </section>
-
-    <section class="nr-card">
-      <header class="nr-section-head"><div><span>OPERATIONS</span><h2>ابزارهای عملیاتی</h2></div></header>
-      <div class="nr-module-grid newsroom-modules">
-        {% for name, preview_id, icon, title in [
-          ('weather','weatherPreview','☁','هواشناسی فردا'),
-          ('air-traffic','airTrafficPreview','✈','ترافیک هوایی ایران و منطقه'),
-          ('tanker','tankerPreview','◈','نفتکش‌ها و تنگه هرمز'),
-          ('market','marketPreview','↗','بازار و دلار')
-        ] %}
-        <article class="nr-module" data-module="{{ name }}">
-          <span>{{ icon }}</span><strong>{{ title }}</strong>
-          <div>
-            <button type="button" data-module-preview="{{ name }}" data-preview-toggle="{{ name }}">پیش‌نمایش</button>
-            <button type="button" data-module-run="{{ name }}">انتشار همین حالا</button>
-          </div>
-          <div id="{{ preview_id }}" class="nr-module-preview" data-preview="{{ name }}" data-preview-panel="{{ name }}" hidden></div>
-        </article>
-        {% endfor %}
-      </div>
-    </section>
-
-    <details class="ops-fold" id="priorityEditor">
-      <summary><span><small>EDITORIAL</small><strong>اولویت قرمز ۲۴/۷</strong></span><b>⌄</b></summary>
-      <div class="nr-card nr-collapsible nr-details-body">
-        <p>اولویت‌ها و تنظیمات سردبیری</p>
-        <div id="priorityList" class="nr-priority-list"><span>در حال دریافت…</span></div>
-      </div>
-    </details>
-
-    <details class="ops-fold" id="settingsHealthFold">
-      <summary><span><small>SETTINGS</small><strong>تنظیمات و سلامت</strong></span><b>⌄</b></summary>
-      <div class="nr-card nr-collapsible nr-details-body">
-        <div id="agentSettingsMount"></div>
-      </div>
-    </details>
-  </aside>
-</div>
-
-<div id="confirmSheet" class="nr-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-  <button class="nr-sheet-backdrop" type="button" data-sheet-close aria-label="بستن"></button>
-  <section class="nr-sheet-panel nr-confirm-panel">
-    <span class="nr-sheet-grabber"></span>
-    <div class="nr-confirm-icon">!</div>
-    <h2 id="confirmTitle">تأیید عملیات</h2>
-    <p id="confirmText">از انجام این عملیات مطمئنی؟</p>
-    <div class="nr-sheet-actions">
-      <button id="confirmAccept" class="nr-button nr-button-danger" type="button">تأیید</button>
-      <button class="nr-button nr-button-secondary" type="button" data-sheet-close>انصراف</button>
+<section class="v4-grid v4-grid-3" style="margin-top:14px" aria-label="سلامت سیستم">
+  <article class="v4-card v4-card-pad">
+    <div class="v4-action-row" style="justify-content:space-between">
+      <strong>Agent</strong>
+      <span id="agentHealth" class="v4-status">در حال بررسی</span>
     </div>
-  </section>
-</div>
-
-<div id="editorSheet" class="nr-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="editorHeading">
-  <button class="nr-sheet-backdrop" type="button" data-editor-close aria-label="بستن"></button>
-  <section class="nr-sheet-panel nr-editor-panel">
-    <span class="nr-sheet-grabber"></span>
-    <header><div><small>ویرایش سردبیری</small><h2 id="editorHeading">نسخه نهایی خبر</h2></div><button type="button" class="nr-close" data-editor-close>×</button></header>
-    <input id="editorStoryId" type="hidden">
-    <label><span>تیتر فارسی</span><textarea id="editorTitle" rows="3" maxlength="280"></textarea></label>
-    <label><span>متن خبر</span><textarea id="editorBody" rows="8" maxlength="4000"></textarea></label>
-    <div class="nr-editor-source" id="editorSource">—</div>
-    <a id="editorSourceLink" class="nr-button nr-button-secondary" href="#" target="_blank" rel="noopener" hidden>بازکردن منبع اصلی</a>
-    <div class="nr-sheet-actions">
-      <button id="editorSave" class="nr-button nr-button-secondary" type="button">ذخیره برای بررسی</button>
-      <button id="editorPublish" class="nr-button nr-button-primary" type="button">انتشار نسخه ویرایش‌شده</button>
+    <p class="v4-page-subtitle">آخرین چرخه: <b id="lastCycle">—</b></p>
+  </article>
+  <article class="v4-card v4-card-pad">
+    <div class="v4-action-row" style="justify-content:space-between">
+      <strong>Luna</strong>
+      <span id="lunaHealth" class="v4-status">در حال بررسی</span>
     </div>
-  </section>
-</div>
+    <p class="v4-page-subtitle">صف/انتظار: <b id="waitingLuna">—</b> · آماده: <b id="readyCount">—</b></p>
+  </article>
+  <article class="v4-card v4-card-pad">
+    <div class="v4-action-row" style="justify-content:space-between">
+      <strong>Telegram</strong>
+      <span id="telegramHealth" class="v4-status">در حال بررسی</span>
+    </div>
+    <p class="v4-page-subtitle">آخرین انتشار: <b id="lastPublication">{{ last_publication or '—' }}</b></p>
+  </article>
+</section>
+
+<section class="v4-grid v4-grid-2" style="margin-top:14px">
+  <article class="v4-card v4-card-pad">
+    <div class="v4-action-row" style="justify-content:space-between;margin-bottom:12px">
+      <h2 class="v4-section-title" style="margin:0">وضعیت اتاق خبر</h2>
+      <a class="v4-button is-secondary" href="/health">جزئیات سلامت</a>
+    </div>
+    <div class="v4-grid v4-grid-2">
+      <div><span class="v4-kpi-label">ورودی خبرها</span><div class="v4-kpi-value" id="incomingCount" style="font-size:24px">{{ live_count }}</div></div>
+      <div><span class="v4-kpi-label">ردشده امروز</span><div class="v4-kpi-value" id="rejectedToday" style="font-size:24px">{{ rejected_today }}</div></div>
+      <div><span class="v4-kpi-label">منابع فعال</span><div class="v4-kpi-value" id="activeSources" style="font-size:24px">—</div></div>
+      <div><span class="v4-kpi-label">انتشار خودکار</span><div style="margin-top:9px"><span id="autoPublishState" class="v4-status">—</span></div></div>
+    </div>
+  </article>
+
+  <article class="v4-card v4-card-pad">
+    <h2 class="v4-section-title">چرا ممکن است خبر کم منتشر شده باشد؟</h2>
+    <div id="healthNotes" class="v4-grid" style="gap:8px">
+      <div class="v4-empty" style="min-height:112px">در حال خواندن وضعیت واقعی سیستم…</div>
+    </div>
+  </article>
+</section>
+
+<section class="v4-card v4-card-pad" style="margin-top:14px">
+  <h2 class="v4-section-title">دسترسی سریع</h2>
+  <div class="v4-action-row">
+    <a class="v4-button" href="/incoming">ورودی خبرها</a>
+    <a class="v4-button is-secondary" href="/review">بررسی انسانی</a>
+    <a class="v4-button is-secondary" href="/luna">Luna</a>
+    <a class="v4-button is-secondary" href="/history">منتشرشده‌ها</a>
+    <a class="v4-button is-secondary" href="/source-manager">منابع</a>
+    <a class="v4-button is-secondary" href="/settings">تنظیمات</a>
+  </div>
+</section>
 {% endblock %}
+
 {% block scripts %}
-<script src="{{ url_for('static', filename='newsroom-ui.js') }}" defer></script>
-<script src="{{ url_for('static', filename='newsroom-live.js') }}" defer></script>
-<script src="{{ url_for('static', filename='newsroom-actions.js') }}" defer></script>
-<script src="{{ url_for('static', filename='newsroom-editor.js') }}" defer></script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const statusLabel = {ok: 'سالم', warning: 'نیازمند توجه', error: 'خطا', unknown: 'نامشخص'};
+  const setStatus = (node, value) => {
+    if (!node) return;
+    const state = ['ok','warning','error'].includes(value) ? value : 'unknown';
+    node.className = `v4-status${state === 'ok' ? ' is-ok' : state === 'warning' ? ' is-warning' : state === 'error' ? ' is-error' : ''}`;
+    node.textContent = statusLabel[state];
+  };
+  const fmt = (value) => value || '—';
+
+  async function loadSnapshot(showToast = false) {
+    try {
+      const response = await fetch('/api/v4/snapshot', {credentials: 'same-origin', cache: 'no-store'});
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || 'snapshot_failed');
+      $('regularPublished').textContent = data.quota.regular_published;
+      $('regularLimit').textContent = data.quota.regular_limit;
+      $('regularRemaining').textContent = data.quota.regular_remaining;
+      $('specialUsed').textContent = data.quota.special_used;
+      $('specialLimit').textContent = data.quota.special_limit;
+      $('reviewCount').textContent = data.counts.review;
+      $('waitingLuna').textContent = data.counts.waiting_luna;
+      $('readyCount').textContent = data.counts.ready;
+      $('incomingCount').textContent = data.counts.incoming;
+      $('rejectedToday').textContent = data.counts.rejected_today;
+      $('activeSources').textContent = data.counts.active_sources;
+      $('lastCycle').textContent = fmt(data.latest.last_cycle_at);
+      $('lastPublication').textContent = fmt(data.latest.last_publication);
+      setStatus($('agentHealth'), data.health.agent);
+      setStatus($('lunaHealth'), data.health.luna);
+      setStatus($('telegramHealth'), data.health.telegram);
+      const auto = $('autoPublishState');
+      auto.textContent = data.settings.auto_publish ? 'فعال' : 'خاموش';
+      auto.className = `v4-status ${data.settings.auto_publish ? 'is-ok' : 'is-warning'}`;
+      const notes = $('healthNotes');
+      notes.innerHTML = '';
+      (data.health.notes || []).forEach(note => {
+        const row = document.createElement('div');
+        row.className = 'v4-card';
+        row.style.cssText = 'padding:11px 12px;background:var(--v4-surface-2);box-shadow:none';
+        row.textContent = note;
+        notes.appendChild(row);
+      });
+      if (showToast) NewsroomV4.toast('وضعیت پنل تازه شد');
+    } catch (error) {
+      NewsroomV4.toast('خواندن وضعیت پنل ناموفق بود', 'error');
+    }
+  }
+
+  $('v4Refresh')?.addEventListener('click', () => loadSnapshot(true));
+  $('v4Scan')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.textContent = 'در صف…';
+    try {
+      const result = await NewsroomV4.postJSON('/api/newsroom/scan', {});
+      NewsroomV4.toast(result.message || 'اسکن در صف اجرا قرار گرفت');
+      window.setTimeout(() => loadSnapshot(false), 1800);
+    } catch (error) {
+      NewsroomV4.toast(error.message || 'اسکن ناموفق بود', 'error');
+    } finally {
+      button.disabled = false;
+      button.textContent = '⚡ اسکن فوری';
+    }
+  });
+
+  loadSnapshot(false);
+  window.setInterval(() => loadSnapshot(false), 15000);
+})();
+</script>
 {% endblock %}

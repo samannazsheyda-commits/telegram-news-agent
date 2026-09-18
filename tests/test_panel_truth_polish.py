@@ -92,13 +92,14 @@ def test_main_newsroom_does_not_flash_raw_english_source_labels():
     assert "<small>{{ item.source }}</small>" not in template
 
 
-def test_newsroom_navigation_is_compact_visual_and_fully_persian():
+def test_newsroom_navigation_is_compact_visual_and_mobile_safe_v4():
     base = Path("panel/templates/base.html").read_text(encoding="utf-8")
-    css = Path("panel/static/newsroom-nav-v2.css").read_text(encoding="utf-8")
-    assert "newsroom-nav-item" in base
-    assert "nav-icon" in base
-    assert "nav-label" in base
+    css = Path("panel/static/newsroom-v4.css").read_text(encoding="utf-8")
+    assert "v4-nav-link" in base
+    assert "v4-nav-icon" in base
+    assert "v4-mobile-nav" in base
     assert "COMMAND CENTER" not in base
-    assert "اتاق خبر" in base
-    assert "border-radius:999px" in css.replace(" ", "")
-    assert "position:fixed" in css.replace(" ", "")
+    assert "داشبورد" in base
+    assert "ورودی خبرها" in base
+    assert "position: fixed" in css
+    assert "env(safe-area-inset-bottom)" in css

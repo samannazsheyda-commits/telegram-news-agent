@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Luna | بی‌خبر{% endblock %}
+{% block content %}
+<section class="v4-page-header">
+  <div>
+    <h1 class="v4-page-title">Luna Editorial Desk</h1>
+    <p class="v4-page-subtitle">صف بررسی Luna، خروجی‌های آماده و خطاها؛ نسخه نهایی همیشه قبل از انتشار دیده می‌شود.</p>
+  </div>
+  <span class="v4-status is-active">{{ pagination.total }} مورد</span>
+</section>
+
+{% if items %}
+<div class="v4-news-list">
+  {% for item in items %}
+  <article class="v4-card v4-news-card" data-news-card="{{ item.id }}">
+    <header class="v4-news-head">
+      <div><strong>{{ item.source or 'منبع نامشخص' }}</strong><span class="v4-news-time">{{ item.updated_at or '—' }}</span></div>
+      <div class="v4-action-row">
+        <span class="v4-status{% if item.has_luna %} is-ok{% elif item.status == 'failed' %} is-error{% else %} is-warning{% endif %}">
+          {% if item.has_luna %}آماده پیش‌نمایش{% elif item.status == 'failed' %}خطا{% else %}در انتظار Luna{% endif %}
+        </span>
+        {% if item.importance %}<span class="v4-score">{{ item.importance }}/10</span>{% endif %}
+      </div>
+    </header>
+
+    <section class="v4-copy-block is-original">
+      <span class="v4-copy-label">خبر اصلی</span>
+      <h2>{{ item.original_title or 'بدون عنوان' }}</h2>
+      {% if item.original_body %}<p>{{ item.original_body }}</p>{% endif %}
+    </section>
+
+    <section class="v4-copy-block is-luna" style="margin-top:12px">
+      <span class="v4-copy-label">🧠 Luna Final</span>
+      {% if item.has_luna %}
+        <div class="v4-action-row" style="margin-bottom:10px">
+          {% if item.decision %}<span class="v4-status is-active">{{ item.decision }}</span>{% endif %}
+          {% if item.luna_reason %}<span class="v4-muted">{{ item.luna_reason }}</span>{% endif %}
+        </div>
+        {% if item.luna_title %}<h3>{{ item.luna_title }}</h3>{% endif %}
+        {% if item.luna_body %}<p>{{ item.luna_body }}</p>{% endif %}
+      {% elif item.status == 'failed' %}
+        <p class="v4-muted">پردازش Luna ناموفق بوده؛ از بخش سلامت خطای provider را بررسی کن.</p>
+      {% else %}
+        <p class="v4-muted">خروجی نهایی هنوز آماده نشده است.</p>
+      {% endif %}
+    </section>
+
+    <footer class="v4-news-actions">
+      <div class="v4-news-meta">{% if item.dedup %}<span>Dedup: {{ item.dedup }}</span>{% endif %}</div>
+      <div class="v4-action-row">
+        {% if item.source_url %}<a class="v4-button is-quiet" href="{{ item.source_url }}" target="_blank" rel="noopener">منبع</a>{% endif %}
+        {% if item.has_luna %}<a class="v4-button" href="/review/{{ item.id }}">پیش‌نمایش نهایی</a>{% endif %}
+      </div>
+    </footer>
+  </article>
+  {% endfor %}
+</div>
+
+<nav class="v4-pagination">
+  {% if pagination.has_prev %}<a class="v4-button is-secondary" href="?page={{ pagination.page - 1 }}">صفحه قبل</a>{% endif %}
+  <span>صفحه {{ pagination.page }} از {{ pagination.pages }}</span>
+  {% if pagination.has_next %}<a class="v4-button is-secondary" href="?page={{ pagination.page + 1 }}">صفحه بعد</a>{% endif %}
+</nav>
+{% else %}
+<div class="v4-empty">فعلاً خبری در صف یا خروجی Luna دیده نمی‌شود.</div>
+{% endif %}
+{% endblock %}

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from panel.app import create_app
 
 
@@ -22,6 +24,7 @@ class FakeData:
                     "discovered_at": "2026-09-14T11:50:00+00:00",
                 }
             ],
+            "data/custom_sources.json": [],
             "state.json": {"newsroom_engine": "v3"},
         }
 
@@ -56,58 +59,47 @@ def _dashboard_html() -> str:
     return response.get_data(as_text=True)
 
 
-def test_dashboard_uses_single_v3_newsroom_shell_without_legacy_style_stack():
+def test_dashboard_uses_single_v4_newsroom_shell_without_legacy_style_stack():
     html = _dashboard_html()
-    assert "newsroom-shell.css" in html
-    assert "light-newsroom.css" not in html
-    assert "newsroom.css" not in html
-    assert "newsroom-nav-v2.css" not in html
-    assert "newsroom-compact.css" not in html
-    assert 'data-newsroom-shell="v3"' in html
+    assert "newsroom-v4.css" in html
+    assert "newsroom-v4-pages.css" in html
+    assert "newsroom-v4.js" in html
+    for legacy in ("newsroom-shell.css", "newsroom-final.css", "newsroom-ui.js", "newsroom-live.js", "newsroom-actions.js", "newsroom-editor.js"):
+        assert legacy not in html
+    assert 'data-newsroom-shell="v4"' in html
 
 
-def test_mobile_first_navigation_and_v3_status_are_immediately_available():
+def test_mobile_first_navigation_and_health_status_are_immediately_available():
     html = _dashboard_html()
-    assert 'id="newsroomStatusBar"' in html
-    assert 'id="engineState"' in html
-    assert 'id="telegramState"' in html
-    assert 'id="publishingState"' in html
-    assert 'id="lastCycleAt"' in html
-    assert 'id="mobileBottomNav"' in html
-    for label in ("اتاق خبر", "بررسی", "منتشرشده", "منابع"):
+    assert 'class="v4-mobile-nav"' in html
+    assert 'id="agentHealth"' in html
+    assert 'id="lunaHealth"' in html
+    assert 'id="telegramHealth"' in html
+    assert 'id="lastCycle"' in html
+    for label in ("داشبورد", "ورودی", "بررسی", "لونا", "بیشتر"):
         assert label in html
 
 
-def test_server_rendered_story_card_exposes_direct_editorial_actions():
+def test_dashboard_is_summary_first_instead_of_rendering_story_cards():
     html = _dashboard_html()
-    assert 'data-story-id="live-1"' in html
-    assert 'data-action="publish"' in html
-    assert 'data-action="edit"' in html
-    assert 'data-action="reject"' in html
-    assert 'data-action="source"' in html
-    assert "تیتر مهم برای تست اتاق خبر" in html
-    assert "رویترز" in html
-    assert "Reuters" not in html
+    assert 'id="incomingCount"' in html
+    assert 'href="/incoming"' in html
+    assert 'data-story-id="live-1"' not in html
+    assert "تیتر مهم برای تست اتاق خبر" not in html
 
 
-def test_sensitive_actions_have_confirmation_and_inline_editor_hooks():
+def test_sensitive_editorial_actions_live_in_preview_safe_review_surface():
+    review = Path("panel/templates/review_edit.html").read_text(encoding="utf-8")
+    assert 'id="v4PublishFinal"' in review
+    assert 'id="v4RejectFinal"' in review
+    assert "تأیید انتشار" in review
+    assert "/publish-final" in review
+    assert "Luna دوباره اجرا نمی‌شود" in review
+
+
+def test_v4_runtime_replaces_legacy_live_bundle_and_hides_secrets():
     html = _dashboard_html()
-    assert 'id="confirmSheet"' in html
-    assert 'id="confirmAccept"' in html
-    assert 'id="editorSheet"' in html
-    assert 'id="editorTitle"' in html
-    assert 'id="editorBody"' in html
-    assert 'data-confirm-action="publishing"' in html
-
-
-def test_dashboard_loads_small_newsroom_modules_instead_of_legacy_live_bundle():
-    html = _dashboard_html()
-    for asset in (
-        "newsroom-ui.js",
-        "newsroom-live.js",
-        "newsroom-actions.js",
-        "newsroom-editor.js",
-    ):
-        assert asset in html
-    assert "static/live.js" not in html
+    assert "newsroom-v4.js" in html
+    for asset in ("newsroom-ui.js", "newsroom-live.js", "newsroom-actions.js", "newsroom-editor.js", "static/live.js"):
+        assert asset not in html
     assert "TELEGRAM_BOT_TOKEN" not in html

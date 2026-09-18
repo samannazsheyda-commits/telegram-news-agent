@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}سلامت سیستم | بی‌خبر{% endblock %}
+{% block content %}
+<section class="v4-page-header">
+  <div>
+    <h1 class="v4-page-title">سلامت و خطاها</h1>
+    <p class="v4-page-subtitle">خلاصه انسانی از این‌که چرا انتشار ممکن است کند یا متوقف شده باشد.</p>
+  </div>
+  <button id="healthRefresh" class="v4-button is-secondary" type="button">↻ تازه‌سازی</button>
+</section>
+
+<section class="v4-grid v4-grid-3">
+  <article class="v4-card v4-card-pad">
+    <span class="v4-kpi-label">Agent</span>
+    <div style="margin-top:10px"><span id="healthAgent" class="v4-status{% if health.agent == 'ok' %} is-ok{% elif health.agent == 'error' %} is-error{% elif health.agent == 'warning' %} is-warning{% endif %}">{{ health.agent }}</span></div>
+    <p class="v4-page-subtitle">آخرین چرخه: <span id="healthLastCycle">{{ health.last_cycle_at or '—' }}</span></p>
+  </article>
+  <article class="v4-card v4-card-pad">
+    <span class="v4-kpi-label">Luna / Provider</span>
+    <div style="margin-top:10px"><span id="healthLuna" class="v4-status{% if health.luna == 'ok' %} is-ok{% elif health.luna == 'error' %} is-error{% elif health.luna == 'warning' %} is-warning{% endif %}">{{ health.luna }}</span></div>
+    <p class="v4-page-subtitle">صف Luna: {{ counts.waiting_luna }} · آماده: {{ counts.ready }}</p>
+  </article>
+  <article class="v4-card v4-card-pad">
+    <span class="v4-kpi-label">Telegram</span>
+    <div style="margin-top:10px"><span id="healthTelegram" class="v4-status{% if health.telegram == 'ok' %} is-ok{% elif health.telegram == 'error' %} is-error{% elif health.telegram == 'warning' %} is-warning{% endif %}">{{ health.telegram }}</span></div>
+    <p class="v4-page-subtitle">سهمیه باقی‌مانده: {{ quota.regular_remaining }}</p>
+  </article>
+</section>
+
+<section class="v4-card v4-card-pad" style="margin-top:14px">
+  <h2 class="v4-section-title">وضعیت انتشار</h2>
+  <div id="healthNotes" class="v4-diagnostic-list">
+    {% for note in health.notes %}<div class="v4-diagnostic-row">{{ note }}</div>{% endfor %}
+  </div>
+</section>
+
+<section class="v4-grid v4-grid-2" style="margin-top:14px">
+  <article class="v4-card v4-card-pad">
+    <h2 class="v4-section-title">آخرین دلیل سیستم</h2>
+    <code id="healthReason" class="v4-code-block">{{ health.reason or '—' }}</code>
+  </article>
+  <article class="v4-card v4-card-pad">
+    <h2 class="v4-section-title">آخرین خطا</h2>
+    <code id="healthError" class="v4-code-block">{{ health.last_error or 'خطای ثبت‌شده‌ای دیده نمی‌شود' }}</code>
+  </article>
+</section>
+
+<section class="v4-card v4-card-pad" style="margin-top:14px">
+  <h2 class="v4-section-title">راهنمای سریع</h2>
+  <div class="v4-grid v4-grid-2">
+    <div class="v4-diagnostic-row"><strong>خبر منتشر نمی‌شود؟</strong><span>سهمیه، Telegram، Luna و دلیل آخرین چرخه را بالا ببین.</span></div>
+    <div class="v4-diagnostic-row"><strong>ترجمه ماشینی خراب است؟</strong><span>Luna همچنان باید قابل استفاده بماند؛ خرابی preview نباید پنل را قفل کند.</span></div>
+    <div class="v4-diagnostic-row"><strong>منبع خطا دارد؟</strong><span>از بخش منابع، سلامت و آخرین خطای همان منبع را بررسی کن.</span></div>
+    <div class="v4-diagnostic-row"><strong>پنل ساکت است؟</strong><span>آخرین چرخه Agent و تعداد ورودی خبرها مشخص می‌کند مشکل fetch است یا تصمیم‌گیری.</span></div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  const label = {ok: 'سالم', warning: 'نیازمند توجه', error: 'خطا', unknown: 'نامشخص'};
+  const setState = (id, value) => {
+    const node = document.getElementById(id);
+    if (!node) return;
+    const state = ['ok','warning','error'].includes(value) ? value : 'unknown';
+    node.className = `v4-status${state === 'ok' ? ' is-ok' : state === 'warning' ? ' is-warning' : state === 'error' ? ' is-error' : ''}`;
+    node.textContent = label[state];
+  };
+  async function refresh() {
+    try {
+      const response = await fetch('/api/v4/snapshot', {credentials: 'same-origin', cache: 'no-store'});
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || 'health_failed');
+      setState('healthAgent', data.health.agent);
+      setState('healthLuna', data.health.luna);
+      setState('healthTelegram', data.health.telegram);
+      document.getElementById('healthLastCycle').textContent = data.health.last_cycle_at || '—';
+      document.getElementById('healthReason').textContent = data.health.reason || '—';
+      document.getElementById('healthError').textContent = data.health.last_error || 'خطای ثبت‌شده‌ای دیده نمی‌شود';
+      const notes = document.getElementById('healthNotes');
+      notes.innerHTML = '';
+      (data.health.notes || []).forEach(text => {
+        const row = document.createElement('div');
+        row.className = 'v4-diagnostic-row';
+        row.textContent = text;
+        notes.appendChild(row);
+      });
+      NewsroomV4.toast('وضعیت سلامت تازه شد');
+    } catch (error) {
+      NewsroomV4.toast(error.message || 'دریافت وضعیت ناموفق بود', 'error');
+    }
+  }
+  document.getElementById('healthRefresh')?.addEventListener('click', refresh);
+})();
+</script>
+{% endblock %}

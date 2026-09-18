@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% block title %}ورودی خبرها | بی‌خبر{% endblock %}
+{% block content %}
+<section class="v4-page-header">
+  <div>
+    <h1 class="v4-page-title">ورودی خبرها</h1>
+    <p class="v4-page-subtitle">خبر اصلی، ترجمه ماشینی و نسخه Luna کاملاً جدا دیده می‌شوند. در هر صفحه حداکثر {{ pagination.page_size }} خبر نمایش داده می‌شود.</p>
+  </div>
+  <span class="v4-status is-active">{{ pagination.total }} خبر</span>
+</section>
+
+{% if items %}
+<div class="v4-news-list">
+  {% for item in items %}
+  <article class="v4-card v4-news-card" data-news-card="{{ item.id }}">
+    <header class="v4-news-head">
+      <div>
+        <strong>{{ item.source or 'منبع نامشخص' }}</strong>
+        <span class="v4-news-time">{{ item.updated_at or '—' }}</span>
+      </div>
+      <div class="v4-action-row">
+        <span class="v4-status{% if item.status == 'ready' %} is-ok{% elif item.status == 'failed' %} is-error{% elif item.status in ['waiting','processing','pending'] %} is-warning{% endif %}">{{ item.status or 'new' }}</span>
+        {% if item.importance %}<span class="v4-score">اهمیت {{ item.importance }}</span>{% endif %}
+      </div>
+    </header>
+
+    <section class="v4-copy-block is-original">
+      <span class="v4-copy-label">Original</span>
+      <h2>{{ item.original_title or 'بدون عنوان' }}</h2>
+      {% if item.original_body %}<p>{{ item.original_body }}</p>{% endif %}
+    </section>
+
+    <div class="v4-copy-grid">
+      <section class="v4-copy-block is-machine">
+        <span class="v4-copy-label">🌐 ترجمه ماشینی</span>
+        {% if item.has_machine %}
+          {% if item.machine_title %}<h3>{{ item.machine_title }}</h3>{% endif %}
+          {% if item.machine_body %}<p>{{ item.machine_body }}</p>{% endif %}
+        {% else %}
+          <p class="v4-muted">ترجمه ماشینی موقتاً در دسترس نیست</p>
+        {% endif %}
+      </section>
+
+      <section class="v4-copy-block is-luna">
+        <span class="v4-copy-label">🧠 نسخه Luna</span>
+        {% if item.has_luna %}
+          {% if item.decision %}<span class="v4-status is-active">{{ item.decision }}</span>{% endif %}
+          {% if item.luna_title %}<h3>{{ item.luna_title }}</h3>{% endif %}
+          {% if item.luna_body %}<p>{{ item.luna_body }}</p>{% endif %}
+          {% if item.luna_reason %}<p class="v4-muted">دلیل: {{ item.luna_reason }}</p>{% endif %}
+        {% else %}
+          <p class="v4-muted">هنوز بررسی نشده</p>
+        {% endif %}
+      </section>
+    </div>
+
+    <footer class="v4-news-actions">
+      <div class="v4-news-meta">
+        {% if item.dedup %}<span>Dedup: {{ item.dedup }}</span>{% endif %}
+        {% if item.relevance %}<span>Relevance: {{ item.relevance }}</span>{% endif %}
+      </div>
+      <div class="v4-action-row">
+        {% if item.source_url %}<a class="v4-button is-quiet" href="{{ item.source_url }}" target="_blank" rel="noopener">باز کردن منبع</a>{% endif %}
+        {% if item.can_act %}
+          <button class="v4-button is-danger" type="button" data-v4-reject="{{ item.id }}">رد</button>
+          {% if item.has_luna %}
+            <a class="v4-button" href="/review/{{ item.id }}">پیش‌نمایش و تصمیم</a>
+          {% else %}
+            <button class="v4-button" type="button" data-v4-send-luna="{{ item.id }}">🧠 ارسال به Luna</button>
+          {% endif %}
+        {% endif %}
+      </div>
+    </footer>
+  </article>
+  {% endfor %}
+</div>
+
+<nav class="v4-pagination" aria-label="صفحه‌بندی">
+  {% if pagination.has_prev %}<a class="v4-button is-secondary" href="?page={{ pagination.page - 1 }}">صفحه قبل</a>{% endif %}
+  <span>صفحه {{ pagination.page }} از {{ pagination.pages }}</span>
+  {% if pagination.has_next %}<a class="v4-button is-secondary" href="?page={{ pagination.page + 1 }}">صفحه بعد</a>{% endif %}
+</nav>
+{% else %}
+<div class="v4-empty">فعلاً خبری در ورودی پنل نیست.</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  const sleep = (ms) => new Promise(resolve => window.setTimeout(resolve, ms));
+
+  async function waitForCommand(commandId) {
+    for (let attempt = 0; attempt < 60; attempt += 1) {
+      const response = await fetch(`/api/newsroom/command/${encodeURIComponent(commandId)}`, {
+        credentials: 'same-origin',
+        cache: 'no-store',
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.message || result.error || `HTTP ${response.status}`);
+      if (['succeeded', 'reconciled'].includes(result.status)) return result;
+      if (['failed', 'ambiguous'].includes(result.status)) throw new Error(result.message || 'پردازش Luna ناموفق بود');
+      await sleep(2000);
+    }
+    throw new Error('پردازش Luna هنوز کامل نشده؛ وضعیت در بخش Luna قابل مشاهده است');
+  }
+
+  document.addEventListener('click', async (event) => {
+    const reject = event.target.closest('[data-v4-reject]');
+    if (reject) {
+      const ok = await NewsroomV4.confirmAction({title: 'رد خبر', message: 'این خبر از ورودی کنار گذاشته شود؟'});
+      if (!ok) return;
+      reject.disabled = true;
+      try {
+        const result = await NewsroomV4.postJSON(`/api/newsroom/live/${encodeURIComponent(reject.dataset.v4Reject)}/reject`, {});
+        NewsroomV4.toast(result.message || 'خبر رد شد');
+        reject.closest('[data-news-card]')?.remove();
+      } catch (error) {
+        reject.disabled = false;
+        NewsroomV4.toast(error.message || 'رد خبر ناموفق بود', 'error');
+      }
+      return;
+    }
+
+    const send = event.target.closest('[data-v4-send-luna]');
+    if (send) {
+      send.disabled = true;
+      const original = send.textContent;
+      try {
+        send.textContent = 'در صف Luna…';
+        const queued = await NewsroomV4.postJSON(`/api/v4/items/${encodeURIComponent(send.dataset.v4SendLuna)}/luna`, {});
+        NewsroomV4.toast(queued.message || 'خبر برای Luna ثبت شد');
+        if (queued.status === 'succeeded' && queued.review_url) {
+          window.location.href = queued.review_url;
+          return;
+        }
+        if (!queued.command_id) throw new Error('شناسه فرمان Luna دریافت نشد');
+        send.textContent = 'Luna در حال پردازش…';
+        const finished = await waitForCommand(queued.command_id);
+        NewsroomV4.toast(finished.message || 'نسخه Luna آماده شد');
+        window.location.href = finished.review_url || `/review/${encodeURIComponent(send.dataset.v4SendLuna)}`;
+      } catch (error) {
+        send.disabled = false;
+        send.textContent = original;
+        NewsroomV4.toast(error.message || 'ارسال به Luna ناموفق بود', 'error');
+      }
+    }
+  });
+})();
+</script>
+{% endblock %}

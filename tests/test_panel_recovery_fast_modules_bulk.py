@@ -100,7 +100,12 @@ def test_bulk_clear_supports_live_feed(tmp_path, monkeypatch):
     assert '"a"' not in text
 
 
-def test_dashboard_has_bulk_live_controls():
-    combined = Path("panel/templates/dashboard.html").read_text(encoding="utf-8") + Path("panel/static/live.js").read_text(encoding="utf-8")
-    assert 'id="liveSelectAll"' in combined
-    assert 'id="liveBulkDelete"' in combined
+def test_v4_incoming_uses_server_side_pagination_instead_of_huge_dashboard_dom():
+    v4 = Path("panel/v4.py").read_text(encoding="utf-8")
+    incoming = Path("panel/templates/incoming.html").read_text(encoding="utf-8")
+    dashboard = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
+    assert "PAGE_SIZE = 25" in v4
+    assert "_paginate" in v4
+    assert "pagination.has_next" in incoming
+    assert 'data-news-card=' in incoming
+    assert 'data-news-card=' not in dashboard

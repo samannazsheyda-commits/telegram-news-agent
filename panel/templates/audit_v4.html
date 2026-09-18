@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Audit Log | بی‌خبر{% endblock %}
+{% block content %}
+<section class="v4-page-header">
+  <div>
+    <h1 class="v4-page-title">Audit Log</h1>
+    <p class="v4-page-subtitle">ردّ قابل‌پیگیری actionهای کاربر، Luna و سیستم؛ قبل/بعد و نتیجه بدون نمایش secret.</p>
+  </div>
+  <span class="v4-status is-active">{{ items|length }} رکورد اخیر</span>
+</section>
+
+{% if items %}
+<div class="v4-audit-list">
+  {% for item in items %}
+  <article class="v4-card v4-audit-row">
+    <div class="v4-audit-main">
+      <div class="v4-action-row">
+        <strong>{{ item.action }}</strong>
+        <span class="v4-status{% if item.result == 'ok' %} is-ok{% elif item.result.startswith('error') %} is-error{% endif %}">{{ item.result }}</span>
+        <span class="v4-status">{{ item.actor }}</span>
+      </div>
+      <div class="v4-news-meta"><span>{{ item.timestamp }}</span><span>Target: {{ item.target or '—' }}</span></div>
+    </div>
+    <details>
+      <summary>قبل / بعد</summary>
+      <div class="v4-audit-details">
+        <div><span>قبل</span><pre>{{ item.before|tojson(indent=2) }}</pre></div>
+        <div><span>بعد</span><pre>{{ item.after|tojson(indent=2) }}</pre></div>
+      </div>
+    </details>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="v4-empty">هنوز action ثبت‌شده‌ای در Audit Log نیست.</div>
+{% endif %}
+{% endblock %}

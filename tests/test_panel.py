@@ -81,35 +81,28 @@ def test_invalid_password_is_rejected():
     assert "رمز ورود درست نیست" in response.get_data(as_text=True)
 
 
-def test_authenticated_dashboard_is_a_real_persian_newsroom():
+def test_authenticated_dashboard_is_a_real_persian_newsroom_v4():
     app = _app()
     client = app.test_client()
     response = _login(client)
     text = response.get_data(as_text=True)
     assert response.status_code == 200
-    assert "اتاق خبر بی‌خبر" in text
-    assert "اتاق فرمان" not in text
-    assert "توقف کامل انتشار" in text
-    assert "اسکن فوری" in text
-    assert "اولویت قرمز ۲۴/۷" in text
-    assert "هواشناسی فردا" in text
-    assert "ترافیک هوایی ایران و منطقه" in text
-    assert "نفتکش‌ها و تنگه هرمز" in text
-    assert "بازار و دلار" in text
+    assert "مرکز کنترل بی‌خبر" in text
+    assert "منتشرشده امروز" in text
+    assert "باقی‌مانده" in text
+    assert "خبر ویژه Luna" in text
     assert "سلامت سیستم" in text
-    assert "ورودی زنده" in text
-    assert 'id="liveFeed"' in text
-    assert 'id="soundToggle"' in text
-    assert 'data-preview-toggle="weather"' in text
-    assert 'data-preview-toggle="air-traffic"' in text
-    assert 'data-preview-toggle="tanker"' in text
-    assert 'data-preview-toggle="market"' in text
-    assert 'id="weatherPreview"' in text
-    assert 'hidden' in text
-    assert "پیش‌نمایش دقیق هواشناسی" not in text
+    assert "اسکن فوری" in text
+    assert "ورودی خبرها" in text
+    assert 'id="incomingCount"' in text
+    assert 'id="agentHealth"' in text
+    assert 'id="lunaHealth"' in text
+    assert 'id="telegramHealth"' in text
+    assert "ترافیک هوایی" not in text
+    assert 'data-preview-toggle="air-traffic"' not in text
     assert 'rel="manifest"' in text
-    assert "settings.css" in text
-    assert "settings.js" in text
+    assert "newsroom-v4.css" in text
+    assert "newsroom-v4.js" in text
     assert "serviceWorker" in text
 
 
@@ -152,7 +145,7 @@ def test_pwa_assets_exist_and_do_not_cache_api_routes():
     assert "settings.css" in worker
 
 
-def test_dashboard_marks_live_items_pending_when_persian_copy_is_missing():
+def test_dashboard_summarises_live_items_without_rendering_all_story_content():
     data = FakeData()
     data.files["data/panel_live_feed.json"] = [
         {
@@ -177,14 +170,12 @@ def test_dashboard_marks_live_items_pending_when_persian_copy_is_missing():
     response = _login(client)
     text = response.get_data(as_text=True)
     assert response.status_code == 200
-    assert "ورودی زنده" in text
+    assert "ورودی خبرها" in text
+    assert 'id="incomingCount"' in text
     assert ">5<" in text
-    assert "عنوان فارسی در حال آماده‌سازی" in text
-    assert "خبر زنده صفر" not in text
     assert "Live story 0" not in text
-    assert "تازه" in text
-    assert "نیاز به تصمیم دستی نیست" in text
-    assert ">0<" in text
+    assert "خبر زنده صفر" not in text
+    assert 'href="/incoming"' in text
 
 
 def test_mutation_without_csrf_is_rejected():

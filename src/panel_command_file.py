@@ -5,27 +5,47 @@ import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 import requests
 
+from .ai_newsroom import AIServiceError
 from .editorial_store import LocalEditorialStore
 from .event_ledger import EventLedger
 from .manual_publish import publish_review_item, reject_review_item
 from .newsroom_models import RawNewsItem
 from .newsroom_v2 import CycleSummary, run_cycle
+from .newsroom_v3.manual_publish import publish_manual_story
+from .one_x_ai_newsroom import OneXAINewsAI
 from .panel_live_feed import LiveFeedStore
 from .runtime_v12 import _normalise_url, extract_public_telegram_source_links
 from .services import send_telegram
 from .sources import USER_AGENT
+from .strict_translation import _natural_persian_copy
 from .truth_social import fetch_trump_truth_items
 
 OWN_CHANNEL = "bikhabaar"
 TERMINAL = {"succeeded", "failed", "reconciled"}
+_ALLOWED_ACTIONS = {"publish", "reject", "refresh", "luna_preview", "publish_final"}
 
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _read_json(path: str | Path, default: Any) -> Any:
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return default
+
+
+def _atomic_write_json(path: str | Path, value: Any) -> None:
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    tmp = target.with_suffix(target.suffix + ".tmp")
+    tmp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    tmp.replace(target)
 
 
 def load_command_args(path: str | Path) -> dict[str, str]:
@@ -35,7 +55,7 @@ def load_command_args(path: str | Path) -> dict[str, str]:
     action = str(payload.get("action") or "").strip()
     item_id = str(payload.get("item_id") or "").strip()
     command_id = str(payload.get("command_id") or Path(path).stem).strip()
-    if action not in {"publish", "reject", "refresh"}:
+    if action not in _ALLOWED_ACTIONS:
         raise ValueError("invalid_action")
     if action != "refresh" and not item_id:
         raise ValueError("missing_item_id")
@@ -47,6 +67,12 @@ def load_command_args(path: str | Path) -> dict[str, str]:
         "item_id": item_id,
         "title": str(payload.get("title") or ""),
         "body": str(payload.get("body") or ""),
+        "source": str(payload.get("source") or ""),
+        "source_url": str(payload.get("source_url") or ""),
+        "original_title": str(payload.get("original_title") or ""),
+        "original_body": str(payload.get("original_body") or ""),
+        "news_key": str(payload.get("news_key") or ""),
+        "published_at": str(payload.get("published_at") or ""),
         "created_at": str(payload.get("created_at") or ""),
     }
 
@@ -118,6 +144,196 @@ def _consume(path: Path) -> None:
         path.unlink()
     except FileNotFoundError:
         pass
+
+
+def _row_id(row: Any) -> str:
+    if not isinstance(row, dict):
+        return ""
+    return str(row.get("id") or row.get("item_id") or row.get("news_key") or "").strip()
+
+
+def _find_row(path: str | Path, item_id: str) -> dict:
+    rows = _read_json(path, [])
+    if not isinstance(rows, list):
+        return {}
+    match = next((row for row in rows if isinstance(row, dict) and _row_id(row) == item_id), None)
+    return dict(match) if isinstance(match, dict) else {}
+
+
+def _upsert_row(path: str | Path, row: dict) -> None:
+    rows = _read_json(path, [])
+    rows = [dict(item) for item in rows if isinstance(item, dict)] if isinstance(rows, list) else []
+    item_id = _row_id(row)
+    updated = [dict(row)]
+    updated.extend(item for item in rows if _row_id(item) != item_id)
+    _atomic_write_json(path, updated)
+
+
+def _remove_row(path: str | Path, item_id: str) -> None:
+    rows = _read_json(path, [])
+    if not isinstance(rows, list):
+        return
+    _atomic_write_json(path, [row for row in rows if not isinstance(row, dict) or _row_id(row) != item_id])
+
+
+def _has_persian(value: str) -> bool:
+    return any("\u0600" <= char <= "\u06ff" for char in str(value or ""))
+
+
+def _luna_finalize_piece(ai: OneXAINewsAI, source_text: str) -> str:
+    source = str(source_text or "").strip()
+    if not source:
+        return ""
+    if _has_persian(source):
+        draft_text = source
+    else:
+        draft = ai.translate_to_fa(source)
+        draft_text = str(getattr(draft, "text", "") or "").strip()
+        if not draft_text or getattr(draft, "faithful", False) is not True:
+            raise AIServiceError("luna_manual_translation_rejected")
+    edit = ai.edit_persian(source, draft_text)
+    if getattr(edit, "faithful", False) is not True or getattr(edit, "natural", False) is not True:
+        raise AIServiceError("luna_manual_edit_rejected")
+    edited_text = str(getattr(edit, "text", "") or "").strip()
+    if not edited_text:
+        raise AIServiceError("luna_manual_edit_empty")
+    guarded = _natural_persian_copy(source, edited_text)
+    if not guarded or not _has_persian(guarded):
+        raise AIServiceError("luna_manual_guard_rejected")
+    return guarded
+
+
+def _finalize_manual_copy_with_luna(original_title: str, original_body: str) -> tuple[str, str]:
+    source_title = str(original_title or "").strip()
+    source_body = str(original_body or "").strip()
+    if not source_title:
+        raise AIServiceError("missing_original_title")
+    ai = OneXAINewsAI()
+    if not ai.available:
+        raise AIServiceError("luna_manual_unavailable")
+    final_title = _luna_finalize_piece(ai, source_title)
+    final_body = _luna_finalize_piece(ai, source_body) if source_body else ""
+    return final_title, final_body
+
+
+def _manual_source(args: dict[str, str]) -> dict:
+    item_id = args["item_id"]
+    queued = _find_row("data/editorial_queue.json", item_id)
+    live = _find_row("data/panel_live_feed.json", item_id)
+    current = {**live, **queued}
+    source = str(args.get("source") or current.get("source") or "").strip()
+    source_url = str(args.get("source_url") or current.get("source_url") or "").strip()
+    original_title = str(
+        args.get("original_title")
+        or current.get("original_title")
+        or current.get("title")
+        or ""
+    ).strip()
+    original_body = str(
+        args.get("original_body")
+        or current.get("original_summary")
+        or current.get("summary")
+        or current.get("body")
+        or ""
+    ).strip()
+    return {
+        **current,
+        "id": item_id,
+        "item_id": item_id,
+        "news_key": str(args.get("news_key") or current.get("news_key") or item_id).strip(),
+        "source": source,
+        "source_url": source_url,
+        "original_title": original_title,
+        "original_summary": original_body,
+        "published_at_source": str(args.get("published_at") or current.get("published_at_source") or "").strip(),
+    }
+
+
+def _apply_luna_preview(args: dict[str, str]) -> dict:
+    current = _manual_source(args)
+    if not current.get("source") or not current.get("source_url"):
+        raise ValueError("missing_source")
+    if not current.get("original_title"):
+        raise ValueError("missing_original_title")
+    title, body = _finalize_manual_copy_with_luna(
+        str(current.get("original_title") or ""),
+        str(current.get("original_summary") or ""),
+    )
+    now = _now()
+    queued = dict(current)
+    queued.update(
+        status="pending",
+        luna_status="ready",
+        luna_finalized_at=now,
+        persian_title=title,
+        persian_body=body,
+        final_persian_title=title,
+        final_persian_body=body,
+        updated_at=now,
+    )
+    _upsert_row("data/editorial_queue.json", queued)
+    result = _result(args, "succeeded", "نسخه نهایی Luna آماده شد؛ قبل از انتشار آن را بررسی کن")
+    result.update(
+        telegram_message_id=None,
+        review_url=f"/review/{args['item_id']}",
+    )
+    return result
+
+
+def _finalize_published_item(item: dict, result: dict, title: str, body: str) -> None:
+    now = _now()
+    final = dict(item)
+    final.update(
+        status="published_manual",
+        persian_title=title,
+        persian_body=body,
+        final_persian_title=title,
+        final_persian_body=body,
+        decision_at=now,
+        updated_at=now,
+        telegram_message_id=result.get("telegram_message_id"),
+        v3_story_id=str(result.get("story_id") or ""),
+    )
+    _upsert_row("data/editorial_history.json", final)
+    _remove_row("data/editorial_queue.json", _row_id(item))
+    _remove_row("data/panel_live_feed.json", _row_id(item))
+
+
+def _apply_publish_final(args: dict[str, str]) -> dict:
+    current = _manual_source(args)
+    title = str(args.get("title") or current.get("final_persian_title") or current.get("persian_title") or "").strip()
+    body = str(args.get("body") or current.get("final_persian_body") or current.get("persian_body") or "").strip()
+    if not current.get("source") or not current.get("source_url"):
+        raise ValueError("missing_source")
+    if not title or not _has_persian(title):
+        raise ValueError("missing_final_persian_title")
+    publish_result = publish_manual_story(
+        data_dir=Path(os.environ.get("DATA_DIR", "data")),
+        item_id=args["item_id"],
+        news_key=str(current.get("news_key") or args["item_id"]),
+        source=str(current.get("source") or ""),
+        source_url=str(current.get("source_url") or ""),
+        title=title,
+        body=body,
+        published_at=str(current.get("published_at_source") or ""),
+    )
+    status = str(publish_result.get("status") or "failed")
+    if status in {"succeeded", "reconciled"}:
+        _finalize_published_item(current, publish_result, title, body)
+    messages = {
+        "succeeded": "نسخه تأییدشده در تلگرام منتشر شد",
+        "reconciled": "انتشار قبلی تأیید و همگام شد",
+        "ambiguous": "وضعیت ارسال تلگرام نامشخص است؛ انتشار دوباره خودکار مسدود شد",
+        "processing": "انتشار در حال پردازش است",
+        "failed": "انتشار ناموفق بود",
+    }
+    result = _result(args, status, messages.get(status, "وضعیت انتشار ثبت شد"))
+    result.update(
+        story_id=str(publish_result.get("story_id") or ""),
+        telegram_message_id=publish_result.get("telegram_message_id") if isinstance(publish_result.get("telegram_message_id"), int) else None,
+        error=str(publish_result.get("error") or ""),
+    )
+    return result
 
 
 def scan_items_into_v2_panel(
@@ -244,6 +460,16 @@ def process_command_file(
                 visible = _scan_fresh_items_into_queue(store)
                 message = f"اسکن تازه انجام شد؛ {visible} خبر در ورودی زنده پنل موجود است"
             terminal = _write_result(result_dir, _result(args, "succeeded", message))
+            _consume(command_path)
+            return terminal
+
+        if args["action"] == "luna_preview":
+            terminal = _write_result(result_dir, _apply_luna_preview(args))
+            _consume(command_path)
+            return terminal
+
+        if args["action"] == "publish_final":
+            terminal = _write_result(result_dir, _apply_publish_final(args))
             _consume(command_path)
             return terminal
 

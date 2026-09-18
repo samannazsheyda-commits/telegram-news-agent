@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}ورود لازم است | بی‌خبر{% endblock %}
+{% block content %}
+<section class="v4-card v4-auth-card">
+  <h1>ورود لازم است</h1>
+  <p>برای دسترسی به مرکز کنترل بی‌خبر وارد پنل شو.</p>
+  <a class="v4-button" href="{{ url_for('login', next=request.path) }}">ورود به پنل</a>
+</section>
+{% endblock %}
