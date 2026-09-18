@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}منابع | مرکز کنترل بی‌خبر{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{{ url_for('static', filename='newsroom-v4-source.css') }}">{% endblock %}
 {% block content %}
 <section class="v4-page-head">
   <div><h1>مدیریت منابع</h1><p>هر منبع روشن از اسکن بعدی وارد چرخه رصد می‌شود؛ بدون deploy و بدون SSH</p></div>
