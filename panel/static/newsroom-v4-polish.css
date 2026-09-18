@@ -1,0 +1,23 @@
+/* V4.1 readability + density layer. Kept separate so it can be rolled back safely. */
+body.v4-body{
+  font-family:Vazirmatn,"Noto Sans Arabic","Noto Sans",Tahoma,Arial,sans-serif;
+  font-size:14.5px;
+  line-height:1.75;
+  font-weight:400;
+  letter-spacing:0;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+}
+body.v4-body button,body.v4-body input,body.v4-body textarea,body.v4-body select{font-family:inherit}
+.v4-page{width:min(1560px,100%);padding-top:18px}
+.v41-page-head{margin-bottom:13px;align-items:center}.v41-page-head h1{font-size:30px;font-weight:750;letter-spacing:-.3px}.v41-page-head p{font-size:13.5px;line-height:1.8;color:#b1bfcc}
+.v41-kpi-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}.v41-kpi-grid .v4-kpi{padding:11px 13px;border-radius:13px;box-shadow:none}.v41-kpi-grid .v4-kpi span{font-size:11.5px;margin-bottom:3px}.v41-kpi-grid .v4-kpi strong{font-size:21px}.v41-kpi-grid .v4-kpi small{font-size:10.5px;margin-top:2px}.v41-kpi-grid .v4-kpi.is-primary{background:#192838;border-color:#32506d}
+.v41-dashboard-grid{grid-template-columns:minmax(0,2.65fr) minmax(248px,.65fr);gap:11px}.v41-story-panel{box-shadow:none}.v41-story-panel>.v4-panel-head{padding:12px 14px}.v41-story-panel>.v4-panel-head h2{font-size:16px}.v41-story-panel>.v4-panel-head p{font-size:11.5px;line-height:1.65}
+.v41-story-list{gap:7px;padding:8px}.v41-story-card{padding:11px 12px;border-radius:13px;background:#1b2632;box-shadow:none}.v41-story-card:hover{border-color:#3a4b5d}.v41-story-card .v4-story-meta{font-size:10.5px;gap:6px}.v41-story-card .v4-source-badge,.v41-story-card .v4-state-badge{padding:3px 7px;background:#263746}
+.v41-original{margin-top:8px}.v41-original h3{font-size:16.5px;line-height:1.75;font-weight:720;color:#f5f8fb}.v41-original p{font-size:13.25px;line-height:1.88;color:#c8d3dd;margin-top:5px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.v41-translation{margin-top:8px;padding:9px 10px;border-radius:11px;background:#142333;border-color:#28465f}.v41-translation h3{margin:5px 0 0;font-size:16px;line-height:1.85;font-weight:680}.v41-translation p{font-size:13.5px;line-height:1.95;color:#e2e9ef;margin-top:5px}.v41-translation-label{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#8ec5ff;font-size:11px;font-weight:650}.v41-translation-label small{font-size:10px;color:#7fd6ae;font-weight:500}.v41-translation-label.is-warning small{color:#ffc36c}
+.v41-story-actions{margin-top:8px;gap:5px}.v41-story-actions .v4-button{min-height:34px;padding:6px 9px;border-radius:9px;font-size:11.5px}.v41-source-link{margin-inline-start:auto}.v41-story-card .v4-story-progress{margin-top:6px;font-size:11px}
+.v41-side-stack{gap:10px}.v41-side-stack .v4-panel{box-shadow:none}.v41-side-stack .v4-panel-head{padding:12px 13px}.v41-side-stack .v4-health-row{padding:9px 12px;font-size:11.5px}.v41-side-stack .v4-quick-grid{padding:8px;gap:6px}.v41-side-stack .v4-quick{padding:9px 10px;border-radius:10px}.v41-side-stack .v4-quick strong{font-size:11.5px}.v41-side-stack .v4-quick small{font-size:10px;line-height:1.6}
+.v4-panel-head h2,.v4-page-head h1,.v4-original h3,.v4-luna h3{font-family:inherit}.v4-button{font-weight:570}.v4-button-primary{font-weight:750}
+@media(max-width:1100px){.v41-dashboard-grid{grid-template-columns:1fr}.v41-side-stack{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){body.v4-body{font-size:14px;line-height:1.8}.v4-page{padding-top:12px}.v41-page-head{gap:10px;margin-bottom:10px}.v41-page-head h1{font-size:24px}.v41-page-head p{font-size:12.5px}.v41-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.v41-kpi-grid .v4-kpi{padding:9px 10px}.v41-story-list{padding:6px}.v41-story-card{padding:10px}.v41-original h3{font-size:16px;line-height:1.8}.v41-original p{font-size:13px;-webkit-line-clamp:2}.v41-translation h3{font-size:15.5px}.v41-translation p{font-size:13.25px}.v41-story-actions{display:grid;grid-template-columns:1fr 1fr}.v41-story-actions .v4-button{min-height:39px}.v41-source-link{margin-inline-start:0}.v41-side-stack{grid-template-columns:1fr}}
