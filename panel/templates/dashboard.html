@@ -22,133 +22,66 @@
 </section>
 
 <section class="v4-kpi-grid" aria-label="آمار امروز">
-  <article class="v4-kpi is-primary">
-    <span>خبر عادی امروز</span>
-    <strong>{{ regular_used }} / {{ regular_target }}</strong>
-    <small>{{ regular_remaining }} خبر باقی مانده</small>
-  </article>
-  <article class="v4-kpi">
-    <span>خبر ویژه Luna</span>
-    <strong>{{ special_used }} / {{ special_target }}</strong>
-    <small>خارج از سهمیه عادی</small>
-  </article>
-  <article class="v4-kpi is-warn">
-    <span>منتظر بررسی</span>
-    <strong>{{ queue_count }}</strong>
-    <small>نیازمند تصمیم انسانی</small>
-  </article>
-  <article class="v4-kpi">
-    <span>منتظر Luna</span>
-    <strong>{{ luna_count }}</strong>
-    <small>در صف نهایی‌سازی</small>
-  </article>
-  <article class="v4-kpi">
-    <span>Waiting سیستم</span>
-    <strong>{{ waiting_count }}</strong>
-    <small>وضعیت پردازش خبرها</small>
-  </article>
-  <article class="v4-kpi is-good">
-    <span>آخرین انتشار</span>
-    <strong>{% if last_publication %}●{% else %}—{% endif %}</strong>
-    <small>{% if last_publication %}<time datetime="{{ last_publication }}" data-v4-relative-time>{{ last_publication }}</time>{% else %}هنوز ثبت نشده{% endif %}</small>
-  </article>
+  <article class="v4-kpi is-primary"><span>خبر عادی امروز</span><strong>{{ regular_used }} / {{ regular_target }}</strong><small>{{ regular_remaining }} خبر باقی مانده</small></article>
+  <article class="v4-kpi"><span>خبر ویژه Luna</span><strong>{{ special_used }} / {{ special_target }}</strong><small>خارج از سهمیه عادی</small></article>
+  <article class="v4-kpi is-warn"><span>منتظر بررسی</span><strong>{{ queue_count }}</strong><small>نیازمند تصمیم انسانی</small></article>
+  <article class="v4-kpi"><span>منتظر Luna</span><strong>{{ luna_count }}</strong><small>در صف نهایی‌سازی</small></article>
+  <article class="v4-kpi"><span>Waiting سیستم</span><strong>{{ waiting_count }}</strong><small>وضعیت پردازش خبرها</small></article>
+  <article class="v4-kpi is-good"><span>آخرین انتشار</span><strong>{% if last_publication %}●{% else %}—{% endif %}</strong><small>{% if last_publication %}<time datetime="{{ last_publication }}" data-v4-relative-time>{{ last_publication }}</time>{% else %}هنوز ثبت نشده{% endif %}</small></article>
 </section>
 
 <div class="v4-grid">
   <section>
     <section class="v4-panel">
       <header class="v4-panel-head">
-        <div>
-          <h2>ورودی خبرها</h2>
-          <p>۳۰ خبر تازه‌تر · ترجمه ماشینی برای تصمیم سریع · Luna فقط در صورت نیاز</p>
-        </div>
+        <div><h2>ورودی خبرها</h2><p>۳۰ خبر تازه‌تر · ترجمه ماشینی برای تصمیم سریع · Luna فقط در صورت نیاز</p></div>
         <a class="v4-panel-link" href="/intake">مشاهده همه</a>
       </header>
-
       <div id="v4LiveFeed" class="v4-story-list">
         {% if live %}
           {% for item in live[:30] %}
             {% set story_id = item.id or item.item_id or item.news_key %}
             {% set original_title = item.original_title or item.title or '' %}
             {% set original_body = item.original_summary or item.summary or item.body or '' %}
-            {% set machine_preview = item.machine_translation or item.machine_preview or item.translation_preview or item.persian_title or '' %}
+            {% set machine_preview = item.machine_translation or item.machine_preview or item.translation_preview or '' %}
             {% set luna_title = item.final_persian_title or '' %}
             {% set luna_body = item.final_persian_body or '' %}
-            {% set luna_ready = luna_title or luna_body %}
+            {% set luna_ready = item.luna_decision or luna_title or luna_body %}
             <article class="v4-story-card" data-v4-story-card="1" data-story-id="{{ story_id }}" data-luna-ready="{{ 1 if luna_ready else 0 }}">
               <div class="v4-story-meta">
                 <span class="v4-source-badge">{{ item.source_display or item.canonical_source_name or 'منبع خبری' }}</span>
                 {% if item.updated_at or item.discovered_at %}<time datetime="{{ item.updated_at or item.discovered_at }}" data-v4-relative-time>{{ item.updated_at or item.discovered_at }}</time>{% endif %}
                 <span class="v4-state-badge">{{ item.panel_status_fa or item.panel_status or 'در حال پردازش' }}</span>
               </div>
-
-              <div class="v4-original">
-                <label>Original</label>
-                <h3>{{ original_title or 'بدون عنوان اصلی' }}</h3>
-                {% if original_body %}<p>{{ original_body }}</p>{% endif %}
-              </div>
-
-              <div class="v4-machine">
-                <label>🌐 ترجمه ماشینی</label>
-                {% if machine_preview %}
-                  <p>{{ machine_preview }}</p>
-                {% else %}
-                  <p>ترجمه ماشینی هنوز آماده نیست</p>
-                {% endif %}
-              </div>
-
+              <div class="v4-original"><label>Original</label><h3>{{ original_title or 'بدون عنوان اصلی' }}</h3>{% if original_body %}<p>{{ original_body }}</p>{% endif %}</div>
+              <div class="v4-machine"><label>🌐 ترجمه ماشینی</label>{% if machine_preview %}<p data-loaded="1">{{ machine_preview }}</p>{% else %}<p>ترجمه ماشینی هنوز آماده نیست</p>{% endif %}</div>
               <div class="v4-luna">
-                <div class="v4-luna-head">
-                  <label>🧠 Luna</label>
-                  {% if luna_ready %}
-                    <span class="v4-luna-decision">{{ item.luna_decision or item.decision or 'نسخه نهایی آماده' }}</span>
-                  {% else %}
-                    <span class="v4-luna-decision">هنوز بررسی نشده</span>
-                  {% endif %}
-                </div>
+                <div class="v4-luna-head"><label>🧠 Luna</label>{% if luna_ready %}<span class="v4-luna-decision">{{ item.luna_decision or 'نسخه نهایی آماده' }}</span>{% else %}<span class="v4-luna-decision">هنوز بررسی نشده</span>{% endif %}</div>
                 {% if luna_ready %}
                   {% if item.importance is defined %}<div class="v4-importance">اهمیت: {{ item.importance }}/10</div>{% endif %}
-                  <h3>{{ luna_title }}</h3>
-                  {% if luna_body %}<p>{{ luna_body }}</p>{% endif %}
                   {% if item.decision_reason_fa %}<p><strong>دلیل:</strong> {{ item.decision_reason_fa }}</p>{% endif %}
-                {% else %}
-                  <p>اگر خبر ارزش بررسی دارد، ابتدا برای نهایی‌سازی به Luna بفرست</p>
-                {% endif %}
+                  {% if luna_title %}<h3>{{ luna_title }}</h3>{% endif %}
+                  {% if luna_body %}<p>{{ luna_body }}</p>{% endif %}
+                {% else %}<p>اگر خبر ارزش بررسی دارد، ابتدا برای نهایی‌سازی به Luna بفرست</p>{% endif %}
               </div>
-
               <div class="v4-story-actions">
                 {% if luna_ready %}
-                  <button class="v4-button v4-button-primary" type="button" data-v4-action="publish-final">انتشار</button>
+                  {% if item.luna_decision in ['PUBLISH', 'SPECIAL'] %}<button class="v4-button v4-button-primary" type="button" data-v4-action="publish-final">انتشار</button>{% endif %}
                   <button class="v4-button v4-button-secondary" type="button" data-v4-action="edit-final">ویرایش</button>
-                {% else %}
-                  <button class="v4-button v4-button-primary" type="button" data-v4-action="send-luna">ارسال به Luna</button>
-                {% endif %}
+                {% else %}<button class="v4-button v4-button-primary" type="button" data-v4-action="send-luna">ارسال به Luna</button>{% endif %}
                 <button class="v4-button v4-button-danger" type="button" data-v4-action="reject">رد</button>
                 {% if item.source_url or item.link %}<a class="v4-button v4-button-secondary" href="{{ item.source_url or item.link }}" target="_blank" rel="noopener">منبع</a>{% endif %}
               </div>
               <div class="v4-story-progress" data-v4-story-progress hidden></div>
             </article>
           {% endfor %}
-        {% else %}
-          <div class="v4-empty"><strong>فعلاً خبر تازه‌ای نیست</strong><span>ورودی زنده به‌صورت خودکار به‌روز می‌شود</span></div>
-        {% endif %}
+        {% else %}<div class="v4-empty"><strong>فعلاً خبر تازه‌ای نیست</strong><span>ورودی زنده به‌صورت خودکار به‌روز می‌شود</span></div>{% endif %}
       </div>
     </section>
 
     <section class="v4-panel">
-      <header class="v4-panel-head">
-        <div><h2>نیازمند بررسی انسانی</h2><p>فقط مواردی که واقعاً باید تصمیم بگیری</p></div>
-        <a class="v4-panel-link" href="{{ url_for('review_queue') }}">صف بررسی</a>
-      </header>
-      {% if pending %}
-        <ul class="v4-mini-list">
-          {% for item in pending[:5] %}
-          <li class="v4-mini-row"><span>{{ item.source_display or item.canonical_source_name or 'منبع خبری' }}</span><strong>{{ item.persian_title or item.original_title or 'بدون عنوان' }}</strong><a class="v4-panel-link" href="{{ url_for('review_edit', item_id=item.id) }}">بازکردن</a></li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <div class="v4-empty"><strong>صف بررسی خالی است</strong><span>موردی برای تصمیم دستی وجود ندارد</span></div>
-      {% endif %}
+      <header class="v4-panel-head"><div><h2>نیازمند بررسی انسانی</h2><p>فقط مواردی که واقعاً باید تصمیم بگیری</p></div><a class="v4-panel-link" href="{{ url_for('review_queue') }}">صف بررسی</a></header>
+      {% if pending %}<ul class="v4-mini-list">{% for item in pending[:5] %}<li class="v4-mini-row"><span>{{ item.source_display or item.canonical_source_name or 'منبع خبری' }}</span><strong>{{ item.persian_title or item.original_title or 'بدون عنوان' }}</strong><a class="v4-panel-link" href="{{ url_for('review_edit', item_id=item.id) }}">بازکردن</a></li>{% endfor %}</ul>{% else %}<div class="v4-empty"><strong>صف بررسی خالی است</strong><span>موردی برای تصمیم دستی وجود ندارد</span></div>{% endif %}
     </section>
   </section>
 
@@ -164,28 +97,9 @@
         <div class="v4-health-row{% if state and state.last_error %} is-error{% endif %}"><span>آخرین خطا</span><strong>{{ state.last_error if state and state.last_error else 'بدون خطای مهم' }}</strong></div>
       </div>
     </section>
-
-    <section class="v4-panel">
-      <header class="v4-panel-head"><div><h2>کنترل سریع</h2><p>کارهای روزانه بدون SSH</p></div></header>
-      <div class="v4-quick-grid">
-        <a class="v4-quick" href="/luna"><strong>Luna Assistant</strong><small>سؤال و فرمان</small></a>
-        <a class="v4-quick" href="/settings"><strong>سهمیه‌ها</strong><small>عادی و ویژه</small></a>
-        <a class="v4-quick" href="/source-manager"><strong>افزودن/مدیریت منبع</strong><small>فعال/غیرفعال و منبع تازه</small></a>
-        <a class="v4-quick" href="{{ url_for('history') }}"><strong>آرشیو</strong><small>منتشرشده‌ها</small></a>
-      </div>
-    </section>
-
-    <section class="v4-panel">
-      <header class="v4-panel-head"><div><h2>ماژول‌های عملیاتی</h2><p>فقط موارد فعال و قابل اتکا</p></div></header>
-      <div class="v4-quick-grid">
-        <a class="v4-quick" href="/system#weather"><strong>هواشناسی</strong><small>وضعیت و پیش‌نمایش</small></a>
-        <a class="v4-quick" href="/system#market"><strong>بازار و دلار</strong><small>وضعیت آخرین داده</small></a>
-        <a class="v4-quick" href="/system#tanker"><strong>نفتکش و هرمز</strong><small>وضعیت آخرین داده</small></a>
-      </div>
-    </section>
+    <section class="v4-panel"><header class="v4-panel-head"><div><h2>کنترل سریع</h2><p>کارهای روزانه بدون SSH</p></div></header><div class="v4-quick-grid"><a class="v4-quick" href="/luna"><strong>Luna Assistant</strong><small>سؤال و فرمان</small></a><a class="v4-quick" href="/settings"><strong>سهمیه‌ها</strong><small>عادی و ویژه</small></a><a class="v4-quick" href="/source-manager"><strong>افزودن/مدیریت منبع</strong><small>فعال/غیرفعال و منبع تازه</small></a><a class="v4-quick" href="{{ url_for('history') }}"><strong>آرشیو</strong><small>منتشرشده‌ها</small></a></div></section>
+    <section class="v4-panel"><header class="v4-panel-head"><div><h2>ماژول‌های عملیاتی</h2><p>فقط موارد فعال و قابل اتکا</p></div></header><div class="v4-quick-grid"><a class="v4-quick" href="/system#weather"><strong>هواشناسی</strong><small>وضعیت و پیش‌نمایش</small></a><a class="v4-quick" href="/system#market"><strong>بازار و دلار</strong><small>وضعیت آخرین داده</small></a><a class="v4-quick" href="/system#tanker"><strong>نفتکش و هرمز</strong><small>وضعیت آخرین داده</small></a></div></section>
   </aside>
 </div>
 {% endblock %}
-{% block scripts %}
-<script src="{{ url_for('static', filename='newsroom-v4-dashboard.js') }}" defer></script>
-{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='newsroom-v4-dashboard.js') }}" defer></script>{% endblock %}
