@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}تنظیمات | بی‌خبر{% endblock %}
+{% block content %}
+<section class="v4-page-header">
+  <div>
+    <h1 class="v4-page-title">تنظیمات اتاق خبر</h1>
+    <p class="v4-page-subtitle">تنظیمات روزمره بدون SSH. هیچ کلید API یا secret در این صفحه نمایش داده نمی‌شود.</p>
+  </div>
+</section>
+
+<div class="v4-grid v4-grid-2">
+  <section class="v4-card v4-card-pad">
+    <h2 class="v4-section-title">سهمیه انتشار</h2>
+    <form id="quotaForm" class="v4-form-grid">
+      <label>
+        <span>خبر عادی روزانه</span>
+        <input id="dailyQuota" name="daily_quota" type="number" min="1" max="200" value="{{ quota.regular_limit }}" required>
+      </label>
+      <label>
+        <span>خبر ویژه Luna</span>
+        <input id="specialQuota" name="special_quota" type="number" min="0" max="50" value="{{ quota.special_limit }}" required>
+      </label>
+      <p class="v4-page-subtitle">خبر ویژه خارج از سهمیه عادی محاسبه می‌شود.</p>
+      <button class="v4-button" type="submit">ذخیره سهمیه</button>
+    </form>
+  </section>
+
+  <section class="v4-card v4-card-pad">
+    <h2 class="v4-section-title">وضعیت انتشار</h2>
+    <div class="v4-settings-row">
+      <div><strong>انتشار خودکار</strong><p>وضعیت فعلی سیستم</p></div>
+      <span class="v4-status {{ 'is-ok' if settings.auto_publish else 'is-warning' }}">{{ 'فعال' if settings.auto_publish else 'خاموش' }}</span>
+    </div>
+    <div class="v4-settings-row">
+      <div><strong>تأیید دستی</strong><p>برای مسیرهایی که این حالت را پشتیبانی می‌کنند</p></div>
+      <span class="v4-status">{{ 'فعال' if settings.manual_approval else 'خاموش' }}</span>
+    </div>
+    <div class="v4-settings-row">
+      <div><strong>فاصله حداقل انتشار</strong><p>ثانیه</p></div>
+      <b>{{ settings.min_publish_interval or '—' }}</b>
+    </div>
+  </section>
+
+  <section class="v4-card v4-card-pad">
+    <h2 class="v4-section-title">اولویت‌های خبری</h2>
+    <p class="v4-page-subtitle">این فهرست از تنظیمات واقعی پنل خوانده می‌شود.</p>
+    <div class="v4-tag-list">
+      {% for term in settings.priority_terms %}<span>{{ term }}</span>{% else %}<span>—</span>{% endfor %}
+    </div>
+    <a class="v4-button is-secondary" href="/source-manager" style="margin-top:14px">مدیریت منابع و اولویت‌ها</a>
+  </section>
+
+  <section class="v4-card v4-card-pad">
+    <h2 class="v4-section-title">حالت آرام / تازگی</h2>
+    <div class="v4-settings-row"><span>پنجره تازگی خبر</span><b>{{ settings.freshness_hours }} ساعت</b></div>
+    <div class="v4-settings-row"><span>Quiet mode</span><b>{{ 'فعال' if settings.quiet_mode else 'خاموش' }}</b></div>
+    <div class="v4-settings-row"><span>بازه</span><b>{{ settings.quiet_start }} — {{ settings.quiet_end }}</b></div>
+    <p class="v4-page-subtitle">ویرایش این موارد فعلاً از endpoint تنظیمات موجود انجام می‌شود؛ در مرحله بعد کنترل‌های کامل همین‌جا ادغام می‌شوند.</p>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  document.getElementById('quotaForm')?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const button = event.currentTarget.querySelector('button[type="submit"]');
+    const daily = Number(document.getElementById('dailyQuota').value);
+    const special = Number(document.getElementById('specialQuota').value);
+    button.disabled = true;
+    try {
+      const result = await NewsroomV4.postJSON('/api/v4/settings/quota', {daily_quota: daily, special_quota: special});
+      NewsroomV4.toast(`سهمیه ذخیره شد: ${result.daily_quota} عادی + ${result.special_quota} ویژه`);
+    } catch (error) {
+      NewsroomV4.toast(error.message || 'ذخیره تنظیمات ناموفق بود', 'error');
+    } finally {
+      button.disabled = false;
+    }
+  });
+})();
+</script>
+{% endblock %}
