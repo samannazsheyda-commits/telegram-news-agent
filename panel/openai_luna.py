@@ -71,8 +71,9 @@ class OpenAILunaClient:
         previous_response_id: str | None = None,
         text_format: dict | None = None,
     ) -> dict:
+        resolved_model = str(model or self.fast_model)
         payload: dict = {
-            "model": str(model or self.fast_model),
+            "model": resolved_model,
             "input": input_items,
             "store": False,
         }
@@ -103,6 +104,20 @@ class OpenAILunaClient:
             raise LunaProviderError("provider_error", "ارتباط Luna با OpenAI ناموفق بود.", True) from exc
         if not isinstance(value, dict):
             raise LunaProviderError("invalid_response", "پاسخ Luna معتبر نبود.", True)
+        try:
+            from .luna_usage import record_usage
+
+            usage = self.usage(value)
+            record_usage(
+                model=resolved_model,
+                kind="response",
+                input_tokens=usage["input_tokens"],
+                output_tokens=usage["output_tokens"],
+                cached_tokens=usage["cached_input_tokens"],
+            )
+        except Exception:
+            # Telemetry must never break Luna itself.
+            pass
         return value
 
     @staticmethod
@@ -177,6 +192,12 @@ class OpenAILunaClient:
             raise LunaProviderError("provider_error", "تبدیل ویس به متن ناموفق بود.", True) from exc
         if not isinstance(value, dict) or not str(value.get("text") or "").strip():
             raise LunaProviderError("invalid_transcription", "متنی از این ویس دریافت نشد.", True)
+        try:
+            from .luna_usage import record_usage
+
+            record_usage(model=self.transcribe_model, kind="transcription")
+        except Exception:
+            pass
         return value
 
 
