@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 from panel.app import create_app
 from panel.live_api import bp as live_api_bp
 from panel.newsroom_api import bp as newsroom_api_bp
-
-# Live production screenshot regression coverage. Keep these assertions behavior-focused.
+from panel.newsroom_v4_api import bp as newsroom_v4_api_bp
 
 
 class FakeData:
@@ -17,12 +15,17 @@ class FakeData:
                 "auto_publish": True,
                 "emergency_lock": False,
                 "priority_terms": ["ایران"],
+                "daily_limit": 35,
+                "special_limit": 5,
             },
             "data/newsroom_v3_production_status.json": {
                 "mode": "production",
                 "reason": "no_safe_candidate",
                 "error": "",
-                "last_cycle_at": "2026-09-14T12:00:00+00:00",
+                "daily_limit": 35,
+                "daily_published": 12,
+                "daily_remaining": 23,
+                "last_cycle_at": "2026-09-18T12:00:00+00:00",
             },
             "state.json": {"newsroom_engine": "v3", "telegram_state": "ok"},
             "data/editorial_queue.json": [],
@@ -55,13 +58,14 @@ def _client(data: FakeData):
     )
     app.register_blueprint(live_api_bp)
     app.register_blueprint(newsroom_api_bp)
+    app.register_blueprint(newsroom_v4_api_bp)
     client = app.test_client()
     with client.session_transaction() as session:
         session["admin"] = True
     return client
 
 
-def test_v3_snapshot_never_uses_raw_english_as_primary_display_copy():
+def test_live_feed_never_uses_raw_english_as_primary_persian_copy():
     data = FakeData()
     data.files["data/panel_live_feed.json"] = [
         {
@@ -72,23 +76,20 @@ def test_v3_snapshot_never_uses_raw_english_as_primary_display_copy():
             "title": "Raw English headline must not flash in the newsroom",
             "summary": "Raw English summary",
             "panel_status": "new",
-            "published_at_source": "2026-09-14T12:00:00+00:00",
-            "updated_at": "2026-09-14T12:00:00+00:00",
+            "published_at_source": "2026-09-18T12:00:00+00:00",
+            "updated_at": "2026-09-18T12:00:00+00:00",
         }
     ]
 
-    payload = _client(data).get("/api/newsroom/snapshot").get_json()
-    story = payload["live"][0]
-
+    story = _client(data).get("/api/live-feed").get_json()["items"][0]
     assert story["title"] == "عنوان فارسی در حال آماده‌سازی"
     assert story["original_title"] == "Raw English headline must not flash in the newsroom"
     assert story["original_body"] == "Raw English summary"
-    assert story["needs_localization"] is True
+    assert story["needs_machine_translation"] is True
     assert story["source_url"] == "https://example.com/story"
-    assert "Raw English headline" not in story["title"]
 
 
-def test_v3_snapshot_exposes_persisted_final_telegram_copy_for_editing():
+def test_live_feed_exposes_persisted_persian_copy_without_mutating_source():
     data = FakeData()
     data.files["data/panel_live_feed.json"] = [
         {
@@ -100,112 +101,87 @@ def test_v3_snapshot_exposes_persisted_final_telegram_copy_for_editing():
             "summary": "Original source summary",
             "persian_title": "تیتر نهایی فارسی",
             "persian_body": "متن نهایی فارسی",
-            "final_message": "🔴 تیتر نهایی فارسی\n\nمتن نهایی فارسی\n\nمنبع: https://example.com/fa",
+            "final_message": "🔴 تیتر نهایی فارسی\n\nمتن نهایی فارسی",
             "panel_status": "new",
-            "published_at_source": "2026-09-14T12:00:00+00:00",
-            "updated_at": "2026-09-14T12:00:00+00:00",
+            "published_at_source": "2026-09-18T12:00:00+00:00",
+            "updated_at": "2026-09-18T12:00:00+00:00",
         }
     ]
 
-    story = _client(data).get("/api/newsroom/snapshot").get_json()["live"][0]
-
+    story = _client(data).get("/api/live-feed").get_json()["items"][0]
     assert story["title"] == "تیتر نهایی فارسی"
     assert story["body"] == "متن نهایی فارسی"
-    assert "تیتر نهایی فارسی" in story["final_message"]
+    assert story["final_message"]
     assert story["original_title"] == "Original source title"
-    assert story["source_url"] == "https://example.com/fa"
-    assert story["needs_localization"] is False
+    assert story["needs_machine_translation"] is False
 
 
-def test_new_live_ui_localizes_missing_copy_and_shows_final_telegram_output():
-    js = Path("panel/static/newsroom-live.js").read_text(encoding="utf-8")
+def test_v4_live_ui_machine_then_luna_then_prepared_publish():
+    live = Path("panel/static/newsroom-live.js").read_text(encoding="utf-8")
+    actions = Path("panel/static/newsroom-actions.js").read_text(encoding="utf-8")
+    assert "/api/live-feed/machine-translate" in live
+    assert "needs_machine_translation" in live
+    assert "ترجمه ماشینی" in live
+    assert "نسخه نهایی لونا" in live
+    assert "متن اصلی منبع" in live
+    assert "/luna" in actions
+    assert "/publish-prepared" in actions
 
-    assert "/api/live-feed/localize" in js
-    assert "needs_localization" in js
-    assert "final_message" in js
-    assert "نسخه نهایی تلگرام" in js
-    assert "متن اصلی منبع" in js
 
-
-def test_editor_exposes_clickable_source_link_from_story_url():
+def test_editor_exposes_clickable_source_and_edits_seen_luna_copy():
     dashboard = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
     editor = Path("panel/static/newsroom-editor.js").read_text(encoding="utf-8")
-
     assert 'id="editorSourceLink"' in dashboard
-    assert "storySourceUrl" in editor
-    assert "editorSourceLink" in editor
+    assert 'id="editorTitle"' in dashboard
+    assert 'id="editorBody"' in dashboard
+    assert "sourceLink" in editor
+    assert "BikhabarV4?.setLuna" in editor
 
 
 def test_dashboard_has_obvious_add_source_entry_point():
     dashboard = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
-
-    assert "افزودن منبع" in dashboard
+    assert "مدیریت منبع" in dashboard
     assert 'href="/source-manager"' in dashboard
 
 
-def test_module_preview_uses_cached_result_before_build_and_renders_rich_preview():
-    js = Path("panel/static/newsroom-actions.js").read_text(encoding="utf-8")
-    load_start = js.index("async function loadModulePreview")
-    load_end = js.index("document.addEventListener('click'", load_start)
-    preview_flow = js[load_start:load_end]
-    render_start = js.index("function renderModulePreview")
-    renderer = js[render_start:load_start]
-
-    cached_get = "requestJSON(`/api/command-center/module/${encodeURIComponent(moduleName)}/preview`)"
-    build_post = "requestJSON(`/api/command-center/module/${encodeURIComponent(moduleName)}/preview`, {method:'POST'})"
-    assert cached_get in preview_flow
-    assert build_post in preview_flow
-    assert preview_flow.index(cached_get) < preview_flow.index(build_post)
-    assert "image_url" in renderer
-    assert "available_for_publish" in renderer
-    assert "generated_at" in renderer
+def test_v4_drops_heavy_inline_module_previews_from_main_newsroom():
+    dashboard = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
+    actions = Path("panel/static/newsroom-actions.js").read_text(encoding="utf-8")
+    assert "data-preview-toggle" not in dashboard
+    assert "air-traffic" not in dashboard
+    assert "loadModulePreview" not in actions
+    assert "renderModulePreview" not in actions
 
 
-def test_v3_snapshot_uses_current_v3_telegram_truth_over_stale_legacy_error():
+def test_v4_status_uses_current_v3_production_truth():
     data = FakeData()
-    data.files["state.json"] = {
-        "newsroom_engine": "v3",
-        "telegram_state": "error",
-    }
+    data.files["state.json"] = {"newsroom_engine": "v3", "telegram_state": "error"}
     data.files["data/newsroom_v3_production_status.json"].update(
-        {
-            "error": "",
-            "publish_failed": 0,
-            "last_telegram_message_id": 1457,
-            "reason": "no_safe_candidate",
-        }
+        {"error": "", "publish_failed": 0, "reason": "no_safe_candidate", "daily_published": 12}
     )
-
-    payload = _client(data).get("/api/newsroom/snapshot").get_json()
-
+    payload = _client(data).get("/api/newsroom/v4/status").get_json()
     assert payload["engine"] == "v3"
-    assert payload["telegram_state"] == "ok"
+    assert payload["error"] == ""
+    assert payload["daily_published"] == 12
 
 
-def test_localization_failure_is_visible_and_retryable_instead_of_silent_forever():
+def test_machine_translation_failure_is_visible_and_retryable():
     js = Path("panel/static/newsroom-live.js").read_text(encoding="utf-8")
-
-    assert "خطا در آماده‌سازی" in js
-    assert "retry-localization" in js
-    assert "localization_failed" in js
-    assert "catch (_)" not in js
-
-
-def test_mobile_status_bar_is_compact_non_sticky_horizontal_strip():
-    css = Path("panel/static/newsroom-shell.css").read_text(encoding="utf-8")
-    match = re.search(r"@media\s*\(max-width:\s*640px\)", css)
-    assert match is not None
-    mobile_css = css[match.start():]
-    status_start = mobile_css.index(".nr-status-bar")
-    status_css = mobile_css[status_start: status_start + 360]
-
-    assert "position:static" in status_css.replace(" ", "")
-    assert "display:flex" in status_css.replace(" ", "")
-    assert "overflow-x:auto" in status_css.replace(" ", "")
+    assert "خطا در آماده‌سازی ترجمه ماشینی" in js
+    assert "machineFailures" in js
+    assert 'data-action="machine"' in js
+    assert "catch (error)" in js
 
 
-def test_production_wsgi_wires_live_feed_translator():
+def test_mobile_v4_uses_light_fixed_navigation_without_blur():
+    css = Path("panel/static/newsroom-v4.css").read_text(encoding="utf-8")
+    assert ".nr-mobile-nav" in css
+    assert "env(safe-area-inset-bottom)" in css
+    assert "backdrop-filter:none!important" in css
+    assert "--v4-bg:#f4f7fb" in css
+
+
+def test_production_wsgi_wires_machine_translator():
     wsgi = Path("panel/wsgi.py").read_text(encoding="utf-8")
-
     assert "from src.services import translate_to_fa" in wsgi
     assert 'config["LIVE_FEED_TRANSLATOR"] = translate_to_fa' in wsgi
