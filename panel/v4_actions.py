@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 
 from flask import Blueprint, current_app, jsonify, request, session
 
+from .audit_log import append_audit
 from .command_center import _enqueue, _remove_from_queue, _remove_live_ids, _upsert_history, _write_list
 
 
@@ -101,6 +102,15 @@ def publish_final(item_id: str):
         original_body=str(row.get("original_summary") or row.get("summary") or row.get("body") or ""),
         published_at=str(row.get("published_at_source") or row.get("published") or ""),
     )
+    append_audit(
+        _data(),
+        actor="user",
+        action="publish_final",
+        target=item_id,
+        before={"status": str(row.get("status") or "pending"), "title": str(row.get("final_persian_title") or row.get("persian_title") or "")},
+        after={"status": "queued", "title": title, "command_id": command_id},
+        result="queued",
+    )
     return jsonify({
         "ok": True,
         "status": "queued",
@@ -121,4 +131,13 @@ def reject_final(item_id: str):
     _upsert_history(final)
     _remove_from_queue(item_id)
     _remove_live_ids([item_id], mark_seen=True)
+    append_audit(
+        _data(),
+        actor="user",
+        action="reject_candidate",
+        target=item_id,
+        before={"status": str(row.get("status") or "pending")},
+        after={"status": "rejected_manual"},
+        result="ok",
+    )
     return jsonify({"ok": True, "status": "succeeded", "command_id": "", "message": "خبر رد نهایی شد"})
