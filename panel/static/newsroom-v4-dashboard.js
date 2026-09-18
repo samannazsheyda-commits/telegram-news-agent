@@ -11,6 +11,70 @@
     node.className = `v4-story-progress ${kind}`.trim();
   }
 
+  function renderLunaPreview(card, preview, reviewUrl) {
+    const luna = card?.querySelector('.v4-luna');
+    const actions = card?.querySelector('.v4-story-actions');
+    if (!luna || !actions || !preview) return;
+    luna.replaceChildren();
+
+    const head = document.createElement('div');
+    head.className = 'v4-luna-head';
+    const label = document.createElement('label');
+    label.textContent = '🧠 Luna Final';
+    const decision = document.createElement('span');
+    decision.className = 'v4-luna-decision';
+    decision.textContent = preview.decision || '—';
+    head.append(label, decision);
+    luna.appendChild(head);
+
+    const importance = document.createElement('div');
+    importance.className = 'v4-importance';
+    importance.textContent = `اهمیت: ${Number(preview.importance || 0).toLocaleString('fa-IR')}/10`;
+    luna.appendChild(importance);
+
+    if (preview.reason_fa) {
+      const reason = document.createElement('p');
+      const strong = document.createElement('strong');
+      strong.textContent = 'دلیل: ';
+      reason.append(strong, document.createTextNode(preview.reason_fa));
+      luna.appendChild(reason);
+    }
+    if (preview.title_fa) {
+      const title = document.createElement('h3');
+      title.textContent = preview.title_fa;
+      luna.appendChild(title);
+    }
+    if (preview.body_fa) {
+      const body = document.createElement('p');
+      body.textContent = preview.body_fa;
+      luna.appendChild(body);
+    }
+
+    const sourceLink = actions.querySelector('a[href]')?.cloneNode(true) || null;
+    actions.replaceChildren();
+    if (preview.decision === 'PUBLISH' || preview.decision === 'SPECIAL') {
+      const publish = document.createElement('button');
+      publish.className = 'v4-button v4-button-primary';
+      publish.type = 'button';
+      publish.dataset.v4Action = 'publish-final';
+      publish.textContent = 'انتشار';
+      actions.appendChild(publish);
+    }
+    const edit = document.createElement('a');
+    edit.className = 'v4-button v4-button-secondary';
+    edit.href = reviewUrl || `/review/${encodeURIComponent(card.dataset.storyId)}`;
+    edit.textContent = 'ویرایش';
+    actions.appendChild(edit);
+    const reject = document.createElement('button');
+    reject.className = 'v4-button v4-button-danger';
+    reject.type = 'button';
+    reject.dataset.v4Action = 'reject';
+    reject.textContent = 'رد';
+    actions.appendChild(reject);
+    if (sourceLink) actions.appendChild(sourceLink);
+    card.dataset.lunaReady = '1';
+  }
+
   async function poll(commandId, card) {
     const started = Date.now();
     while (Date.now() - started < 45000) {
@@ -33,9 +97,9 @@
     progress(card, 'Luna در حال بررسی و ساخت نسخه نهایی…');
     try {
       const result = await V4.requestJSON(`/api/panel/luna/preview/${encodeURIComponent(id)}`, {method: 'POST'});
+      renderLunaPreview(card, result.preview, result.review_url);
       progress(card, 'نسخه Luna آماده شد', 'success');
       V4.toast(result.preview?.decision === 'REJECT' ? 'Luna این خبر را برای انتشار مناسب ندانست.' : 'نسخه نهایی Luna آماده بررسی است.', 'success');
-      window.setTimeout(() => window.location.reload(), 350);
     } catch (error) {
       progress(card, error.message, 'error');
       V4.toast(error.message, 'error');
