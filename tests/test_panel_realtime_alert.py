@@ -45,11 +45,12 @@ def test_dashboard_has_bounded_v4_feed_without_legacy_sound_bundle(tmp_path):
     assert "live.js" not in html
 
 
-def test_v4_dashboard_updates_story_actions_without_full_page_reload(tmp_path):
+def test_v41_dashboard_updates_story_actions_without_full_page_reload(tmp_path):
     client = _client(tmp_path)
     js = client.get("/static/newsroom-v4-dashboard.js").get_data(as_text=True)
-    assert "/api/panel/luna/preview/" in js
-    assert "/api/panel/luna/publish/" in js
+    assert "/api/panel/luna/translate-story/" in js
+    assert "/api/panel/luna/publish-final/" in js
+    assert "/api/panel/luna/block-story/" in js
     assert "replaceChildren" in js
     assert "window.location.reload" not in js
     assert "DOMParser" not in js
