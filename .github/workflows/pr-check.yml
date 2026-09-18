@@ -26,6 +26,9 @@ jobs:
           node --check panel/static/newsroom-live.js
           node --check panel/static/newsroom-actions.js
           node --check panel/static/newsroom-editor.js
+          node --check panel/static/newsroom-v4.js
+          node --check panel/static/newsroom-v4-dashboard.js
+          node --check panel/static/luna-assistant.js
       - name: Run V2 focused tests
         if: github.head_ref == 'design/newsroom-v2-2026-09-07' || startsWith(github.head_ref, 'feat/newsroom-v2-cutover-')
         run: >-
