@@ -1,49 +1,49 @@
 {% extends 'base.html' %}
 {% block title %}Luna | مرکز کنترل بی‌خبر{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='newsroom-v4-luna.css') }}">
+{% endblock %}
 {% block content %}
-<section class="v4-page-head">
-  <div><h1>Luna Control</h1><p>نسخه‌های نهایی سردبیری و دستیار عملیاتی پنل</p></div>
-  <a class="v4-button v4-button-secondary" href="/intake">ورودی خبرها</a>
-</section>
-
-<div class="v4-grid">
-  <section class="v4-panel v4-assistant">
-    <div id="v4AssistantLog" class="v4-chat-log">
-      <div class="v4-chat-msg luna">من Luna هستم. می‌توانی بپرسی چرا امروز خبر کم منتشر شده، آخرین خبرها را بخواهی، یا تغییر کنترل‌شده‌ای مثل سهمیه را درخواست کنی.</div>
-    </div>
-    <form id="v4AssistantForm" class="v4-chat-form">
-      <textarea id="v4AssistantInput" rows="2" placeholder="مثلاً: چرا امروز خبر کم منتشر شده؟"></textarea>
-      <button class="v4-button v4-button-primary" type="submit">ارسال</button>
-    </form>
-  </section>
-
-  <aside class="v4-side-stack">
-    <section class="v4-panel">
-      <header class="v4-panel-head"><div><h2>نسخه‌های Luna</h2><p>آخرین ۵۰ تصمیم ذخیره‌شده</p></div></header>
-      {% if previews %}
-      <ul class="v4-mini-list">
-        {% for item in previews[:50] %}
-        <li class="v4-mini-row">
-          <span>{{ item.decision or '—' }} · {{ item.importance or 0 }}/10</span>
-          <strong>{{ item.title_fa or item.reason_fa or item.story_id }}</strong>
-          <a class="v4-panel-link" href="/review/{{ item.story_id }}">بازکردن</a>
-        </li>
-        {% endfor %}
-      </ul>
-      {% else %}
-      <div class="v4-empty"><strong>هنوز نسخه‌ای ثبت نشده</strong><span>از ورودی خبرها یک خبر را برای Luna بفرست</span></div>
-      {% endif %}
-    </section>
-
-    <section class="v4-panel">
-      <header class="v4-panel-head"><div><h2>فرمان‌های نمونه</h2><p>دستیار پنل</p></div></header>
-      <div class="v4-quick-grid">
-        <button class="v4-quick" type="button" data-v4-assistant-example="چرا امروز خبر کم منتشر شده؟"><strong>علت سکوت</strong><small>سلامت + سهمیه + صف‌ها</small></button>
-        <button class="v4-quick" type="button" data-v4-assistant-example="آخرین 20 خبر منتشرشده رو نشون بده"><strong>آخرین خبرها</strong><small>آرشیو انتشار</small></button>
-        <button class="v4-quick" type="button" data-v4-assistant-example="سهمیه امروز رو بکن 40"><strong>تغییر سهمیه</strong><small>با تأیید نهایی</small></button>
+<section class="v41-luna" aria-label="گفت‌وگو با Luna">
+  <header class="v41-luna-head">
+    <div class="v41-luna-title">
+      <span class="v41-luna-orb" aria-hidden="true">L</span>
+      <div>
+        <h1>Luna</h1>
+        <p id="v4LunaStatus">دستیار اتاق خبر بی‌خبر</p>
       </div>
-    </section>
-  </aside>
-</div>
+    </div>
+    <div class="v41-luna-badges">
+      <span class="v41-luna-badge" id="v4LunaConnection">در حال بررسی اتصال…</span>
+    </div>
+  </header>
+
+  <div id="v4LunaMessages" class="v41-luna-messages" aria-live="polite" aria-relevant="additions text">
+    <article class="v41-msg v41-msg-luna">
+      <div class="v41-msg-avatar" aria-hidden="true">L</div>
+      <div class="v41-msg-body">
+        <p>من Luna هستم. درباره خبرها، منابع و وضعیت اتاق خبر باهام طبیعی حرف بزن؛ عکس هم می‌تونی بفرستی یا با میکروفون صحبت کنی.</p>
+      </div>
+    </article>
+  </div>
+
+  <div id="v4LunaAttachmentPreview" class="v41-attachment-preview" hidden></div>
+
+  <form id="v4LunaComposer" class="v41-luna-composer" autocomplete="off">
+    <label class="v41-icon-button" for="v4LunaImage" title="ارسال عکس" aria-label="ارسال عکس">
+      <span aria-hidden="true">＋</span>
+    </label>
+    <input id="v4LunaImage" name="image" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+
+    <button id="v4LunaMic" class="v41-icon-button" type="button" title="صحبت با Luna" aria-label="صحبت با Luna">
+      <span aria-hidden="true">●</span>
+    </button>
+
+    <textarea id="v4LunaInput" name="message" rows="1" maxlength="5000" placeholder="به Luna بگو چه کاری انجام بده…" aria-label="پیام به Luna"></textarea>
+
+    <button id="v4LunaSend" class="v41-send-button" type="submit" aria-label="ارسال پیام">ارسال</button>
+  </form>
+  <div id="v4LunaComposerHint" class="v41-composer-hint">Enter برای ارسال · Shift+Enter برای خط جدید</div>
+</section>
 {% endblock %}
 {% block scripts %}<script src="{{ url_for('static', filename='luna-assistant.js') }}" defer></script>{% endblock %}
