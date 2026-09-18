@@ -25,9 +25,9 @@
       {% set machine_preview = item.machine_translation or item.machine_preview or item.translation_preview or '' %}
       <article class="v4-story-card" data-v4-story-card="1" data-story-id="{{ story_id }}" data-luna-ready="0">
         <div class="v4-story-meta">
-          <span class="v4-source-badge">{{ item.source or 'منبع' }}</span>
+          <span class="v4-source-badge">{{ item.source_display or item.canonical_source_name or 'منبع خبری' }}</span>
           {% if item.updated_at or item.discovered_at %}<time datetime="{{ item.updated_at or item.discovered_at }}" data-v4-relative-time>{{ item.updated_at or item.discovered_at }}</time>{% endif %}
-          <span class="v4-state-badge">{{ item.panel_status or 'new' }}</span>
+          <span class="v4-state-badge">{{ item.panel_status_fa or item.panel_status or 'در حال پردازش' }}</span>
         </div>
         <div class="v4-original"><label>Original</label><h3>{{ original_title or 'بدون عنوان' }}</h3>{% if original_body %}<p>{{ original_body }}</p>{% endif %}</div>
         <div class="v4-machine"><label>🌐 ترجمه ماشینی</label><p{% if machine_preview %} data-loaded="1"{% endif %}>{{ machine_preview or 'ترجمه ماشینی هنوز آماده نیست' }}</p></div>
