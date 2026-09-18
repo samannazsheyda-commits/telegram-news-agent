@@ -129,7 +129,7 @@
     const accepted = await V4.confirmAction({
       title: result.mode === 'builder' ? 'Luna وارد حالت Builder شود؟' : 'Luna این کار را انجام دهد؟',
       text: result.reply_fa || 'این عملیات نیاز به تأیید دارد.',
-      accept: 'تأیید و ادامه',
+      accept: 'تأیید و اجرا',
     });
     if (!accepted) {
       toolCard('عملیات لغو شد', 'هیچ تغییری انجام نشد', 'warning');
@@ -201,6 +201,11 @@
     } finally {
       setBusy(false);
     }
+  }
+
+  function preferredAudioMime() {
+    const options = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'];
+    return options.find(type => window.MediaRecorder?.isTypeSupported?.(type)) || '';
   }
 
   async function startRecording() {
