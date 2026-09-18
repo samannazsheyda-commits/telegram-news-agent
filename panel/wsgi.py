@@ -9,6 +9,7 @@ from .live_api import bp as live_api_bp
 from .luna_assistant import bp as luna_assistant_bp
 from .luna_operator_api import bp as luna_operator_bp
 from .luna_translation_api import bp as luna_translation_bp
+from .luna_usage_api import bp as luna_usage_bp
 from .newsroom_api import bp as newsroom_api_bp
 from .source_manager import bp as source_manager_bp
 from .v4 import bp as panel_v4_bp
@@ -40,4 +41,5 @@ app.register_blueprint(panel_v4_bp)
 app.register_blueprint(luna_assistant_bp)
 app.register_blueprint(luna_operator_bp)
 app.register_blueprint(luna_translation_bp)
+app.register_blueprint(luna_usage_bp)
 app.register_blueprint(weather_preview_bp)
