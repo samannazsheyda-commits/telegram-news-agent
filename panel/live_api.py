@@ -7,16 +7,15 @@ from datetime import datetime, timedelta, timezone
 from flask import Blueprint, current_app, jsonify, request, session
 
 from src.formatters import _source_label
-from src.offline_translation import translate_to_fa_offline
 
 from .app import PANEL_STATUS_FA, REASON_FA
 
 
 bp = Blueprint("live_api", __name__)
 _TERMINAL_LIVE_STATUSES = {"auto_published", "published_auto", "published_manual"}
-_LOCALIZATION_CACHE: dict[str, dict] = {}
-_LOCALIZATION_CACHE_LIMIT = 240
-_LOCALIZE_BATCH_LIMIT = 12
+_MACHINE_CACHE: dict[str, dict] = {}
+_MACHINE_CACHE_LIMIT = 240
+_MACHINE_BATCH_LIMIT = 12
 _LIVE_PANEL_MAX_AGE = timedelta(minutes=60)
 
 
@@ -71,7 +70,7 @@ def _cache_signature(row: dict) -> str:
 
 def _cache_get(row: dict) -> dict | None:
     row_id = _row_id(row)
-    cached = _LOCALIZATION_CACHE.get(row_id)
+    cached = _MACHINE_CACHE.get(row_id)
     if not isinstance(cached, dict) or cached.get("signature") != _cache_signature(row):
         return None
     return cached
@@ -83,38 +82,41 @@ def _cache_put(row: dict, *, title: str, body: str) -> dict:
         "signature": _cache_signature(row),
         "title": title,
         "body": body,
-        "translation_mode": "offline_literal",
+        "translation_mode": "machine",
     }
-    _LOCALIZATION_CACHE[row_id] = value
-    while len(_LOCALIZATION_CACHE) > _LOCALIZATION_CACHE_LIMIT:
-        oldest = next(iter(_LOCALIZATION_CACHE), None)
+    _MACHINE_CACHE[row_id] = value
+    while len(_MACHINE_CACHE) > _MACHINE_CACHE_LIMIT:
+        oldest = next(iter(_MACHINE_CACHE), None)
         if oldest is None:
             break
-        _LOCALIZATION_CACHE.pop(oldest, None)
+        _MACHINE_CACHE.pop(oldest, None)
     return value
 
 
-def _translate_persian(value: str) -> str:
-    """Create a panel-only literal preview with the local Argos model.
+def _translate_machine(value: str) -> str:
+    """Return a lightweight operator-only machine translation.
 
-    This intentionally never calls a network translator or Luna. The result is
-    for operator comprehension only and is never persisted as final copy.
+    The production app injects src.services.translate_to_fa, which tries Google
+    first and keeps a small network fallback chain. Nothing from this preview is
+    persisted or published. Crucially, no Argos model is imported into Gunicorn.
     """
     text = str(value or "").strip()
     if not text:
         return ""
     if _has_persian(text):
         return text
+    translator = current_app.config.get("LIVE_FEED_TRANSLATOR")
+    if not callable(translator):
+        return ""
     try:
-        translated = str(translate_to_fa_offline(text) or "").strip()
+        translated = str(translator(text) or "").strip()
     except Exception as exc:
-        print(f"PANEL_OFFLINE_TRANSLATION_FAILED type={type(exc).__name__}", flush=True)
+        print(f"PANEL_MACHINE_TRANSLATION_FAILED type={type(exc).__name__}", flush=True)
         return ""
     return translated if _has_persian(translated) else ""
 
 
 def _final_message(row: dict) -> str:
-    """Return only a final message that was already persisted by a publish/edit path."""
     return str(row.get("final_message") or row.get("telegram_message") or "").strip()
 
 
@@ -128,25 +130,23 @@ def _public_row(row: dict, queued_ids: set[str]) -> dict:
     if cached and _has_persian(str(cached.get("title") or "")):
         title_fa = str(cached.get("title") or "")
         body_fa = str(cached.get("body") or "")
-        translation_mode = "offline_literal"
-        needs_localization = False
+        translation_mode = "machine"
+        needs_machine_translation = False
     elif _has_persian(raw_title):
         title_fa = raw_title
         body_fa = raw_body
         translation_mode = "source_persian"
-        needs_localization = False
+        needs_machine_translation = False
     elif _has_persian(persisted_title):
-        # Existing human/final Persian remains visible when present, but panel
-        # localization never creates or overwrites these persisted fields.
         title_fa = persisted_title
         body_fa = persisted_body
         translation_mode = "persisted_persian"
-        needs_localization = False
+        needs_machine_translation = False
     else:
-        title_fa = "عنوان فارسی در حال آماده‌سازی"
+        title_fa = ""
         body_fa = ""
-        translation_mode = "pending_offline"
-        needs_localization = bool(row_id and raw_title)
+        translation_mode = "pending_machine"
+        needs_machine_translation = bool(row_id and raw_title)
 
     status = str(row.get("panel_status") or "new")
     reason = str(row.get("decision_reason") or "")
@@ -174,11 +174,13 @@ def _public_row(row: dict, queued_ids: set[str]) -> dict:
         "can_reject": bool(row_id) and status not in _TERMINAL_LIVE_STATUSES,
         "final_message": _final_message(row),
         "translation_mode": translation_mode,
-        "needs_localization": needs_localization,
+        "needs_machine_translation": needs_machine_translation,
+        # Compatibility alias for older panel code/tests. It now means machine preview.
+        "needs_localization": needs_machine_translation,
     }
 
 
-def _raw_rows(limit: int = 40) -> tuple[list[dict], set[str]]:
+def _raw_rows(limit: int = 24) -> tuple[list[dict], set[str]]:
     data = current_app.extensions["editorial_data"]
     value, _ = data.read_json("data/panel_live_feed.json", [])
     rows = value if isinstance(value, list) else []
@@ -198,7 +200,7 @@ def _raw_rows(limit: int = 40) -> tuple[list[dict], set[str]]:
     return rows, queued_ids
 
 
-def _fast_rows(limit: int = 40) -> list[dict]:
+def _fast_rows(limit: int = 24) -> list[dict]:
     rows, queued_ids = _raw_rows(limit)
     return [_public_row(row, queued_ids) for row in rows]
 
@@ -217,7 +219,7 @@ def require_admin():
 
 @bp.get("/api/live-feed")
 def live_feed():
-    items = _fast_rows(40)
+    items = _fast_rows(24)
     response = jsonify(
         {
             "ok": True,
@@ -231,8 +233,8 @@ def live_feed():
     return response
 
 
-@bp.post("/api/live-feed/localize")
-def localize_live_feed():
+@bp.post("/api/live-feed/machine-translate")
+def machine_translate_live_feed():
     payload = request.get_json(silent=True) or {}
     values = payload.get("ids")
     if not isinstance(values, list):
@@ -245,26 +247,34 @@ def localize_live_feed():
         if item_id and item_id not in seen:
             seen.add(item_id)
             ids.append(item_id)
-        if len(ids) >= _LOCALIZE_BATCH_LIMIT:
+        if len(ids) >= _MACHINE_BATCH_LIMIT:
             break
     if not ids:
-        return jsonify({"ok": True, "items": []})
+        return jsonify({"ok": True, "items": [], "translation_mode": "machine"})
 
     rows, queued_ids = _raw_rows(100)
     by_id = {_row_id(row): row for row in rows if _row_id(row)}
-    localized: list[dict] = []
+    translated_rows: list[dict] = []
     for item_id in ids:
         row = by_id.get(item_id)
         if row is None:
             continue
-        raw_title, raw_body = _raw_fields(row)
-        title_fa = _translate_persian(raw_title)
-        if not title_fa:
-            continue
-        body_fa = _translate_persian(raw_body) if raw_body else ""
-        _cache_put(row, title=title_fa, body=body_fa)
-        localized_row = _public_row(row, queued_ids)
-        localized_row["translation_mode"] = "offline_literal"
-        localized.append(localized_row)
+        cached = _cache_get(row)
+        if cached is None:
+            raw_title, raw_body = _raw_fields(row)
+            title_fa = _translate_machine(raw_title)
+            if not title_fa:
+                continue
+            body_fa = _translate_machine(raw_body) if raw_body else ""
+            _cache_put(row, title=title_fa, body=body_fa)
+        translated_row = _public_row(row, queued_ids)
+        translated_row["translation_mode"] = "machine"
+        translated_rows.append(translated_row)
 
-    return jsonify({"ok": True, "items": localized, "translation_mode": "offline_literal"})
+    return jsonify({"ok": True, "items": translated_rows, "translation_mode": "machine"})
+
+
+# Backward-compatible alias while old clients drain from caches.
+@bp.post("/api/live-feed/localize")
+def localize_live_feed_compat():
+    return machine_translate_live_feed()
