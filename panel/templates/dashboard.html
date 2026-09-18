@@ -28,7 +28,7 @@
   <section>
     <section class="v4-panel v41-story-panel">
       <header class="v4-panel-head">
-        <div><h2>تازه‌ترین خبرها</h2><p>بدون ترجمه ماشینیِ اجباری؛ ترجمه قابل انتشار فقط با Luna و کنترل کیفیت.</p></div>
+        <div><h2>تازه‌ترین خبرها</h2><p>ترجمه قابل انتشار فقط با Luna و کنترل کیفیت ساخته می‌شود.</p></div>
         <a class="v4-panel-link" href="/intake">مشاهده همه</a>
       </header>
       <div id="v4LiveFeed" class="v4-story-list v41-story-list">
@@ -92,7 +92,7 @@
         <div class="v4-health-row"><span>Agent</span><strong>{{ 'فعال' if state and (state.last_cycle_at or state.last_scan_at) else 'در حال بررسی' }}</strong></div>
         <div class="v4-health-row"><span>Telegram</span><strong>{{ state.telegram_state if state and state.telegram_state is defined else 'در حال بررسی' }}</strong></div>
         <div class="v4-health-row"><span>منابع خطادار</span><strong>{{ state.last_sources_failed if state and state.last_sources_failed is defined else '—' }}</strong></div>
-        <div class="v4-health-row{% if state and state.last_error %} is-error{% endif %}"><span>آخرین خطا</span><strong>{{ state.last_error if state and state.last_error else 'بدون خطای مهم' }}</strong></div>
+        <div class="v4-health-row{% if state and state.last_error %} is-error{% endif %"><span>آخرین خطا</span><strong>{{ state.last_error if state and state.last_error else 'بدون خطای مهم' }}</strong></div>
       </div>
     </section>
     <section class="v4-panel">
