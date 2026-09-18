@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}سلامت سیستم | بی‌خبر{% endblock %}
+{% block content %}
+{% set daily_limit = v3.daily_limit or state.daily_limit or 35 %}
+{% set daily_published = v3.daily_published or state.daily_published or 0 %}
+<section class="v4-page-head">
+  <div><h1>سلامت سیستم</h1><p>جواب ساده برای «چرا خبر منتشر نشده؟» و وضعیت سرویس‌ها</p></div>
+  <a class="v4-button v4-button-secondary" href="/settings">تنظیمات</a>
+</section>
+
+<section class="v4-kpi-grid">
+  <article class="v4-kpi"><span>منتشرشده امروز</span><strong>{{ daily_published }} / {{ daily_limit }}</strong><small>سهمیه فعلی</small></article>
+  <article class="v4-kpi"><span>Ready</span><strong>{{ v3.ready or 0 }}</strong><small>آماده انتشار</small></article>
+  <article class="v4-kpi is-warn"><span>Waiting</span><strong>{{ v3.waiting or 0 }}</strong><small>در انتظار تصمیم</small></article>
+  <article class="v4-kpi"><span>Duplicate</span><strong>{{ v3.duplicates or 0 }}</strong><small>تکراری</small></article>
+  <article class="v4-kpi"><span>منابع خطادار</span><strong>{{ v3.sources_failed or state.last_sources_failed or 0 }}</strong><small>آخرین چرخه</small></article>
+  <article class="v4-kpi{% if v3.publish_failed %} is-warn{% else %} is-good{% endif %}"><span>خطای انتشار</span><strong>{{ v3.publish_failed or 0 }}</strong><small>آخرین چرخه</small></article>
+</section>
+
+<div class="v4-grid">
+  <section class="v4-panel">
+    <header class="v4-panel-head"><div><h2>تشخیص سریع</h2><p>خلاصه وضعیت به زبان ساده</p></div></header>
+    <div class="v4-health-list">
+      <div class="v4-health-row"><span>Agent</span><strong>{{ 'فعال / چرخه ثبت شده' if (v3.last_cycle_at or state.last_cycle_at) else 'زمان آخرین چرخه موجود نیست' }}</strong></div>
+      <div class="v4-health-row"><span>Telegram</span><strong>{{ state.telegram_state or ('خطای ارسال' if v3.publish_failed else 'بدون خطای ثبت‌شده') }}</strong></div>
+      <div class="v4-health-row"><span>Luna / Provider</span><strong>{{ state.luna_state or state.ai_state or 'وضعیت صریح ثبت نشده' }}</strong></div>
+      <div class="v4-health-row"><span>علت آخرین چرخه</span><strong>{{ v3.reason or state.last_reason or 'علت خاصی ثبت نشده' }}</strong></div>
+      <div class="v4-health-row{% if v3.error or state.last_error %} is-error{% endif %}"><span>آخرین خطا</span><strong>{{ v3.error or state.last_error or 'بدون خطای مهم ثبت‌شده' }}</strong></div>
+      <div class="v4-health-row"><span>آخرین انتشار</span><strong>{{ v3.last_published_at or state.last_publication_at or '—' }}</strong></div>
+    </div>
+  </section>
+
+  <aside class="v4-side-stack">
+    <section class="v4-panel">
+      <header class="v4-panel-head"><div><h2>Audit Log</h2><p>آخرین اقدام‌های پنل و Luna</p></div></header>
+      {% if audit %}
+      <ul class="v4-mini-list">
+        {% for item in audit[:50] %}
+        <li class="v4-mini-row"><span>{{ item.actor }} · {{ item.action }}</span><strong>{{ item.target }}</strong><small>{{ item.result }}</small></li>
+        {% endfor %}
+      </ul>
+      {% else %}<div class="v4-empty"><strong>هنوز اقدامی ثبت نشده</strong><span>اکشن‌های V4 اینجا ثبت می‌شوند</span></div>{% endif %}
+    </section>
+  </aside>
+</div>
+{% endblock %}
