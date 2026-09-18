@@ -3,6 +3,7 @@ import os
 from src.local_json_repository import LocalJsonRepository
 from src.services import translate_to_fa
 
+from . import command_center as command_center_module
 from .app import create_app
 from .command_center import bp as command_center_bp
 from .live_api import bp as live_api_bp
@@ -14,6 +15,12 @@ from .v4_assistant import bp as panel_v4_assistant_bp
 from .v4_published import bp as panel_v4_published_bp
 from .weather_preview import bp as weather_preview_bp
 
+
+# Air Traffic is retired from the active panel. Historical files may stay on
+# disk for archive purposes, but the live command-center must not expose it.
+command_center_module.MODULES.pop("air-traffic", None)
+command_center_module.MODULE_PREVIEW_PATHS.pop("air-traffic", None)
+command_center_module.MODULE_PREVIEW_ACTIONS.pop("air-traffic", None)
 
 # The current VPS panel is intentionally served over plain HTTP on port 80.
 # A Secure session cookie is not returned by browsers over HTTP, which breaks
