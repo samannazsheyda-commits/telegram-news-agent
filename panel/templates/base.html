@@ -32,7 +32,7 @@
       <a class="v4-nav-link{% if request.path.startswith('/published') or request.path.startswith('/history') %} is-active{% endif %}" href="/published"><span class="v4-nav-icon" aria-hidden="true">↗</span><span>منتشرشده</span></a>
       <a class="v4-nav-link{% if request.path.startswith('/source-manager') or request.path.startswith('/sources') %} is-active{% endif %}" href="/source-manager"><span class="v4-nav-icon" aria-hidden="true">⌁</span><span>منابع</span></a>
       <a class="v4-nav-link{% if request.path.startswith('/settings') %} is-active{% endif %}" href="/settings"><span class="v4-nav-icon" aria-hidden="true">⚙</span><span>تنظیمات</span></a>
-      <a class="v4-nav-link{% if request.path.startswith('/health') %} is-active{% endif %}" href="/health"><span class="v4-nav-icon" aria-hidden="true">♡</span><span>سلامت سیستم</span></a>
+      <a class="v4-nav-link{% if request.path.startswith('/health') or request.path.startswith('/audit') %} is-active{% endif %}" href="/health"><span class="v4-nav-icon" aria-hidden="true">♡</span><span>سلامت سیستم</span></a>
     </nav>
 
     <div class="v4-topbar-actions">
@@ -60,7 +60,7 @@
     <a class="{% if request.path.startswith('/incoming') %}is-active{% endif %}" href="/incoming"><span class="v4-nav-icon">↓</span><span>ورودی</span></a>
     <a class="{% if request.path.startswith('/review') %}is-active{% endif %}" href="{{ url_for('review_queue') }}"><span class="v4-nav-icon">✓</span><span>بررسی</span></a>
     <a class="{% if request.path.startswith('/luna') %}is-active{% endif %}" href="/luna"><span class="v4-nav-icon">✦</span><span>لونا</span></a>
-    <button type="button" data-v4-more-open class="{% if request.path.startswith('/published') or request.path.startswith('/history') or request.path.startswith('/source-manager') or request.path.startswith('/sources') or request.path.startswith('/settings') or request.path.startswith('/health') %}is-active{% endif %}"><span class="v4-nav-icon">•••</span><span>بیشتر</span></button>
+    <button type="button" data-v4-more-open class="{% if request.path.startswith('/published') or request.path.startswith('/history') or request.path.startswith('/source-manager') or request.path.startswith('/sources') or request.path.startswith('/settings') or request.path.startswith('/health') or request.path.startswith('/audit') %}is-active{% endif %}"><span class="v4-nav-icon">•••</span><span>بیشتر</span></button>
   </nav>
 
   <div id="v4MoreSheet" class="v4-more-sheet" aria-hidden="true">
@@ -73,8 +73,11 @@
       <a href="/source-manager"><span class="v4-nav-icon">⌁</span> منابع</a>
       <a href="/settings"><span class="v4-nav-icon">⚙</span> تنظیمات</a>
       <a href="/health"><span class="v4-nav-icon">♡</span> سلامت و خطاها</a>
+      <a href="/audit"><span class="v4-nav-icon">≡</span> Audit Log</a>
     </div>
   </div>
+
+  {% include '_luna_assistant.html' %}
   {% endif %}
 
   <div id="v4ToastStack" class="v4-toast-stack" aria-live="polite" aria-atomic="true"></div>
