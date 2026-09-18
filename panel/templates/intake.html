@@ -23,7 +23,10 @@
       {% set original_title = item.original_title or item.title or '' %}
       {% set original_body = item.original_summary or item.summary or item.body or '' %}
       {% set machine_preview = item.machine_translation or item.machine_preview or item.translation_preview or '' %}
-      <article class="v4-story-card" data-v4-story-card="1" data-story-id="{{ story_id }}" data-luna-ready="0">
+      {% set luna_title = item.final_persian_title or '' %}
+      {% set luna_body = item.final_persian_body or '' %}
+      {% set luna_ready = item.luna_decision or luna_title or luna_body %}
+      <article class="v4-story-card" data-v4-story-card="1" data-story-id="{{ story_id }}" data-luna-ready="{{ 1 if luna_ready else 0 }}">
         <div class="v4-story-meta">
           <span class="v4-source-badge">{{ item.source_display or item.canonical_source_name or 'منبع خبری' }}</span>
           {% if item.updated_at or item.discovered_at %}<time datetime="{{ item.updated_at or item.discovered_at }}" data-v4-relative-time>{{ item.updated_at or item.discovered_at }}</time>{% endif %}
@@ -31,18 +34,27 @@
         </div>
         <div class="v4-original"><label>Original</label><h3>{{ original_title or 'بدون عنوان' }}</h3>{% if original_body %}<p>{{ original_body }}</p>{% endif %}</div>
         <div class="v4-machine"><label>🌐 ترجمه ماشینی</label><p{% if machine_preview %} data-loaded="1"{% endif %}>{{ machine_preview or 'ترجمه ماشینی هنوز آماده نیست' }}</p></div>
-        <div class="v4-luna"><div class="v4-luna-head"><label>🧠 Luna</label><span class="v4-luna-decision">هنوز بررسی نشده</span></div><p>برای خبر ارزشمند، نسخه نهایی Luna را بساز</p></div>
+        <div class="v4-luna">
+          <div class="v4-luna-head"><label>🧠 Luna</label><span class="v4-luna-decision">{{ item.luna_decision if luna_ready else 'هنوز بررسی نشده' }}</span></div>
+          {% if luna_ready %}
+            {% if item.importance is defined %}<div class="v4-importance">اهمیت: {{ item.importance }}/10</div>{% endif %}
+            {% if item.decision_reason_fa %}<p><strong>دلیل:</strong> {{ item.decision_reason_fa }}</p>{% endif %}
+            {% if luna_title %}<h3>{{ luna_title }}</h3>{% endif %}
+            {% if luna_body %}<p>{{ luna_body }}</p>{% endif %}
+          {% else %}<p>برای خبر ارزشمند، نسخه نهایی Luna را بساز</p>{% endif %}
+        </div>
         <div class="v4-story-actions">
-          <button class="v4-button v4-button-primary" type="button" data-v4-action="send-luna">ارسال به Luna</button>
+          {% if luna_ready %}
+            {% if item.luna_decision in ['PUBLISH', 'SPECIAL'] %}<button class="v4-button v4-button-primary" type="button" data-v4-action="publish-final">انتشار</button>{% endif %}
+            <button class="v4-button v4-button-secondary" type="button" data-v4-action="edit-final">ویرایش</button>
+          {% else %}<button class="v4-button v4-button-primary" type="button" data-v4-action="send-luna">ارسال به Luna</button>{% endif %}
           <button class="v4-button v4-button-danger" type="button" data-v4-action="reject">رد</button>
           {% if item.source_url or item.link %}<a class="v4-button v4-button-secondary" href="{{ item.source_url or item.link }}" target="_blank" rel="noopener">منبع</a>{% endif %}
         </div>
         <div class="v4-story-progress" data-v4-story-progress hidden></div>
       </article>
     {% endfor %}
-  {% else %}
-    <div class="v4-empty"><strong>خبری با این فیلتر پیدا نشد</strong><span>فیلترها را تغییر بده یا بعداً دوباره بررسی کن</span></div>
-  {% endif %}
+  {% else %}<div class="v4-empty"><strong>خبری با این فیلتر پیدا نشد</strong><span>فیلترها را تغییر بده یا بعداً دوباره بررسی کن</span></div>{% endif %}
   </div>
 </section>
 {% endblock %}
