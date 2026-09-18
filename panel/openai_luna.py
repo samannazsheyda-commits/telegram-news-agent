@@ -68,6 +68,8 @@ class OpenAILunaClient:
         model: str | None = None,
         instructions: str | None = None,
         reasoning_effort: str | None = None,
+        previous_response_id: str | None = None,
+        text_format: dict | None = None,
     ) -> dict:
         payload: dict = {
             "model": str(model or self.fast_model),
@@ -80,6 +82,10 @@ class OpenAILunaClient:
             payload["instructions"] = instructions
         if reasoning_effort:
             payload["reasoning"] = {"effort": reasoning_effort}
+        if previous_response_id:
+            payload["previous_response_id"] = str(previous_response_id)
+        if text_format:
+            payload["text"] = {"format": text_format}
         try:
             response = requests.post(
                 f"{self.base_url}/v1/responses",
@@ -138,6 +144,17 @@ class OpenAILunaClient:
                 }
             )
         return calls
+
+    @staticmethod
+    def usage(response: dict) -> dict:
+        raw = response.get("usage") if isinstance(response, dict) else {}
+        raw = raw if isinstance(raw, dict) else {}
+        details = raw.get("input_tokens_details") if isinstance(raw.get("input_tokens_details"), dict) else {}
+        return {
+            "input_tokens": int(raw.get("input_tokens") or 0),
+            "output_tokens": int(raw.get("output_tokens") or 0),
+            "cached_input_tokens": int(details.get("cached_tokens") or 0),
+        }
 
     def transcribe(self, content: bytes, *, filename: str, mimetype: str) -> dict:
         if not isinstance(content, (bytes, bytearray)) or not content:
