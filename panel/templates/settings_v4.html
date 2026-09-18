@@ -2,18 +2,19 @@
 {% block title %}تنظیمات | مرکز کنترل بی‌خبر{% endblock %}
 {% block content %}
 <section class="v4-page-head">
-  <div><h1>تنظیمات</h1><p>کنترل روزانه بدون ورود به SSH</p></div>
+  <div><h1>تنظیمات</h1><p>کنترل روزانه پنل و نمایش صادقانه تنظیمات مؤثر runtime</p></div>
   <a class="v4-button v4-button-secondary" href="/system">سلامت سیستم</a>
 </section>
 
 <div class="v4-grid">
   <section class="v4-panel">
-    <header class="v4-panel-head"><div><h2>سهمیه انتشار</h2><p>خبرهای عادی و ویژه Luna مستقل از هم هستند</p></div></header>
+    <header class="v4-panel-head"><div><h2>سهمیه انتشار</h2><p>مقدار ذخیره‌شده در پنل و سهمیه مؤثر V3 را جدا می‌بینی</p></div></header>
     <form class="v4-form-grid" method="post" action="/settings/quotas">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <div class="v4-field"><label for="dailyLimit">خبر عادی روزانه</label><input id="dailyLimit" class="v4-input" type="number" min="0" max="200" name="daily_limit" value="{{ settings.daily_limit or state.daily_limit or 35 }}"></div>
-      <div class="v4-field"><label for="specialLimit">خبر ویژه Luna</label><input id="specialLimit" class="v4-input" type="number" min="0" max="50" name="special_daily_limit" value="{{ settings.special_daily_limit or state.special_daily_limit or 5 }}"></div>
-      <div class="v4-field-wide"><button class="v4-button v4-button-primary" type="submit">ذخیره سهمیه‌ها</button></div>
+      <div class="v4-field"><label for="dailyLimit">هدف خبر عادی در پنل</label><input id="dailyLimit" class="v4-input" type="number" min="0" max="200" name="daily_limit" value="{{ settings.daily_limit or 35 }}"></div>
+      <div class="v4-field"><label for="specialLimit">هدف خبر ویژه Luna در پنل</label><input id="specialLimit" class="v4-input" type="number" min="0" max="50" name="special_daily_limit" value="{{ settings.special_daily_limit or 5 }}"></div>
+      <div class="v4-field-wide v4-machine"><p><strong>سهمیه مؤثر V3 فعلی:</strong> عادی {{ state.daily_limit if state.daily_limit is defined else 'از env' }} · ویژه {{ state.special_daily_limit if state.special_daily_limit is defined else 'از env' }}<br>تا وقتی runtime V3 به تنظیمات پنل متصل نشده، ذخیره این فرم فقط «هدف پنل» را ثبت می‌کند و سهمیه مؤثر Agent را تغییر نمی‌دهد.</p></div>
+      <div class="v4-field-wide"><button class="v4-button v4-button-primary" type="submit">ذخیره هدف پنل</button></div>
     </form>
   </section>
 
