@@ -6,6 +6,8 @@ from pathlib import Path
 
 from . import newsroom_hybrid_runtime as hybrid
 from . import runtime_v13 as v13
+from .panel_v4_commands import apply_command as apply_panel_v4_command
+from .panel_v4_runtime import run_v3_with_panel_settings
 
 
 DEFAULT_RUNTIME_ROOT = Path("/var/lib/bikhabar/runtime")
@@ -65,6 +67,8 @@ def install_vps_paths() -> None:
     panel_command_dir().mkdir(parents=True, exist_ok=True)
     v13._NEWSROOM_SETTINGS_PATH = newsroom_settings_path()
     hybrid._process_panel_commands = _process_panel_commands
+    hybrid.apply_panel_command = apply_panel_v4_command
+    hybrid.run_v3_production_once = run_v3_with_panel_settings
 
 
 def main() -> int:
