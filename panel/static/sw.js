@@ -5,6 +5,7 @@ const SHELL = [
   '/static/newsroom-v4-dashboard.js',
   '/static/newsroom-v4-luna.css',
   '/static/luna-assistant.js',
+  '/static/settings.css',
   '/static/settings.js',
   '/static/manifest.webmanifest',
 ];
