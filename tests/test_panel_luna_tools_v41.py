@@ -46,12 +46,12 @@ def test_tool_schema_exposes_newsroom_actions_without_shell():
     assert "python" not in combined
 
 
-def test_search_story_and_source_listing_are_read_only():
+def test_search_story_and_targeted_source_lookup_are_read_only():
     data = MemoryData()
     toolbox = LunaToolbox(data, block_path="/tmp/test-luna-operator-blocks.json")
 
     stories = toolbox.execute("search_stories", {"query": "Iran"})
-    sources = toolbox.execute("list_sources", {"active": True})
+    sources = toolbox.execute("list_sources", {"active": True, "query": "رسالت"})
 
     assert stories["ok"] is True
     assert stories["stories"][0]["id"] == "story-1"
