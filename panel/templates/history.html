@@ -1,23 +1,40 @@
 {% extends 'base.html' %}
-{% block title %}تاریخچه | بی‌خبر{% endblock %}
+{% block title %}منتشرشده | مرکز کنترل بی‌خبر{% endblock %}
 {% block content %}
-<h1>تاریخچه</h1>
-<div class="filter-row">
-  <a href="{{ url_for('history') }}">همه</a>
-  <a href="{{ url_for('history', status='published_manual') }}">انتشار دستی</a>
-  <a href="{{ url_for('history', status='published_auto') }}">انتشار خودکار</a>
-  <a href="{{ url_for('history', status='rejected_manual') }}">رد دستی</a>
-</div>
-<div class="list">
-{% for item in items %}
-  <section class="news-card static">
-    <div class="meta"><span>{{ item.source }}</span><span>{{ item.status }}</span></div>
-    <h2>{{ item.final_persian_title or item.persian_title or item.original_title }}</h2>
-    {% if item.final_persian_body or item.persian_body %}<p>{{ item.final_persian_body or item.persian_body }}</p>{% endif %}
-    <div class="meta"><span>{{ item.decision_at or item.updated_at or '' }}</span>{% if item.source_url %}<a href="{{ item.source_url }}" target="_blank" rel="noopener">منبع</a>{% endif %}</div>
-  </section>
-{% else %}
-  <section class="card empty">موردی پیدا نشد.</section>
-{% endfor %}
-</div>
+<section class="v4-page-head">
+  <div><h1>منتشرشده و آرشیو</h1><p>تاریخچه واقعی تصمیم‌ها و انتشارها</p></div>
+  <a class="v4-button v4-button-secondary" href="/">داشبورد</a>
+</section>
+
+<section class="v4-panel">
+  <header class="v4-panel-head">
+    <div class="v4-toolbar">
+      <a class="v4-button {{ 'v4-button-primary' if not status else 'v4-button-secondary' }}" href="{{ url_for('history') }}">همه</a>
+      <a class="v4-button {{ 'v4-button-primary' if status == 'published_manual' else 'v4-button-secondary' }}" href="{{ url_for('history', status='published_manual') }}">دستی</a>
+      <a class="v4-button {{ 'v4-button-primary' if status == 'published_auto' else 'v4-button-secondary' }}" href="{{ url_for('history', status='published_auto') }}">خودکار</a>
+      <a class="v4-button {{ 'v4-button-primary' if status == 'rejected_manual' else 'v4-button-secondary' }}" href="{{ url_for('history', status='rejected_manual') }}">ردشده</a>
+    </div>
+  </header>
+  <div class="v4-story-list">
+  {% for item in items[:100] %}
+    <article class="v4-story-card">
+      <div class="v4-story-meta">
+        <span class="v4-source-badge">{{ item.source or 'منبع' }}</span>
+        <span class="v4-state-badge">{{ item.status or '—' }}</span>
+        {% if item.decision_at or item.updated_at %}<time datetime="{{ item.decision_at or item.updated_at }}" data-v4-relative-time>{{ item.decision_at or item.updated_at }}</time>{% endif %}
+      </div>
+      <div class="v4-original">
+        <h3>{{ item.final_persian_title or item.persian_title or item.original_title or 'بدون عنوان' }}</h3>
+        {% if item.final_persian_body or item.persian_body %}<p>{{ item.final_persian_body or item.persian_body }}</p>{% endif %}
+      </div>
+      <div class="v4-story-actions">
+        {% if item.source_url %}<a class="v4-button v4-button-secondary" href="{{ item.source_url }}" target="_blank" rel="noopener">منبع</a>{% endif %}
+        {% if item.telegram_message_id %}<span class="v4-button v4-button-secondary">Telegram ID: {{ item.telegram_message_id }}</span>{% endif %}
+      </div>
+    </article>
+  {% else %}
+    <div class="v4-empty"><strong>موردی پیدا نشد</strong><span>فیلتر دیگری را امتحان کن</span></div>
+  {% endfor %}
+  </div>
+</section>
 {% endblock %}
