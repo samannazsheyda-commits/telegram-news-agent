@@ -120,6 +120,17 @@ def _upsert(path: str, record: dict, *, id_key: str, message: str) -> list[dict]
     return _write_list(path, lambda rows: [record] + [row for row in rows if str(row.get(id_key) or "") != target], message)
 
 
+def _update_live_story(story_id: str, **fields) -> None:
+    def transform(rows: list[dict]) -> list[dict]:
+        for row in rows:
+            if _story_id(row) == story_id:
+                row.update(fields)
+                break
+        return rows
+
+    _write_list("data/panel_live_feed.json", transform, "panel v4: persist preview state")
+
+
 def _preview_for(story_id: str) -> dict | None:
     return next((row for row in _rows("data/panel_luna_previews.json") if str(row.get("story_id") or "") == story_id), None)
 
@@ -135,12 +146,6 @@ def _audit(action: str, target: str, *, actor: str = "user", before=None, after=
         "result": result,
     }
     _write_list("data/panel_audit_log.json", lambda rows: ([record] + rows)[:500], "panel v4: audit action")
-
-
-def _page_login_guard():
-    if session.get("admin"):
-        return None
-    return redirect(url_for("login", next=request.path))
 
 
 @bp.before_request
@@ -190,7 +195,7 @@ def update_quotas():
     regular = _bounded(request.form.get("daily_limit", ""), int(current.get("daily_limit") or 35), 200)
     special = _bounded(request.form.get("special_daily_limit", ""), int(current.get("special_daily_limit") or 5), 50)
     before = {"daily_limit": current.get("daily_limit", 35), "special_daily_limit": current.get("special_daily_limit", 5)}
-    saved = _write_settings(lambda value: {**value, "daily_limit": regular, "special_daily_limit": special})
+    _write_settings(lambda value: {**value, "daily_limit": regular, "special_daily_limit": special})
     _audit("update_quotas", "newsroom_settings", before=before, after={"daily_limit": regular, "special_daily_limit": special})
     return redirect(url_for("panel_v4.settings_page"))
 
@@ -208,6 +213,9 @@ def machine_preview(story_id: str):
     row = _find_live_item(story_id)
     if row is None:
         return jsonify({"ok": False, "error": "story_not_found", "message": "خبر پیدا نشد"}), 404
+    cached = str(row.get("machine_translation") or row.get("machine_preview") or "").strip()
+    if cached:
+        return jsonify({"ok": True, "preview": cached, "label": "🌐 ترجمه ماشینی", "cached": True})
     source = _source_text(row)
     try:
         preview = str(_machine_translator()(source) or "").strip()
@@ -215,7 +223,8 @@ def machine_preview(story_id: str):
         return jsonify({"ok": False, "error": "machine_translation_failed", "message": "ترجمه ماشینی موقتاً در دسترس نیست", "detail": type(exc).__name__}), 503
     if not preview:
         return jsonify({"ok": False, "error": "machine_translation_failed", "message": "ترجمه ماشینی موقتاً در دسترس نیست"}), 503
-    return jsonify({"ok": True, "preview": preview, "label": "🌐 ترجمه ماشینی"})
+    _update_live_story(story_id, machine_translation=preview, machine_translation_at=_now_iso())
+    return jsonify({"ok": True, "preview": preview, "label": "🌐 ترجمه ماشینی", "cached": False})
 
 
 @bp.post("/api/panel/luna/preview/<story_id>")
@@ -233,6 +242,16 @@ def luna_preview(story_id: str):
         return jsonify({"ok": False, "error": "luna_preview_failed", "message": "Luna نتوانست نسخه نهایی معتبر بسازد"}), 503
 
     _upsert("data/panel_luna_previews.json", preview, id_key="story_id", message="panel v4: save Luna preview")
+    _update_live_story(
+        story_id,
+        final_persian_title=preview["title_fa"],
+        final_persian_body=preview["body_fa"],
+        luna_decision=preview["decision"],
+        importance=preview["importance"],
+        decision_reason_fa=preview["reason_fa"],
+        luna_confidence=preview["confidence"],
+        luna_reviewed_at=preview["updated_at"],
+    )
     review = _review_record_from_live(row, story_id)
     review.update(
         persian_title=preview["title_fa"],
