@@ -1,5 +1,7 @@
 import os
 
+from flask import session
+
 from src.local_json_repository import LocalJsonRepository
 from src.services import translate_to_fa
 
@@ -12,10 +14,6 @@ from .source_manager import bp as source_manager_bp
 from .weather_preview import bp as weather_preview_bp
 
 
-# The current VPS panel is intentionally served over plain HTTP on port 80.
-# A Secure session cookie is not returned by browsers over HTTP, which breaks
-# Flask-WTF CSRF validation on the login POST. Keep HTTP as the deployment
-# default and allow a future HTTPS reverse proxy to opt in explicitly.
 cookie_secure = str(os.environ.get("PANEL_COOKIE_SECURE", "0")).strip().lower() in {"1", "true", "yes", "on"}
 config = {"SESSION_COOKIE_SECURE": cookie_secure}
 local_root = str(os.environ.get("PANEL_LOCAL_ROOT") or "").strip()
@@ -24,6 +22,16 @@ if local_root:
 config["LIVE_FEED_TRANSLATOR"] = translate_to_fa
 
 app = create_app(config)
+
+# The owner explicitly operates this VPS panel without a password. Keep the
+# behavior configurable so authentication can be restored later without a code
+# change, while making the production default match the current operating mode.
+auth_disabled = str(os.environ.get("PANEL_AUTH_DISABLED", "1")).strip().lower() in {"1", "true", "yes", "on"}
+if auth_disabled:
+    @app.before_request
+    def _passwordless_operator_session():
+        session["admin"] = True
+
 app.register_blueprint(command_center_bp)
 app.register_blueprint(live_api_bp)
 app.register_blueprint(newsroom_api_bp)
