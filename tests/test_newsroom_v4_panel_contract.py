@@ -137,5 +137,5 @@ def test_v4_css_disables_heavy_mobile_blur_and_animation():
     base = Path("panel/templates/base.html").read_text(encoding="utf-8")
     css = Path("panel/static/newsroom-v4.css").read_text(encoding="utf-8")
     assert "newsroom-v4.css" in base
-    assert "backdrop-filter: none" in css
-    assert "animation: none" in css
+    assert "backdrop-filter:none!important" in css
+    assert "animation:none!important" in css
