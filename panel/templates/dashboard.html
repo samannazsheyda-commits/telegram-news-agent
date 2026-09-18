@@ -5,15 +5,15 @@
   <div>
     <span class="v4-kicker">NEWSROOM CONTROL</span>
     <h1>اتاق خبر بی‌خبر</h1>
-    <p>ترجمه ماشینی را ببین، خبر ارزشمند را به لونا بده، نسخه نهایی را قبل از انتشار بررسی کن.</p>
+    <p>ترجمه ماشینی را ببین، خبر ارزشمند را به لونا بده، نسخه نهایی را قبل از انتشار بررسی و در صورت نیاز ویرایش کن.</p>
   </div>
   <div class="v4-hero-actions">
     <button id="scanNow" class="v4-btn v4-btn-primary" type="button">اسکن فوری</button>
-    <a class="v4-btn v4-btn-secondary" href="/source-manager">مدیریت منابع</a>
+    <a class="v4-btn v4-btn-secondary" href="/source-manager">افزودن / مدیریت منبع</a>
   </div>
 </section>
 
-<section class="v4-overview" aria-label="آمار امروز">
+<section id="newsroomStatusBar" class="v4-overview" aria-label="آمار امروز">
   <article class="v4-stat v4-stat-main">
     <span>منتشرشده امروز</span>
     <strong><b id="publishedCount">{{ published_today }}</b><em>/</em><b id="dailyLimitLabel">۳۵</b></strong>
@@ -50,12 +50,12 @@
 
 <section class="v4-toolbar">
   <div>
-    <strong>فید زنده</strong>
+    <strong>ورودی زنده</strong>
     <span id="liveCount">{{ live_count }}</span>
   </div>
   <div class="v4-toolbar-actions">
     <button id="refreshFeed" class="v4-btn v4-btn-quiet" type="button">به‌روزرسانی</button>
-    <button id="publishingToggle" class="v4-btn v4-btn-danger" type="button">توقف انتشار خودکار</button>
+    <button id="publishingToggle" class="v4-btn v4-btn-danger" type="button">توقف کامل انتشار</button>
   </div>
 </section>
 
@@ -81,6 +81,25 @@
   </details>
 </section>
 
+<div id="editorSheet" class="nr-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="editorHeading">
+  <button class="nr-sheet-backdrop" type="button" data-editor-close aria-label="بستن"></button>
+  <section class="nr-sheet-panel v4-editor-panel">
+    <span class="nr-sheet-grabber"></span>
+    <div class="v4-editor-head">
+      <div><span>نسخه نهایی لونا</span><h2 id="editorHeading">ویرایش قبل از انتشار</h2></div>
+      <a id="editorSourceLink" href="#" target="_blank" rel="noopener">باز کردن منبع</a>
+    </div>
+    <input id="editorStoryId" type="hidden">
+    <div class="v4-editor-source">منبع: <strong id="editorSource">—</strong></div>
+    <label class="v4-editor-field">تیتر نهایی<input id="editorTitle" type="text" maxlength="280" autocomplete="off"></label>
+    <label class="v4-editor-field">متن نهایی<textarea id="editorBody" rows="8" maxlength="4000"></textarea></label>
+    <div class="nr-sheet-actions">
+      <button id="editorApply" class="v4-btn v4-btn-primary" type="button">اعمال ویرایش</button>
+      <button class="v4-btn v4-btn-secondary" type="button" data-editor-close>بستن</button>
+    </div>
+  </section>
+</div>
+
 <div id="confirmSheet" class="nr-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
   <button class="nr-sheet-backdrop" type="button" data-sheet-close aria-label="بستن"></button>
   <section class="nr-sheet-panel nr-confirm-panel">
@@ -99,4 +118,5 @@
 <script src="{{ url_for('static', filename='newsroom-ui.js') }}" defer></script>
 <script src="{{ url_for('static', filename='newsroom-live.js') }}" defer></script>
 <script src="{{ url_for('static', filename='newsroom-actions.js') }}" defer></script>
+<script src="{{ url_for('static', filename='newsroom-editor.js') }}" defer></script>
 {% endblock %}
