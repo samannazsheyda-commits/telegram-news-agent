@@ -6,7 +6,7 @@ from uuid import uuid4
 
 from flask import Blueprint, current_app, jsonify, request, session
 
-from .command_center import _settings, _write_list, _write_settings
+from .command_center import _settings, _write_list
 
 
 bp = Blueprint("luna_assistant", __name__)
@@ -64,20 +64,24 @@ def _published_rows(limit: int = 20) -> list[dict]:
     return rows[: max(1, min(50, limit))]
 
 
+def _v3_status() -> dict:
+    value = _read("data/newsroom_v3_production_status.json", {})
+    return value if isinstance(value, dict) else {}
+
+
 def _diagnosis() -> str:
-    v3 = _read("data/newsroom_v3_production_status.json", {})
-    v3 = v3 if isinstance(v3, dict) else {}
+    v3 = _v3_status()
     settings, _ = _settings()
     state = _read("state.json", {})
     state = state if isinstance(state, dict) else {}
-    limit = int(v3.get("daily_limit") or settings.get("daily_limit") or 35)
+    limit = int(v3.get("daily_limit") or state.get("daily_limit") or settings.get("daily_limit") or 35)
     published = int(v3.get("daily_published") or state.get("daily_published") or 0)
     remaining = max(0, int(v3.get("daily_remaining") if v3.get("daily_remaining") is not None else limit - published))
     waiting = int(v3.get("waiting") or 0)
     ready = int(v3.get("ready") or 0)
     failed_sources = int(v3.get("sources_failed") or state.get("last_sources_failed") or 0)
     publish_failed = int(v3.get("publish_failed") or 0)
-    reason = str(v3.get("reason") or state.get("last_reason") or "نامشخص")
+    reason = str(v3.get("reason") or state.get("last_reason") or state.get("newsroom_reason") or "نامشخص")
     telegram = str(state.get("telegram_state") or "نامشخص")
     return (
         f"امروز {published} خبر از سهمیه {limit} منتشر شده و {remaining} خبر تا سقف عادی باقی مانده. "
@@ -98,6 +102,16 @@ def _parse_quota(message: str) -> int | None:
     return target if 0 <= target <= 200 else None
 
 
+def _quota_not_wired_reply(target: int) -> str:
+    v3 = _v3_status()
+    effective = v3.get("daily_limit")
+    current = f"{effective}" if effective is not None else "از env سرویس"
+    return (
+        f"درخواست سهمیه {target} را مستقیم اجرا نمی‌کنم، چون V3 فعلاً سهمیه مؤثر را از env می‌خواند، نه از تنظیمات پنل. "
+        f"سهمیه مؤثر فعلی: {current}. برای اعمال واقعی باید اتصال runtime به تنظیمات پنل اضافه شود؛ با scope فعلی فقط پنل را تغییر می‌دهم."
+    )
+
+
 def _parse_source_action(message: str) -> tuple[str, str] | None:
     normalized = re.sub(r"\s+", " ", message).strip()
     if "خاموش" in normalized or "غیرفعال" in normalized:
@@ -116,14 +130,6 @@ def _parse_source_action(message: str) -> tuple[str, str] | None:
 def _execute_pending(record: dict) -> tuple[bool, str]:
     action = str(record.get("action") or "")
     payload = record.get("payload") if isinstance(record.get("payload"), dict) else {}
-    if action == "update_daily_quota":
-        target = int(payload.get("daily_limit") or 0)
-        before, _ = _settings()
-        previous = int(before.get("daily_limit") or 35)
-        _write_settings(lambda value: {**value, "daily_limit": target})
-        _audit(action, "newsroom_settings", before={"daily_limit": previous}, after={"daily_limit": target})
-        return True, f"سهمیه خبر عادی از {previous} به {target} تغییر کرد."
-
     if action in {"disable_source", "enable_source"}:
         name = str(payload.get("name") or "").strip()
         desired = action == "enable_source"
@@ -132,7 +138,11 @@ def _execute_pending(record: dict) -> tuple[bool, str]:
         def transform(rows: list[dict]) -> list[dict]:
             matched = False
             for row in rows:
-                candidates = {str(row.get("name") or "").casefold(), str(row.get("handle") or "").lstrip("@").casefold(), str(row.get("id") or "").casefold()}
+                candidates = {
+                    str(row.get("name") or "").casefold(),
+                    str(row.get("handle") or "").lstrip("@").casefold(),
+                    str(row.get("id") or "").casefold(),
+                }
                 if name.casefold().lstrip("@") in candidates:
                     changed["before"] = bool(row.get("active", True))
                     row["active"] = desired
@@ -149,7 +159,6 @@ def _execute_pending(record: dict) -> tuple[bool, str]:
             return False, f"منبع «{name}» در منابع قابل‌مدیریت پنل پیدا نشد."
         _audit(action, name, before={"active": changed["before"]}, after={"active": desired})
         return True, f"منبع «{name}» {'فعال' if desired else 'غیرفعال'} شد."
-
     return False, "این اکشن دیگر معتبر نیست."
 
 
@@ -169,13 +178,11 @@ def assistant():
 
     quota = _parse_quota(message)
     if quota is not None:
-        action_id = _save_pending("update_daily_quota", {"daily_limit": quota}, f"سهمیه خبر عادی روی {quota} تنظیم شود؟")
         return jsonify({
             "ok": True,
-            "action": "update_daily_quota",
-            "confirmation_required": True,
-            "action_id": action_id,
-            "reply_fa": f"سهمیه خبر عادی را روی {quota} بگذارم؟ این تغییر فقط بعد از تأیید تو اعمال می‌شود.",
+            "action": "quota_runtime_bridge_required",
+            "confirmation_required": False,
+            "reply_fa": _quota_not_wired_reply(quota),
         })
 
     source_action = _parse_source_action(message)
@@ -212,7 +219,7 @@ def assistant():
         "ok": True,
         "action": "help",
         "confirmation_required": False,
-        "reply_fa": "می‌توانم علت کم‌بودن انتشار را بررسی کنم، آخرین خبرهای منتشرشده را نشان بدهم، سهمیه روزانه را با تأیید تو تغییر بدهم، یا یک منبع قابل‌مدیریت را روشن/خاموش کنم.",
+        "reply_fa": "می‌توانم علت کم‌بودن انتشار را بررسی کنم، آخرین خبرهای منتشرشده را نشان بدهم، وضعیت سهمیه مؤثر V3 را توضیح بدهم، یا یک منبع قابل‌مدیریت را روشن/خاموش کنم.",
     })
 
 
