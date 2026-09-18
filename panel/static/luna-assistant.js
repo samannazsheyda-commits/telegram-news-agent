@@ -17,9 +17,7 @@
   let audioChunks = [];
   let busy = false;
 
-  function scrollToBottom() {
-    messages.scrollTop = messages.scrollHeight;
-  }
+  function scrollToBottom() { messages.scrollTop = messages.scrollHeight; }
 
   function message(text, role = 'luna') {
     const article = document.createElement('article');
@@ -124,11 +122,19 @@
     }
   }
 
+  function showToolEvents(result) {
+    for (const event of result.tool_events || []) {
+      const label = event.tool || 'ابزار Luna';
+      const detail = event.message || (event.confirmation_required ? 'منتظر تأیید تو' : 'انجام شد');
+      toolCard(label, detail, event.ok ? 'success' : (event.confirmation_required ? 'warning' : ''));
+    }
+  }
+
   async function confirmResult(result) {
     if (!result.confirmation_required || !result.action_id) return;
     const accepted = await V4.confirmAction({
       title: result.mode === 'builder' ? 'Luna وارد حالت Builder شود؟' : 'Luna این کار را انجام دهد؟',
-      text: result.reply_fa || 'این عملیات نیاز به تأیید دارد.',
+      text: result.summary_fa || result.reply_fa || 'این عملیات نیاز به تأیید دارد.',
       accept: 'تأیید و اجرا',
     });
     if (!accepted) {
@@ -136,8 +142,8 @@
       return;
     }
     try {
-      const confirmed = await V4.requestJSON(`/api/panel/luna/assistant/confirm/${encodeURIComponent(result.action_id)}`, {method: 'POST'});
-      toolCard('انجام شد', confirmed.reply_fa || 'عملیات با تأیید تو اجرا شد.', 'success');
+      const confirmed = await V4.requestJSON(`/api/panel/luna/operator-confirm/${encodeURIComponent(result.action_id)}`, {method: 'POST'});
+      toolCard('انجام شد', confirmed.message || confirmed.reply_fa || 'عملیات با تأیید تو اجرا شد.', 'success');
     } catch (error) {
       toolCard('اجرا نشد', error.message || 'این عملیات فعلاً قابل اجرا نیست.', 'warning');
     }
@@ -158,11 +164,12 @@
     const pending = typing();
 
     try {
-      const result = await V4.requestJSON('/api/panel/luna/chat', {method: 'POST', body: data});
+      const result = await V4.requestJSON('/api/panel/luna/operator-chat', {method: 'POST', body: data});
       pending.body.replaceChildren();
       const paragraph = document.createElement('p');
       paragraph.textContent = result.reply_fa || 'انجام شد.';
       pending.body.appendChild(paragraph);
+      showToolEvents(result);
       if (result.mode === 'builder') toolCard('Builder', 'درخواست تغییر کد تشخیص داده شد');
       await confirmResult(result);
     } catch (error) {
@@ -201,11 +208,6 @@
     } finally {
       setBusy(false);
     }
-  }
-
-  function preferredAudioMime() {
-    const options = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'];
-    return options.find(type => window.MediaRecorder?.isTypeSupported?.(type)) || '';
   }
 
   async function startRecording() {
