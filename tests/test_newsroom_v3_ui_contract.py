@@ -16,8 +16,10 @@ class FakeData:
                     "source": "Reuters",
                     "source_display": "رویترز",
                     "source_url": "https://example.com/1",
-                    "persian_title": "تیتر مهم برای تست اتاق خبر",
-                    "persian_body": "متن خلاصه خبر برای تصمیم سردبیری.",
+                    "original_title": "Important original newsroom test headline",
+                    "original_summary": "Original source summary for the newsroom test.",
+                    "persian_title": "تیتر قدیمی که نباید با ترجمه ماشینی قاطی شود",
+                    "persian_body": "متن قدیمی که نباید به‌عنوان ترجمه ماشینی نشان داده شود",
                     "panel_status": "new",
                     "source_priority": "high",
                     "discovered_at": "2026-09-14T11:50:00+00:00",
@@ -83,7 +85,9 @@ def test_server_rendered_story_card_requires_luna_preview_before_publish():
     assert 'data-v4-action="reject"' in html
     assert 'data-v4-action="publish-final"' not in html
     assert 'data-action="publish"' not in html
-    assert "تیتر مهم برای تست اتاق خبر" in html
+    assert "Important original newsroom test headline" in html
+    assert "ترجمه ماشینی هنوز آماده نیست" in html
+    assert "تیتر قدیمی که نباید با ترجمه ماشینی قاطی شود" not in html
     assert "رویترز" in html
 
 
