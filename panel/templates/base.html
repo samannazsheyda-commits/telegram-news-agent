@@ -12,57 +12,73 @@
   <title>{% block title %}بی‌خبر{% endblock %}</title>
   <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='panel.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='settings.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='source_manager.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-shell.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-final.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-v4.css') }}">
   {% block extra_head %}{% endblock %}
 </head>
-<body data-newsroom-shell="v3">
-  <header class="nr-topbar">
-    <a href="{{ url_for('dashboard') if session.get('admin') else url_for('login') }}" class="nr-brand" aria-label="بی‌خبر">
-      <span class="nr-brand-mark">ب</span>
-      <span class="nr-brand-copy"><strong>بی‌خبر</strong><small>Newsroom V3</small></span>
+<body data-newsroom-shell="v4">
+  <header class="v4-topbar">
+    <a href="{{ url_for('dashboard') if session.get('admin') else url_for('login') }}" class="v4-brand" aria-label="بی‌خبر">
+      <span class="v4-brand-mark">ب</span>
+      <span class="v4-brand-copy"><strong>بی‌خبر</strong><small>NEWSROOM V4</small></span>
     </a>
+
     {% if session.get('admin') %}
-    <nav class="nr-desktop-nav newsroom-nav" aria-label="ناوبری اتاق خبر">
-      <a class="newsroom-nav-item{% if request.path == '/' %} is-active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon" aria-hidden="true">●</span><span class="nav-label">اتاق خبر</span></a>
-      <a class="newsroom-nav-item{% if request.path.startswith('/review') %} is-active{% endif %}" href="{{ url_for('review_queue') }}"><span class="nav-icon" aria-hidden="true">✓</span><span class="nav-label">بررسی</span></a>
-      <a class="newsroom-nav-item{% if request.path.startswith('/history') %} is-active{% endif %}" href="{{ url_for('history') }}"><span class="nav-icon" aria-hidden="true">↗</span><span class="nav-label">منتشرشده</span></a>
-      <a class="newsroom-nav-item{% if request.path.startswith('/source-manager') or request.path.startswith('/sources') %} is-active{% endif %}" href="/source-manager"><span class="nav-icon" aria-hidden="true">⌁</span><span class="nav-label">منابع</span></a>
+    <nav class="v4-desktop-nav" aria-label="ناوبری اتاق خبر">
+      <a class="v4-nav-link{% if request.path == '/' %} is-active{% endif %}" href="{{ url_for('dashboard') }}"><span class="v4-nav-icon" aria-hidden="true">⌂</span><span>داشبورد</span></a>
+      <a class="v4-nav-link{% if request.path.startswith('/incoming') %} is-active{% endif %}" href="/incoming"><span class="v4-nav-icon" aria-hidden="true">↓</span><span>ورودی خبرها</span></a>
+      <a class="v4-nav-link{% if request.path.startswith('/review') %} is-active{% endif %}" href="{{ url_for('review_queue') }}"><span class="v4-nav-icon" aria-hidden="true">✓</span><span>بررسی</span></a>
+      <a class="v4-nav-link{% if request.path.startswith('/luna') %} is-active{% endif %}" href="/luna"><span class="v4-nav-icon" aria-hidden="true">✦</span><span>Luna</span></a>
+      <a class="v4-nav-link{% if request.path.startswith('/history') %} is-active{% endif %}" href="{{ url_for('history') }}"><span class="v4-nav-icon" aria-hidden="true">↗</span><span>منتشرشده</span></a>
+      <a class="v4-nav-link{% if request.path.startswith('/source-manager') or request.path.startswith('/sources') %} is-active{% endif %}" href="/source-manager"><span class="v4-nav-icon" aria-hidden="true">⌁</span><span>منابع</span></a>
+      <a class="v4-nav-link{% if request.path.startswith('/settings') %} is-active{% endif %}" href="/settings"><span class="v4-nav-icon" aria-hidden="true">⚙</span><span>تنظیمات</span></a>
+      <a class="v4-nav-link{% if request.path.startswith('/health') %} is-active{% endif %}" href="/health"><span class="v4-nav-icon" aria-hidden="true">♡</span><span>سلامت سیستم</span></a>
     </nav>
-    <div class="nr-topbar-actions">
-      <span class="nr-private-pill"><i></i> خصوصی</span>
-      <form method="post" action="{{ url_for('logout') }}" class="inline-form">
+
+    <div class="v4-topbar-actions">
+      <span class="v4-private-pill"><i></i> خصوصی</span>
+      <form method="post" action="{{ url_for('logout') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button class="nr-ghost-button" type="submit">خروج</button>
+        <button class="v4-ghost-button" type="submit">خروج</button>
       </form>
     </div>
     {% endif %}
   </header>
 
-  <main class="nr-page">
+  <main class="v4-page">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% for category, message in messages %}
-        <div class="nr-flash {{ category }}">{{ message }}</div>
+        <div class="v4-flash {{ category }}">{{ message }}</div>
       {% endfor %}
     {% endwith %}
     {% block content %}{% endblock %}
   </main>
 
   {% if session.get('admin') %}
-  <nav id="mobileBottomNav" class="nr-mobile-nav" aria-label="منوی موبایل">
-    <a class="newsroom-nav-item{% if request.path == '/' %} is-active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon">●</span><b class="nav-label">اتاق خبر</b></a>
-    <a class="newsroom-nav-item{% if request.path.startswith('/review') %} is-active{% endif %}" href="{{ url_for('review_queue') }}"><span class="nav-icon">✓</span><b class="nav-label">بررسی</b></a>
-    <a class="newsroom-nav-item{% if request.path.startswith('/history') %} is-active{% endif %}" href="{{ url_for('history') }}"><span class="nav-icon">↗</span><b class="nav-label">منتشرشده</b></a>
-    <a class="newsroom-nav-item{% if request.path.startswith('/source-manager') or request.path.startswith('/sources') %} is-active{% endif %}" href="/source-manager"><span class="nav-icon">⌁</span><b class="nav-label">منابع</b></a>
+  <nav class="v4-mobile-nav" aria-label="منوی اصلی موبایل">
+    <a class="{% if request.path == '/' %}is-active{% endif %}" href="{{ url_for('dashboard') }}"><span class="v4-nav-icon">⌂</span><span>داشبورد</span></a>
+    <a class="{% if request.path.startswith('/incoming') %}is-active{% endif %}" href="/incoming"><span class="v4-nav-icon">↓</span><span>ورودی</span></a>
+    <a class="{% if request.path.startswith('/review') %}is-active{% endif %}" href="{{ url_for('review_queue') }}"><span class="v4-nav-icon">✓</span><span>بررسی</span></a>
+    <a class="{% if request.path.startswith('/luna') %}is-active{% endif %}" href="/luna"><span class="v4-nav-icon">✦</span><span>لونا</span></a>
+    <button type="button" data-v4-more-open class="{% if request.path.startswith('/history') or request.path.startswith('/source-manager') or request.path.startswith('/sources') or request.path.startswith('/settings') or request.path.startswith('/health') %}is-active{% endif %}"><span class="v4-nav-icon">•••</span><span>بیشتر</span></button>
   </nav>
+
+  <div id="v4MoreSheet" class="v4-more-sheet" aria-hidden="true">
+    <div class="v4-more-panel" role="dialog" aria-label="بخش‌های بیشتر">
+      <div class="v4-action-row" style="justify-content:space-between;padding:4px 6px 8px">
+        <strong>بخش‌های بیشتر</strong>
+        <button type="button" class="v4-ghost-button" data-v4-more-close>بستن</button>
+      </div>
+      <a href="{{ url_for('history') }}"><span class="v4-nav-icon">↗</span> منتشرشده</a>
+      <a href="/source-manager"><span class="v4-nav-icon">⌁</span> منابع</a>
+      <a href="/settings"><span class="v4-nav-icon">⚙</span> تنظیمات</a>
+      <a href="/health"><span class="v4-nav-icon">♡</span> سلامت و خطاها</a>
+    </div>
+  </div>
   {% endif %}
 
-  <div id="nrToastStack" class="nr-toast-stack" aria-live="polite" aria-atomic="true"></div>
+  <div id="v4ToastStack" class="v4-toast-stack" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="{{ url_for('static', filename='settings.js') }}" defer></script>
-  <script src="{{ url_for('static', filename='newsroom-final.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='newsroom-v4.js') }}" defer></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('{{ url_for('static', filename='sw.js') }}').catch(() => {}));
