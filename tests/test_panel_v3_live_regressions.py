@@ -127,19 +127,19 @@ def test_new_live_ui_localizes_missing_copy_and_shows_final_telegram_output():
     assert "متن اصلی منبع" in js
 
 
-def test_editor_exposes_clickable_source_link_from_story_url():
+def test_v4_story_card_exposes_clickable_source_and_review_edit_path():
     dashboard = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
-    editor = Path("panel/static/newsroom-editor.js").read_text(encoding="utf-8")
+    js = Path("panel/static/newsroom-v4-dashboard.js").read_text(encoding="utf-8")
 
-    assert 'id="editorSourceLink"' in dashboard
-    assert "storySourceUrl" in editor
-    assert "editorSourceLink" in editor
+    assert 'target="_blank" rel="noopener">منبع</a>' in dashboard
+    assert "data-v4-action=\"edit-final\"" in dashboard
+    assert "/review/${encodeURIComponent(card.dataset.storyId)}" in js
 
 
 def test_dashboard_has_obvious_add_source_entry_point():
     dashboard = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
 
-    assert "افزودن منبع" in dashboard
+    assert "افزودن/مدیریت منبع" in dashboard
     assert 'href="/source-manager"' in dashboard
 
 
