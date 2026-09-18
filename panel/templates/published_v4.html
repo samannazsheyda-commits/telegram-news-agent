@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}منتشرشده‌ها | بی‌خبر{% endblock %}
+{% block content %}
+<section class="v4-page-header">
+  <div>
+    <h1 class="v4-page-title">منتشرشده‌ها</h1>
+    <p class="v4-page-subtitle">آرشیو واقعی انتشار با جستجو، فیلتر منبع و شناسه پیام تلگرام؛ حداکثر {{ pagination.page_size }} مورد در هر صفحه.</p>
+  </div>
+  <span class="v4-status is-active">{{ pagination.total }} نتیجه</span>
+</section>
+
+<section class="v4-card v4-card-pad" style="margin-bottom:14px">
+  <form method="get" action="/published" class="v4-archive-filters">
+    <label>
+      <span>جستجو</span>
+      <input name="q" value="{{ filters.q }}" placeholder="تیتر، متن یا منبع…">
+    </label>
+    <label>
+      <span>منبع</span>
+      <select name="source">
+        <option value="">همه منابع</option>
+        {% for source in sources %}<option value="{{ source }}"{% if filters.source == source %} selected{% endif %}>{{ source }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>
+      <span>نوع انتشار</span>
+      <select name="status">
+        <option value="">همه</option>
+        <option value="published_manual"{% if filters.status == 'published_manual' %} selected{% endif %}>دستی</option>
+        <option value="published_auto"{% if filters.status == 'published_auto' %} selected{% endif %}>خودکار</option>
+      </select>
+    </label>
+    <div class="v4-action-row" style="align-self:end">
+      <button class="v4-button" type="submit">اعمال فیلتر</button>
+      <a class="v4-button is-secondary" href="/published">پاک‌کردن</a>
+    </div>
+  </form>
+</section>
+
+{% if items %}
+<div class="v4-news-list" data-page-size="{{ pagination.page_size }}">
+  {% for item in items %}
+  <article class="v4-card v4-news-card" data-history-row="{{ item.id }}">
+    <header class="v4-news-head">
+      <div>
+        <strong>{{ item.source or 'منبع نامشخص' }}</strong>
+        <span class="v4-news-time">{{ item.published_at or '—' }}</span>
+      </div>
+      <div class="v4-action-row">
+        <span class="v4-status is-ok">{{ 'دستی' if item.status == 'published_manual' else 'خودکار' }}</span>
+        {% if item.telegram_message_id %}<span class="v4-score">Telegram #{{ item.telegram_message_id }}</span>{% endif %}
+      </div>
+    </header>
+    <section class="v4-copy-block is-luna">
+      <span class="v4-copy-label">متن نهایی منتشرشده</span>
+      <h2>{{ item.title or 'بدون عنوان' }}</h2>
+      {% if item.body %}<p>{{ item.body }}</p>{% endif %}
+    </section>
+    <footer class="v4-news-actions">
+      <div class="v4-news-meta">
+        {% if item.v3_story_id %}<span>Story: {{ item.v3_story_id }}</span>{% endif %}
+        {% if item.telegram_message_id %}<span>Message ID: {{ item.telegram_message_id }}</span>{% endif %}
+      </div>
+      {% if item.source_url %}<a class="v4-button is-quiet" href="{{ item.source_url }}" target="_blank" rel="noopener">منبع اصلی</a>{% endif %}
+    </footer>
+  </article>
+  {% endfor %}
+</div>
+
+<nav class="v4-pagination" aria-label="صفحه‌بندی آرشیو">
+  {% if pagination.has_prev %}<a class="v4-button is-secondary" href="?page={{ pagination.page - 1 }}&q={{ filters.q|urlencode }}&source={{ filters.source|urlencode }}&status={{ filters.status|urlencode }}">صفحه قبل</a>{% endif %}
+  <span>صفحه {{ pagination.page }} از {{ pagination.pages }}</span>
+  {% if pagination.has_next %}<a class="v4-button is-secondary" href="?page={{ pagination.page + 1 }}&q={{ filters.q|urlencode }}&source={{ filters.source|urlencode }}&status={{ filters.status|urlencode }}">صفحه بعد</a>{% endif %}
+</nav>
+{% else %}
+<div class="v4-empty">با این فیلتر مورد منتشرشده‌ای پیدا نشد.</div>
+{% endif %}
+{% endblock %}
