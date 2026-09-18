@@ -7,6 +7,7 @@
   const mic = document.getElementById('v4LunaMic');
   const send = document.getElementById('v4LunaSend');
   const connection = document.getElementById('v4LunaConnection');
+  const usageBadge = document.getElementById('v4LunaUsage');
   const status = document.getElementById('v4LunaStatus');
   if (!form || !input || !messages || !imageInput || !mic || !send || !window.BikhabarV4) return;
 
@@ -51,6 +52,36 @@
     return node;
   }
 
+  function builderCard(result) {
+    const pr = result?.pull_request || {};
+    const files = Array.isArray(result?.changed_files) ? result.changed_files : [];
+    const node = document.createElement('div');
+    node.className = 'v41-tool-card is-success v41-builder-card';
+    const title = document.createElement('strong');
+    title.textContent = pr.number ? `Builder · PR #${pr.number}` : 'Builder · تغییر آماده شد';
+    node.appendChild(title);
+    if (result?.summary_fa) {
+      const summary = document.createElement('p');
+      summary.textContent = result.summary_fa;
+      node.appendChild(summary);
+    }
+    if (files.length) {
+      const meta = document.createElement('small');
+      meta.textContent = `${files.length.toLocaleString('fa-IR')} فایل تغییر کرد · ${result.branch || ''}`;
+      node.appendChild(meta);
+    }
+    if (pr.url) {
+      const link = document.createElement('a');
+      link.href = pr.url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = 'باز کردن Draft PR';
+      node.appendChild(link);
+    }
+    messages.appendChild(node);
+    scrollToBottom();
+  }
+
   function typing() {
     const article = document.createElement('article');
     article.className = 'v41-msg v41-msg-luna';
@@ -64,6 +95,22 @@
     messages.appendChild(article);
     scrollToBottom();
     return {article, body};
+  }
+
+  async function revealText(paragraph, text) {
+    const resolved = String(text || '');
+    if (!resolved) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || resolved.length < 90) {
+      paragraph.textContent = resolved;
+      return;
+    }
+    paragraph.textContent = '';
+    const chunks = resolved.match(/.{1,18}(?:\s|$)/g) || [resolved];
+    for (const chunk of chunks) {
+      paragraph.textContent += chunk;
+      scrollToBottom();
+      await new Promise(resolve => window.setTimeout(resolve, 14));
+    }
   }
 
   function setBusy(value) {
@@ -108,17 +155,24 @@
 
   async function loadStatus() {
     try {
-      const info = await V4.requestJSON('/api/panel/luna/status');
+      const info = await V4.requestJSON('/api/panel/luna/usage');
       if (connection) {
         connection.textContent = info.connected ? 'Luna متصل' : 'Luna متصل نیست';
         connection.dataset.connected = info.connected ? '1' : '0';
       }
       if (status) {
         const builder = info.builder_connected ? 'Builder آماده' : 'Builder بدون اتصال GitHub';
-        status.textContent = info.connected ? `دستیار اتاق خبر · ${builder}` : 'کلید OpenAI روی سرور تنظیم نشده';
+        status.textContent = info.connected ? `دستیار هوشمند اتاق خبر · ${builder}` : 'کلید OpenAI روی سرور تنظیم نشده';
+      }
+      if (usageBadge) {
+        const today = info.usage?.today || {};
+        const requests = Number(today.requests || 0).toLocaleString('fa-IR');
+        const cost = Number(today.estimated_usd || 0);
+        usageBadge.textContent = `امروز ${requests} درخواست · $${cost.toFixed(cost < 1 ? 3 : 2)}`;
       }
     } catch (_) {
       if (connection) connection.textContent = 'وضعیت نامشخص';
+      if (usageBadge) usageBadge.textContent = 'مصرف امروز: —';
     }
   }
 
@@ -143,7 +197,9 @@
     }
     try {
       const confirmed = await V4.requestJSON(`/api/panel/luna/operator-confirm/${encodeURIComponent(result.action_id)}`, {method: 'POST'});
-      toolCard('انجام شد', confirmed.message || confirmed.reply_fa || 'عملیات با تأیید تو اجرا شد.', 'success');
+      if (result.mode === 'builder' && confirmed.pull_request) builderCard(confirmed);
+      else toolCard('انجام شد', confirmed.message || confirmed.reply_fa || 'عملیات با تأیید تو اجرا شد.', 'success');
+      void loadStatus();
     } catch (error) {
       toolCard('اجرا نشد', error.message || 'این عملیات فعلاً قابل اجرا نیست.', 'warning');
     }
@@ -167,10 +223,10 @@
       const result = await V4.requestJSON('/api/panel/luna/operator-chat', {method: 'POST', body: data});
       pending.body.replaceChildren();
       const paragraph = document.createElement('p');
-      paragraph.textContent = result.reply_fa || 'انجام شد.';
       pending.body.appendChild(paragraph);
+      await revealText(paragraph, result.reply_fa || 'انجام شد.');
       showToolEvents(result);
-      if (result.mode === 'builder') toolCard('Builder', 'درخواست تغییر کد تشخیص داده شد');
+      if (result.mode === 'builder') toolCard('Builder', 'درخواست تغییر کد تشخیص داده شد؛ برای شروع تأیید لازم است', 'warning');
       await confirmResult(result);
     } catch (error) {
       pending.body.replaceChildren();
@@ -202,7 +258,8 @@
       input.value = [input.value.trim(), result.text || ''].filter(Boolean).join(' ');
       autoGrow();
       input.focus();
-      toolCard('تبدیل ویس به متن انجام شد', 'متن را قبل از ارسال می‌توانی ویرایش کنی', 'success');
+      toolCard('ویس به متن تبدیل شد', 'اگر خواستی متن رو اصلاح کن و بعد بفرست', 'success');
+      void loadStatus();
     } catch (error) {
       toolCard('تبدیل ویس ناموفق بود', error.message || 'دوباره امتحان کن', 'warning');
     } finally {
@@ -234,8 +291,8 @@
       recorder.start();
       mic.classList.add('is-recording');
       mic.setAttribute('aria-label', 'پایان ضبط');
-      if (status) status.textContent = 'در حال شنیدن… برای پایان دوباره میکروفون را بزن';
-    } catch (error) {
+      if (status) status.textContent = 'دارم گوش می‌دم… برای پایان دوباره میکروفون رو بزن';
+    } catch (_) {
       recordingStream?.getTracks().forEach(track => track.stop());
       recordingStream = null;
       recorder = null;
@@ -245,7 +302,7 @@
 
   function stopRecording() {
     if (recorder && recorder.state !== 'inactive') recorder.stop();
-    if (status) status.textContent = 'دستیار اتاق خبر بی‌خبر';
+    if (status) status.textContent = 'دستیار هوشمند اتاق خبر بی‌خبر';
   }
 
   form.addEventListener('submit', event => {
