@@ -127,13 +127,16 @@ def test_new_live_ui_localizes_missing_copy_and_shows_final_telegram_output():
     assert "متن اصلی منبع" in js
 
 
-def test_editor_exposes_clickable_source_link_from_story_url():
-    dashboard = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
-    editor = Path("panel/static/newsroom-editor.js").read_text(encoding="utf-8")
+def test_v4_editorial_surfaces_expose_clickable_source_link():
+    incoming = Path("panel/templates/incoming.html").read_text(encoding="utf-8")
+    review = Path("panel/templates/review_edit.html").read_text(encoding="utf-8")
 
-    assert 'id="editorSourceLink"' in dashboard
-    assert "storySourceUrl" in editor
-    assert "editorSourceLink" in editor
+    for template in (incoming, review):
+        assert "item.source_url" in template
+        assert 'target="_blank"' in template
+        assert 'rel="noopener"' in template
+    assert "باز کردن منبع" in incoming
+    assert "باز کردن منبع" in review
 
 
 def test_dashboard_has_obvious_add_source_entry_point():
@@ -191,17 +194,12 @@ def test_localization_failure_is_visible_and_retryable_instead_of_silent_forever
     assert "catch (_)" not in js
 
 
-def test_mobile_status_bar_is_compact_non_sticky_horizontal_strip():
-    css = Path("panel/static/newsroom-shell.css").read_text(encoding="utf-8")
-    match = re.search(r"@media\s*\(max-width:\s*640px\)", css)
-    assert match is not None
-    mobile_css = css[match.start():]
-    status_start = mobile_css.index(".nr-status-bar")
-    status_css = mobile_css[status_start: status_start + 360]
-
-    assert "position:static" in status_css.replace(" ", "")
-    assert "display:flex" in status_css.replace(" ", "")
-    assert "overflow-x:auto" in status_css.replace(" ", "")
+def test_v4_mobile_navigation_is_fixed_safe_area_bar():
+    css = Path("panel/static/newsroom-v4.css").read_text(encoding="utf-8")
+    assert ".v4-mobile-nav" in css
+    assert "position: fixed" in css
+    assert "env(safe-area-inset-bottom)" in css
+    assert "grid-template-columns: repeat(5" in css
 
 
 def test_production_wsgi_wires_live_feed_translator():
