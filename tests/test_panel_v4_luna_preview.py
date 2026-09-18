@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import src.panel_command_file as command_file
 import src.panel_command_router as router
 
 
@@ -47,7 +48,7 @@ def test_luna_preview_saves_final_copy_without_publishing(tmp_path, monkeypatch)
     )
 
     monkeypatch.setattr(
-        router,
+        command_file,
         "_finalize_manual_copy_with_luna",
         lambda title, body: ("ایران تصمیم منطقه‌ای تازه‌ای اعلام کرد", "این تصمیم روز جمعه اعلام شد"),
     )
@@ -55,7 +56,7 @@ def test_luna_preview_saves_final_copy_without_publishing(tmp_path, monkeypatch)
     def _must_not_publish(**kwargs):
         raise AssertionError("luna_preview must never publish to Telegram")
 
-    monkeypatch.setattr(router, "publish_manual_story", _must_not_publish)
+    monkeypatch.setattr(command_file, "publish_manual_story", _must_not_publish)
 
     result = router.apply_command("panel_commands/cmd-preview.json")
 
@@ -109,7 +110,7 @@ def test_publish_final_uses_previewed_copy_without_running_luna_again(tmp_path, 
     )
 
     monkeypatch.setattr(
-        router,
+        command_file,
         "_finalize_manual_copy_with_luna",
         lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("publish_final must not run Luna again")),
     )
@@ -119,7 +120,7 @@ def test_publish_final_uses_previewed_copy_without_running_luna_again(tmp_path, 
         captured.update(kwargs)
         return {"status": "succeeded", "story_id": "v3-story-2", "telegram_message_id": 12345}
 
-    monkeypatch.setattr(router, "publish_manual_story", _publish_manual_story)
+    monkeypatch.setattr(command_file, "publish_manual_story", _publish_manual_story)
 
     result = router.apply_command("panel_commands/cmd-publish.json")
 
