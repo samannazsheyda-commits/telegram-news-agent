@@ -5,6 +5,7 @@ from pathlib import Path
 from panel.app import create_app
 from panel.live_api import bp as live_api_bp
 from panel.newsroom_api import bp as newsroom_api_bp
+from panel.newsroom_v4_api import bp as newsroom_v4_api_bp
 
 
 class FakeData:
@@ -67,6 +68,7 @@ def _client(data: FakeData, translator=lambda text: f"ترجمه {text}" if text
     )
     app.register_blueprint(live_api_bp)
     app.register_blueprint(newsroom_api_bp)
+    app.register_blueprint(newsroom_v4_api_bp)
     client = app.test_client()
     with client.session_transaction() as session:
         session["admin"] = True
@@ -88,15 +90,16 @@ def test_machine_translation_endpoint_returns_operator_preview():
     assert payload["items"][0]["translation_mode"] == "machine"
 
 
-def test_snapshot_exposes_real_daily_quota_and_limits_live_payload():
+def test_v4_status_exposes_real_daily_quota_and_feed_is_bounded():
     data = FakeData()
-    payload = _client(data).get("/api/newsroom/snapshot").get_json()
-    assert payload["v3"]["daily_limit"] == 35
-    assert payload["v3"]["daily_published"] == 12
-    assert payload["v3"]["daily_remaining"] == 23
-    assert payload["settings"]["daily_limit"] == 35
-    assert payload["settings"]["special_limit"] == 5
-    assert len(payload["live"]) <= 24
+    client = _client(data)
+    status = client.get("/api/newsroom/v4/status").get_json()
+    feed = client.get("/api/live-feed").get_json()
+    assert status["daily_limit"] == 35
+    assert status["daily_published"] == 12
+    assert status["daily_remaining"] == 23
+    assert status["special_limit"] == 5
+    assert len(feed["items"]) <= 24
 
 
 def test_panel_has_separate_machine_luna_and_publish_actions():
@@ -107,20 +110,20 @@ def test_panel_has_separate_machine_luna_and_publish_actions():
     assert "انتشار نسخه لونا" in js
     assert "/api/live-feed/machine-translate" in js
     assert "/luna" in actions
-    assert "prepared_title" in actions
+    assert "/publish-prepared" in actions
 
 
 def test_panel_daily_limit_is_editable_from_dashboard():
     dashboard = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
     assert 'id="dailyLimitInput"' in dashboard
     assert 'id="saveDailyLimit"' in dashboard
-    assert "۳۵ خبر" in dashboard or "dailyLimit" in dashboard
+    assert "dailyLimit" in dashboard
 
 
 def test_runtime_reads_daily_limit_from_panel_settings():
     runtime = Path("src/newsroom_hybrid_runtime.py").read_text(encoding="utf-8")
-    assert 'newsroom_settings.get("daily_limit")' in runtime
-    assert "daily_limit=" in runtime
+    assert 'settings.get("daily_limit")' in runtime
+    assert "daily_limit=daily_limit" in runtime
 
 
 def test_luna_prepare_is_distinct_from_publish():
