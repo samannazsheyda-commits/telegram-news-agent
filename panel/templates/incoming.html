@@ -19,7 +19,7 @@
         <span class="v4-news-time">{{ item.updated_at or '—' }}</span>
       </div>
       <div class="v4-action-row">
-        <span class="v4-status">{{ item.status or 'new' }}</span>
+        <span class="v4-status{% if item.status == 'ready' %} is-ok{% elif item.status == 'failed' %} is-error{% elif item.status in ['waiting','processing','pending'] %} is-warning{% endif %}">{{ item.status or 'new' }}</span>
         {% if item.importance %}<span class="v4-score">اهمیت {{ item.importance }}</span>{% endif %}
       </div>
     </header>
@@ -88,6 +88,23 @@
 {% block scripts %}
 <script>
 (() => {
+  const sleep = (ms) => new Promise(resolve => window.setTimeout(resolve, ms));
+
+  async function waitForCommand(commandId) {
+    for (let attempt = 0; attempt < 60; attempt += 1) {
+      const response = await fetch(`/api/newsroom/command/${encodeURIComponent(commandId)}`, {
+        credentials: 'same-origin',
+        cache: 'no-store',
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.message || result.error || `HTTP ${response.status}`);
+      if (['succeeded', 'reconciled'].includes(result.status)) return result;
+      if (['failed', 'ambiguous'].includes(result.status)) throw new Error(result.message || 'پردازش Luna ناموفق بود');
+      await sleep(2000);
+    }
+    throw new Error('پردازش Luna هنوز کامل نشده؛ وضعیت در بخش Luna قابل مشاهده است');
+  }
+
   document.addEventListener('click', async (event) => {
     const reject = event.target.closest('[data-v4-reject]');
     if (reject) {
@@ -109,11 +126,19 @@
     if (send) {
       send.disabled = true;
       const original = send.textContent;
-      send.textContent = 'در صف Luna…';
       try {
-        const result = await NewsroomV4.postJSON(`/api/v4/items/${encodeURIComponent(send.dataset.v4SendLuna)}/luna`, {});
-        NewsroomV4.toast(result.message || 'خبر برای Luna ثبت شد');
-        if (result.review_url) window.location.href = result.review_url;
+        send.textContent = 'در صف Luna…';
+        const queued = await NewsroomV4.postJSON(`/api/v4/items/${encodeURIComponent(send.dataset.v4SendLuna)}/luna`, {});
+        NewsroomV4.toast(queued.message || 'خبر برای Luna ثبت شد');
+        if (queued.status === 'succeeded' && queued.review_url) {
+          window.location.href = queued.review_url;
+          return;
+        }
+        if (!queued.command_id) throw new Error('شناسه فرمان Luna دریافت نشد');
+        send.textContent = 'Luna در حال پردازش…';
+        const finished = await waitForCommand(queued.command_id);
+        NewsroomV4.toast(finished.message || 'نسخه Luna آماده شد');
+        window.location.href = finished.review_url || `/review/${encodeURIComponent(send.dataset.v4SendLuna)}`;
       } catch (error) {
         send.disabled = false;
         send.textContent = original;
