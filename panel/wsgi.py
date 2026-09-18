@@ -18,7 +18,12 @@ from .weather_preview import bp as weather_preview_bp
 # Flask-WTF CSRF validation on the login POST. Keep HTTP as the deployment
 # default and allow a future HTTPS reverse proxy to opt in explicitly.
 cookie_secure = str(os.environ.get("PANEL_COOKIE_SECURE", "0")).strip().lower() in {"1", "true", "yes", "on"}
-config = {"SESSION_COOKIE_SECURE": cookie_secure}
+config = {
+    "SESSION_COOKIE_SECURE": cookie_secure,
+    # Luna accepts bounded image/voice uploads. Individual endpoints enforce
+    # tighter file limits before provider requests.
+    "MAX_CONTENT_LENGTH": 12 * 1024 * 1024,
+}
 local_root = str(os.environ.get("PANEL_LOCAL_ROOT") or "").strip()
 if local_root:
     config["DATA_BACKEND"] = LocalJsonRepository(local_root)
