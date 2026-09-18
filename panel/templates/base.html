@@ -79,7 +79,7 @@
 
   <div id="v4ToastStack" class="v4-toast-stack" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="{{ url_for('static', filename='newsroom-v4.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='newsroom-v4.js') }}"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('{{ url_for('static', filename='sw.js') }}').catch(() => {}));
