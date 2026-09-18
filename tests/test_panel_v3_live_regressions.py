@@ -133,13 +133,14 @@ def test_v4_story_card_exposes_clickable_source_and_review_edit_path():
 
     assert 'target="_blank" rel="noopener">منبع</a>' in dashboard
     assert "data-v4-action=\"edit-final\"" in dashboard
-    assert "/review/${encodeURIComponent(card.dataset.storyId)}" in js
+    assert "/api/newsroom/live/${encodeURIComponent(id)}/review" in js
+    assert "moveToReview" in js
 
 
-def test_dashboard_has_obvious_add_source_entry_point():
+def test_dashboard_has_obvious_source_manager_entry_point():
     dashboard = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
 
-    assert "افزودن/مدیریت منبع" in dashboard
+    assert ">منابع<" in dashboard or "<strong>منابع</strong>" in dashboard
     assert 'href="/source-manager"' in dashboard
 
 
