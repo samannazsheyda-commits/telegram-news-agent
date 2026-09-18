@@ -16,7 +16,8 @@ _TERMINAL_LIVE_STATUSES = {"auto_published", "published_auto", "published_manual
 _MACHINE_CACHE: dict[str, dict] = {}
 _MACHINE_CACHE_LIMIT = 240
 _MACHINE_BATCH_LIMIT = 12
-_LIVE_PANEL_MAX_AGE = timedelta(minutes=60)
+_LIVE_PANEL_MAX_AGE = timedelta(hours=3)
+_PENDING_MACHINE_TITLE = "عنوان فارسی در حال آماده‌سازی"
 
 
 def _row_id(row: dict) -> str:
@@ -116,6 +117,20 @@ def _translate_machine(value: str) -> str:
     return translated if _has_persian(translated) else ""
 
 
+# Compatibility hook for older tests/clients. It deliberately points to the
+# new Google-first machine preview rather than the removed Argos model.
+def _translate_persian(value: str) -> str:
+    return _translate_machine(value)
+
+
+def _source_name(value: str) -> str:
+    raw = str(value or "").strip()
+    compact = raw.lower().replace(" ", "")
+    if compact in {"clashreport", "clashreport/telegram"}:
+        return "Clash Report"
+    return _source_label(raw)
+
+
 def _final_message(row: dict) -> str:
     return str(row.get("final_message") or row.get("telegram_message") or "").strip()
 
@@ -143,13 +158,14 @@ def _public_row(row: dict, queued_ids: set[str]) -> dict:
         translation_mode = "persisted_persian"
         needs_machine_translation = False
     else:
-        title_fa = ""
+        title_fa = _PENDING_MACHINE_TITLE
         body_fa = ""
         translation_mode = "pending_machine"
         needs_machine_translation = bool(row_id and raw_title)
 
     status = str(row.get("panel_status") or "new")
     reason = str(row.get("decision_reason") or "")
+    raw_source = str(row.get("source") or "")
     return {
         "id": row_id,
         "item_id": row_id,
@@ -157,8 +173,8 @@ def _public_row(row: dict, queued_ids: set[str]) -> dict:
         "body": body_fa,
         "original_title": raw_title,
         "original_body": raw_body,
-        "source": _source_label(str(row.get("source") or "")),
-        "source_raw": str(row.get("source") or ""),
+        "source": _source_name(raw_source),
+        "source_raw": raw_source,
         "source_url": str(row.get("source_url") or ""),
         "panel_status": status,
         "panel_status_fa": PANEL_STATUS_FA.get(status, "در حال پردازش"),
@@ -175,7 +191,6 @@ def _public_row(row: dict, queued_ids: set[str]) -> dict:
         "final_message": _final_message(row),
         "translation_mode": translation_mode,
         "needs_machine_translation": needs_machine_translation,
-        # Compatibility alias for older panel code/tests. It now means machine preview.
         "needs_localization": needs_machine_translation,
     }
 
@@ -262,10 +277,10 @@ def machine_translate_live_feed():
         cached = _cache_get(row)
         if cached is None:
             raw_title, raw_body = _raw_fields(row)
-            title_fa = _translate_machine(raw_title)
+            title_fa = _translate_persian(raw_title)
             if not title_fa:
                 continue
-            body_fa = _translate_machine(raw_body) if raw_body else ""
+            body_fa = _translate_persian(raw_body) if raw_body else ""
             _cache_put(row, title=title_fa, body=body_fa)
         translated_row = _public_row(row, queued_ids)
         translated_row["translation_mode"] = "machine"
@@ -274,7 +289,6 @@ def machine_translate_live_feed():
     return jsonify({"ok": True, "items": translated_rows, "translation_mode": "machine"})
 
 
-# Backward-compatible alias while old clients drain from caches.
 @bp.post("/api/live-feed/localize")
 def localize_live_feed_compat():
     return machine_translate_live_feed()
