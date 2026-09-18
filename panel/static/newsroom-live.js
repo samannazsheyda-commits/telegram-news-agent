@@ -85,13 +85,13 @@
         </div>`
       : `<div class="v4-copy-box v4-machine-copy is-empty">
           <div class="v4-copy-label"><span>ترجمه ماشینی</span><small>هنوز آماده نشده</small></div>
-          ${machineFailed ? '<p class="v4-error-copy">ترجمه ماشینی در این تلاش آماده نشد.</p>' : ''}
+          ${machineFailed ? '<p class="v4-error-copy">خطا در آماده‌سازی ترجمه ماشینی؛ دوباره امتحان کن.</p>' : ''}
           <button class="v4-inline-btn" type="button" data-action="machine" ${machineBusy ? 'disabled' : ''}>${machineBusy ? 'در حال ترجمه…' : 'ترجمه ماشینی'}</button>
         </div>`;
 
     const lunaPanel = luna
       ? `<div class="v4-copy-box v4-luna-copy">
-          <div class="v4-copy-label"><span>نسخه نهایی لونا</span><small>قبل از انتشار بررسی کن</small></div>
+          <div class="v4-copy-label"><span>نسخه نهایی لونا</span><small>قبل از انتشار بررسی یا ویرایش کن</small></div>
           <h4>${esc(luna.title)}</h4>
           ${luna.body ? `<p>${esc(luna.body)}</p>` : ''}
         </div>`
@@ -121,6 +121,7 @@
       <div class="v4-story-actions">
         <button class="v4-action machine" type="button" data-action="machine" ${machineBusy ? 'disabled' : ''}>ترجمه ماشینی</button>
         <button class="v4-action luna" type="button" data-action="luna">ترجمه و ویراستاری با لونا</button>
+        <button class="v4-action edit-luna" type="button" data-action="edit-luna" ${luna ? '' : 'disabled'}>ویرایش نسخه لونا</button>
         <button class="v4-action publish" type="button" data-action="publish-prepared" ${luna ? '' : 'disabled'}>انتشار نسخه لونا</button>
         <button class="v4-action reject" type="button" data-action="reject">رد</button>
         ${sourceUrl ? `<a class="v4-action source" href="${esc(sourceUrl)}" target="_blank" rel="noopener">منبع</a>` : ''}
@@ -211,7 +212,6 @@
       if (changed || firstPaint) renderFeed();
       firstPaint = false;
 
-      // Paint first, then prepare a few cheap machine previews. Never block the panel.
       const autoIds = stories.slice(0, 4).filter(s => s.needs_machine_translation || s.needs_localization).map(storyId);
       if (autoIds.length) void machineTranslate(autoIds, {silent:true});
     } catch (error) {
