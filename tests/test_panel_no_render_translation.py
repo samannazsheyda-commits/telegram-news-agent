@@ -15,6 +15,7 @@ class FakeData:
                     "item_id": "english-1",
                     "news_key": "english-key",
                     "source": "Reuters",
+                    "source_display": "رویترز",
                     "source_url": "https://example.com/story",
                     "title": "Raw English headline must not trigger translation during dashboard render",
                     "summary": "Raw English summary",
@@ -38,7 +39,7 @@ class FakeData:
         del key
 
 
-def test_dashboard_get_never_calls_translation_backend():
+def test_dashboard_get_never_calls_translation_backend_and_preserves_original():
     data = FakeData()
     calls: list[str] = []
 
@@ -61,15 +62,19 @@ def test_dashboard_get_never_calls_translation_backend():
         session["admin"] = True
 
     response = client.get("/")
+    text = response.get_data(as_text=True)
 
     assert response.status_code == 200
     assert calls == []
-    assert "Raw English headline" not in response.get_data(as_text=True)
+    assert "Raw English headline" in text
+    assert "Raw English summary" in text
+    assert "ترجمه ماشینی هنوز آماده نیست" in text
 
 
-def test_live_ui_automatically_requests_offline_preview_after_render():
-    js = Path("panel/static/newsroom-live.js").read_text(encoding="utf-8")
+def test_v4_ui_requests_machine_preview_lazily_after_render():
+    js = Path("panel/static/newsroom-v4-dashboard.js").read_text(encoding="utf-8")
 
-    assert "/api/live-feed/localize" in js
-    assert "retry-localization" in js
-    assert "void localizeMissing(currentStories);" in js
+    assert "/api/panel/machine-preview/" in js
+    assert "IntersectionObserver" in js
+    assert "loadMachinePreview" in js
+    assert "rootMargin" in js
