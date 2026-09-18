@@ -1,24 +1,121 @@
 {% extends 'base.html' %}
-{% block title %}بررسی خبر | بی‌خبر{% endblock %}
+{% block title %}پیش‌نمایش نهایی | بی‌خبر{% endblock %}
 {% block content %}
-<a class="back" href="{{ url_for('review_queue') }}">→ برگشت به صف</a>
-<section class="card source-card">
-  <div class="meta"><span>{{ item.source }}</span><span>{{ reason_fa.get(item.rejection_reason, item.rejection_reason) }}</span></div>
-  <h2>{{ item.original_title }}</h2>
-  {% if item.original_summary %}<p>{{ item.original_summary }}</p>{% endif %}
-  <div class="meta"><span>{{ item.published_at_source or 'زمان نامشخص' }}</span>{% if item.source_url %}<a target="_blank" rel="noopener" href="{{ item.source_url }}">لینک منبع</a>{% endif %}</div>
+<section class="v4-page-header">
+  <div>
+    <a class="v4-muted" href="{{ url_for('review_queue') }}">→ برگشت به صف بررسی</a>
+    <h1 class="v4-page-title" style="margin-top:8px">پیش‌نمایش نهایی خبر</h1>
+    <p class="v4-page-subtitle">متن پایین همان نسخه‌ای است که بعد از تأیید تو منتشر می‌شود؛ هنگام انتشار Luna دوباره اجرا نمی‌شود.</p>
+  </div>
+  <span class="v4-status is-ok">Luna Final آماده</span>
 </section>
 
-<form method="post" class="stack-form editor-form">
-  {{ form.hidden_tag() }}
-  {{ form.title_fa.label }}
-  {{ form.title_fa() }}
-  {{ form.body_fa.label }}
-  {{ form.body_fa(rows=8) }}
-  <div class="danger-note">با زدن «تأیید و انتشار فوری»، همین متن بلافاصله در @bikhabaar منتشر می‌شود.</div>
-  <div class="split-actions">
-    {{ form.publish(class_='primary', onclick="return confirm('این خبر همین الان در تلگرام منتشر شود؟')") }}
-    {{ form.reject(class_='danger', onclick="return confirm('این خبر رد نهایی شود؟')") }}
-  </div>
-</form>
+<section class="v4-card v4-news-card">
+  <header class="v4-news-head">
+    <div>
+      <strong>{{ item.source or 'منبع نامشخص' }}</strong>
+      <span class="v4-news-time">{{ item.published_at_source or 'زمان نامشخص' }}</span>
+    </div>
+    {% if item.source_url %}<a class="v4-button is-quiet" target="_blank" rel="noopener" href="{{ item.source_url }}">باز کردن منبع</a>{% endif %}
+  </header>
+
+  <section class="v4-copy-block is-original">
+    <span class="v4-copy-label">Original</span>
+    <h2>{{ item.original_title or 'بدون عنوان' }}</h2>
+    {% if item.original_summary %}<p>{{ item.original_summary }}</p>{% endif %}
+  </section>
+
+  <section class="v4-copy-block is-luna">
+    <span class="v4-copy-label">🧠 Luna Final — قابل ویرایش قبل از انتشار</span>
+    <form id="v4FinalReviewForm" class="v4-form-grid" onsubmit="return false" style="margin-top:12px">
+      {{ form.hidden_tag() }}
+      <label>
+        <span>تیتر نهایی فارسی</span>
+        {{ form.title_fa(id='v4FinalTitle') }}
+      </label>
+      <label>
+        <span>متن نهایی</span>
+        {{ form.body_fa(id='v4FinalBody', rows=8) }}
+      </label>
+      <div class="v4-card" style="padding:12px;background:var(--v4-warning-soft);box-shadow:none;border-color:#fedf89">
+        <strong style="font-size:12px;color:var(--v4-warning)">قبل از انتشار</strong>
+        <p class="v4-muted" style="margin:5px 0 0">انتشار فقط بعد از تأیید دوم انجام می‌شود. متن ویرایش‌شده تو عیناً برای انتشار استفاده می‌شود.</p>
+      </div>
+      <div class="v4-action-row">
+        <button id="v4PublishFinal" class="v4-button" type="button">✅ تأیید و انتشار</button>
+        <button id="v4RejectFinal" class="v4-button is-danger" type="button">❌ رد نهایی</button>
+      </div>
+    </form>
+  </section>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  const itemId = {{ item.id|tojson }};
+  const sleep = (ms) => new Promise(resolve => window.setTimeout(resolve, ms));
+
+  async function waitForCommand(commandId) {
+    for (let attempt = 0; attempt < 60; attempt += 1) {
+      const response = await fetch(`/api/newsroom/command/${encodeURIComponent(commandId)}`, {
+        credentials: 'same-origin',
+        cache: 'no-store',
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.message || result.error || `HTTP ${response.status}`);
+      if (['succeeded', 'reconciled'].includes(result.status)) return result;
+      if (['failed', 'ambiguous'].includes(result.status)) throw new Error(result.message || 'انتشار ناموفق بود');
+      await sleep(2000);
+    }
+    throw new Error('وضعیت انتشار هنوز نهایی نشده؛ از بخش سلامت یا منتشرشده‌ها بررسی کن');
+  }
+
+  document.getElementById('v4PublishFinal')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    const title = document.getElementById('v4FinalTitle')?.value?.trim() || '';
+    const body = document.getElementById('v4FinalBody')?.value?.trim() || '';
+    if (!title) {
+      NewsroomV4.toast('تیتر نهایی فارسی لازم است', 'error');
+      return;
+    }
+    const confirmed = await NewsroomV4.confirmAction({
+      title: 'تأیید انتشار',
+      message: 'همین تیتر و متن نهایی در کانال بی‌خبر منتشر شود؟',
+    });
+    if (!confirmed) return;
+
+    const original = button.textContent;
+    button.disabled = true;
+    button.textContent = 'در صف انتشار…';
+    try {
+      const queued = await NewsroomV4.postJSON(`/api/v4/items/${encodeURIComponent(itemId)}/publish-final`, {title, body});
+      if (!queued.command_id) throw new Error('شناسه فرمان انتشار دریافت نشد');
+      button.textContent = 'در حال انتشار…';
+      const finished = await waitForCommand(queued.command_id);
+      NewsroomV4.toast(finished.message || 'خبر منتشر شد');
+      window.location.href = '/history';
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = original;
+      NewsroomV4.toast(error.message || 'انتشار ناموفق بود', 'error');
+    }
+  });
+
+  document.getElementById('v4RejectFinal')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    const confirmed = await NewsroomV4.confirmAction({title: 'رد نهایی خبر', message: 'این خبر از صف بررسی حذف و رد شود؟'});
+    if (!confirmed) return;
+    button.disabled = true;
+    try {
+      const result = await NewsroomV4.postJSON(`/api/v4/items/${encodeURIComponent(itemId)}/reject`, {});
+      NewsroomV4.toast(result.message || 'خبر رد شد');
+      window.location.href = '/review';
+    } catch (error) {
+      button.disabled = false;
+      NewsroomV4.toast(error.message || 'رد خبر ناموفق بود', 'error');
+    }
+  });
+})();
+</script>
 {% endblock %}
