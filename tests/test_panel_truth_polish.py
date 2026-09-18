@@ -86,19 +86,20 @@ def test_quiet_mode_reaches_v2_as_auto_publish_pause(monkeypatch):
     assert captured["settings"]["auto_publish"] is False
 
 
-def test_main_newsroom_does_not_flash_raw_english_source_labels():
-    template = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
-    assert "item.source_display or item.source" not in template
-    assert "<small>{{ item.source }}</small>" not in template
+def test_main_newsroom_does_not_fallback_to_raw_source_label():
+    dashboard = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
+    intake = Path("panel/templates/intake.html").read_text(encoding="utf-8")
+    assert "item.source_display or item.source" not in dashboard
+    assert "item.source_display or item.source" not in intake
+    assert "<small>{{ item.source }}</small>" not in dashboard
 
 
-def test_newsroom_navigation_is_compact_visual_and_fully_persian():
+def test_newsroom_v4_navigation_is_compact_and_mobile_safe():
     base = Path("panel/templates/base.html").read_text(encoding="utf-8")
-    css = Path("panel/static/newsroom-nav-v2.css").read_text(encoding="utf-8")
-    assert "newsroom-nav-item" in base
-    assert "nav-icon" in base
-    assert "nav-label" in base
+    css = Path("panel/static/newsroom-v4.css").read_text(encoding="utf-8")
+    assert "v4-nav-link" in base
+    assert "v4-mobile-link" in base
     assert "COMMAND CENTER" not in base
-    assert "اتاق خبر" in base
-    assert "border-radius:999px" in css.replace(" ", "")
+    assert "مرکز کنترل بی‌خبر" in base
     assert "position:fixed" in css.replace(" ", "")
+    assert "safe-area-inset-bottom" in css
