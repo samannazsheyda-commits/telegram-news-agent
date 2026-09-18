@@ -18,8 +18,8 @@ class FakeData:
                     "source_url": "https://example.com/1",
                     "original_title": "Important original newsroom test headline",
                     "original_summary": "Original source summary for the newsroom test.",
-                    "persian_title": "تیتر قدیمی که نباید با ترجمه ماشینی قاطی شود",
-                    "persian_body": "متن قدیمی که نباید به‌عنوان ترجمه ماشینی نشان داده شود",
+                    "persian_title": "تیتر قدیمی که نباید به‌عنوان خروجی Luna نمایش داده شود",
+                    "persian_body": "متن قدیمی که نباید به‌عنوان خروجی Luna نمایش داده شود",
                     "panel_status": "new",
                     "source_priority": "high",
                     "discovered_at": "2026-09-14T11:50:00+00:00",
@@ -59,14 +59,15 @@ def _dashboard_html() -> str:
     return response.get_data(as_text=True)
 
 
-def test_dashboard_uses_single_v4_newsroom_shell_without_legacy_style_stack():
+def test_dashboard_uses_single_v41_newsroom_shell_without_legacy_style_stack():
     html = _dashboard_html()
     assert "newsroom-v4.css" in html
+    assert "newsroom-v4-polish.css" in html
     assert "newsroom-shell.css" not in html
     assert "newsroom-final.css" not in html
     assert "newsroom-nav-v2.css" not in html
     assert "newsroom-compact.css" not in html
-    assert 'data-newsroom-shell="v4"' in html
+    assert 'data-newsroom-shell="v4-1"' in html
 
 
 def test_mobile_first_navigation_and_health_are_immediately_available():
@@ -78,16 +79,15 @@ def test_mobile_first_navigation_and_health_are_immediately_available():
         assert label in html
 
 
-def test_server_rendered_story_card_requires_luna_preview_before_publish():
+def test_server_rendered_story_card_requires_guarded_translation_before_publish():
     html = _dashboard_html()
     assert 'data-story-id="live-1"' in html
-    assert 'data-v4-action="send-luna"' in html
-    assert 'data-v4-action="reject"' in html
+    assert 'data-v4-action="translate-luna"' in html
+    assert 'data-v4-action="reject-block"' in html
     assert 'data-v4-action="publish-final"' not in html
-    assert 'data-action="publish"' not in html
     assert "Important original newsroom test headline" in html
-    assert "ترجمه ماشینی هنوز آماده نیست" in html
-    assert "تیتر قدیمی که نباید با ترجمه ماشینی قاطی شود" not in html
+    assert "هنوز ساخته نشده" in html
+    assert "تیتر قدیمی که نباید به‌عنوان خروجی Luna نمایش داده شود" not in html
     assert "رویترز" in html
 
 
@@ -98,7 +98,7 @@ def test_sensitive_actions_have_v4_confirmation_surface():
     assert "newsroom-v4.js" in html
 
 
-def test_dashboard_loads_only_v4_dashboard_modules():
+def test_dashboard_loads_only_v41_dashboard_modules():
     html = _dashboard_html()
     assert "newsroom-v4.js" in html
     assert "newsroom-v4-dashboard.js" in html
