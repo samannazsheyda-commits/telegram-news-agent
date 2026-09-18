@@ -198,19 +198,17 @@ def test_status_and_health_use_real_runtime_values(monkeypatch):
     assert health["telegram_state"] == "ok"
 
 
-def test_dashboard_is_newsroom_first_and_operator_sections_are_collapsible():
+def test_dashboard_is_newsroom_first_and_operator_actions_are_clear_v4_destinations():
     html = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
     base = Path("panel/templates/base.html").read_text(encoding="utf-8")
-    assert "اتاق خبر بی‌خبر" in html
+    assert "مرکز کنترل بی‌خبر" in html
     assert "اتاق فرمان" not in html + base
-    assert "اولویت قرمز ۲۴/۷" in html
-    assert 'id="priorityEditor"' in html
-    assert 'id="clearCurrentFeed"' in html
-    assert "فقط از پنل" in html
-    assert 'class="ops-fold"' in html
-    assert "ابزارهای عملیاتی" in html
-    assert "تنظیمات و سلامت" in html
-    assert html.index("ورودی زنده") < html.index("ابزارهای عملیاتی")
+    assert "دسترسی سریع" in html
+    for destination in ("ورودی خبرها", "بررسی انسانی", "Luna", "منتشرشده‌ها", "منابع", "تنظیمات"):
+        assert destination in html
+    assert "سلامت سیستم" in html + base
+    assert 'class="v4-mobile-nav"' in base
+    assert "ترافیک هوایی" not in html + base
 
 
 def test_live_client_is_fast_revisioned_stateful_and_dings():
@@ -240,16 +238,14 @@ def test_live_feed_api_has_revision_and_stays_persian_first():
     assert payload["items"][0]["original_title"] == "Missile launched from Iran"
 
 
-def test_module_preview_ui_is_inline_toggle_and_non_publishing_refresh():
+def test_v4_dashboard_does_not_expose_removed_air_traffic_or_dead_preview_controls():
     html = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
-    js = Path("panel/static/live.js").read_text(encoding="utf-8")
-    assert 'data-preview-toggle="{{ name }}"' in html
-    assert 'data-preview-panel="{{ name }}"' in html
-    for name in ("weather", "air-traffic", "tanker", "market"):
-        assert f"'{name}'" in html
-    assert "panel.hidden = !opening" in js or "preview.hidden" in js
-    assert "/preview" in js
-    assert "پیش‌نمایش" in html
+    base = Path("panel/templates/base.html").read_text(encoding="utf-8")
+    assert "air-traffic" not in html + base
+    assert "ترافیک هوایی" not in html + base
+    assert 'data-preview-toggle="air-traffic"' not in html
+    assert "/incoming" in html
+    assert "/health" in html
 
 
 def test_no_telegram_delete_api_or_method_is_present_in_panel_code():
