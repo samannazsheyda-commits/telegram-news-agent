@@ -14,6 +14,7 @@ class FakeData:
                     "item_id": "live-1",
                     "news_key": "key-1",
                     "source": "Reuters",
+                    "source_display": "رویترز",
                     "source_url": "https://example.com/1",
                     "persian_title": "تیتر مهم برای تست اتاق خبر",
                     "persian_body": "متن خلاصه خبر برای تصمیم سردبیری.",
@@ -56,58 +57,47 @@ def _dashboard_html() -> str:
     return response.get_data(as_text=True)
 
 
-def test_dashboard_uses_single_v3_newsroom_shell_without_legacy_style_stack():
+def test_dashboard_uses_single_v4_newsroom_shell_without_legacy_style_stack():
     html = _dashboard_html()
-    assert "newsroom-shell.css" in html
-    assert "light-newsroom.css" not in html
-    assert "newsroom.css" not in html
+    assert "newsroom-v4.css" in html
+    assert "newsroom-shell.css" not in html
+    assert "newsroom-final.css" not in html
     assert "newsroom-nav-v2.css" not in html
     assert "newsroom-compact.css" not in html
-    assert 'data-newsroom-shell="v3"' in html
+    assert 'data-newsroom-shell="v4"' in html
 
 
-def test_mobile_first_navigation_and_v3_status_are_immediately_available():
+def test_mobile_first_navigation_and_health_are_immediately_available():
     html = _dashboard_html()
-    assert 'id="newsroomStatusBar"' in html
-    assert 'id="engineState"' in html
-    assert 'id="telegramState"' in html
-    assert 'id="publishingState"' in html
-    assert 'id="lastCycleAt"' in html
-    assert 'id="mobileBottomNav"' in html
-    for label in ("اتاق خبر", "بررسی", "منتشرشده", "منابع"):
+    assert 'class="v4-mobile-nav"' in html
+    assert "سلامت سیستم" in html
+    assert "Luna" in html
+    for label in ("داشبورد", "ورودی", "بررسی", "کنترل"):
         assert label in html
 
 
-def test_server_rendered_story_card_exposes_direct_editorial_actions():
+def test_server_rendered_story_card_requires_luna_preview_before_publish():
     html = _dashboard_html()
     assert 'data-story-id="live-1"' in html
-    assert 'data-action="publish"' in html
-    assert 'data-action="edit"' in html
-    assert 'data-action="reject"' in html
-    assert 'data-action="source"' in html
+    assert 'data-v4-action="send-luna"' in html
+    assert 'data-v4-action="reject"' in html
+    assert 'data-v4-action="publish-final"' not in html
+    assert 'data-action="publish"' not in html
     assert "تیتر مهم برای تست اتاق خبر" in html
     assert "رویترز" in html
-    assert "Reuters" not in html
 
 
-def test_sensitive_actions_have_confirmation_and_inline_editor_hooks():
+def test_sensitive_actions_have_v4_confirmation_surface():
     html = _dashboard_html()
-    assert 'id="confirmSheet"' in html
-    assert 'id="confirmAccept"' in html
-    assert 'id="editorSheet"' in html
-    assert 'id="editorTitle"' in html
-    assert 'id="editorBody"' in html
-    assert 'data-confirm-action="publishing"' in html
+    assert 'id="v4ConfirmDialog"' in html
+    assert 'id="v4ConfirmAccept"' in html
+    assert "newsroom-v4.js" in html
 
 
-def test_dashboard_loads_small_newsroom_modules_instead_of_legacy_live_bundle():
+def test_dashboard_loads_only_v4_dashboard_modules():
     html = _dashboard_html()
-    for asset in (
-        "newsroom-ui.js",
-        "newsroom-live.js",
-        "newsroom-actions.js",
-        "newsroom-editor.js",
-    ):
-        assert asset in html
-    assert "static/live.js" not in html
+    assert "newsroom-v4.js" in html
+    assert "newsroom-v4-dashboard.js" in html
+    for legacy in ("newsroom-ui.js", "newsroom-live.js", "newsroom-actions.js", "newsroom-editor.js", "static/live.js"):
+        assert legacy not in html
     assert "TELEGRAM_BOT_TOKEN" not in html
