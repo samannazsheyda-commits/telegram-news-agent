@@ -84,8 +84,8 @@ def test_dashboard_binds_initial_intake_to_30_cards():
 
     assert html.count('data-v4-story-card="1"') == 30
     assert "Original headline 44" in html
-    assert "Original headline 14" in html
-    assert "Original headline 13" not in html
+    assert "Original headline 15" in html
+    assert "Original headline 14" not in html
 
 
 def test_pre_luna_story_requires_preview_before_publish():
