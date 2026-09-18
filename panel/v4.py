@@ -8,7 +8,7 @@ from flask import Blueprint, current_app, jsonify, render_template, request, ses
 
 from src.formatters import _source_label
 
-from .command_center import _public_settings, _settings, _write_settings
+from .command_center import _enqueue, _public_settings, _settings, _write_settings
 
 
 bp = Blueprint("panel_v4", __name__)
@@ -30,6 +30,43 @@ def _rows(path: str) -> list[dict]:
     if not isinstance(value, list):
         return []
     return [dict(row) for row in value if isinstance(row, dict)]
+
+
+def _row_id(row: dict) -> str:
+    return str(row.get("item_id") or row.get("id") or row.get("news_key") or "").strip()
+
+
+def _merged_editorial_rows() -> list[dict]:
+    """Merge live-feed discovery data with durable review/Luna state.
+
+    The worker persists Luna previews to editorial_queue.  Merging here keeps
+    the original source fields from the live feed while allowing durable queue
+    fields (final copy, Luna status, edits) to win.
+    """
+    merged: dict[str, dict] = {}
+    order: list[str] = []
+    for row in _rows("data/panel_live_feed.json"):
+        item_id = _row_id(row)
+        if not item_id:
+            continue
+        merged[item_id] = dict(row)
+        order.append(item_id)
+    for row in _rows("data/editorial_queue.json"):
+        item_id = _row_id(row)
+        if not item_id:
+            continue
+        if item_id not in merged:
+            order.append(item_id)
+            merged[item_id] = {}
+        merged[item_id] = {**merged[item_id], **row}
+    return [merged[item_id] for item_id in order if item_id in merged]
+
+
+def _find_editorial_item(item_id: str) -> dict | None:
+    wanted = str(item_id or "").strip()
+    if not wanted:
+        return None
+    return next((row for row in _merged_editorial_rows() if _row_id(row) == wanted), None)
 
 
 def _safe_int(value, default: int = 0) -> int:
@@ -111,8 +148,14 @@ def _luna_copy(row: dict) -> tuple[str, str]:
 def _public_incoming(row: dict) -> dict:
     machine_title, machine_body = _machine_copy(row)
     luna_title, luna_body = _luna_copy(row)
-    item_id = str(row.get("item_id") or row.get("id") or row.get("news_key") or "").strip()
-    status = str(row.get("panel_status") or row.get("decision_state") or "new").strip().lower()
+    item_id = _row_id(row)
+    status = str(
+        row.get("luna_status")
+        or row.get("panel_status")
+        or row.get("decision_state")
+        or row.get("status")
+        or "new"
+    ).strip().lower()
     return {
         "id": item_id,
         "source": _source_label(str(row.get("source") or "")),
@@ -282,7 +325,7 @@ def require_admin():
 
 @bp.get("/incoming")
 def incoming():
-    rows = _rows("data/panel_live_feed.json")
+    rows = _merged_editorial_rows()
     rows.sort(key=_ago_sort_value, reverse=True)
     public = [_public_incoming(row) for row in rows]
     page_rows, pagination = _paginate(public, _safe_int(request.args.get("page"), 1))
@@ -291,7 +334,7 @@ def incoming():
 
 @bp.get("/luna")
 def luna():
-    rows = _rows("data/panel_live_feed.json")
+    rows = _merged_editorial_rows()
     rows.sort(key=_ago_sort_value, reverse=True)
     projected = [_public_incoming(row) for row in rows]
     active = [row for row in projected if row["has_luna"] or row["status"] in {"waiting", "ready", "processing", "failed"}]
@@ -314,6 +357,49 @@ def health_page():
 @bp.get("/api/v4/snapshot")
 def snapshot_api():
     return jsonify({"ok": True, **_build_snapshot()})
+
+
+@bp.post("/api/v4/items/<item_id>/luna")
+def send_item_to_luna(item_id: str):
+    row = _find_editorial_item(item_id)
+    if row is None:
+        return jsonify({"ok": False, "status": "failed", "error": "item_not_found", "message": "خبر پیدا نشد"}), 404
+
+    final_title, final_body = _luna_copy(row)
+    if final_title or final_body:
+        return jsonify({
+            "ok": True,
+            "status": "succeeded",
+            "command_id": "",
+            "review_url": f"/review/{item_id}",
+            "message": "نسخه Luna از قبل آماده است",
+        })
+
+    source = str(row.get("source") or "").strip()
+    source_url = str(row.get("source_url") or row.get("link") or "").strip()
+    original_title = str(row.get("original_title") or row.get("title") or "").strip()
+    original_body = str(row.get("original_summary") or row.get("summary") or row.get("body") or "").strip()
+    if not original_title:
+        return jsonify({"ok": False, "status": "failed", "error": "source_text_missing", "message": "متن اصلی خبر موجود نیست"}), 409
+    if not source or not source_url:
+        return jsonify({"ok": False, "status": "failed", "error": "source_missing", "message": "منبع یا لینک معتبر خبر موجود نیست"}), 409
+
+    command_id = _enqueue(
+        "luna_preview",
+        item_id=item_id,
+        news_key=str(row.get("news_key") or item_id),
+        source=source,
+        source_url=source_url,
+        original_title=original_title,
+        original_body=original_body,
+        published_at=str(row.get("published_at_source") or row.get("published") or ""),
+    )
+    return jsonify({
+        "ok": True,
+        "status": "queued",
+        "command_id": command_id,
+        "message": "خبر برای نهایی‌سازی با Luna در صف قرار گرفت",
+    }), 202
 
 
 @bp.post("/api/v4/settings/quota")
