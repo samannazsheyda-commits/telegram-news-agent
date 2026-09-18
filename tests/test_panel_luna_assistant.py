@@ -3,6 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 
 from panel.app import create_app
+from panel.luna_assistant import bp as luna_assistant_bp
 from panel.v4 import bp as panel_v4_bp
 
 
@@ -43,6 +44,7 @@ def _client():
     )
     app = create_app({"TESTING": True, "SECRET_KEY": "x", "WTF_CSRF_ENABLED": False, "DATA_BACKEND": data})
     app.register_blueprint(panel_v4_bp)
+    app.register_blueprint(luna_assistant_bp)
     client = app.test_client()
     with client.session_transaction() as session:
         session["admin"] = True
