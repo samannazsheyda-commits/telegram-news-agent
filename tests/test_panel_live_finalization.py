@@ -84,7 +84,7 @@ def test_live_feed_get_stays_fast_and_marks_missing_persian_translation():
     assert payload["items"][0]["needs_localization"] is True
 
 
-def test_live_localize_endpoint_returns_literal_preview_without_final_message(monkeypatch):
+def test_live_localize_endpoint_returns_machine_preview_without_final_message(monkeypatch):
     translations = {
         "Iran launches a missile": "ایران یک موشک شلیک کرد",
         "The missile was launched toward a military target.": "این موشک به سوی یک هدف نظامی شلیک شد.",
@@ -97,7 +97,7 @@ def test_live_localize_endpoint_returns_literal_preview_without_final_message(mo
     assert item["id"] == "n1"
     assert item["title"] == "ایران یک موشک شلیک کرد"
     assert item["body"] == "این موشک به سوی یک هدف نظامی شلیک شد."
-    assert item["translation_mode"] == "offline_literal"
+    assert item["translation_mode"] == "machine"
     assert item["final_message"] == ""
     source_row = data.files["data/panel_live_feed.json"][0]
     assert "persian_title" not in source_row
