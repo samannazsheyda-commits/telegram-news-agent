@@ -18,8 +18,8 @@ class FakeData:
                     "source_url": "https://example.com/1",
                     "original_title": "Important original newsroom test headline",
                     "original_summary": "Original source summary for the newsroom test.",
-                    "persian_title": "تیتر قدیمی که نباید به‌عنوان خروجی Luna نمایش داده شود",
-                    "persian_body": "متن قدیمی که نباید به‌عنوان خروجی Luna نمایش داده شود",
+                    "persian_title": "تیتر فارسی آماده بررسی کاربر",
+                    "persian_body": "متن فارسی آماده بررسی کاربر",
                     "panel_status": "new",
                     "source_priority": "high",
                     "discovered_at": "2026-09-14T11:50:00+00:00",
@@ -79,15 +79,16 @@ def test_mobile_first_navigation_and_health_are_immediately_available():
         assert label in html
 
 
-def test_server_rendered_story_card_requires_guarded_translation_before_publish():
+def test_server_rendered_story_card_shows_persisted_persian_and_can_publish_after_confirmation():
     html = _dashboard_html()
     assert 'data-story-id="live-1"' in html
     assert 'data-v4-action="translate-luna"' in html
     assert 'data-v4-action="reject-block"' in html
-    assert 'data-v4-action="publish-final"' not in html
-    assert "Important original newsroom test headline" in html
-    assert "هنوز ساخته نشده" in html
-    assert "تیتر قدیمی که نباید به‌عنوان خروجی Luna نمایش داده شود" not in html
+    assert 'data-v4-action="publish-final"' in html
+    assert "تیتر فارسی آماده بررسی کاربر" in html
+    assert "متن فارسی آماده بررسی کاربر" in html
+    assert "Important original newsroom test headline" not in html
+    assert "تأیید و انتشار با Luna" in html
     assert "رویترز" in html
 
 
