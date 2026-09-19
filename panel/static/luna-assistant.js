@@ -3,6 +3,7 @@
   const input = document.getElementById('v4LunaInput');
   const messages = document.getElementById('v4LunaMessages');
   const imageInput = document.getElementById('v4LunaImage');
+  const audioInput = document.getElementById('v4LunaAudio');
   const imagePreview = document.getElementById('v4LunaAttachmentPreview');
   const mic = document.getElementById('v4LunaMic');
   const send = document.getElementById('v4LunaSend');
@@ -117,6 +118,7 @@
     busy = Boolean(value);
     send.disabled = busy;
     imageInput.disabled = busy;
+    if (audioInput) audioInput.disabled = busy;
     if (!recorder || recorder.state === 'inactive') mic.disabled = busy;
   }
 
@@ -155,7 +157,7 @@
 
   async function loadStatus() {
     try {
-      const info = await V4.requestJSON('/api/panel/luna/usage');
+      const info = await V4.requestJSON('/api/panel/luna/status');
       if (connection) {
         connection.textContent = info.connected ? 'Luna متصل' : 'Luna متصل نیست';
         connection.dataset.connected = info.connected ? '1' : '0';
@@ -164,15 +166,10 @@
         const builder = info.builder_connected ? 'Builder آماده' : 'Builder بدون اتصال GitHub';
         status.textContent = info.connected ? `دستیار هوشمند اتاق خبر · ${builder}` : 'کلید OpenAI روی سرور تنظیم نشده';
       }
-      if (usageBadge) {
-        const today = info.usage?.today || {};
-        const requests = Number(today.requests || 0).toLocaleString('fa-IR');
-        const cost = Number(today.estimated_usd || 0);
-        usageBadge.textContent = `امروز ${requests} درخواست · $${cost.toFixed(cost < 1 ? 3 : 2)}`;
-      }
+      if (usageBadge) usageBadge.textContent = info.fast_model ? `مدل: ${info.fast_model}` : 'وضعیت مدل: —';
     } catch (_) {
       if (connection) connection.textContent = 'وضعیت نامشخص';
-      if (usageBadge) usageBadge.textContent = 'مصرف امروز: —';
+      if (usageBadge) usageBadge.textContent = 'وضعیت مدل: —';
     }
   }
 
@@ -196,7 +193,7 @@
       return;
     }
     try {
-      const confirmed = await V4.requestJSON(`/api/panel/luna/operator-confirm/${encodeURIComponent(result.action_id)}`, {method: 'POST'});
+      const confirmed = await V4.requestJSON(`/api/panel/luna/assistant/confirm/${encodeURIComponent(result.action_id)}`, {method: 'POST'});
       if (result.mode === 'builder' && confirmed.pull_request) builderCard(confirmed);
       else toolCard('انجام شد', confirmed.message || confirmed.reply_fa || 'عملیات با تأیید تو اجرا شد.', 'success');
       void loadStatus();
@@ -205,14 +202,21 @@
     }
   }
 
+  function looksLikeOperatorCommand(text) {
+    const value = String(text || '').trim();
+    if (!value) return false;
+    if (value.includes('سهمیه')) return true;
+    if ((value.includes('منبع') || value.includes('سورس')) && /فعال|غیرفعال|خاموش|روشن/.test(value)) return true;
+    if ((value.includes('آخرین') || value.includes('اخیر')) && (value.includes('خبر') || value.includes('منتشر'))) return true;
+    return /چرا|کم منتشر|خبر کم|سکوت|منتشر نشده|منتشر نشد/.test(value);
+  }
+
   async function ask() {
     const text = String(input.value || '').trim();
     if ((!text && !selectedImage) || busy) return;
 
     message(text || 'این تصویر رو بررسی کن', 'user');
-    const data = new FormData();
-    data.append('message', text);
-    if (selectedImage) data.append('image', selectedImage, selectedImage.name || 'image.jpg');
+    const image = selectedImage;
     input.value = '';
     autoGrow();
     clearImage();
@@ -220,7 +224,19 @@
     const pending = typing();
 
     try {
-      const result = await V4.requestJSON('/api/panel/luna/operator-chat', {method: 'POST', body: data});
+      let result;
+      if (!image && looksLikeOperatorCommand(text)) {
+        result = await V4.requestJSON('/api/panel/luna/assistant', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({message: text}),
+        });
+      } else {
+        const data = new FormData();
+        data.append('message', text);
+        if (image) data.append('image', image, image.name || 'image.jpg');
+        result = await V4.requestJSON('/api/panel/luna/chat', {method: 'POST', body: data});
+      }
       pending.body.replaceChildren();
       const paragraph = document.createElement('p');
       pending.body.appendChild(paragraph);
@@ -246,11 +262,14 @@
     return options.find(type => window.MediaRecorder?.isTypeSupported?.(type)) || '';
   }
 
-  async function transcribeBlob(blob) {
-    const mime = blob.type || 'audio/webm';
-    const ext = mime.includes('mp4') ? 'mp4' : 'webm';
+  async function transcribeAudio(fileOrBlob, filename = 'luna-voice.webm') {
+    const originalType = String(fileOrBlob?.type || 'audio/webm');
+    const cleanType = originalType.split(';', 1)[0] || 'audio/webm';
+    const payload = fileOrBlob instanceof File
+      ? fileOrBlob
+      : new Blob([fileOrBlob], {type: cleanType});
     const data = new FormData();
-    data.append('audio', blob, `luna-voice.${ext}`);
+    data.append('audio', payload, filename);
     toolCard('ویس دریافت شد', 'در حال تبدیل به متن…');
     setBusy(true);
     try {
@@ -258,18 +277,24 @@
       input.value = [input.value.trim(), result.text || ''].filter(Boolean).join(' ');
       autoGrow();
       input.focus();
-      toolCard('ویس به متن تبدیل شد', 'اگر خواستی متن رو اصلاح کن و بعد بفرست', 'success');
+      toolCard('ویس به متن تبدیل شد', 'متن آماده است؛ ارسال را بزن یا قبلش اصلاحش کن', 'success');
       void loadStatus();
     } catch (error) {
       toolCard('تبدیل ویس ناموفق بود', error.message || 'دوباره امتحان کن', 'warning');
     } finally {
       setBusy(false);
+      if (audioInput) audioInput.value = '';
     }
   }
 
   async function startRecording() {
     if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
-      V4.toast('مرورگر این دستگاه ضبط ویس را پشتیبانی نمی‌کند.', 'error');
+      if (audioInput) {
+        audioInput.click();
+        V4.toast('ضبط مستقیم مرورگر در دسترس نیست؛ ویس را از گوشی انتخاب یا ضبط کن.');
+      } else {
+        V4.toast('مرورگر این دستگاه ضبط ویس را پشتیبانی نمی‌کند.', 'error');
+      }
       return;
     }
     try {
@@ -281,12 +306,15 @@
         if (event.data?.size) audioChunks.push(event.data);
       });
       recorder.addEventListener('stop', () => {
-        const blob = new Blob(audioChunks, {type: recorder.mimeType || mimeType || 'audio/webm'});
+        const recordedType = recorder.mimeType || mimeType || 'audio/webm';
+        const cleanType = recordedType.split(';', 1)[0];
+        const ext = cleanType.includes('mp4') ? 'mp4' : 'webm';
+        const blob = new Blob(audioChunks, {type: cleanType});
         recordingStream?.getTracks().forEach(track => track.stop());
         recordingStream = null;
         mic.classList.remove('is-recording');
         mic.setAttribute('aria-label', 'صحبت با Luna');
-        if (blob.size) void transcribeBlob(blob);
+        if (blob.size) void transcribeAudio(blob, `luna-voice.${ext}`);
       }, {once: true});
       recorder.start();
       mic.classList.add('is-recording');
@@ -296,7 +324,12 @@
       recordingStream?.getTracks().forEach(track => track.stop());
       recordingStream = null;
       recorder = null;
-      V4.toast('اجازه میکروفون داده نشد یا ضبط شروع نشد.', 'error');
+      if (audioInput) {
+        audioInput.click();
+        V4.toast('ضبط مستقیم مجاز نشد؛ ویس را از گوشی انتخاب یا ضبط کن.');
+      } else {
+        V4.toast('اجازه میکروفون داده نشد یا ضبط شروع نشد.', 'error');
+      }
     }
   }
 
@@ -327,6 +360,12 @@
       return;
     }
     previewImage(file);
+  });
+
+  audioInput?.addEventListener('change', () => {
+    const file = audioInput.files?.[0];
+    if (!file) return;
+    void transcribeAudio(file, file.name || 'luna-voice.m4a');
   });
 
   mic.addEventListener('click', () => {
