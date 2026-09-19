@@ -33,16 +33,32 @@ def _find_live_story(data, story_id: str) -> dict | None:
     return None
 
 
-def _visible_persian_copy(row: dict) -> tuple[str, str]:
-    final_ready = str(row.get("luna_translation_status") or "") == "passed"
-    if final_ready:
-        title = str(row.get("final_persian_title") or "").strip()
-        body = str(row.get("final_persian_body") or "").strip()
-        if title and _FA_RE.search(title):
-            return title, body
-    title = str(row.get("persian_title") or "").strip()
-    body = str(row.get("persian_body") or "").strip()
-    return title, body
+def _machine_persian_copy(row: dict) -> tuple[str, str]:
+    return (
+        str(row.get("persian_title") or "").strip(),
+        str(row.get("persian_body") or "").strip(),
+    )
+
+
+def _luna_persian_copy(row: dict) -> tuple[str, str]:
+    if str(row.get("luna_translation_status") or "") != "passed":
+        return "", ""
+    return (
+        str(row.get("final_persian_title") or "").strip(),
+        str(row.get("final_persian_body") or "").strip(),
+    )
+
+
+def _visible_persian_copy(row: dict, copy_mode: str = "visible") -> tuple[str, str]:
+    mode = str(copy_mode or "visible").strip().lower()
+    if mode == "machine":
+        return _machine_persian_copy(row)
+    if mode == "luna":
+        return _luna_persian_copy(row)
+    title, body = _luna_persian_copy(row)
+    if title and _FA_RE.search(title):
+        return title, body
+    return _machine_persian_copy(row)
 
 
 def publish_story(
@@ -51,8 +67,12 @@ def publish_story(
     *,
     enqueue: Callable[..., str],
     confirmed: bool = False,
+    copy_mode: str = "visible",
 ) -> dict:
     story_id = str(story_id or "").strip()
+    copy_mode = str(copy_mode or "visible").strip().lower()
+    if copy_mode not in {"visible", "machine", "luna"}:
+        copy_mode = "visible"
     if not story_id:
         return {"ok": False, "error": "story_id_required", "message": "شناسه خبر لازم است."}
 
@@ -60,12 +80,13 @@ def publish_story(
     if row is None:
         return {"ok": False, "error": "story_not_found", "message": "خبر پیدا نشد."}
 
-    title, body = _visible_persian_copy(row)
+    title, body = _visible_persian_copy(row, copy_mode)
     if not title or not _FA_RE.search(title):
+        message = "نسخه Luna این خبر هنوز آماده انتشار نیست." if copy_mode == "luna" else "ترجمه فارسی این خبر هنوز آماده انتشار نیست."
         return {
             "ok": False,
             "error": "persian_copy_not_ready",
-            "message": "ترجمه فارسی این خبر هنوز آماده انتشار نیست.",
+            "message": message,
         }
 
     source = str(row.get("source") or "").strip()
@@ -85,7 +106,7 @@ def publish_story(
             "confirmation_required": True,
             "pending_action": {
                 "action": "publish_story",
-                "payload": {"story_id": story_id},
+                "payload": {"story_id": story_id, "copy_mode": copy_mode},
                 "summary_fa": f"همین نسخه منتشر شود؟ «{title}»",
             },
         }
@@ -100,7 +121,7 @@ def publish_story(
         original_body=original_body,
         title=title,
         body=body,
-        luna_v41_final=True,
+        luna_v41_final=(copy_mode != "machine"),
         human_approved=True,
         published_at=str(row.get("published_at_source") or row.get("published") or ""),
     )
@@ -109,5 +130,6 @@ def publish_story(
         "status": "queued",
         "command_id": command_id,
         "title": title,
+        "copy_mode": copy_mode,
         "message": "همان نسخه فارسی تأییدشده در صف امن انتشار قرار گرفت.",
     }
