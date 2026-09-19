@@ -6,8 +6,9 @@ from unittest.mock import patch
 from panel.app import create_app
 from panel.luna_operator_api import bp as luna_operator_bp
 from panel.luna_tool_runtime import execute_luna_tool
-from panel.luna_tools import LunaToolbox, tool_schemas
+from panel.luna_tools import LunaToolbox
 from panel.luna_translation_api import bp as luna_translation_bp
+from panel.openai_luna import OpenAILunaClient
 
 
 class MemoryData:
@@ -97,9 +98,41 @@ def test_publish_endpoint_accepts_the_visible_machine_persian_copy():
     assert kwargs["body"] == "این تحقیقات به چند نقص اطلاعاتی پیش از حمله اشاره می‌کند."
 
 
-def test_luna_exposes_publish_story_tool_and_requires_confirmation():
+class FastFakeClient:
+    fast_model = "gpt-5"
+
+    def __init__(self):
+        self.calls = []
+
+    def create_response(self, **kwargs):
+        self.calls.append(kwargs)
+        return {"id": "resp-1", "output": []}
+
+    @staticmethod
+    def function_calls(response):
+        del response
+        return []
+
+    @staticmethod
+    def output_text(response):
+        del response
+        return "سلام، آماده‌ام."
+
+
+def test_luna_exposes_publish_story_tool_and_requires_confirmation(tmp_path, monkeypatch):
     data = MemoryData()
-    names = {item["name"] for item in tool_schemas()}
+    app = _base_app(data)
+    app.register_blueprint(luna_operator_bp)
+    client = app.test_client()
+    _login(client)
+    monkeypatch.setenv("LUNA_CONVERSATION_PATH", str(tmp_path / "luna-publish-conversation.json"))
+    provider = FastFakeClient()
+
+    with patch("panel.luna_operator_api.get_luna_client", return_value=provider):
+        response = client.post("/api/panel/luna/operator-chat", json={"message": "همین خبر را منتشر کن"})
+
+    assert response.status_code == 200
+    names = {item["name"] for item in provider.calls[0]["tools"]}
     assert "publish_story" in names
 
     result = execute_luna_tool(
@@ -107,7 +140,6 @@ def test_luna_exposes_publish_story_tool_and_requires_confirmation():
         "publish_story",
         {"story_id": "story-1"},
     )
-
     assert result["ok"] is True
     assert result["confirmation_required"] is True
     assert result["pending_action"]["action"] == "publish_story"
@@ -133,39 +165,28 @@ def test_confirmed_luna_publish_queues_exact_visible_copy():
     assert kwargs["body"] == "این تحقیقات به چند نقص اطلاعاتی پیش از حمله اشاره می‌کند."
 
 
-class FastFakeClient:
-    fast_model = "gpt-5"
+class FakeHTTPResponse:
+    def raise_for_status(self):
+        return None
 
-    def __init__(self):
-        self.calls = []
-
-    def create_response(self, **kwargs):
-        self.calls.append(kwargs)
-        return {"id": "resp-1", "output": []}
-
-    @staticmethod
-    def function_calls(response):
-        del response
-        return []
-
-    @staticmethod
-    def output_text(response):
-        del response
-        return "سلام، آماده‌ام."
+    def json(self):
+        return {"id": "resp-1", "output": [], "usage": {}}
 
 
-def test_operator_chat_requests_low_reasoning_for_faster_routine_replies(tmp_path, monkeypatch):
-    data = MemoryData()
-    app = _base_app(data)
-    app.register_blueprint(luna_operator_bp)
-    client = app.test_client()
-    _login(client)
-    monkeypatch.setenv("LUNA_CONVERSATION_PATH", str(tmp_path / "luna-conversations.json"))
-    provider = FastFakeClient()
+def test_provider_uses_low_reasoning_for_tool_driven_routine_operator_calls():
+    captured = {}
 
-    with patch("panel.luna_operator_api.get_luna_client", return_value=provider):
-        response = client.post("/api/panel/luna/operator-chat", json={"message": "سلام"})
+    def fake_post(url, **kwargs):
+        captured["url"] = url
+        captured["json"] = kwargs["json"]
+        return FakeHTTPResponse()
 
-    assert response.status_code == 200
-    assert provider.calls
-    assert provider.calls[0]["reasoning_effort"] == "low"
+    client = OpenAILunaClient(api_key="test", fast_model="gpt-5", base_url="https://example.test")
+    with patch("panel.openai_luna.requests.post", side_effect=fake_post):
+        client.create_response(
+            input_items=[{"role": "user", "content": [{"type": "input_text", "text": "سلام"}]}],
+            tools=[],
+            model=client.fast_model,
+        )
+
+    assert captured["json"]["reasoning"] == {"effort": "low"}
