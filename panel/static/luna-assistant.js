@@ -3,6 +3,7 @@
   const input = document.getElementById('v4LunaInput');
   const messages = document.getElementById('v4LunaMessages');
   const imageInput = document.getElementById('v4LunaImage');
+  const audioInput = document.getElementById('v4LunaAudio');
   const imagePreview = document.getElementById('v4LunaAttachmentPreview');
   const mic = document.getElementById('v4LunaMic');
   const send = document.getElementById('v4LunaSend');
@@ -117,6 +118,7 @@
     busy = Boolean(value);
     send.disabled = busy;
     imageInput.disabled = busy;
+    if (audioInput) audioInput.disabled = busy;
     if (!recorder || recorder.state === 'inactive') mic.disabled = busy;
   }
 
@@ -208,18 +210,17 @@
   async function ask() {
     const text = String(input.value || '').trim();
     if ((!text && !selectedImage) || busy) return;
-
     message(text || 'این تصویر رو بررسی کن', 'user');
-    const data = new FormData();
-    data.append('message', text);
-    if (selectedImage) data.append('image', selectedImage, selectedImage.name || 'image.jpg');
+    const image = selectedImage;
     input.value = '';
     autoGrow();
     clearImage();
     setBusy(true);
     const pending = typing();
-
     try {
+      const data = new FormData();
+      data.append('message', text);
+      if (image) data.append('image', image, image.name || 'image.jpg');
       const result = await V4.requestJSON('/api/panel/luna/operator-chat', {method: 'POST', body: data});
       pending.body.replaceChildren();
       const paragraph = document.createElement('p');
@@ -246,11 +247,12 @@
     return options.find(type => window.MediaRecorder?.isTypeSupported?.(type)) || '';
   }
 
-  async function transcribeBlob(blob) {
-    const mime = blob.type || 'audio/webm';
-    const ext = mime.includes('mp4') ? 'mp4' : 'webm';
+  async function transcribeAudio(fileOrBlob, filename = 'luna-voice.webm') {
+    const originalType = String(fileOrBlob?.type || 'audio/webm');
+    const cleanType = originalType.split(';', 1)[0] || 'audio/webm';
+    const payload = fileOrBlob instanceof File ? fileOrBlob : new Blob([fileOrBlob], {type: cleanType});
     const data = new FormData();
-    data.append('audio', blob, `luna-voice.${ext}`);
+    data.append('audio', payload, filename);
     toolCard('ویس دریافت شد', 'در حال تبدیل به متن…');
     setBusy(true);
     try {
@@ -258,18 +260,22 @@
       input.value = [input.value.trim(), result.text || ''].filter(Boolean).join(' ');
       autoGrow();
       input.focus();
-      toolCard('ویس به متن تبدیل شد', 'اگر خواستی متن رو اصلاح کن و بعد بفرست', 'success');
+      toolCard('ویس به متن تبدیل شد', 'متن آماده است؛ ارسال را بزن یا قبلش اصلاحش کن', 'success');
       void loadStatus();
     } catch (error) {
       toolCard('تبدیل ویس ناموفق بود', error.message || 'دوباره امتحان کن', 'warning');
     } finally {
       setBusy(false);
+      if (audioInput) audioInput.value = '';
     }
   }
 
   async function startRecording() {
     if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
-      V4.toast('مرورگر این دستگاه ضبط ویس را پشتیبانی نمی‌کند.', 'error');
+      if (audioInput) {
+        audioInput.click();
+        V4.toast('ضبط مستقیم مرورگر در HTTP در دسترس نیست؛ ویس را از گوشی انتخاب یا ضبط کن.');
+      } else V4.toast('مرورگر این دستگاه ضبط ویس را پشتیبانی نمی‌کند.', 'error');
       return;
     }
     try {
@@ -277,16 +283,17 @@
       audioChunks = [];
       const mimeType = preferredAudioMime();
       recorder = mimeType ? new MediaRecorder(recordingStream, {mimeType}) : new MediaRecorder(recordingStream);
-      recorder.addEventListener('dataavailable', event => {
-        if (event.data?.size) audioChunks.push(event.data);
-      });
+      recorder.addEventListener('dataavailable', event => { if (event.data?.size) audioChunks.push(event.data); });
       recorder.addEventListener('stop', () => {
-        const blob = new Blob(audioChunks, {type: recorder.mimeType || mimeType || 'audio/webm'});
+        const recordedType = recorder.mimeType || mimeType || 'audio/webm';
+        const cleanType = recordedType.split(';', 1)[0];
+        const ext = cleanType.includes('mp4') ? 'mp4' : 'webm';
+        const blob = new Blob(audioChunks, {type: cleanType});
         recordingStream?.getTracks().forEach(track => track.stop());
         recordingStream = null;
         mic.classList.remove('is-recording');
         mic.setAttribute('aria-label', 'صحبت با Luna');
-        if (blob.size) void transcribeBlob(blob);
+        if (blob.size) void transcribeAudio(blob, `luna-voice.${ext}`);
       }, {once: true});
       recorder.start();
       mic.classList.add('is-recording');
@@ -296,7 +303,10 @@
       recordingStream?.getTracks().forEach(track => track.stop());
       recordingStream = null;
       recorder = null;
-      V4.toast('اجازه میکروفون داده نشد یا ضبط شروع نشد.', 'error');
+      if (audioInput) {
+        audioInput.click();
+        V4.toast('مرورگر اجازه ضبط مستقیم نداد؛ ویس را از گوشی انتخاب یا ضبط کن.');
+      } else V4.toast('اجازه میکروفون داده نشد یا ضبط شروع نشد.', 'error');
     }
   }
 
@@ -305,11 +315,7 @@
     if (status) status.textContent = 'دستیار هوشمند اتاق خبر بی‌خبر';
   }
 
-  form.addEventListener('submit', event => {
-    event.preventDefault();
-    void ask();
-  });
-
+  form.addEventListener('submit', event => { event.preventDefault(); void ask(); });
   input.addEventListener('input', autoGrow);
   input.addEventListener('keydown', event => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -317,7 +323,6 @@
       form.requestSubmit();
     }
   });
-
   imageInput.addEventListener('change', () => {
     const file = imageInput.files?.[0];
     if (!file) return clearImage();
@@ -328,7 +333,11 @@
     }
     previewImage(file);
   });
-
+  audioInput?.addEventListener('change', () => {
+    const file = audioInput.files?.[0];
+    if (!file) return;
+    void transcribeAudio(file, file.name || 'luna-voice.m4a');
+  });
   mic.addEventListener('click', () => {
     if (recorder && recorder.state !== 'inactive') stopRecording();
     else void startRecording();
