@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="theme-color" content="#121820">
+  <meta name="color-scheme" content="dark light">
+  <meta name="newsroom-v5" content="enabled">
+  <meta name="auto-publish-enabled" content="{{ 'true' if auto_publish_enabled else 'false' }}">
+  <title>بی‌خبر · Newsroom V5</title>
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&amp;display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-v5-app.css') }}">
+</head>
+<body class="v5-body">
+  <div id="v5App" class="v5-app" data-active-tab="news">
+    <header class="v5-topbar">
+      <div class="v5-brand">
+        <span class="v5-brand-mark">ب</span>
+        <div><strong>بی‌خبر</strong><small>Newsroom V5</small></div>
+      </div>
+      <div class="v5-live-status" id="v5ConnectionStatus" data-state="connecting">
+        <span class="v5-live-dot" aria-hidden="true"></span><span>در حال اتصال</span>
+      </div>
+    </header>
+
+    <main class="v5-main" id="v5Main">
+      <section class="v5-view is-active" id="v5ViewNews" data-view="news" aria-label="خبرها">
+        <div class="v5-view-head">
+          <div><h1>خبرها</h1><p>خبرهای فارسی آماده تصمیم سردبیری</p></div>
+          <span class="v5-count" id="v5ReviewCount">…</span>
+        </div>
+        <div id="v5ReviewList" class="v5-review-list" aria-live="polite"></div>
+        <div id="v5ReviewSentinel" class="v5-sentinel" aria-hidden="true"></div>
+        <div id="v5ReviewEmpty" class="v5-empty" hidden>فعلاً خبر آماده بررسی نداریم.</div>
+      </section>
+
+      <section class="v5-view" id="v5ViewLuna" data-view="luna" aria-label="Luna">
+        <div class="v5-view-head">
+          <div><h1>Luna</h1><p>دستیار سردبیری و اپراتور</p></div>
+        </div>
+        <div id="v5LunaMount" class="v5-placeholder-panel">
+          <strong>Luna آماده اتصال به گفت‌وگوی V5 است.</strong>
+          <p>زمینه خبر انتخاب‌شده و پیش‌نویس پیام هنگام جابه‌جایی تب حفظ می‌شود.</p>
+          <button type="button" class="v5-primary" id="v5OpenLegacyLuna">باز کردن Luna فعلی</button>
+        </div>
+      </section>
+
+      <section class="v5-view" id="v5ViewPublished" data-view="published" aria-label="منتشرشده">
+        <div class="v5-view-head">
+          <div><h1>منتشرشده</h1><p>آرشیو انتشارهای تأییدشده</p></div>
+          <span class="v5-count" id="v5PublishedCount">…</span>
+        </div>
+        <div id="v5PublishedList" class="v5-review-list"></div>
+      </section>
+
+      <section class="v5-view" id="v5ViewControl" data-view="control" aria-label="کنترل">
+        <div class="v5-view-head"><div><h1>کنترل</h1><p>منابع، تنظیمات و سلامت سیستم</p></div></div>
+        <div class="v5-control-grid">
+          <a href="/source-manager" class="v5-control-card"><strong>منابع</strong><span>مدیریت منابع خبری</span></a>
+          <a href="/settings" class="v5-control-card"><strong>تنظیمات</strong><span>تنظیمات پنل و انتشار</span></a>
+          <a href="/system" class="v5-control-card"><strong>سلامت سیستم</strong><span>وضعیت سرویس‌ها و پردازش</span></a>
+          <div class="v5-control-card is-static"><strong>انتشار خودکار</strong><span>{{ 'روشن' if auto_publish_enabled else 'خاموش' }}</span></div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="v5-tabbar" aria-label="ناوبری اصلی">
+      <button type="button" class="v5-tab is-active" data-tab="news"><span>⌂</span><b>خبرها</b></button>
+      <button type="button" class="v5-tab" data-tab="luna"><span>◉</span><b>Luna</b></button>
+      <button type="button" class="v5-tab" data-tab="published"><span>✓</span><b>منتشرشده</b></button>
+      <button type="button" class="v5-tab" data-tab="control"><span>⚙</span><b>کنترل</b></button>
+    </nav>
+  </div>
+
+  <dialog id="v5Confirm" class="v5-dialog">
+    <form method="dialog">
+      <h2 id="v5ConfirmTitle">تأیید</h2>
+      <div id="v5ConfirmPreview" class="v5-confirm-preview"></div>
+      <p id="v5ConfirmText"></p>
+      <div class="v5-dialog-actions">
+        <button value="cancel" class="v5-secondary">انصراف</button>
+        <button value="confirm" id="v5ConfirmAccept" class="v5-primary">تأیید</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="v5Toast" class="v5-toast" hidden role="status" aria-live="polite"></div>
+  <div id="v5VersionBanner" class="v5-version-banner" hidden>
+    نسخه جدید آماده است.
+    <button id="v5ReloadVersion" type="button">بارگذاری نسخه جدید</button>
+  </div>
+
+  <script src="{{ url_for('static', filename='newsroom-v5-review.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='newsroom-v5-app.js') }}" defer></script>
+</body>
+</html>
