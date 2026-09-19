@@ -84,12 +84,7 @@ def test_live_feed_get_stays_fast_and_marks_missing_persian_translation():
     assert payload["items"][0]["needs_localization"] is True
 
 
-def test_live_localize_endpoint_returns_literal_preview_without_final_message(monkeypatch):
-    translations = {
-        "Iran launches a missile": "ایران یک موشک شلیک کرد",
-        "The missile was launched toward a military target.": "این موشک به سوی یک هدف نظامی شلیک شد.",
-    }
-    monkeypatch.setattr("panel.live_api._translate_persian", lambda text: translations.get(text, text))
+def test_live_localize_endpoint_persists_machine_copy_without_final_message():
     data = FakeData(); client = _app(data).test_client(); csrf = _login(client)
     response = client.post("/api/live-feed/localize", json={"ids": ["n1"]}, headers={"X-CSRFToken": csrf})
     assert response.status_code == 200
@@ -97,11 +92,12 @@ def test_live_localize_endpoint_returns_literal_preview_without_final_message(mo
     assert item["id"] == "n1"
     assert item["title"] == "ایران یک موشک شلیک کرد"
     assert item["body"] == "این موشک به سوی یک هدف نظامی شلیک شد."
-    assert item["translation_mode"] == "offline_literal"
+    assert item["translation_mode"] == "machine_persian"
     assert item["final_message"] == ""
     source_row = data.files["data/panel_live_feed.json"][0]
-    assert "persian_title" not in source_row
-    assert "persian_body" not in source_row
+    assert source_row["persian_title"] == "ایران یک موشک شلیک کرد"
+    assert source_row["persian_body"] == "این موشک به سوی یک هدف نظامی شلیک شد."
+    assert source_row["machine_translation_status"] == "passed"
 
 
 def test_preview_generation_endpoint_queues_non_publishing_preview_command():
