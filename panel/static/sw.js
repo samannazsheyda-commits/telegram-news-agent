@@ -1,5 +1,9 @@
-const CACHE = 'bikhabar-newsroom-v4-1-2';
-const SHELL = [
+const CACHE = 'bikhabar-newsroom-v5-1';
+const STATIC_SHELL = [
+  '/static/newsroom-v5-app.css',
+  '/static/newsroom-v5-review.js',
+  '/static/newsroom-v5-app.js',
+  '/static/manifest.webmanifest',
   '/static/newsroom-v4.css',
   '/static/newsroom-v4-polish.css',
   '/static/newsroom-v4.js',
@@ -8,17 +12,23 @@ const SHELL = [
   '/static/luna-assistant.js',
   '/static/settings.css',
   '/static/settings.js',
-  '/static/manifest.webmanifest',
 ];
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil(
+    caches.open(CACHE)
+      .then(cache => cache.addAll(STATIC_SHELL))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))
       .then(() => self.clients.claim())
+      .then(() => self.clients.matchAll({ type: 'window', includeUncontrolled: true }))
+      .then(clients => Promise.all(clients.map(client => client.postMessage({ type: 'NEW_VERSION_AVAILABLE', cache: CACHE }))))
   );
 });
 
@@ -26,13 +36,49 @@ function networkOnly(request) {
   return fetch(request, { cache: 'no-store' });
 }
 
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(CACHE);
+  const cached = await cache.match(request);
+  const network = fetch(request, { cache: 'no-cache' }).then(response => {
+    if (response.ok) cache.put(request, response.clone());
+    return response;
+  });
+  return cached || network;
+}
+
+async function networkFirstShell(request) {
+  const cache = await caches.open(CACHE);
+  try {
+    const response = await fetch(request, { cache: 'no-store' });
+    if (response.ok && response.type === 'basic') await cache.put('/v5', response.clone());
+    return response;
+  } catch (error) {
+    const fallback = await caches.match('/v5');
+    if (fallback) return fallback;
+    throw error;
+  }
+}
+
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   if (event.request.method !== 'GET') return;
   if (url.origin !== self.location.origin) return;
 
+  // Live/authenticated data and SSE are always network-fresh. Never cache them.
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(networkOnly(event.request));
+    return;
+  }
+
+  // V5 is a persistent shell; navigation gets a network-first response and may
+  // use the last successfully authenticated shell only as an offline fallback.
+  if (url.pathname === '/v5') {
+    event.respondWith(networkFirstShell(event.request));
+    return;
+  }
+
+  // Legacy authenticated document routes remain network-only during rollout.
   if (
-    url.pathname.startsWith('/api/') ||
     url.pathname === '/' ||
     url.pathname.startsWith('/login') ||
     url.pathname.startsWith('/review') ||
@@ -49,14 +95,6 @@ self.addEventListener('fetch', event => {
   }
 
   if (url.pathname.startsWith('/static/')) {
-    event.respondWith(
-      fetch(event.request, { cache: 'no-store' }).then(response => {
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      }).catch(() => caches.match(event.request))
-    );
+    event.respondWith(staleWhileRevalidate(event.request));
   }
 });
