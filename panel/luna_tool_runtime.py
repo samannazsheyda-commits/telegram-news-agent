@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from .command_center import _enqueue
 from .github_builder import BuilderError
 from .github_builder_release import BuilderRelease, configured_builder
+from .luna_publish import publish_story
 from .luna_translation import translate_story_in_repository
 
 
@@ -40,8 +42,8 @@ def execute_luna_tool(
     """Execute one Luna tool while keeping shared cross-tool pipelines centralized.
 
     Translation is routed through the same guarded repository pipeline used by
-    story cards. Builder release tools are CI-gated and never expose shell or
-    direct production writes.
+    story cards. Publishing always uses the human-visible Persian copy and the
+    safe V3 command queue. Builder release tools stay CI-gated.
     """
     args = dict(arguments or {})
     if name == "translate_story":
@@ -55,6 +57,14 @@ def execute_luna_tool(
                 "message": "Luna برای ترجمه به اتصال OpenAI نیاز دارد.",
             }
         return translate_story_in_repository(toolbox.data, story_id, provider_client)
+
+    if name == "publish_story":
+        return publish_story(
+            toolbox.data,
+            str(args.get("story_id") or ""),
+            enqueue=_enqueue,
+            confirmed=confirmed,
+        )
 
     if name in {"builder_ci_status", "builder_prepare_merge"}:
         pr_number = _builder_pr_number(toolbox, args)

@@ -8,20 +8,23 @@ def _text(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
 
-def test_v41_dashboard_uses_guarded_luna_translation_endpoint_only():
+def test_v41_dashboard_uses_persisted_persian_preview_and_guarded_luna_translation():
     dashboard_js = _text("panel/static/newsroom-v4-dashboard.js")
     dashboard = _text("panel/templates/dashboard.html")
     assert "/api/panel/luna/translate-story/" in dashboard_js
     assert "/api/panel/machine-preview/" not in dashboard_js
-    assert "ترجمه ماشینی" not in dashboard
+    assert "ترجمه ماشینی" in dashboard
     assert "ترجمه با Luna" in dashboard
+    assert "item.persian_title" in dashboard
 
 
-def test_v41_publish_requires_quality_ready_and_confirmation():
+def test_v41_publish_requires_visible_persian_copy_and_confirmation():
     dashboard_js = _text("panel/static/newsroom-v4-dashboard.js")
     translation = _text("panel/luna_translation.py")
+    publish = _text("panel/luna_publish.py")
     assert "quality_passed" in translation
-    assert "card.dataset.finalReady !== '1'" in dashboard_js
+    assert "card.dataset.publishReady !== '1'" in dashboard_js
+    assert "persian_copy_not_ready" in publish
     assert "/api/panel/luna/publish-final/" in dashboard_js
     assert "confirmAction" in dashboard_js
     assert "همین نسخه منتشر شود؟" in dashboard_js
@@ -44,10 +47,10 @@ def test_mobile_nav_has_safe_area_and_stable_layer():
     assert ".v4-mobile-nav" in css
 
 
-def test_v41_keeps_original_and_final_luna_copy_separate_without_judgment_ui():
+def test_v41_keeps_machine_preview_and_optional_luna_copy_separate_without_judgment_ui():
     dashboard = _text("panel/templates/dashboard.html")
     assert "v41-original" in dashboard
-    assert "ترجمه Luna" in dashboard
-    assert "ترجمه ماشینی" not in dashboard
+    assert "نسخه Luna" in dashboard
+    assert "ترجمه ماشینی" in dashboard
     assert "اهمیت:" not in dashboard
     assert "PUBLISH" not in dashboard

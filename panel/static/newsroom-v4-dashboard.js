@@ -24,7 +24,7 @@
     const label = document.createElement('div');
     label.className = 'v41-translation-label';
     const labelMain = document.createElement('span');
-    labelMain.textContent = 'ترجمه Luna';
+    labelMain.textContent = 'نسخه Luna';
     const labelState = document.createElement('small');
     labelState.textContent = result.repaired ? 'کنترل کیفیت: تأیید پس از اصلاح' : 'کنترل کیفیت: تأیید';
     label.append(labelMain, labelState);
@@ -62,7 +62,7 @@
     publish.className = 'v4-button v4-button-primary';
     publish.type = 'button';
     publish.dataset.v4Action = 'publish-final';
-    publish.textContent = 'انتشار';
+    publish.textContent = 'تأیید و انتشار با Luna';
     actions.appendChild(publish);
 
     const reject = document.createElement('button');
@@ -73,6 +73,7 @@
     actions.appendChild(reject);
     if (sourceLink) actions.appendChild(sourceLink);
     card.dataset.finalReady = '1';
+    card.dataset.publishReady = '1';
   }
 
   async function poll(commandId, card) {
@@ -99,7 +100,7 @@
       const result = await V4.requestJSON(`/api/panel/luna/translate-story/${encodeURIComponent(id)}`, {method: 'POST'});
       renderTranslation(card, result);
       progress(card, result.repaired ? 'ترجمه پس از یک اصلاح خودکار تأیید شد' : 'ترجمه تأیید شد', 'success');
-      V4.toast('ترجمه Luna آماده است.', 'success');
+      V4.toast('نسخه Luna آماده است.', 'success');
     } catch (error) {
       progress(card, error.message || 'ترجمه نیاز به بررسی دارد', 'error');
       V4.toast(error.message || 'ترجمه Luna تأیید نشد.', 'error');
@@ -125,18 +126,22 @@
 
   async function publishFinal(card) {
     const id = card?.dataset.storyId;
-    if (!id || card.dataset.finalReady !== '1' || card.classList.contains('is-busy')) return;
-    const title = card.querySelector('[data-v41-title]')?.textContent?.trim() || '';
-    const body = card.querySelector('[data-v41-body]')?.textContent?.trim() || '';
+    if (!id || card.dataset.publishReady !== '1' || card.classList.contains('is-busy')) return;
+    const title = card.querySelector('[data-v41-title]')?.textContent?.trim()
+      || card.querySelector('[data-v41-publish-title]')?.textContent?.trim()
+      || '';
+    const body = card.querySelector('[data-v41-body]')?.textContent?.trim()
+      || card.querySelector('[data-v41-publish-body]')?.textContent?.trim()
+      || '';
     const preview = [title, body].filter(Boolean).join('\n\n');
     const accepted = await V4.confirmAction({
       title: 'همین نسخه منتشر شود؟',
       text: preview.length > 700 ? `${preview.slice(0, 700)}…` : preview,
-      accept: 'انتشار',
+      accept: 'تأیید و انتشار',
     });
     if (!accepted) return;
     card.classList.add('is-busy');
-    progress(card, 'نسخه تأییدشده در صف امن V3 قرار می‌گیرد…');
+    progress(card, 'نسخه‌ای که دیدی در صف امن انتشار قرار می‌گیرد…');
     try {
       const queued = await V4.requestJSON(`/api/panel/luna/publish-final/${encodeURIComponent(id)}`, {method: 'POST'});
       const done = await poll(queued.command_id, card);

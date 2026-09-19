@@ -39,7 +39,7 @@ class FakeData:
         del key
 
 
-def test_dashboard_get_never_calls_translation_backend_and_preserves_original():
+def test_dashboard_get_never_calls_translation_backend_and_hides_raw_english_until_persian_exists():
     data = FakeData()
     calls: list[str] = []
 
@@ -66,10 +66,12 @@ def test_dashboard_get_never_calls_translation_backend_and_preserves_original():
 
     assert response.status_code == 200
     assert calls == []
-    assert "Raw English headline" in text
-    assert "Raw English summary" in text
+    assert "Raw English headline" not in text
+    assert "Raw English summary" not in text
+    assert "عنوان فارسی در حال آماده‌سازی" in text
     assert "ترجمه با Luna" in text
-    assert "ترجمه ماشینی" not in text
+    assert "ترجمه ماشینی" in text
+    assert 'data-v4-action="publish-final"' not in text
 
 
 def test_v41_ui_translates_only_on_explicit_luna_action():
