@@ -4,7 +4,7 @@ from src.newsroom_v5_store import NewsroomV5Store
 from src.newsroom_v5_translation import translate_story
 
 
-def _story(story_id="s1", title="English headline"):
+def _story(story_id="s1", title="English headline", body="English body text with concrete details"):
     return {
         "id": story_id,
         "news_key": story_id,
@@ -13,7 +13,7 @@ def _story(story_id="s1", title="English headline"):
         "source_url": f"https://example.test/{story_id}",
         "source_item_id": story_id,
         "original_title": title,
-        "original_body": "English body text with concrete details",
+        "original_body": body,
         "published_at_source": "2026-09-20T10:00:00+00:00",
         "state": "received",
     }
@@ -59,7 +59,10 @@ def test_all_translation_backends_fail_story_stays_durable_and_retry_is_schedule
 
 def test_persian_source_is_normalized_without_ai(tmp_path):
     store = NewsroomV5Store(tmp_path / "db.sqlite")
-    store.upsert_story(_story(title="تیتر فارسی معتبر درباره یک رویداد مهم"))
+    store.upsert_story(_story(
+        title="تیتر فارسی معتبر درباره یک رویداد مهم",
+        body="متن فارسی معتبر درباره جزئیات همان رویداد",
+    ))
     calls = {"ai": 0}
 
     def ai(_):
