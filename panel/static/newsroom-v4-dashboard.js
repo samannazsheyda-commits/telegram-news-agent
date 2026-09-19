@@ -3,18 +3,10 @@
   if (!feed || !window.BikhabarV4) return;
   const V4 = window.BikhabarV4;
   const terminalStatuses = new Set([
-    'auto_published',
-    'published_auto',
-    'published_manual',
-    'reconciled_published',
-    'rejected_manual',
-    'rejected',
-    'superseded',
-    'blocked',
+    'auto_published', 'published_auto', 'published_manual', 'reconciled_published',
+    'rejected_manual', 'rejected', 'superseded', 'blocked',
   ]);
 
-  // Never leave an untranslated server-rendered card visible, even if an old
-  // template is briefly served during a rolling deployment.
   feed.querySelectorAll('[data-v4-story-card]').forEach(card => {
     if (card.dataset.machineReady !== '1') card.remove();
   });
@@ -24,9 +16,15 @@
       .map(card => String(card.dataset.storyId || ''))
       .filter(Boolean)
   );
+  const refreshButton = document.getElementById('v4RefreshLive');
+  const soundButton = document.getElementById('v4SoundToggle');
+  const refreshState = document.getElementById('v4RefreshState');
   let audioContext = null;
   let audioUnlocked = false;
   let refreshRunning = false;
+  let initialSnapshotComplete = false;
+  let soundEnabled = true;
+  try { soundEnabled = window.localStorage.getItem('bikhabar-news-sound') !== '0'; } catch (_error) {}
 
   function progress(card, text, kind = '') {
     const node = card?.querySelector('[data-v4-story-progress]');
@@ -64,6 +62,10 @@
     return item?.machine_translation_status === 'passed' || mode === 'machine_persian' || mode === 'source_persian';
   }
 
+  function storyTimeOf(item) {
+    return String(item?.story_time || item?.published_at_source || item?.updated_at || '');
+  }
+
   function machinePublishButton(actions) {
     return Array.from(actions?.querySelectorAll('[data-v4-action]') || [])
       .find(node => node.dataset.v4Action === 'publish-machine') || null;
@@ -90,7 +92,6 @@
     const actions = card?.querySelector('.v41-story-actions');
     if (!panel || !actions || !result?.quality_passed) return;
     panel.replaceChildren();
-
     const label = document.createElement('div');
     label.className = 'v41-translation-label';
     const labelMain = document.createElement('span');
@@ -99,7 +100,6 @@
     labelState.textContent = result.repaired ? 'کنترل کیفیت: تأیید پس از اصلاح' : 'کنترل کیفیت: تأیید';
     label.append(labelMain, labelState);
     panel.appendChild(label);
-
     const title = document.createElement('h3');
     title.dataset.v41Title = '1';
     title.textContent = result.title_fa || '';
@@ -110,7 +110,6 @@
       body.textContent = result.body_fa;
       panel.appendChild(body);
     }
-
     const sourceLink = sourceLinkClone(actions);
     const machineReady = card.dataset.machineReady === '1';
     actions.replaceChildren();
@@ -191,7 +190,6 @@
       accept: 'تأیید و انتشار',
     });
     if (!accepted) return;
-
     card.classList.add('is-busy');
     progress(card, 'نسخه‌ای که دیدی در صف امن انتشار قرار می‌گیرد…');
     try {
@@ -206,6 +204,7 @@
       progress(card, done.telegram_message_id ? `منتشر شد · Message ID ${done.telegram_message_id}` : 'منتشر شد', 'success');
       V4.toast('خبر منتشر شد.', 'success');
       card.remove();
+      knownStoryIds.delete(String(id));
     } catch (error) {
       progress(card, error.message, 'error');
       V4.toast(error.message, 'error');
@@ -236,7 +235,14 @@
     }
   }
 
+  function updateSoundButton() {
+    if (!soundButton) return;
+    soundButton.textContent = soundEnabled ? 'صدای خبر: روشن' : 'صدای خبر: خاموش';
+    soundButton.setAttribute('aria-pressed', soundEnabled ? 'true' : 'false');
+  }
+
   function playNewStoryAlarm() {
+    if (!soundEnabled) return;
     if (!audioUnlocked || !audioContext) {
       try { window.sessionStorage.setItem('bikhabar-pending-news-alarm', '1'); } catch (_error) {}
       return;
@@ -253,21 +259,19 @@
     oscillator.stop(audioContext.currentTime + 0.2);
   }
 
-  function unlockNewsroomAudio() {
-    if (audioUnlocked) return;
+  function unlockNewsroomAudio({playPending = true} = {}) {
+    if (!soundEnabled) return Promise.resolve(false);
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return;
+    if (!AudioContextClass) return Promise.resolve(false);
     audioContext = audioContext || new AudioContextClass();
-    Promise.resolve(audioContext.resume()).then(() => {
+    return Promise.resolve(audioContext.resume()).then(() => {
       audioUnlocked = true;
       let pending = false;
       try { pending = window.sessionStorage.getItem('bikhabar-pending-news-alarm') === '1'; } catch (_error) {}
-      if (pending) playNewStoryAlarm();
-    }).catch(() => {});
+      if (pending && playPending) playNewStoryAlarm();
+      return true;
+    }).catch(() => false);
   }
-
-  document.addEventListener('pointerdown', unlockNewsroomAudio, {once: true});
-  document.addEventListener('keydown', unlockNewsroomAudio, {once: true});
 
   function newStoryIds(items) {
     const fresh = [];
@@ -301,11 +305,14 @@
     source.className = 'v4-source-badge';
     source.textContent = item.source || 'منبع خبری';
     meta.appendChild(source);
-    if (item.updated_at) {
+    const storyTime = storyTimeOf(item);
+    if (storyTime) {
       const time = document.createElement('time');
-      time.dateTime = item.updated_at;
-      time.dataset.v4RelativeTime = item.updated_at;
-      time.textContent = V4.relativeTime(item.updated_at);
+      time.dateTime = storyTime;
+      time.dataset.v4RelativeTime = storyTime;
+      time.dataset.v4Exact = '1';
+      time.textContent = V4.storyTime(storyTime);
+      time.title = V4.exactTime(storyTime);
       meta.appendChild(time);
     }
     const state = document.createElement('span');
@@ -320,7 +327,6 @@
     const id = String(item.id || item.item_id || '');
     const titleText = String(item.title || item.persian_title || '').trim();
     if (!id || !titleText) return null;
-
     const card = document.createElement('article');
     card.className = 'v4-story-card v41-story-card';
     card.dataset.v4StoryCard = '1';
@@ -328,7 +334,6 @@
     card.dataset.machineReady = '1';
     card.dataset.finalReady = '0';
     card.appendChild(makeMeta(item));
-
     const original = document.createElement('div');
     original.className = 'v4-original v41-original';
     const machineLabel = document.createElement('div');
@@ -349,7 +354,6 @@
       original.appendChild(body);
     }
     card.appendChild(original);
-
     const luna = document.createElement('div');
     luna.className = 'v4-luna v41-translation';
     luna.dataset.v41Translation = '1';
@@ -364,7 +368,6 @@
     lunaHelp.textContent = 'اگر بازنویسی نهایی می‌خواهی، «ترجمه با Luna» را بزن.';
     luna.append(lunaLabel, lunaHelp);
     card.appendChild(luna);
-
     const actions = document.createElement('div');
     actions.className = 'v4-story-actions v41-story-actions';
     actions.appendChild(actionButton('انتشار مستقیم', 'publish-machine', 'primary'));
@@ -382,7 +385,6 @@
       actions.appendChild(link);
     }
     card.appendChild(actions);
-
     const status = document.createElement('div');
     status.className = 'v4-story-progress';
     status.dataset.v4StoryProgress = '1';
@@ -398,6 +400,21 @@
       return;
     }
     ensureMachinePublishButton(card, true);
+    const source = card.querySelector('.v4-source-badge');
+    if (source && item.source) source.textContent = item.source;
+    const storyTime = storyTimeOf(item);
+    let time = card.querySelector('.v4-story-meta time');
+    if (storyTime) {
+      if (!time) {
+        time = document.createElement('time');
+        card.querySelector('.v4-story-meta')?.insertBefore(time, card.querySelector('.v4-state-badge'));
+      }
+      time.dateTime = storyTime;
+      time.dataset.v4RelativeTime = storyTime;
+      time.dataset.v4Exact = '1';
+      time.textContent = V4.storyTime(storyTime);
+      time.title = V4.exactTime(storyTime);
+    }
     const title = card.querySelector('[data-v41-publish-title]');
     if (title && item.title) title.textContent = item.title;
     let body = card.querySelector('[data-v41-publish-body]');
@@ -408,9 +425,7 @@
         card.querySelector('.v41-original')?.appendChild(body);
       }
       body.textContent = item.body;
-    } else {
-      body?.remove();
-    }
+    } else body?.remove();
     const state = card.querySelector('.v4-state-badge');
     if (state) state.textContent = item.panel_status_fa || item.panel_status || 'تازه';
   }
@@ -431,22 +446,33 @@
     feed.appendChild(empty);
   }
 
+  function sortCardsByTime() {
+    const cards = Array.from(feed.querySelectorAll('[data-v4-story-card]'));
+    cards.sort((a, b) => {
+      const aTime = Date.parse(a.querySelector('time')?.dateTime || '') || 0;
+      const bTime = Date.parse(b.querySelector('time')?.dateTime || '') || 0;
+      return bTime - aTime;
+    });
+    const fragment = document.createDocumentFragment();
+    cards.forEach(card => fragment.appendChild(card));
+    feed.appendChild(fragment);
+  }
+
   function syncLiveCards(items) {
-    const active = items.filter(item =>
-      isMachineReady(item) && !terminalStatuses.has(String(item.panel_status || ''))
-    );
+    const active = items.filter(item => isMachineReady(item) && !terminalStatuses.has(String(item.panel_status || '')));
     if (active.length) feed.querySelector('.v4-empty')?.remove();
+    const fragment = document.createDocumentFragment();
     active.forEach(item => {
       const id = String(item.id || item.item_id || '');
       if (!id) return;
       let card = cardForId(id);
-      if (!card) {
-        card = createStoryCard(item);
-        if (card) feed.prepend(card);
-      } else {
-        patchStoryCard(card, item);
-      }
+      if (!card) card = createStoryCard(item);
+      else patchStoryCard(card, item);
+      if (card) fragment.appendChild(card);
     });
+    feed.appendChild(fragment);
+    sortCardsByTime();
+    V4.refreshTimeNodes(feed);
     ensureEmptyState();
   }
 
@@ -459,38 +485,47 @@
     if (!ids.length) return [];
     try {
       const payload = await V4.requestJSON('/api/live-feed/localize', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ids}),
+        method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ids}),
       });
       return Array.isArray(payload.items) ? payload.items : [];
-    } catch (_error) {
-      return [];
-    }
+    } catch (_error) { return []; }
   }
 
-  async function refreshLiveFeed() {
+  function setRefreshState(text) {
+    if (refreshState) refreshState.textContent = text;
+  }
+
+  async function refreshLiveFeed({manual = false} = {}) {
     if (refreshRunning) return;
     refreshRunning = true;
+    refreshButton?.setAttribute('disabled', 'disabled');
+    if (manual) setRefreshState('در حال دریافت تازه‌ترین خبرها…');
     try {
       const payload = await V4.requestJSON('/api/live-feed');
       const items = Array.isArray(payload.items) ? payload.items : [];
       removeTerminalCards(items);
-
       const readyItems = items.filter(isMachineReady);
       const freshReady = newStoryIds(readyItems);
       syncLiveCards(readyItems);
-
       const localized = await localizePending(items);
       const freshLocalized = newStoryIds(localized);
-      if (localized.length) syncLiveCards(localized);
-
-      if (freshReady.length || freshLocalized.length) playNewStoryAlarm();
-      ensureEmptyState();
-    } catch (_error) {
-      // Keep the current dashboard usable; the next poll retries naturally.
+      if (localized.length) syncLiveCards([...readyItems, ...localized]);
+      const newCount = new Set([...freshReady, ...freshLocalized]).size;
+      if (initialSnapshotComplete && newCount) {
+        playNewStoryAlarm();
+        V4.toast(`${newCount.toLocaleString('fa-IR')} خبر تازه رسید.`, 'success');
+      }
+      initialSnapshotComplete = true;
+      const clock = new Intl.DateTimeFormat('fa-IR', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
+      }).format(new Date());
+      setRefreshState(`آخرین بروزرسانی: ${clock} · ${items.length.toLocaleString('fa-IR')} ورودی`);
+    } catch (error) {
+      setRefreshState('بروزرسانی ناموفق؛ دوباره تلاش می‌شود');
+      if (manual) V4.toast(error.message || 'دریافت خبرهای جدید ناموفق بود.', 'error');
     } finally {
       refreshRunning = false;
+      refreshButton?.removeAttribute('disabled');
     }
   }
 
@@ -507,7 +542,28 @@
     if (action === 'reject') void rejectStory(card);
   });
 
+  refreshButton?.addEventListener('click', () => void refreshLiveFeed({manual: true}));
+  soundButton?.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    try { window.localStorage.setItem('bikhabar-news-sound', soundEnabled ? '1' : '0'); } catch (_error) {}
+    updateSoundButton();
+    if (!soundEnabled) {
+      try { window.sessionStorage.removeItem('bikhabar-pending-news-alarm'); } catch (_error) {}
+      V4.toast('صدای خبر خاموش شد.');
+      return;
+    }
+    void unlockNewsroomAudio({playPending: false}).then(unlocked => {
+      if (unlocked) {
+        playNewStoryAlarm();
+        V4.toast('صدای خبر روشن شد.', 'success');
+      } else V4.toast('مرورگر اجازه پخش صدا نداد.', 'error');
+    });
+  });
+  document.addEventListener('pointerdown', () => { void unlockNewsroomAudio(); }, {once: true});
+  document.addEventListener('keydown', () => { void unlockNewsroomAudio(); }, {once: true});
+
+  updateSoundButton();
   ensureEmptyState();
-  window.setTimeout(refreshLiveFeed, 300);
-  window.setInterval(refreshLiveFeed, 5000);
+  window.setTimeout(() => void refreshLiveFeed(), 300);
+  window.setInterval(() => void refreshLiveFeed(), 5000);
 })();

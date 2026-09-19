@@ -21,16 +21,21 @@
   <article class="v4-kpi is-primary"><span>منتشرشده امروز</span><strong>{{ regular_used }}</strong><small>{{ regular_remaining }} تا سقف فعلی</small></article>
   <article class="v4-kpi"><span>ورودی زنده</span><strong>{{ live_count }}</strong><small>خبر قابل مشاهده</small></article>
   <article class="v4-kpi is-warn"><span>در صف بررسی</span><strong>{{ queue_count }}</strong><small>نیازمند تصمیم تو</small></article>
-  <article class="v4-kpi is-good"><span>آخرین انتشار</span><strong>{% if last_publication %}●{% else %}—{% endif %}</strong><small>{% if last_publication %}<time datetime="{{ last_publication }}" data-v4-relative-time>{{ last_publication }}</time>{% else %}هنوز ثبت نشده{% endif %}</small></article>
+  <article class="v4-kpi is-good"><span>آخرین انتشار</span><strong>{% if last_publication %}●{% else %}—{% endif %}</strong><small>{% if last_publication %}<time datetime="{{ last_publication }}" data-v4-relative-time data-v4-exact="1">{{ last_publication }}</time>{% else %}هنوز ثبت نشده{% endif %}</small></article>
 </section>
 
 <div class="v4-grid v41-dashboard-grid">
   <section>
     <section class="v4-panel v41-story-panel">
       <header class="v4-panel-head">
-        <div><h2>تازه‌ترین خبرها</h2><p>فقط خبرهایی اینجا دیده می‌شوند که ترجمه فارسی آن‌ها آماده است؛ از «اصل خبر» به منبع دسترسی داری.</p></div>
-        <a class="v4-panel-link" href="/intake">مشاهده همه</a>
+        <div><h2>تازه‌ترین خبرها</h2><p>خبر جدید هر ۵ ثانیه بررسی می‌شود و جدیدترین زمان انتشار منبع بالاتر می‌آید.</p></div>
+        <div class="v4-toolbar">
+          <button id="v4RefreshLive" class="v4-button v4-button-secondary" type="button">بروزرسانی الان</button>
+          <button id="v4SoundToggle" class="v4-button v4-button-secondary" type="button" aria-pressed="true">صدای خبر: روشن</button>
+          <a class="v4-panel-link" href="/intake">مشاهده همه</a>
+        </div>
       </header>
+      <div id="v4RefreshState" class="v4-story-progress" aria-live="polite">بروزرسانی خودکار هر ۵ ثانیه</div>
       <div id="v4LiveFeed" class="v4-story-list v41-story-list">
         {% if live %}
           {% for item in live[:40] %}
@@ -42,10 +47,11 @@
             {% set final_title = item.final_persian_title or '' %}
             {% set final_body = item.final_persian_body or '' %}
             {% set final_ready = final_title and item.luna_translation_status == 'passed' %}
+            {% set source_time = item.story_time or item.published_at_source or item.published or item.discovered_at %}
             <article class="v4-story-card v41-story-card" data-v4-story-card="1" data-story-id="{{ story_id }}" data-machine-ready="1" data-final-ready="{{ 1 if final_ready else 0 }}">
               <div class="v4-story-meta">
                 <span class="v4-source-badge">{{ item.source_display or item.canonical_source_name or item.source or 'منبع خبری' }}</span>
-                {% if item.updated_at or item.discovered_at %}<time datetime="{{ item.updated_at or item.discovered_at }}" data-v4-relative-time>{{ item.updated_at or item.discovered_at }}</time>{% endif %}
+                {% if source_time %}<time datetime="{{ source_time }}" data-v4-relative-time data-v4-exact="1" title="زمان انتشار منبع">{{ source_time }}</time>{% endif %}
                 <span class="v4-state-badge">{{ item.panel_status_fa or item.panel_status or 'تازه' }}</span>
               </div>
 
@@ -86,8 +92,15 @@
     </section>
 
     <section class="v4-panel">
-      <header class="v4-panel-head"><div><h2>صف بررسی</h2><p>خبرهایی که برای ویرایش یا تصمیم دستی نگه داشته‌ای.</p></div><a class="v4-panel-link" href="{{ url_for('review_queue') }}">بازکردن صف</a></header>
-      {% if pending %}<ul class="v4-mini-list">{% for item in pending[:5] %}<li class="v4-mini-row"><span>{{ item.source_display or item.canonical_source_name or item.source or 'منبع خبری' }}</span><strong>{{ item.final_persian_title or item.persian_title or item.original_title or 'بدون عنوان' }}</strong><a class="v4-panel-link" href="{{ url_for('review_edit', item_id=item.id) }}">ویرایش</a></li>{% endfor %}</ul>{% else %}<div class="v4-empty"><strong>صف بررسی خالی است</strong><span>موردی برای تصمیم دستی وجود ندارد</span></div>{% endif %}
+      <header class="v4-panel-head"><div><h2>صف بررسی</h2><p>فقط نسخه فارسی نمایش داده می‌شود؛ متن خام انگلیسی در داشبورد نمی‌آید.</p></div><a class="v4-panel-link" href="{{ url_for('review_queue') }}">بازکردن صف</a></header>
+      {% if pending %}
+      <ul class="v4-mini-list">
+        {% for item in pending[:20] %}
+          {% set queue_title = item.final_persian_title or item.persian_title %}
+          {% if queue_title %}<li class="v4-mini-row"><span>{{ item.source_display or item.canonical_source_name or item.source or 'منبع خبری' }}</span><strong>{{ queue_title }}</strong><a class="v4-panel-link" href="{{ url_for('review_edit', item_id=item.id) }}">ویرایش</a></li>{% endif %}
+        {% endfor %}
+      </ul>
+      {% else %}<div class="v4-empty"><strong>صف بررسی خالی است</strong><span>موردی برای تصمیم دستی وجود ندارد</span></div>{% endif %}
     </section>
   </section>
 
@@ -124,4 +137,5 @@
 {% block scripts %}
 <script src="{{ url_for('static', filename='newsroom-v4-dashboard.js') }}" defer></script>
 <script src="{{ url_for('static', filename='newsroom-v4-ready-guard.js') }}" defer></script>
+<script src="{{ url_for('static', filename='newsroom-v4-bulk.js') }}" defer></script>
 {% endblock %}

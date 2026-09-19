@@ -9,6 +9,8 @@
 <section class="v4-panel">
   <div class="v4-story-list">
   {% for item in items[:100] %}
+    {% set persian_title = item.final_persian_title or item.persian_title %}
+    {% set persian_body = item.final_persian_body or item.persian_body %}
     <article class="v4-story-card">
       <div class="v4-story-meta">
         <span class="v4-source-badge">{{ item.source or 'منبع' }}</span>
@@ -16,8 +18,8 @@
         <span class="v4-state-badge">منتظر تصمیم</span>
       </div>
       <div class="v4-original">
-        <h3>{{ item.final_persian_title or item.persian_title or item.original_title or 'بدون عنوان' }}</h3>
-        {% if item.final_persian_body or item.persian_body %}<p>{{ item.final_persian_body or item.persian_body }}</p>{% elif item.original_summary %}<p>{{ item.original_summary }}</p>{% endif %}
+        <h3>{{ persian_title or 'ترجمه فارسی در حال آماده‌سازی' }}</h3>
+        {% if persian_body %}<p>{{ persian_body }}</p>{% endif %}
       </div>
       <div class="v4-story-actions">
         <a class="v4-button v4-button-primary" href="{{ url_for('review_edit', item_id=item.id) }}">بازکردن و تصمیم</a>
