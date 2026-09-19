@@ -21,7 +21,7 @@
 </head>
 <body class="v4-body" data-newsroom-shell="v4-1">
   <header class="v4-topbar">
-    <a href="{{ url_for('dashboard') if session.get('admin') else url_for('login') }}" class="v4-brand" aria-label="مرکز کنترل بی‌خبر">
+    <a href="{{ '/v5' if session.get('admin') and config.get('NEWSROOM_V5_UI_ENABLED') else (url_for('dashboard') if session.get('admin') else url_for('login')) }}" class="v4-brand" aria-label="مرکز کنترل بی‌خبر">
       <span class="v4-brand-mark">ب</span>
       <span class="v4-brand-copy">
         <strong>مرکز کنترل بی‌خبر</strong>
@@ -31,6 +31,9 @@
 
     {% if session.get('admin') %}
     <nav class="v4-desktop-nav" aria-label="ناوبری اصلی">
+      {% if config.get('NEWSROOM_V5_UI_ENABLED') %}
+      <a class="v4-nav-link" href="/v5">Newsroom V5</a>
+      {% endif %}
       <a class="v4-nav-link{% if request.path == '/' %} is-active{% endif %}" href="/">داشبورد</a>
       <a class="v4-nav-link{% if request.path.startswith('/intake') %} is-active{% endif %}" href="/intake">ورودی خبرها</a>
       <a class="v4-nav-link{% if request.path.startswith('/review') %} is-active{% endif %}" href="{{ url_for('review_queue') }}">بررسی</a>
@@ -61,7 +64,7 @@
 
   {% if session.get('admin') %}
   <nav class="v4-mobile-nav" aria-label="منوی موبایل">
-    <a class="v4-mobile-link{% if request.path == '/' %} is-active{% endif %}" href="/"><span>⌂</span><b>داشبورد</b></a>
+    <a class="v4-mobile-link{% if request.path == '/' %} is-active{% endif %}" href="{{ '/v5' if config.get('NEWSROOM_V5_UI_ENABLED') else '/' }}"><span>⌂</span><b>{{ 'V5' if config.get('NEWSROOM_V5_UI_ENABLED') else 'داشبورد' }}</b></a>
     <a class="v4-mobile-link{% if request.path.startswith('/intake') %} is-active{% endif %}" href="/intake"><span>≡</span><b>ورودی</b></a>
     <a class="v4-mobile-link{% if request.path.startswith('/review') %} is-active{% endif %}" href="{{ url_for('review_queue') }}"><span>✓</span><b>بررسی</b></a>
     <a class="v4-mobile-link{% if request.path.startswith('/luna') %} is-active{% endif %}" href="/luna"><span>◉</span><b>Luna</b></a>
