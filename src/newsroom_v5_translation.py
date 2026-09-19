@@ -17,6 +17,16 @@ def _fallback_value(result: Any) -> tuple[str, str]:
     return text, backend
 
 
+def _quality_ok(source: str, value: str) -> bool:
+    source = str(source or "").strip()
+    value = str(value or "").strip()
+    if not value or not has_persian(value):
+        return False
+    if has_persian(source):
+        return len(value) >= 4
+    return translation_is_publishable(source, value)
+
+
 def _translate_piece(source: str, lightweight: Callable[[str], str], ai_fallback: Callable[[str], Any] | None) -> tuple[str, str]:
     source = str(source or "").strip()
     if not source:
@@ -25,14 +35,14 @@ def _translate_piece(source: str, lightweight: Callable[[str], str], ai_fallback
         lightweight_value = str(lightweight(source) or "").strip()
     except Exception:
         lightweight_value = ""
-    if lightweight_value and translation_is_publishable(source, lightweight_value):
-        return lightweight_value, "lightweight"
+    if _quality_ok(source, lightweight_value):
+        return lightweight_value, "source_fa" if has_persian(source) else "lightweight"
     if ai_fallback is not None:
         try:
             value, backend = _fallback_value(ai_fallback(source))
         except Exception:
             value, backend = "", "ai"
-        if value and translation_is_publishable(source, value):
+        if _quality_ok(source, value):
             return value, backend
     return "", ""
 
@@ -72,8 +82,6 @@ def translate_story(
         candidate, candidate_backend = _translate_piece(source_body, lightweight, ai_fallback)
         if candidate:
             body_fa, body_backend = candidate, candidate_backend
-        elif has_persian(source_body):
-            body_fa = str(lightweight(source_body) or source_body).strip()
 
     backend = title_backend if title_backend == body_backend or not body_fa else f"{title_backend}+{body_backend}"
     store.set_translation(
