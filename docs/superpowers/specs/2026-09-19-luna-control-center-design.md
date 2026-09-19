@@ -1,7 +1,7 @@
 # Luna Control Center — Architecture Design
 
 Date: 2026-09-19
-Status: Proposed, user-approved in conversation; awaiting written-spec review
+Status: Revised after operator feedback; awaiting written-spec re-approval
 Project: Bikhabar Telegram News Agent / Newsroom Panel
 
 ## 1. Goal
@@ -51,7 +51,7 @@ Any action that changes newsroom state, source state, publication state, configu
 Examples:
 
 - publish story
-- reject/block story
+- reject story
 - edit or rename source
 - enable/disable/delete source
 - move story between queues
@@ -63,17 +63,30 @@ Examples:
 
 The model may prepare and explain a proposed change before confirmation, but it must not perform the mutation until the user explicitly confirms.
 
-### 2.4 No false success
+### 2.4 Story rejection is not blocking
+
+Rejecting a story means only that specific story leaves the active publication workflow and is recorded as rejected for history/audit.
+
+Rejection must not:
+
+- create an operator block
+- blacklist the story fingerprint for future ingestion
+- block the source
+- prevent future stories from the same source from entering the newsroom
+
+If the operator later wants to disable or delete a source, that is a separate source mutation with its own confirmation.
+
+### 2.5 No false success
 
 Luna may only say a change succeeded when the executor returns a successful result.
 
 A model-generated sentence such as «انجام شد» is not evidence of success.
 
-### 2.5 Existing safe publication pipeline remains authoritative
+### 2.6 Existing safe publication pipeline remains authoritative
 
 Publishing must continue through the existing safe `v3_publish` command path. Luna does not bypass publication safeguards or write directly to Telegram.
 
-### 2.6 Code/UI changes remain CI-gated
+### 2.7 Code/UI changes remain CI-gated
 
 Requests that modify application code, UI, routes, behavior, or deployment configuration go through Builder:
 
@@ -203,11 +216,11 @@ Required capabilities:
 - generate Luna copy
 - save manual/Luna edit
 - move to review
-- reject and block
+- reject story
 - publish machine copy
 - publish Luna copy
 - inspect recent published items
-- explain why a story is blocked/not publishable
+- explain why a story is rejected/not publishable
 
 Publishing behavior:
 
@@ -215,6 +228,14 @@ Publishing behavior:
 - `publish_luna_copy`: require a passed Luna copy
 - both require explicit confirmation
 - both enqueue through `v3_publish`
+
+Rejection behavior:
+
+- `reject_story`: marks only the selected story as rejected
+- removes that story from the active dashboard/workflow
+- does not call `add_operator_block`
+- does not create a persistent blacklist entry
+- does not alter source state
 
 ### 5.2 Sources
 
@@ -353,7 +374,7 @@ For every incoming non-Persian story:
    - «انتشار مستقیم» — publish the machine Persian copy
    - «ترجمه با Luna» — create a higher-quality Luna copy
    - review/edit
-   - reject/block
+   - «رد» — reject only this story, without blocking
 
 If the machine translation is already fluent, the operator can publish it without paying the Luna latency/cost.
 
@@ -394,6 +415,8 @@ Good:
 > نام نمایشی `ClashReports` به «کلش ریپورتز» تغییر کند؟
 
 > همین ترجمه ماشینی منتشر شود؟ «...»
+
+> این خبر رد شود؟ فقط همین مورد از چرخه فعلی کنار می‌رود.
 
 > منبع `X` غیرفعال شود؟ تا زمان فعال‌سازی دوباره، خبر جدیدی از آن وارد نمی‌شود.
 
@@ -478,6 +501,7 @@ These are targets, not hard SLA guarantees.
 - expired proposal rejection
 - source rename persistence
 - machine vs Luna publish copy selection
+- reject-story persistence without operator block creation
 - safe publication queue integration
 - audit records
 
@@ -487,7 +511,7 @@ These are targets, not hard SLA guarantees.
 - source rename example using `ClashReports`
 - publish machine translation
 - publish Luna translation
-- reject/block story
+- reject story without creating a persistent block
 - source enable/disable
 - review-only policy change
 - Builder request → PR status → merge confirmation
@@ -497,6 +521,7 @@ These are targets, not hard SLA guarantees.
 - machine Persian copy appears as primary card content
 - direct publish button exists
 - Luna translate button remains distinct
+- reject button says «رد» and does not imply blocking
 - newly arriving story triggers one alarm after audio unlock
 - repeated poll does not repeat alarm
 - published success removes active card
@@ -523,7 +548,8 @@ The architecture is complete when all of the following are true:
 11. Incoming stories receive persisted machine Persian copy for dashboard/direct publishing.
 12. Dashboard plays a one-shot alarm for genuinely new stories after browser audio unlock.
 13. Successfully published stories disappear from the active dashboard but remain in history/audit.
-14. All mutations are auditable and Luna never claims success without executor success.
+14. Rejecting a story affects only that story and never creates a persistent block/blacklist or source block.
+15. All mutations are auditable and Luna never claims success without executor success.
 
 ## 18. Non-goals for this phase
 
@@ -532,7 +558,7 @@ The architecture is complete when all of the following are true:
 - replacing Builder with direct server editing
 - giving Luna arbitrary server administration
 - creating a generic secret/environment editor
-- allowing Luna to silently publish, delete, disable, merge, or deploy without the operator
+- allowing Luna to silently publish, reject, delete, disable, merge, or deploy without the operator
 
 ## 19. Migration approach
 
