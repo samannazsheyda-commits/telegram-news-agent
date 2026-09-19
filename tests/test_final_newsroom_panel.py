@@ -28,7 +28,9 @@ def test_v41_story_flow_has_distinct_machine_and_luna_publish_paths():
     assert "/api/panel/luna/publish-machine/" in DASHBOARD_JS
     assert "/api/panel/luna/publish-final/" in DASHBOARD_JS
     assert "confirmAction" in DASHBOARD_JS
-    assert "reject-block" in DASHBOARD
+    assert 'data-v4-action="reject"' in DASHBOARD
+    assert "reject-block" not in DASHBOARD
+    assert "/api/panel/luna/block-story/" not in DASHBOARD_JS
 
 
 def test_v41_panel_has_real_mobile_navigation_and_confirmation():
