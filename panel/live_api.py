@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 
 from flask import Blueprint, current_app, jsonify, request, session
 
@@ -13,11 +14,20 @@ from .app import PANEL_STATUS_FA, REASON_FA
 
 
 bp = Blueprint("live_api", __name__)
-_TERMINAL_LIVE_STATUSES = {"auto_published", "published_auto", "published_manual"}
+_TERMINAL_LIVE_STATUSES = {
+    "auto_published",
+    "published_auto",
+    "published_manual",
+    "reconciled_published",
+    "rejected_manual",
+    "blocked",
+    "superseded",
+}
 _LOCALIZATION_CACHE: dict[str, dict] = {}
 _LOCALIZATION_CACHE_LIMIT = 240
 _LOCALIZE_BATCH_LIMIT = 12
-_LIVE_PANEL_MAX_AGE = timedelta(minutes=60)
+# Keep a useful live newsroom window instead of silently dropping everything older than one hour.
+_LIVE_PANEL_MAX_AGE = timedelta(hours=6)
 
 
 def _row_id(row: dict) -> str:
@@ -35,19 +45,23 @@ def _raw_fields(row: dict) -> tuple[str, str]:
 
 
 def _parse_time(value: str) -> datetime | None:
-    if not value:
+    text = str(value or "").strip()
+    if not text:
         return None
     try:
-        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
     except (TypeError, ValueError):
-        return None
+        try:
+            parsed = parsedate_to_datetime(text)
+        except (TypeError, ValueError, OverflowError):
+            return None
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=timezone.utc)
     return parsed.astimezone(timezone.utc)
 
 
 def _source_time(row: dict) -> datetime | None:
-    for key in ("published_at_source", "published", "source_timestamp", "discovered_at"):
+    for key in ("published_at_source", "published", "source_timestamp", "discovered_at", "updated_at"):
         parsed = _parse_time(str(row.get(key) or ""))
         if parsed is not None:
             return parsed
@@ -212,6 +226,8 @@ def _public_row(row: dict, queued_ids: set[str]) -> dict:
     status = str(row.get("panel_status") or "new")
     reason = str(row.get("decision_reason") or "")
     has_publishable_persian = _has_persian(machine_title) or _has_persian(raw_title) or luna_ready
+    source_time = _source_time(row)
+    source_time_iso = source_time.isoformat() if source_time else ""
     return {
         "id": row_id,
         "item_id": row_id,
@@ -226,7 +242,8 @@ def _public_row(row: dict, queued_ids: set[str]) -> dict:
         "panel_status_fa": PANEL_STATUS_FA.get(status, "در حال پردازش"),
         "decision_reason": reason,
         "decision_reason_fa": REASON_FA.get(reason, ""),
-        "published_at_source": str(row.get("published_at_source") or ""),
+        "published_at_source": str(row.get("published_at_source") or row.get("published") or ""),
+        "story_time": source_time_iso,
         "updated_at": str(row.get("updated_at") or row.get("discovered_at") or ""),
         "media_type": str(row.get("media_type") or ""),
         "media_url": str(row.get("video_url") or row.get("media_url") or ""),
@@ -241,7 +258,7 @@ def _public_row(row: dict, queued_ids: set[str]) -> dict:
     }
 
 
-def _raw_rows(limit: int = 40) -> tuple[list[dict], set[str]]:
+def _raw_rows(limit: int = 100) -> tuple[list[dict], set[str]]:
     data = current_app.extensions["editorial_data"]
     value, _ = data.read_json("data/panel_live_feed.json", [])
     rows = value if isinstance(value, list) else []
@@ -261,7 +278,7 @@ def _raw_rows(limit: int = 40) -> tuple[list[dict], set[str]]:
     return rows, queued_ids
 
 
-def _fast_rows(limit: int = 40) -> list[dict]:
+def _fast_rows(limit: int = 100) -> list[dict]:
     rows, queued_ids = _raw_rows(limit)
     return [_public_row(row, queued_ids) for row in rows]
 
@@ -280,14 +297,14 @@ def require_admin():
 
 @bp.get("/api/live-feed")
 def live_feed():
-    items = _fast_rows(40)
+    items = _fast_rows(100)
     response = jsonify(
         {
             "ok": True,
             "items": items,
             "count": len(items),
             "revision": _feed_revision(items),
-            "updated_at": items[0]["updated_at"] if items else "",
+            "updated_at": items[0]["story_time"] if items else "",
         }
     )
     response.headers["Cache-Control"] = "no-store, max-age=0"
