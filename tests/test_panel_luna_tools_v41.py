@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from copy import deepcopy
 
+from panel.luna_tool_runtime import execute_luna_tool
 from panel.luna_tools import LunaToolbox, tool_schemas
 
 
@@ -84,13 +85,14 @@ def test_search_story_and_targeted_source_lookup_are_read_only():
 
 def test_translate_story_tool_uses_guarded_pipeline_and_persists_final_copy():
     data = MemoryData()
-    toolbox = LunaToolbox(
-        data,
-        block_path="/tmp/test-luna-operator-blocks.json",
-        translation_client=FakeTranslationClient(),
-    )
+    toolbox = LunaToolbox(data, block_path="/tmp/test-luna-operator-blocks.json")
 
-    result = toolbox.execute("translate_story", {"story_id": "story-1"})
+    result = execute_luna_tool(
+        toolbox,
+        "translate_story",
+        {"story_id": "story-1"},
+        provider_client=FakeTranslationClient(),
+    )
 
     assert result["ok"] is True
     assert result["quality_passed"] is True
