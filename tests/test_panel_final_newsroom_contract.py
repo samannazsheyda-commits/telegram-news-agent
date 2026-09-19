@@ -18,16 +18,18 @@ def test_v41_dashboard_uses_persisted_persian_preview_and_guarded_luna_translati
     assert "item.persian_title" in dashboard
 
 
-def test_v41_publish_requires_visible_persian_copy_and_confirmation():
+def test_v41_publish_requires_the_selected_persian_copy_and_confirmation():
     dashboard_js = _text("panel/static/newsroom-v4-dashboard.js")
     translation = _text("panel/luna_translation.py")
     publish = _text("panel/luna_publish.py")
     assert "quality_passed" in translation
-    assert "card.dataset.publishReady !== '1'" in dashboard_js
+    assert "card?.dataset.finalReady === '1'" in dashboard_js
+    assert "card?.dataset.machineReady === '1'" in dashboard_js
     assert "persian_copy_not_ready" in publish
+    assert "/api/panel/luna/publish-machine/" in dashboard_js
     assert "/api/panel/luna/publish-final/" in dashboard_js
     assert "confirmAction" in dashboard_js
-    assert "همین نسخه منتشر شود؟" in dashboard_js
+    assert "منتشر شود؟" in dashboard_js
 
 
 def test_newsroom_v4_shell_is_slate_and_topbar_has_no_backdrop_blur():
