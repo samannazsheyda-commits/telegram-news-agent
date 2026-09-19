@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from pathlib import Path
 from unittest.mock import patch
+
+from bs4 import BeautifulSoup
 
 from panel.app import create_app
 from panel.luna_operator_api import bp as luna_operator_bp
@@ -77,6 +80,61 @@ def test_dashboard_shows_machine_persian_instead_of_english_and_offers_direct_pu
     assert "این تحقیقات به چند نقص اطلاعاتی پیش از حمله اشاره می‌کند." in html
     assert "Pentagon investigators found flawed intelligence" not in html
     assert "انتشار مستقیم" in html
+
+
+def test_dashboard_disables_luna_publish_until_a_valid_luna_copy_exists():
+    app = _base_app(MemoryData())
+    client = app.test_client()
+    _login(client)
+
+    response = client.get("/")
+    soup = BeautifulSoup(response.get_data(as_text=True), "html.parser")
+    luna_publish = soup.select_one('[data-v4-action="publish-luna"]')
+    luna_translate = soup.select_one('[data-v4-action="translate-luna"]')
+
+    assert response.status_code == 200
+    assert luna_publish is not None
+    assert luna_publish.has_attr("disabled")
+    assert luna_publish.get("aria-disabled") == "true"
+    assert "v4-button-primary" not in luna_publish.get("class", [])
+    assert luna_translate is not None
+    assert luna_translate.get_text(strip=True) == "ترجمه با Luna"
+    assert "ترجمه دوباره" not in response.get_data(as_text=True)
+
+
+def test_dashboard_enables_luna_publish_only_for_passed_luna_copy():
+    data = MemoryData()
+    data.mapping["data/panel_live_feed.json"][0].update(
+        {
+            "final_persian_title": "نسخه نهایی Luna",
+            "final_persian_body": "متن نهایی Luna",
+            "luna_translation_status": "passed",
+        }
+    )
+    app = _base_app(data)
+    client = app.test_client()
+    _login(client)
+
+    response = client.get("/")
+    soup = BeautifulSoup(response.get_data(as_text=True), "html.parser")
+    luna_publish = soup.select_one('[data-v4-action="publish-luna"]')
+    luna_translate = soup.select_one('[data-v4-action="translate-luna"]')
+
+    assert luna_publish is not None
+    assert not luna_publish.has_attr("disabled")
+    assert luna_publish.get("aria-disabled") == "false"
+    assert "v4-button-primary" in luna_publish.get("class", [])
+    assert luna_translate.get_text(strip=True) == "ترجمه با Luna"
+
+
+def test_live_dashboard_js_reconciles_stale_luna_publish_state():
+    source = Path("panel/static/newsroom-v4-dashboard.js").read_text(encoding="utf-8")
+
+    assert "function syncLunaPublishButton" in source
+    assert "syncLunaPublishButton(card, false)" in source
+    assert "syncLunaPublishButton(card, true)" in source
+    assert "publishButton.disabled = !ready" in source
+    assert "publishButton.setAttribute('aria-disabled', ready ? 'false' : 'true')" in source
 
 
 def test_legacy_publish_final_endpoint_still_accepts_visible_machine_copy():
