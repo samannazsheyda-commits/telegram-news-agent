@@ -29,18 +29,38 @@
     }
   }
 
+  function ensureMachineVisibility(card) {
+    if (!(card instanceof Element)) return;
+    const ready = card.dataset.machineReady === '1';
+    card.hidden = !ready;
+  }
+
+  function applyCardState(card) {
+    ensureMachineVisibility(card);
+    ensureLunaPublishState(card);
+  }
+
   function scan(root = feed) {
-    if (root.matches?.('[data-v4-story-card]')) ensureLunaPublishState(root);
-    root.querySelectorAll?.('[data-v4-story-card]').forEach(ensureLunaPublishState);
+    if (root.matches?.('[data-v4-story-card]')) applyCardState(root);
+    root.querySelectorAll?.('[data-v4-story-card]').forEach(applyCardState);
   }
 
   scan();
   const observer = new MutationObserver(mutations => {
     for (const mutation of mutations) {
+      if (mutation.type === 'attributes') {
+        applyCardState(mutation.target);
+        continue;
+      }
       mutation.addedNodes.forEach(node => {
         if (node instanceof Element) scan(node);
       });
     }
   });
-  observer.observe(feed, {childList: true, subtree: true});
+  observer.observe(feed, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['data-machine-ready', 'data-final-ready'],
+  });
 })();
