@@ -47,8 +47,8 @@ class FakeTranslationClient:
         return {
             "text": json.dumps(
                 {
-                    "title_fa": "Iran اقدام جدیدی اعلام کرد",
-                    "body_fa": "Officials این اقدام را اعلام کردند.",
+                    "title_fa": "ایران اقدام جدیدی اعلام کرد",
+                    "body_fa": "مقام‌ها این اقدام را اعلام کردند.",
                     "source_language": "en",
                     "quality_notes": "وفادار به منبع",
                 },
@@ -98,8 +98,8 @@ def test_translate_story_tool_uses_guarded_pipeline_and_persists_final_copy():
     assert result["quality_passed"] is True
     story = data.mapping["data/panel_live_feed.json"][0]
     assert story["luna_translation_status"] == "passed"
-    assert story["final_persian_title"] == "Iran اقدام جدیدی اعلام کرد"
-    assert story["final_persian_body"] == "Officials این اقدام را اعلام کردند."
+    assert story["final_persian_title"] == "ایران اقدام جدیدی اعلام کرد"
+    assert story["final_persian_body"] == "مقام‌ها این اقدام را اعلام کردند."
 
 
 def test_destructive_source_action_requires_confirmation():
