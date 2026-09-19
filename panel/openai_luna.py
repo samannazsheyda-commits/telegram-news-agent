@@ -92,8 +92,14 @@ class OpenAILunaClient:
             payload["tools"] = tools
         if instructions:
             payload["instructions"] = instructions
-        if reasoning_effort:
-            payload["reasoning"] = {"effort": reasoning_effort}
+        # Routine operator turns are tool-driven and benefit more from latency
+        # than extra hidden reasoning. Translation calls do not pass tools and
+        # keep their existing quality behavior unless an effort is explicit.
+        effective_reasoning = reasoning_effort
+        if effective_reasoning is None and tools is not None:
+            effective_reasoning = "low"
+        if effective_reasoning:
+            payload["reasoning"] = {"effort": effective_reasoning}
         if previous_response_id:
             payload["previous_response_id"] = str(previous_response_id)
         if text_format:
