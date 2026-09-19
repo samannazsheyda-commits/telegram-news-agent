@@ -275,6 +275,24 @@ def _finalize_manual_copy_with_luna(original_title: str, original_body: str) -> 
     return final_title, final_body
 
 
+def _guard_v41_final_copy(original_title: str, original_body: str, title: str, body: str) -> tuple[str, str]:
+    """Revalidate already-translated V4.1 OpenAI copy without invoking legacy AI.
+
+    The panel translation endpoint has already run the strict OpenAI quality gate.
+    Runtime still applies the deterministic Persian/source guard before Telegram.
+    """
+    final_title = _natural_persian_copy(str(original_title or ""), str(title or ""))
+    if not final_title or not _has_persian(final_title):
+        raise AIServiceError("luna_v41_title_guard_rejected")
+    if str(original_body or "").strip():
+        final_body = _natural_persian_copy(str(original_body or ""), str(body or ""))
+        if not final_body or not _has_persian(final_body):
+            raise AIServiceError("luna_v41_body_guard_rejected")
+    else:
+        final_body = ""
+    return final_title, final_body
+
+
 def _finalize_editorial_publish(payload: dict[str, Any], result: dict) -> None:
     item_id = str(payload.get("item_id") or "").strip()
     queue_path = Path("data/editorial_queue.json")
@@ -311,7 +329,15 @@ def _apply_v3_publish(payload: dict[str, Any]) -> dict:
     if not source or not source_url: raise ValueError("missing_source")
     if not original_title: raise ValueError("missing_original_title")
 
-    title, body = _finalize_manual_copy_with_luna(original_title, original_body)
+    if bool(payload.get("luna_v41_final")):
+        title, body = _guard_v41_final_copy(
+            original_title,
+            original_body,
+            str(payload.get("title") or "").strip(),
+            str(payload.get("body") or "").strip(),
+        )
+    else:
+        title, body = _finalize_manual_copy_with_luna(original_title, original_body)
     normalized = {
         **payload,
         "item_id": item_id,
@@ -328,7 +354,7 @@ def _apply_v3_publish(payload: dict[str, Any]) -> dict:
     status = str(result.get("status") or "failed")
     if status in {"succeeded", "reconciled"}: _finalize_editorial_publish(normalized, result)
     messages = {
-        "succeeded": "خبر پس از ترجمه و ویرایش لونا با مسیر امن V3 در تلگرام منتشر شد",
+        "succeeded": "خبر با مسیر امن V3 در تلگرام منتشر شد",
         "reconciled": "انتشار قبلی V3 تأیید و همگام شد",
         "ambiguous": "وضعیت ارسال تلگرام نامشخص است؛ انتشار دوباره خودکار مسدود شد",
         "processing": "انتشار V3 در حال پردازش است",

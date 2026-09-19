@@ -199,18 +199,18 @@ def test_status_and_health_use_real_runtime_values(monkeypatch):
     assert health["telegram_state"] == "ok"
 
 
-def test_dashboard_is_newsroom_first_with_clear_v4_operator_sections():
+def test_dashboard_is_newsroom_first_with_clear_v41_operator_sections():
     html = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
     base = Path("panel/templates/base.html").read_text(encoding="utf-8")
-    assert "داشبورد امروز" in html
+    assert "خبرها" in html
     assert "مرکز کنترل بی‌خبر" in base
     assert "Newsroom V4" in base
-    assert "ورودی خبرها" in html
-    assert "کنترل سریع" in html
-    assert "سلامت سیستم" in html
-    assert "افزودن/مدیریت منبع" in html
+    assert "تازه‌ترین خبرها" in html
+    assert "دسترسی سریع" in html
+    assert "سلامت سیستم" in base
+    assert 'href="/source-manager"' in html
     assert "ترافیک هوایی" not in html + base
-    assert html.index("ورودی خبرها") < html.index("کنترل سریع")
+    assert html.index("تازه‌ترین خبرها") < html.index("دسترسی سریع")
 
 
 def test_live_client_is_fast_revisioned_stateful_and_dings():
@@ -242,8 +242,8 @@ def test_live_feed_api_has_revision_and_stays_persian_first():
 
 def test_v4_dashboard_keeps_only_reliable_operational_modules_and_no_air_traffic():
     html = Path("panel/templates/dashboard.html").read_text(encoding="utf-8")
-    assert "ماژول‌های عملیاتی" in html
-    for label in ("هواشناسی", "نفتکش و هرمز", "بازار و دلار"):
+    assert "ماژول‌ها" in html
+    for label in ("هواشناسی", "نفتکش و هرمز", "بازار"):
         assert label in html
     assert "ترافیک هوایی" not in html
     assert "air-traffic" not in html

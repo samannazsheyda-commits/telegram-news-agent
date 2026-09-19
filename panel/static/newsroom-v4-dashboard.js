@@ -11,68 +11,68 @@
     node.className = `v4-story-progress ${kind}`.trim();
   }
 
-  function renderLunaPreview(card, preview, reviewUrl) {
-    const luna = card?.querySelector('.v4-luna');
-    const actions = card?.querySelector('.v4-story-actions');
-    if (!luna || !actions || !preview) return;
-    luna.replaceChildren();
+  function sourceLinkClone(actions) {
+    return actions?.querySelector('.v41-source-link')?.cloneNode(true) || null;
+  }
 
-    const head = document.createElement('div');
-    head.className = 'v4-luna-head';
-    const label = document.createElement('label');
-    label.textContent = '🧠 Luna Final';
-    const decision = document.createElement('span');
-    decision.className = 'v4-luna-decision';
-    decision.textContent = preview.decision || '—';
-    head.append(label, decision);
-    luna.appendChild(head);
+  function renderTranslation(card, result) {
+    const panel = card?.querySelector('[data-v41-translation]');
+    const actions = card?.querySelector('.v41-story-actions');
+    if (!panel || !actions || !result?.quality_passed) return;
+    panel.replaceChildren();
 
-    const importance = document.createElement('div');
-    importance.className = 'v4-importance';
-    importance.textContent = `اهمیت: ${Number(preview.importance || 0).toLocaleString('fa-IR')}/10`;
-    luna.appendChild(importance);
+    const label = document.createElement('div');
+    label.className = 'v41-translation-label';
+    const labelMain = document.createElement('span');
+    labelMain.textContent = 'ترجمه Luna';
+    const labelState = document.createElement('small');
+    labelState.textContent = result.repaired ? 'کنترل کیفیت: تأیید پس از اصلاح' : 'کنترل کیفیت: تأیید';
+    label.append(labelMain, labelState);
+    panel.appendChild(label);
 
-    if (preview.reason_fa) {
-      const reason = document.createElement('p');
-      const strong = document.createElement('strong');
-      strong.textContent = 'دلیل: ';
-      reason.append(strong, document.createTextNode(preview.reason_fa));
-      luna.appendChild(reason);
-    }
-    if (preview.title_fa) {
-      const title = document.createElement('h3');
-      title.textContent = preview.title_fa;
-      luna.appendChild(title);
-    }
-    if (preview.body_fa) {
+    const title = document.createElement('h3');
+    title.dataset.v41Title = '1';
+    title.textContent = result.title_fa || '';
+    panel.appendChild(title);
+    if (result.body_fa) {
       const body = document.createElement('p');
-      body.textContent = preview.body_fa;
-      luna.appendChild(body);
+      body.dataset.v41Body = '1';
+      body.textContent = result.body_fa;
+      panel.appendChild(body);
     }
 
-    const sourceLink = actions.querySelector('a[href]')?.cloneNode(true) || null;
+    const sourceLink = sourceLinkClone(actions);
     actions.replaceChildren();
-    if (preview.decision === 'PUBLISH' || preview.decision === 'SPECIAL') {
-      const publish = document.createElement('button');
-      publish.className = 'v4-button v4-button-primary';
-      publish.type = 'button';
-      publish.dataset.v4Action = 'publish-final';
-      publish.textContent = 'انتشار';
-      actions.appendChild(publish);
-    }
-    const edit = document.createElement('a');
+
+    const translate = document.createElement('button');
+    translate.className = 'v4-button v4-button-secondary';
+    translate.type = 'button';
+    translate.dataset.v4Action = 'translate-luna';
+    translate.textContent = 'ترجمه دوباره';
+    actions.appendChild(translate);
+
+    const edit = document.createElement('button');
     edit.className = 'v4-button v4-button-secondary';
-    edit.href = reviewUrl || `/review/${encodeURIComponent(card.dataset.storyId)}`;
-    edit.textContent = 'ویرایش';
+    edit.type = 'button';
+    edit.dataset.v4Action = 'edit-final';
+    edit.textContent = 'بررسی / ویرایش';
     actions.appendChild(edit);
+
+    const publish = document.createElement('button');
+    publish.className = 'v4-button v4-button-primary';
+    publish.type = 'button';
+    publish.dataset.v4Action = 'publish-final';
+    publish.textContent = 'انتشار';
+    actions.appendChild(publish);
+
     const reject = document.createElement('button');
     reject.className = 'v4-button v4-button-danger';
     reject.type = 'button';
-    reject.dataset.v4Action = 'reject';
-    reject.textContent = 'رد';
+    reject.dataset.v4Action = 'reject-block';
+    reject.textContent = 'رد و مسدودکردن';
     actions.appendChild(reject);
     if (sourceLink) actions.appendChild(sourceLink);
-    card.dataset.lunaReady = '1';
+    card.dataset.finalReady = '1';
   }
 
   async function poll(commandId, card) {
@@ -90,57 +90,58 @@
     throw new Error('پاسخ انتشار دیرتر از حد انتظار شد؛ وضعیت را دوباره بررسی کن');
   }
 
-  async function sendToLuna(card) {
+  async function translateWithLuna(card) {
     const id = card?.dataset.storyId;
     if (!id || card.classList.contains('is-busy')) return;
     card.classList.add('is-busy');
-    progress(card, 'Luna در حال بررسی و ساخت نسخه نهایی…');
+    progress(card, 'Luna در حال ترجمه و کنترل نام‌ها، اعداد و معنی خبر…');
     try {
-      const result = await V4.requestJSON(`/api/panel/luna/preview/${encodeURIComponent(id)}`, {method: 'POST'});
-      renderLunaPreview(card, result.preview, result.review_url);
-      progress(card, 'نسخه Luna آماده شد', 'success');
-      V4.toast(result.preview?.decision === 'REJECT' ? 'Luna این خبر را برای انتشار مناسب ندانست.' : 'نسخه نهایی Luna آماده بررسی است.', 'success');
+      const result = await V4.requestJSON(`/api/panel/luna/translate-story/${encodeURIComponent(id)}`, {method: 'POST'});
+      renderTranslation(card, result);
+      progress(card, result.repaired ? 'ترجمه پس از یک اصلاح خودکار تأیید شد' : 'ترجمه تأیید شد', 'success');
+      V4.toast('ترجمه Luna آماده است.', 'success');
     } catch (error) {
-      progress(card, error.message, 'error');
-      V4.toast(error.message, 'error');
+      progress(card, error.message || 'ترجمه نیاز به بررسی دارد', 'error');
+      V4.toast(error.message || 'ترجمه Luna تأیید نشد.', 'error');
     } finally {
       card.classList.remove('is-busy');
     }
   }
 
-  async function loadMachinePreview(card) {
+  async function moveToReview(card) {
     const id = card?.dataset.storyId;
-    const machine = card?.querySelector('.v4-machine p');
-    if (!id || !machine || machine.dataset.loaded === '1' || card.dataset.machineBusy === '1') return;
-    if (!machine.textContent.includes('هنوز آماده نیست')) return;
-    card.dataset.machineBusy = '1';
+    if (!id || card.classList.contains('is-busy')) return;
+    card.classList.add('is-busy');
+    progress(card, 'در حال انتقال نسخه فعلی به ویرایش…');
     try {
-      const result = await V4.requestJSON(`/api/panel/machine-preview/${encodeURIComponent(id)}`, {method: 'POST'});
-      machine.textContent = result.preview || 'ترجمه ماشینی موقتاً در دسترس نیست';
-      machine.dataset.loaded = '1';
+      const result = await V4.requestJSON(`/api/newsroom/live/${encodeURIComponent(id)}/review`, {method: 'POST'});
+      window.location.href = result.review_url || `/review/${encodeURIComponent(id)}`;
     } catch (error) {
-      machine.textContent = error.message || 'ترجمه ماشینی موقتاً در دسترس نیست';
-    } finally {
-      delete card.dataset.machineBusy;
+      card.classList.remove('is-busy');
+      progress(card, error.message, 'error');
+      V4.toast(error.message, 'error');
     }
   }
 
   async function publishFinal(card) {
     const id = card?.dataset.storyId;
-    if (!id || card.classList.contains('is-busy')) return;
+    if (!id || card.dataset.finalReady !== '1' || card.classList.contains('is-busy')) return;
+    const title = card.querySelector('[data-v41-title]')?.textContent?.trim() || '';
+    const body = card.querySelector('[data-v41-body]')?.textContent?.trim() || '';
+    const preview = [title, body].filter(Boolean).join('\n\n');
     const accepted = await V4.confirmAction({
-      title: 'نسخه نهایی Luna منتشر شود؟',
-      text: 'همین نسخه‌ای که دیدی برای انتشار در تلگرام ارسال می‌شود.',
+      title: 'همین نسخه منتشر شود؟',
+      text: preview.length > 700 ? `${preview.slice(0, 700)}…` : preview,
       accept: 'انتشار',
     });
     if (!accepted) return;
     card.classList.add('is-busy');
-    progress(card, 'در حال قراردادن نسخه تأییدشده در صف انتشار…');
+    progress(card, 'نسخه تأییدشده در صف امن V3 قرار می‌گیرد…');
     try {
-      const queued = await V4.requestJSON(`/api/panel/luna/publish/${encodeURIComponent(id)}`, {method: 'POST'});
+      const queued = await V4.requestJSON(`/api/panel/luna/publish-final/${encodeURIComponent(id)}`, {method: 'POST'});
       const done = await poll(queued.command_id, card);
       progress(card, done.telegram_message_id ? `منتشر شد · Message ID ${done.telegram_message_id}` : 'منتشر شد', 'success');
-      V4.toast('نسخه تأییدشده Luna منتشر شد.', 'success');
+      V4.toast('خبر منتشر شد.', 'success');
     } catch (error) {
       progress(card, error.message, 'error');
       V4.toast(error.message, 'error');
@@ -149,16 +150,20 @@
     }
   }
 
-  async function reject(card) {
+  async function rejectAndBlock(card) {
     const id = card?.dataset.storyId;
     if (!id || card.classList.contains('is-busy')) return;
-    const accepted = await V4.confirmAction({title: 'این خبر رد شود؟', text: 'خبر از صف تصمیم‌گیری پنل خارج می‌شود.', accept: 'رد خبر'});
+    const accepted = await V4.confirmAction({
+      title: 'این خبر برای همیشه از چرخه انتشار خارج شود؟',
+      text: 'خبر رد می‌شود و Block آن ثبت می‌شود تا در چرخه‌های بعدی دوباره Ready نشود.',
+      accept: 'رد و مسدودکردن',
+    });
     if (!accepted) return;
     card.classList.add('is-busy');
     try {
-      await V4.requestJSON(`/api/newsroom/live/${encodeURIComponent(id)}/reject`, {method: 'POST'});
+      await V4.requestJSON(`/api/panel/luna/block-story/${encodeURIComponent(id)}`, {method: 'POST'});
       card.remove();
-      V4.toast('خبر رد شد.', 'success');
+      V4.toast('خبر رد و مسدود شد.', 'success');
     } catch (error) {
       card.classList.remove('is-busy');
       progress(card, error.message, 'error');
@@ -172,22 +177,9 @@
     event.preventDefault();
     const card = target.closest('[data-story-id]');
     const action = target.dataset.v4Action;
-    if (action === 'send-luna') void sendToLuna(card);
+    if (action === 'translate-luna') void translateWithLuna(card);
+    if (action === 'edit-final') void moveToReview(card);
     if (action === 'publish-final') void publishFinal(card);
-    if (action === 'reject') void reject(card);
-    if (action === 'edit-final' && card?.dataset.storyId) window.location.href = `/review/${encodeURIComponent(card.dataset.storyId)}`;
-  });
-
-  const observer = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      observer.unobserve(entry.target);
-      void loadMachinePreview(entry.target);
-    });
-  }, {rootMargin: '180px 0px'}) : null;
-
-  feed.querySelectorAll('[data-v4-story-card="1"]').forEach(card => {
-    if (observer) observer.observe(card);
-    else void loadMachinePreview(card);
+    if (action === 'reject-block') void rejectAndBlock(card);
   });
 })();

@@ -27,6 +27,17 @@
         <div class="v4-health-row"><span>Freshness</span><strong>{{ settings.freshness_hours or 3 }} ساعت</strong></div>
       </div>
     </section>
+
+    <section class="v4-panel" aria-labelledby="lunaUsageTitle">
+      <header class="v4-panel-head"><div><h2 id="lunaUsageTitle">مصرف Luna</h2><p>توکن و هزینه تقریبی OpenAI</p></div><span id="lunaConnectionState" class="v4-state-badge">در حال بررسی…</span></header>
+      <div class="v4-health-list" id="lunaUsagePanel">
+        <div class="v4-health-row"><span>درخواست‌های امروز</span><strong id="lunaTodayRequests">—</strong></div>
+        <div class="v4-health-row"><span>توکن امروز</span><strong id="lunaTodayTokens">—</strong></div>
+        <div class="v4-health-row"><span>هزینه امروز</span><strong id="lunaTodayCost">—</strong></div>
+        <div class="v4-health-row"><span>هزینه این ماه</span><strong id="lunaMonthCost">—</strong></div>
+      </div>
+    </section>
+
     <section class="v4-panel">
       <header class="v4-panel-head"><div><h2>مدیریت</h2><p>بخش‌های تنظیماتی</p></div></header>
       <div class="v4-quick-grid">
@@ -38,4 +49,28 @@
     </section>
   </aside>
 </div>
+{% endblock %}
+{% block scripts %}
+<script>
+(() => {
+  const number = value => new Intl.NumberFormat('fa-IR').format(Number(value || 0));
+  const money = value => `$${Number(value || 0).toFixed(4)}`;
+  fetch('/api/panel/luna/usage', {cache: 'no-store', credentials: 'same-origin'})
+    .then(response => response.ok ? response.json() : Promise.reject(new Error('usage_unavailable')))
+    .then(data => {
+      const today = data.today || {};
+      const month = data.this_month || {};
+      const state = document.getElementById('lunaConnectionState');
+      if (state) state.textContent = data.connected ? 'متصل' : 'بدون API';
+      document.getElementById('lunaTodayRequests').textContent = number(today.requests);
+      document.getElementById('lunaTodayTokens').textContent = number(Number(today.input_tokens || 0) + Number(today.output_tokens || 0));
+      document.getElementById('lunaTodayCost').textContent = money(today.usd);
+      document.getElementById('lunaMonthCost').textContent = money(month.usd);
+    })
+    .catch(() => {
+      const state = document.getElementById('lunaConnectionState');
+      if (state) state.textContent = 'نامشخص';
+    });
+})();
+</script>
 {% endblock %}
