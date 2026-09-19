@@ -14,6 +14,7 @@ from .event_ledger import EventLedger
 from .manual_publish import publish_review_item, reject_review_item
 from .newsroom_models import RawNewsItem
 from .newsroom_v2 import CycleSummary, run_cycle
+from .newsroom_v5_shadow import run_v5_shadow_items
 from .panel_live_feed import LiveFeedStore
 from .runtime_v12 import _normalise_url, extract_public_telegram_source_links
 from .services import send_telegram
@@ -171,7 +172,7 @@ def _legacy_news_to_raw(item, now: datetime) -> RawNewsItem | None:
 
 
 def _scan_fresh_items_into_queue(store: LocalEditorialStore) -> int:
-    """Compatibility entrypoint: refresh the V2 live feed, not the old catch-all queue."""
+    """Compatibility entrypoint: refresh V2 and optionally feed V5 shadow storage."""
     from . import runtime_v13
 
     runtime_v13.install_production_policies()
@@ -186,6 +187,14 @@ def _scan_fresh_items_into_queue(store: LocalEditorialStore) -> int:
         raw_items.extend(fetch_trump_truth_items())
     except Exception as exc:
         print(f"V2_PANEL_SOURCE_FAILED source=truth_social error={exc}", file=sys.stderr)
+
+    shadow = run_v5_shadow_items(raw_items)
+    if shadow.get("enabled"):
+        print(
+            "V5_SHADOW_REFRESH "
+            f"ingested={shadow.get('ingested', 0)} suppressed={shadow.get('suppressed', 0)} "
+            f"published={shadow.get('published', 0)} error={shadow.get('error', '')}"
+        )
 
     settings = runtime_v13.load_newsroom_settings()
     summary = scan_items_into_v2_panel(
