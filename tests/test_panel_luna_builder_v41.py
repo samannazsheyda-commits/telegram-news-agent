@@ -14,6 +14,7 @@ class MemoryData:
     def __init__(self):
         self.mapping = {
             "data/panel_pending_actions.json": [],
+            "data/panel_audit_log.json": [],
             "data/panel_live_feed.json": [],
             "data/editorial_queue.json": [],
             "data/editorial_history.json": [],
@@ -59,7 +60,7 @@ def test_builder_module_exists_and_classifies_panel_change_requests():
 
 
 def test_builder_source_does_not_expose_arbitrary_shell_execution():
-    for path in (Path("panel/luna_builder.py"), Path("panel/github_builder.py")):
+    for path in (Path("panel/luna_builder.py"), Path("panel/github_builder.py"), Path("panel/github_builder_release.py")):
         assert path.exists()
         source = path.read_text(encoding="utf-8")
         forbidden = ["subprocess", "os.system", "shell=True", "eval(", "exec("]
@@ -96,6 +97,7 @@ def test_builder_request_from_chat_creates_pending_confirmation_without_mutating
     assert len(pending) == 1
     assert pending[0]["action"] == "builder_prepare"
     assert pending[0]["status"] == "pending"
+    assert pending[0]["expires_at"]
 
 
 def test_confirmed_builder_request_invokes_real_builder_boundary_and_returns_draft_pr():
@@ -120,7 +122,7 @@ def test_confirmed_builder_request_invokes_real_builder_boundary_and_returns_dra
                 "pull_request": {"number": 999, "url": "https://github.com/example/repo/pull/999", "draft": True},
             }
 
-    with patch("panel.luna_operator_api.GitHubBuilder.from_env", return_value=FakeBuilder()) as factory:
+    with patch("panel.luna_operator_api.configured_builder", return_value=FakeBuilder()) as factory:
         response = client.post(f"/api/panel/luna/operator-confirm/{proposal['action_id']}")
 
     assert response.status_code == 200
@@ -131,3 +133,4 @@ def test_confirmed_builder_request_invokes_real_builder_boundary_and_returns_dra
     assert payload["branch"].startswith("luna/change-")
     factory.assert_called_once_with()
     assert data.mapping["data/panel_pending_actions.json"][0]["status"] == "completed"
+    assert data.mapping["data/panel_audit_log.json"][0]["action"] == "builder_prepare"
