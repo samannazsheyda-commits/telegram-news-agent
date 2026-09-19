@@ -32,12 +32,20 @@ class OpenAILunaClient:
         timeout: int = 45,
         base_url: str | None = None,
     ) -> None:
-        self.api_key = str(api_key if api_key is not None else os.environ.get("OPENAI_API_KEY", "")).strip()
+        # Luna intentionally uses dedicated credentials. The older newsroom stack
+        # may keep OPENAI_API_KEY / OPENAI_BASE_URL pointed at a compatible
+        # provider such as 1xAI; inheriting those values here would silently send
+        # Luna traffic to the wrong provider.
+        self.api_key = str(
+            api_key if api_key is not None else os.environ.get("LUNA_OPENAI_API_KEY", "")
+        ).strip()
         self.fast_model = str(fast_model or os.environ.get("LUNA_MODEL_FAST") or "gpt-5.6-luna").strip()
         self.complex_model = str(complex_model or os.environ.get("LUNA_MODEL_COMPLEX") or "gpt-5.6-terra").strip()
         self.transcribe_model = str(transcribe_model or os.environ.get("LUNA_TRANSCRIBE_MODEL") or "gpt-transcribe").strip()
         self.timeout = max(5, int(timeout))
-        self.base_url = str(base_url or os.environ.get("OPENAI_BASE_URL") or OPENAI_BASE_URL).rstrip("/")
+        self.base_url = str(
+            base_url or os.environ.get("LUNA_OPENAI_BASE_URL") or OPENAI_BASE_URL
+        ).rstrip("/")
 
     @property
     def connected(self) -> bool:
@@ -45,7 +53,10 @@ class OpenAILunaClient:
 
     def _auth_headers(self, *, json_content: bool = True) -> dict[str, str]:
         if not self.api_key:
-            raise LunaProviderError("missing_api_key", "Luna متصل نیست؛ کلید OpenAI روی سرور تنظیم نشده است.")
+            raise LunaProviderError(
+                "missing_api_key",
+                "Luna متصل نیست؛ کلید اختصاصی OpenAI برای Luna روی سرور تنظیم نشده است.",
+            )
         headers = {"Authorization": f"Bearer {self.api_key}"}
         if json_content:
             headers["Content-Type"] = "application/json"
