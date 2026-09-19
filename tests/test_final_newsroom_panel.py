@@ -19,13 +19,15 @@ def test_final_panel_v41_assets_are_loaded():
     assert 'data-newsroom-shell="v4-1"' in BASE
 
 
-def test_v41_story_flow_is_translation_first_and_publish_is_guarded():
+def test_v41_story_flow_has_distinct_machine_and_luna_publish_paths():
     assert "translate-luna" in DASHBOARD
-    assert "publish-final" in DASHBOARD
+    assert "publish-machine" in DASHBOARD
+    assert "publish-luna" in DASHBOARD
     assert "send-luna" not in DASHBOARD
     assert "/api/panel/luna/translate-story/" in DASHBOARD_JS
+    assert "/api/panel/luna/publish-machine/" in DASHBOARD_JS
     assert "/api/panel/luna/publish-final/" in DASHBOARD_JS
-    assert "همین نسخه منتشر شود؟" in DASHBOARD_JS
+    assert "confirmAction" in DASHBOARD_JS
     assert "reject-block" in DASHBOARD
 
 
