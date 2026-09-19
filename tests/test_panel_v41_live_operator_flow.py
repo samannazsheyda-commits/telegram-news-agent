@@ -3,6 +3,8 @@ from __future__ import annotations
 from copy import deepcopy
 from pathlib import Path
 
+from bs4 import BeautifulSoup
+
 from panel.app import create_app
 from panel.live_api import bp as live_api_bp
 from panel.luna_publish import publish_story
@@ -139,6 +141,31 @@ def test_publish_mode_luna_requires_passed_luna_copy_and_uses_it():
     assert result["ok"] is True
     assert captured["title"] == "نسخه لونا"
     assert captured["body"] == "متن لونا."
+
+
+def test_dashboard_disables_luna_publish_when_passed_copy_is_not_actually_persian():
+    data = MemoryData()
+    row = data.mapping["data/panel_live_feed.json"][0]
+    row.update(
+        {
+            "persian_title": "ترجمه ماشینی آماده",
+            "persian_body": "متن فارسی آماده است.",
+            "final_persian_title": "Luna draft is not Persian",
+            "final_persian_body": "English body",
+            "luna_translation_status": "passed",
+        }
+    )
+
+    response = _client(data).get("/")
+    assert response.status_code == 200
+    soup = BeautifulSoup(response.data, "html.parser")
+    publish_luna = soup.select_one('[data-v4-action="publish-luna"]')
+    translate_luna = soup.select_one('[data-v4-action="translate-luna"]')
+
+    assert publish_luna is not None
+    assert publish_luna.has_attr("disabled")
+    assert translate_luna is not None
+    assert translate_luna.get_text(strip=True) == "ترجمه با Luna"
 
 
 def test_v4_dashboard_contract_has_direct_publish_alarm_auto_localize_and_removes_published_card():

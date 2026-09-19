@@ -40,7 +40,10 @@
             {% set machine_ready = item.persian_title %}
             {% set final_title = item.final_persian_title or '' %}
             {% set final_body = item.final_persian_body or '' %}
-            {% set final_ready = final_title and item.luna_translation_status == 'passed' %}
+            {% set fa_letters = 'ابتثجحخدذرزژسشصضطظعغفقکگلمنوهیپچگآءؤئأإةكيي' %}
+            {% set luna_ns = namespace(has_fa=false) %}
+            {% for ch in final_title %}{% if ch in fa_letters %}{% set luna_ns.has_fa = true %}{% endif %}{% endfor %}
+            {% set final_ready = luna_ns.has_fa and item.luna_translation_status == 'passed' %}
             <article class="v4-story-card v41-story-card" data-v4-story-card="1" data-story-id="{{ story_id }}" data-machine-ready="{{ 1 if machine_ready else 0 }}" data-final-ready="{{ 1 if final_ready else 0 }}">
               <div class="v4-story-meta">
                 <span class="v4-source-badge">{{ item.source_display or item.canonical_source_name or item.source or 'منبع خبری' }}</span>
@@ -71,7 +74,7 @@
               <div class="v4-story-actions v41-story-actions">
                 {% if machine_ready %}<button class="v4-button v4-button-primary" type="button" data-v4-action="publish-machine">انتشار مستقیم</button>{% endif %}
                 <button class="v4-button v4-button-secondary" type="button" data-v4-action="translate-luna">{% if final_ready %}ترجمه دوباره{% else %}ترجمه با Luna{% endif %}</button>
-                {% if final_ready %}<button class="v4-button v4-button-primary" type="button" data-v4-action="publish-luna">انتشار نسخه Luna</button>{% endif %}
+                <button class="v4-button {{ 'v4-button-primary' if final_ready else 'v4-button-secondary' }}" type="button" data-v4-action="publish-luna"{% if not final_ready %} disabled aria-disabled="true"{% endif %}>انتشار نسخه Luna</button>
                 <button class="v4-button v4-button-secondary" type="button" data-v4-action="edit-final">بررسی / ویرایش</button>
                 <button class="v4-button v4-button-danger" type="button" data-v4-action="reject-block">رد و مسدودکردن</button>
                 {% if item.source_url or item.link %}<a class="v4-button v4-button-secondary v41-source-link" href="{{ item.source_url or item.link }}" target="_blank" rel="noopener">اصل خبر</a>{% endif %}
