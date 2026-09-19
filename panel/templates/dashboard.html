@@ -28,21 +28,21 @@
   <section>
     <section class="v4-panel v41-story-panel">
       <header class="v4-panel-head">
-        <div><h2>تازه‌ترین خبرها</h2><p>متن اصلی انگلیسی داخل کارت نمایش داده نمی‌شود؛ از «اصل خبر» به منبع دسترسی داری.</p></div>
+        <div><h2>تازه‌ترین خبرها</h2><p>فقط خبرهایی اینجا دیده می‌شوند که ترجمه فارسی آن‌ها آماده است؛ از «اصل خبر» به منبع دسترسی داری.</p></div>
         <a class="v4-panel-link" href="/intake">مشاهده همه</a>
       </header>
       <div id="v4LiveFeed" class="v4-story-list v41-story-list">
         {% if live %}
           {% for item in live[:40] %}
-            {% if item.panel_status not in ['auto_published', 'published_auto', 'published_manual', 'reconciled_published', 'rejected_manual', 'blocked', 'superseded'] %}
+            {% set machine_title = item.persian_title or item.display_title or '' %}
+            {% set machine_ready = item.persian_title and machine_title %}
+            {% if machine_ready and item.panel_status not in ['auto_published', 'published_auto', 'published_manual', 'reconciled_published', 'rejected_manual', 'rejected', 'blocked', 'superseded'] %}
             {% set story_id = item.id or item.item_id or item.news_key %}
-            {% set machine_title = item.persian_title or item.display_title or 'عنوان فارسی در حال آماده‌سازی' %}
             {% set machine_body = item.persian_body or '' %}
-            {% set machine_ready = item.persian_title %}
             {% set final_title = item.final_persian_title or '' %}
             {% set final_body = item.final_persian_body or '' %}
             {% set final_ready = final_title and item.luna_translation_status == 'passed' %}
-            <article class="v4-story-card v41-story-card" data-v4-story-card="1" data-story-id="{{ story_id }}" data-machine-ready="{{ 1 if machine_ready else 0 }}" data-final-ready="{{ 1 if final_ready else 0 }}"{% if not machine_ready %} hidden{% endif %}>
+            <article class="v4-story-card v41-story-card" data-v4-story-card="1" data-story-id="{{ story_id }}" data-machine-ready="1" data-final-ready="{{ 1 if final_ready else 0 }}">
               <div class="v4-story-meta">
                 <span class="v4-source-badge">{{ item.source_display or item.canonical_source_name or item.source or 'منبع خبری' }}</span>
                 {% if item.updated_at or item.discovered_at %}<time datetime="{{ item.updated_at or item.discovered_at }}" data-v4-relative-time>{{ item.updated_at or item.discovered_at }}</time>{% endif %}
@@ -50,7 +50,7 @@
               </div>
 
               <div class="v4-original v41-original">
-                <div class="v41-translation-label"><span>ترجمه ماشینی</span><small>{% if machine_ready %}آماده بررسی تو{% else %}در حال آماده‌سازی{% endif %}</small></div>
+                <div class="v41-translation-label"><span>ترجمه ماشینی</span><small>آماده بررسی تو</small></div>
                 <h3 data-v41-publish-title>{{ machine_title }}</h3>
                 {% if machine_body %}<p data-v41-publish-body>{{ machine_body }}</p>{% endif %}
               </div>
@@ -70,11 +70,11 @@
               </div>
 
               <div class="v4-story-actions v41-story-actions">
-                {% if machine_ready %}<button class="v4-button v4-button-primary" type="button" data-v4-action="publish-machine">انتشار مستقیم</button>{% endif %}
+                <button class="v4-button v4-button-primary" type="button" data-v4-action="publish-machine">انتشار مستقیم</button>
                 <button class="v4-button v4-button-secondary" type="button" data-v4-action="translate-luna">{% if final_ready %}ترجمه دوباره{% else %}ترجمه با Luna{% endif %}</button>
                 <button class="v4-button v4-button-primary" type="button" data-v4-action="publish-luna"{% if not final_ready %} disabled aria-disabled="true" title="ابتدا نسخه Luna را بسازید"{% endif %}>انتشار نسخه Luna</button>
                 <button class="v4-button v4-button-secondary" type="button" data-v4-action="edit-final">بررسی / ویرایش</button>
-                <button class="v4-button v4-button-danger" type="button" data-v4-action="reject-block">رد و مسدودکردن</button>
+                <button class="v4-button v4-button-danger" type="button" data-v4-action="reject">رد خبر</button>
                 {% if item.source_url or item.link %}<a class="v4-button v4-button-secondary v41-source-link" href="{{ item.source_url or item.link }}" target="_blank" rel="noopener">اصل خبر</a>{% endif %}
               </div>
               <div class="v4-story-progress" data-v4-story-progress hidden></div>

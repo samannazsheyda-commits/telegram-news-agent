@@ -50,7 +50,8 @@ def test_v41_dashboard_updates_story_actions_without_full_page_reload(tmp_path):
     js = client.get("/static/newsroom-v4-dashboard.js").get_data(as_text=True)
     assert "/api/panel/luna/translate-story/" in js
     assert "/api/panel/luna/publish-final/" in js
-    assert "/api/panel/luna/block-story/" in js
+    assert "/api/newsroom/live/${encodeURIComponent(id)}/reject" in js
+    assert "/api/panel/luna/block-story/" not in js
     assert "replaceChildren" in js
     assert "window.location.reload" not in js
     assert "DOMParser" not in js

@@ -145,7 +145,7 @@ def test_pwa_assets_exist_and_do_not_cache_api_routes():
     assert "bikhabar-newsroom-v4-1" in worker
 
 
-def test_dashboard_never_translates_during_get_and_hides_raw_english_when_persian_is_missing():
+def test_dashboard_never_translates_during_get_and_hides_unready_story_cards():
     data = FakeData()
     data.files["data/panel_live_feed.json"] = [
         {
@@ -171,12 +171,9 @@ def test_dashboard_never_translates_during_get_and_hides_raw_english_when_persia
     response = _login(client)
     text = response.get_data(as_text=True)
     assert response.status_code == 200
-    assert text.count('data-v4-story-card="1"') == 5
+    assert text.count('data-v4-story-card="1"') == 0
     assert "Live story 0" not in text
-    assert "عنوان فارسی در حال آماده‌سازی" in text
-    assert "ترجمه با Luna" in text
-    assert "ترجمه ماشینی" in text
-    assert 'data-v4-action="publish-final"' not in text
+    assert "عنوان فارسی در حال آماده‌سازی" not in text
     assert "خبر زنده صفر" not in text
 
 
