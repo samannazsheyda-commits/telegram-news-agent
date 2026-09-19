@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from .luna_publish import publish_tool_schema
+
 
 def builder_tool_schemas() -> list[dict]:
     return [
+        publish_tool_schema(),
         {
             "type": "function",
             "name": "builder_ci_status",
