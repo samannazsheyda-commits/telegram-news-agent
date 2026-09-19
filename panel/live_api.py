@@ -61,7 +61,9 @@ def _parse_time(value: str) -> datetime | None:
 
 
 def _source_time(row: dict) -> datetime | None:
-    for key in ("published_at_source", "published", "source_timestamp", "discovered_at", "updated_at"):
+    # Do not use panel updated_at as a publication timestamp. If the source did
+    # not provide a time, keep the item instead of making up an exact source time.
+    for key in ("published_at_source", "published", "source_timestamp", "discovered_at"):
         parsed = _parse_time(str(row.get(key) or ""))
         if parsed is not None:
             return parsed
@@ -258,7 +260,7 @@ def _public_row(row: dict, queued_ids: set[str]) -> dict:
     }
 
 
-def _raw_rows(limit: int = 100) -> tuple[list[dict], set[str]]:
+def _raw_rows(limit: int = 40) -> tuple[list[dict], set[str]]:
     data = current_app.extensions["editorial_data"]
     value, _ = data.read_json("data/panel_live_feed.json", [])
     rows = value if isinstance(value, list) else []
@@ -268,7 +270,7 @@ def _raw_rows(limit: int = 100) -> tuple[list[dict], set[str]]:
         key=lambda row: (_source_time(row) or datetime.min.replace(tzinfo=timezone.utc)).timestamp(),
         reverse=True,
     )
-    rows = fresh_rows[: max(1, min(100, int(limit)))]
+    rows = fresh_rows[: max(1, min(40, int(limit)))]
     queue, _ = data.read_json("data/editorial_queue.json", [])
     queued_ids = {
         str(r.get("id") or r.get("item_id") or "")
@@ -278,7 +280,7 @@ def _raw_rows(limit: int = 100) -> tuple[list[dict], set[str]]:
     return rows, queued_ids
 
 
-def _fast_rows(limit: int = 100) -> list[dict]:
+def _fast_rows(limit: int = 40) -> list[dict]:
     rows, queued_ids = _raw_rows(limit)
     return [_public_row(row, queued_ids) for row in rows]
 
@@ -297,7 +299,7 @@ def require_admin():
 
 @bp.get("/api/live-feed")
 def live_feed():
-    items = _fast_rows(100)
+    items = _fast_rows(40)
     response = jsonify(
         {
             "ok": True,
