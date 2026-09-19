@@ -45,10 +45,36 @@ def test_responses_api_uses_server_key_and_parses_output_text(monkeypatch):
     client = OpenAILunaClient(api_key="secret-test-key", fast_model="gpt-5.6-luna")
     response = client.create_response(input_items="سلام")
 
-    assert seen["url"].endswith("/v1/responses")
+    assert seen["url"] == "https://api.openai.com/v1/responses"
     assert seen["headers"]["Authorization"] == "Bearer secret-test-key"
     assert seen["json"]["model"] == "gpt-5.6-luna"
     assert client.output_text(response) == "سلام، انجامش می‌دم."
+
+
+def test_luna_ignores_legacy_openai_base_url_and_key(monkeypatch):
+    from panel.openai_luna import OpenAILunaClient
+
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://1xai.ir/v1")
+    monkeypatch.setenv("OPENAI_API_KEY", "legacy-provider-key")
+    monkeypatch.setenv("LUNA_OPENAI_API_KEY", "real-openai-key")
+    monkeypatch.delenv("LUNA_OPENAI_BASE_URL", raising=False)
+
+    client = OpenAILunaClient()
+
+    assert client.api_key == "real-openai-key"
+    assert client.base_url == "https://api.openai.com"
+
+
+def test_luna_base_url_can_only_be_overridden_with_luna_specific_env(monkeypatch):
+    from panel.openai_luna import OpenAILunaClient
+
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://legacy.example/v1")
+    monkeypatch.setenv("LUNA_OPENAI_BASE_URL", "https://api.openai.com")
+    monkeypatch.setenv("LUNA_OPENAI_API_KEY", "key")
+
+    client = OpenAILunaClient()
+
+    assert client.base_url == "https://api.openai.com"
 
 
 def test_function_calls_are_extracted_from_responses_output(monkeypatch):
@@ -79,11 +105,12 @@ def test_function_calls_are_extracted_from_responses_output(monkeypatch):
     ]
 
 
-def test_missing_api_key_fails_without_network(monkeypatch):
+def test_missing_luna_api_key_fails_without_using_legacy_key(monkeypatch):
     from panel.openai_luna import LunaProviderError, OpenAILunaClient
 
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    client = OpenAILunaClient(api_key="")
+    monkeypatch.delenv("LUNA_OPENAI_API_KEY", raising=False)
+    monkeypatch.setenv("OPENAI_API_KEY", "legacy-provider-key")
+    client = OpenAILunaClient()
 
     with pytest.raises(LunaProviderError) as exc:
         client.create_response(input_items="سلام")
@@ -105,7 +132,7 @@ def test_transcription_posts_multipart_audio_and_returns_text(monkeypatch):
     client = OpenAILunaClient(api_key="k", transcribe_model="gpt-transcribe")
     result = client.transcribe(b"voice-bytes", filename="voice.webm", mimetype="audio/webm")
 
-    assert seen["url"].endswith("/v1/audio/transcriptions")
+    assert seen["url"] == "https://api.openai.com/v1/audio/transcriptions"
     assert seen["data"]["model"] == "gpt-transcribe"
     assert seen["files"]["file"][0] == "voice.webm"
     assert result["text"] == "این یک تست فارسی است"
