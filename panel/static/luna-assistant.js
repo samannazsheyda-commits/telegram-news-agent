@@ -157,7 +157,7 @@
 
   async function loadStatus() {
     try {
-      const info = await V4.requestJSON('/api/panel/luna/status');
+      const info = await V4.requestJSON('/api/panel/luna/usage');
       if (connection) {
         connection.textContent = info.connected ? 'Luna متصل' : 'Luna متصل نیست';
         connection.dataset.connected = info.connected ? '1' : '0';
@@ -166,10 +166,15 @@
         const builder = info.builder_connected ? 'Builder آماده' : 'Builder بدون اتصال GitHub';
         status.textContent = info.connected ? `دستیار هوشمند اتاق خبر · ${builder}` : 'کلید OpenAI روی سرور تنظیم نشده';
       }
-      if (usageBadge) usageBadge.textContent = info.fast_model ? `مدل: ${info.fast_model}` : 'وضعیت مدل: —';
+      if (usageBadge) {
+        const today = info.usage?.today || {};
+        const requests = Number(today.requests || 0).toLocaleString('fa-IR');
+        const cost = Number(today.estimated_usd || 0);
+        usageBadge.textContent = `امروز ${requests} درخواست · $${cost.toFixed(cost < 1 ? 3 : 2)}`;
+      }
     } catch (_) {
       if (connection) connection.textContent = 'وضعیت نامشخص';
-      if (usageBadge) usageBadge.textContent = 'وضعیت مدل: —';
+      if (usageBadge) usageBadge.textContent = 'مصرف امروز: —';
     }
   }
 
@@ -193,22 +198,13 @@
       return;
     }
     try {
-      const confirmed = await V4.requestJSON(`/api/panel/luna/assistant/confirm/${encodeURIComponent(result.action_id)}`, {method: 'POST'});
+      const confirmed = await V4.requestJSON(`/api/panel/luna/operator-confirm/${encodeURIComponent(result.action_id)}`, {method: 'POST'});
       if (result.mode === 'builder' && confirmed.pull_request) builderCard(confirmed);
       else toolCard('انجام شد', confirmed.message || confirmed.reply_fa || 'عملیات با تأیید تو اجرا شد.', 'success');
       void loadStatus();
     } catch (error) {
       toolCard('اجرا نشد', error.message || 'این عملیات فعلاً قابل اجرا نیست.', 'warning');
     }
-  }
-
-  function looksLikeOperatorCommand(text) {
-    const value = String(text || '').trim();
-    if (!value) return false;
-    if (value.includes('سهمیه')) return true;
-    if ((value.includes('منبع') || value.includes('سورس')) && /فعال|غیرفعال|خاموش|روشن/.test(value)) return true;
-    if ((value.includes('آخرین') || value.includes('اخیر')) && (value.includes('خبر') || value.includes('منتشر'))) return true;
-    return /چرا|کم منتشر|خبر کم|سکوت|منتشر نشده|منتشر نشد/.test(value);
   }
 
   async function ask() {
@@ -224,19 +220,10 @@
     const pending = typing();
 
     try {
-      let result;
-      if (!image && looksLikeOperatorCommand(text)) {
-        result = await V4.requestJSON('/api/panel/luna/assistant', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({message: text}),
-        });
-      } else {
-        const data = new FormData();
-        data.append('message', text);
-        if (image) data.append('image', image, image.name || 'image.jpg');
-        result = await V4.requestJSON('/api/panel/luna/chat', {method: 'POST', body: data});
-      }
+      const data = new FormData();
+      data.append('message', text);
+      if (image) data.append('image', image, image.name || 'image.jpg');
+      const result = await V4.requestJSON('/api/panel/luna/operator-chat', {method: 'POST', body: data});
       pending.body.replaceChildren();
       const paragraph = document.createElement('p');
       pending.body.appendChild(paragraph);
@@ -291,7 +278,7 @@
     if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
       if (audioInput) {
         audioInput.click();
-        V4.toast('ضبط مستقیم مرورگر در دسترس نیست؛ ویس را از گوشی انتخاب یا ضبط کن.');
+        V4.toast('ضبط مستقیم مرورگر در HTTP در دسترس نیست؛ ویس را از گوشی انتخاب یا ضبط کن.');
       } else {
         V4.toast('مرورگر این دستگاه ضبط ویس را پشتیبانی نمی‌کند.', 'error');
       }
@@ -326,7 +313,7 @@
       recorder = null;
       if (audioInput) {
         audioInput.click();
-        V4.toast('ضبط مستقیم مجاز نشد؛ ویس را از گوشی انتخاب یا ضبط کن.');
+        V4.toast('مرورگر اجازه ضبط مستقیم نداد؛ ویس را از گوشی انتخاب یا ضبط کن.');
       } else {
         V4.toast('اجازه میکروفون داده نشد یا ضبط شروع نشد.', 'error');
       }
