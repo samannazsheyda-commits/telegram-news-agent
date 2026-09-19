@@ -39,7 +39,7 @@ class FakeData:
         del key
 
 
-def test_dashboard_get_never_calls_translation_backend_and_hides_raw_english_until_persian_exists():
+def test_dashboard_get_never_calls_translation_backend_and_hides_unready_story_completely():
     data = FakeData()
     calls: list[str] = []
 
@@ -68,16 +68,17 @@ def test_dashboard_get_never_calls_translation_backend_and_hides_raw_english_unt
     assert calls == []
     assert "Raw English headline" not in text
     assert "Raw English summary" not in text
-    assert "عنوان فارسی در حال آماده‌سازی" in text
-    assert "ترجمه با Luna" in text
-    assert "ترجمه ماشینی" in text
-    assert 'data-v4-action="publish-final"' not in text
+    assert "عنوان فارسی در حال آماده‌سازی" not in text
+    assert 'data-story-id="english-1"' not in text
 
 
-def test_v41_ui_translates_only_on_explicit_luna_action():
+def test_v41_ui_translates_only_on_explicit_luna_action_and_rejects_without_blocking():
     js = Path("panel/static/newsroom-v4-dashboard.js").read_text(encoding="utf-8")
 
     assert "/api/panel/luna/translate-story/" in js
     assert "/api/panel/machine-preview/" not in js
     assert "IntersectionObserver" not in js
     assert "translateWithLuna" in js
+    assert "/api/newsroom/live/${encodeURIComponent(id)}/reject" in js
+    assert "/api/panel/luna/block-story/" not in js
+    assert "reject-block" not in js
