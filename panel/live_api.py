@@ -95,11 +95,7 @@ def _cache_put(row: dict, *, title: str, body: str) -> dict:
 
 
 def _translate_persian(value: str) -> str:
-    """Create a panel-only literal preview with the local Argos model.
-
-    This intentionally never calls a network translator or Luna. The result is
-    for operator comprehension only and is never persisted as final copy.
-    """
+    """Fallback to the local model when the configured machine translator is unavailable."""
     text = str(value or "").strip()
     if not text:
         return ""
@@ -111,6 +107,24 @@ def _translate_persian(value: str) -> str:
         print(f"PANEL_OFFLINE_TRANSLATION_FAILED type={type(exc).__name__}", flush=True)
         return ""
     return translated if _has_persian(translated) else ""
+
+
+def _machine_translate_persian(value: str) -> tuple[str, str]:
+    text = str(value or "").strip()
+    if not text:
+        return "", "source"
+    if _has_persian(text):
+        return text, "source"
+    translator = current_app.config.get("LIVE_FEED_TRANSLATOR")
+    if callable(translator):
+        try:
+            translated = str(translator(text) or "").strip()
+        except Exception as exc:
+            print(f"PANEL_MACHINE_TRANSLATION_FAILED type={type(exc).__name__}", flush=True)
+        else:
+            if _has_persian(translated):
+                return translated, "configured"
+    return _translate_persian(text), "offline"
 
 
 def _final_message(row: dict) -> str:
@@ -136,8 +150,6 @@ def _public_row(row: dict, queued_ids: set[str]) -> dict:
         translation_mode = "source_persian"
         needs_localization = False
     elif _has_persian(persisted_title):
-        # Existing human/final Persian remains visible when present, but panel
-        # localization never creates or overwrites these persisted fields.
         title_fa = persisted_title
         body_fa = persisted_body
         translation_mode = "persisted_persian"
@@ -250,21 +262,44 @@ def localize_live_feed():
     if not ids:
         return jsonify({"ok": True, "items": []})
 
-    rows, queued_ids = _raw_rows(100)
-    by_id = {_row_id(row): row for row in rows if _row_id(row)}
+    data = current_app.extensions["editorial_data"]
+    value, sha = data.read_json("data/panel_live_feed.json", [])
+    rows = value if isinstance(value, list) else []
+    by_id = {_row_id(row): row for row in rows if isinstance(row, dict) and _row_id(row)}
+    queue, _ = data.read_json("data/editorial_queue.json", [])
+    queued_ids = {
+        str(r.get("id") or r.get("item_id") or "")
+        for r in (queue if isinstance(queue, list) else [])
+        if isinstance(r, dict)
+    }
+
     localized: list[dict] = []
+    changed = False
     for item_id in ids:
         row = by_id.get(item_id)
         if row is None:
             continue
         raw_title, raw_body = _raw_fields(row)
-        title_fa = _translate_persian(raw_title)
+        title_fa, title_mode = _machine_translate_persian(raw_title)
         if not title_fa:
             continue
-        body_fa = _translate_persian(raw_body) if raw_body else ""
+        body_fa, body_mode = _machine_translate_persian(raw_body) if raw_body else ("", title_mode)
+        row["persian_title"] = title_fa
+        row["persian_body"] = body_fa
+        row["machine_translation_provider"] = "configured" if "configured" in {title_mode, body_mode} else title_mode
+        row["machine_translated_at"] = datetime.now(timezone.utc).isoformat()
         _cache_put(row, title=title_fa, body=body_fa)
         localized_row = _public_row(row, queued_ids)
-        localized_row["translation_mode"] = "offline_literal"
+        localized_row["translation_mode"] = "machine_persian"
         localized.append(localized_row)
+        changed = True
 
-    return jsonify({"ok": True, "items": localized, "translation_mode": "offline_literal"})
+    if changed:
+        data.write_json(
+            "data/panel_live_feed.json",
+            rows,
+            sha,
+            "Persist automatic Persian machine translation for live newsroom",
+        )
+
+    return jsonify({"ok": True, "items": localized, "translation_mode": "machine_persian"})
