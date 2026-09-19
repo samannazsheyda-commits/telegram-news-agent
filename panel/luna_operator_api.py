@@ -256,6 +256,10 @@ def operator_chat():
             model=client.fast_model,
             instructions=_SYSTEM,
         )
+        continuation_input = list(input_items)
+        response_output = response.get("output") if isinstance(response, dict) else []
+        if isinstance(response_output, list):
+            continuation_input.extend(response_output)
         for _ in range(_MAX_TOOL_ROUNDS):
             calls = client.function_calls(response)
             if not calls:
@@ -291,13 +295,16 @@ def operator_chat():
                         "output": json.dumps(result, ensure_ascii=False),
                     }
                 )
+            continuation_input.extend(outputs)
             response = client.create_response(
-                input_items=outputs,
+                input_items=continuation_input,
                 tools=tools,
                 model=client.fast_model,
                 instructions=_SYSTEM,
-                previous_response_id=str(response.get("id") or "") or None,
             )
+            response_output = response.get("output") if isinstance(response, dict) else []
+            if isinstance(response_output, list):
+                continuation_input.extend(response_output)
         reply = client.output_text(response).strip()
     except LunaProviderError as exc:
         return _provider_error(exc)
