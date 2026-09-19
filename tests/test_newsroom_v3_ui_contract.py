@@ -83,12 +83,14 @@ def test_server_rendered_story_card_shows_persisted_persian_and_can_publish_afte
     html = _dashboard_html()
     assert 'data-story-id="live-1"' in html
     assert 'data-v4-action="translate-luna"' in html
-    assert 'data-v4-action="reject-block"' in html
+    assert 'data-v4-action="reject"' in html
+    assert 'data-v4-action="reject-block"' not in html
     assert 'data-v4-action="publish-machine"' in html
     assert "تیتر فارسی آماده بررسی کاربر" in html
     assert "متن فارسی آماده بررسی کاربر" in html
     assert "Important original newsroom test headline" not in html
     assert "انتشار مستقیم" in html
+    assert "رد خبر" in html
     assert "رویترز" in html
 
 
