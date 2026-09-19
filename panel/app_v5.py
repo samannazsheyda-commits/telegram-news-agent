@@ -11,6 +11,25 @@ from src.newsroom_store_factory import create_runtime_store, selected_backend
 from src.newsroom_v5_events import NewsroomEventBroker
 
 
+class _NullDataBackend:
+    """Read-only empty legacy backend for isolated V5 tests/local boot."""
+
+    def read_json(self, _path: str, default):
+        return default, None
+
+    def write_json(self, *_args, **_kwargs):
+        raise RuntimeError("legacy_data_backend_is_read_only")
+
+    def merge_records(self, _path: str, incoming: list[dict], _message: str) -> list[dict]:
+        return list(incoming)
+
+    def replace_records(self, _path: str, records: list[dict], _message: str) -> list[dict]:
+        return list(records)
+
+    def mark_news_seen(self, _news_key: str) -> None:
+        return None
+
+
 def _enabled(value) -> bool:
     if isinstance(value, bool):
         return value
@@ -19,6 +38,10 @@ def _enabled(value) -> bool:
 
 def create_app(config: dict | None = None):
     config = dict(config or {})
+    # V5 API tests and explicit local-store boots must not require a GitHub token.
+    # Production keeps the normal legacy backend unless one is explicitly supplied.
+    if config.get("TESTING") and config.get("NEWSROOM_V5_STORE") is not None and "DATA_BACKEND" not in config:
+        config["DATA_BACKEND"] = _NullDataBackend()
     app = create_legacy_app(config)
 
     explicit_store = config.get("NEWSROOM_V5_STORE")
