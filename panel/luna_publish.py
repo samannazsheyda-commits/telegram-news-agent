@@ -33,11 +33,22 @@ def _find_live_story(data, story_id: str) -> dict | None:
     return None
 
 
+def _source_persian_copy(row: dict) -> tuple[str, str]:
+    title = str(row.get("original_title") or row.get("title") or "").strip()
+    body = str(row.get("original_summary") or row.get("summary") or row.get("body") or "").strip()
+    if not title or not _FA_RE.search(title):
+        return "", ""
+    if body and not _FA_RE.search(body):
+        body = ""
+    return title, body
+
+
 def _machine_persian_copy(row: dict) -> tuple[str, str]:
-    return (
-        str(row.get("persian_title") or "").strip(),
-        str(row.get("persian_body") or "").strip(),
-    )
+    title = str(row.get("persian_title") or "").strip()
+    body = str(row.get("persian_body") or "").strip()
+    if title and _FA_RE.search(title):
+        return title, body
+    return _source_persian_copy(row)
 
 
 def _luna_persian_copy(row: dict) -> tuple[str, str]:
