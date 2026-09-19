@@ -64,7 +64,7 @@ def _login(client):
         session["admin"] = True
 
 
-def test_dashboard_shows_machine_persian_instead_of_english_and_offers_publish():
+def test_dashboard_shows_machine_persian_instead_of_english_and_offers_direct_publish():
     app = _base_app(MemoryData())
     client = app.test_client()
     _login(client)
@@ -76,10 +76,10 @@ def test_dashboard_shows_machine_persian_instead_of_english_and_offers_publish()
     assert "بازرسان پنتاگون از نقص اطلاعات پیش از حمله خبر دادند" in html
     assert "این تحقیقات به چند نقص اطلاعاتی پیش از حمله اشاره می‌کند." in html
     assert "Pentagon investigators found flawed intelligence" not in html
-    assert "تأیید و انتشار با Luna" in html
+    assert "انتشار مستقیم" in html
 
 
-def test_publish_endpoint_accepts_the_visible_machine_persian_copy():
+def test_legacy_publish_final_endpoint_still_accepts_visible_machine_copy():
     data = MemoryData()
     app = _base_app(data)
     app.register_blueprint(luna_translation_bp)
@@ -96,6 +96,31 @@ def test_publish_endpoint_accepts_the_visible_machine_persian_copy():
     kwargs = enqueue.call_args.kwargs
     assert kwargs["title"] == "بازرسان پنتاگون از نقص اطلاعات پیش از حمله خبر دادند"
     assert kwargs["body"] == "این تحقیقات به چند نقص اطلاعاتی پیش از حمله اشاره می‌کند."
+
+
+def test_publish_machine_endpoint_uses_only_machine_copy():
+    data = MemoryData()
+    row = data.mapping["data/panel_live_feed.json"][0]
+    row.update(
+        {
+            "final_persian_title": "نسخه متفاوت Luna",
+            "final_persian_body": "بدنه متفاوت Luna",
+            "luna_translation_status": "passed",
+        }
+    )
+    app = _base_app(data)
+    app.register_blueprint(luna_translation_bp)
+    client = app.test_client()
+    _login(client)
+
+    with patch("panel.luna_translation_api._enqueue", return_value="cmd-machine") as enqueue:
+        response = client.post("/api/panel/luna/publish-machine/story-1")
+
+    assert response.status_code == 202
+    kwargs = enqueue.call_args.kwargs
+    assert kwargs["title"] == "بازرسان پنتاگون از نقص اطلاعات پیش از حمله خبر دادند"
+    assert kwargs["body"] == "این تحقیقات به چند نقص اطلاعاتی پیش از حمله اشاره می‌کند."
+    assert kwargs["luna_v41_final"] is False
 
 
 class FastFakeClient:
