@@ -211,7 +211,9 @@
       const banner = document.getElementById('v5VersionBanner');
       if (banner) banner.hidden = false;
     });
-    document.getElementById('v5ReloadVersion')?.addEventListener('click', () => window.location.reload());
+    document.getElementById('v5ReloadVersion')?.addEventListener('click', () => {
+      window.location.replace(`${window.location.pathname}${window.location.search}${window.location.hash}`);
+    });
   }
 
   function boot() {
