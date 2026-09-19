@@ -1,16 +1,36 @@
 (() => {
   const feed = document.getElementById('v4LiveFeed');
   if (!feed || !window.BikhabarV4) return;
+
   const V4 = window.BikhabarV4;
-  const terminalPublished = new Set(['auto_published', 'published_auto', 'published_manual', 'reconciled_published']);
+  const terminalStatuses = new Set([
+    'auto_published',
+    'published_auto',
+    'published_manual',
+    'reconciled_published',
+    'rejected_manual',
+    'blocked',
+    'superseded',
+  ]);
   const knownStoryIds = new Set(
     Array.from(feed.querySelectorAll('[data-story-id]'))
       .map(card => String(card.dataset.storyId || ''))
       .filter(Boolean)
   );
+
+  const refreshButton = document.getElementById('v4RefreshLive');
+  const soundButton = document.getElementById('v4SoundToggle');
+  const refreshState = document.getElementById('v4RefreshState');
   let audioContext = null;
   let audioUnlocked = false;
   let refreshRunning = false;
+  let initialSnapshotComplete = false;
+  let soundEnabled = true;
+
+  try {
+    const stored = window.localStorage.getItem('bikhabar-news-sound');
+    if (stored === '0') soundEnabled = false;
+  } catch (_error) {}
 
   function progress(card, text, kind = '') {
     const node = card?.querySelector('[data-v4-story-progress]');
@@ -33,9 +53,17 @@
     return button;
   }
 
+  function isTerminal(item) {
+    return terminalStatuses.has(String(item?.panel_status || ''));
+  }
+
   function isMachineReady(item) {
     const mode = String(item?.translation_mode || '');
     return item?.machine_translation_status === 'passed' || mode === 'machine_persian' || mode === 'source_persian';
+  }
+
+  function storyTimeOf(item) {
+    return String(item?.story_time || item?.published_at_source || item?.updated_at || '');
   }
 
   function machinePublishButton(actions) {
@@ -209,7 +237,14 @@
     }
   }
 
+  function updateSoundButton() {
+    if (!soundButton) return;
+    soundButton.textContent = soundEnabled ? 'صدای خبر: روشن' : 'صدای خبر: خاموش';
+    soundButton.setAttribute('aria-pressed', soundEnabled ? 'true' : 'false');
+  }
+
   function playNewStoryAlarm() {
+    if (!soundEnabled) return;
     if (!audioUnlocked || !audioContext) {
       try { window.sessionStorage.setItem('bikhabar-pending-news-alarm', '1'); } catch (_error) {}
       return;
@@ -226,29 +261,26 @@
     oscillator.stop(audioContext.currentTime + 0.2);
   }
 
-  function unlockNewsroomAudio() {
-    if (audioUnlocked) return;
+  function unlockNewsroomAudio({playPending = true} = {}) {
+    if (!soundEnabled) return Promise.resolve(false);
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return;
+    if (!AudioContextClass) return Promise.resolve(false);
     audioContext = audioContext || new AudioContextClass();
-    Promise.resolve(audioContext.resume()).then(() => {
+    return Promise.resolve(audioContext.resume()).then(() => {
       audioUnlocked = true;
       let pending = false;
       try { pending = window.sessionStorage.getItem('bikhabar-pending-news-alarm') === '1'; } catch (_error) {}
-      if (pending) playNewStoryAlarm();
-    }).catch(() => {});
+      if (pending && playPending) playNewStoryAlarm();
+      return true;
+    }).catch(() => false);
   }
-
-  document.addEventListener('pointerdown', unlockNewsroomAudio, {once: true});
-  document.addEventListener('keydown', unlockNewsroomAudio, {once: true});
 
   function newStoryIds(items) {
     const fresh = [];
     items.forEach(item => {
       const id = String(item.id || item.item_id || '');
-      if (!id) return;
-      const status = String(item.panel_status || '');
-      if (!knownStoryIds.has(id) && !terminalPublished.has(status)) fresh.push(id);
+      if (!id || isTerminal(item) || !isMachineReady(item)) return;
+      if (!knownStoryIds.has(id)) fresh.push(id);
       knownStoryIds.add(id);
     });
     return fresh;
@@ -259,9 +291,9 @@
       .find(node => String(node.dataset.storyId || '') === String(id || '')) || null;
   }
 
-  function removeTerminalPublishedCards(items) {
+  function removeTerminalCards(items) {
     items.forEach(item => {
-      if (!terminalPublished.has(String(item.panel_status || ''))) return;
+      if (!isTerminal(item)) return;
       cardForId(item.id || item.item_id)?.remove();
     });
   }
@@ -273,13 +305,18 @@
     source.className = 'v4-source-badge';
     source.textContent = item.source || 'منبع خبری';
     meta.appendChild(source);
-    if (item.updated_at) {
+
+    const storyTime = storyTimeOf(item);
+    if (storyTime) {
       const time = document.createElement('time');
-      time.dateTime = item.updated_at;
-      time.dataset.v4RelativeTime = item.updated_at;
-      time.textContent = V4.relativeTime(item.updated_at);
+      time.dateTime = storyTime;
+      time.dataset.v4RelativeTime = storyTime;
+      time.dataset.v4Exact = '1';
+      time.textContent = V4.storyTime(storyTime);
+      time.title = V4.exactTime(storyTime);
       meta.appendChild(time);
     }
+
     const state = document.createElement('span');
     state.className = 'v4-state-badge';
     state.textContent = item.panel_status_fa || item.panel_status || 'تازه';
@@ -337,6 +374,11 @@
     actions.className = 'v4-story-actions v41-story-actions';
     if (isMachineReady(item)) actions.appendChild(actionButton('انتشار مستقیم', 'publish-machine', 'primary'));
     actions.appendChild(actionButton('ترجمه با Luna', 'translate-luna'));
+    const publishLuna = actionButton('انتشار نسخه Luna', 'publish-luna', 'primary');
+    publishLuna.disabled = true;
+    publishLuna.setAttribute('aria-disabled', 'true');
+    publishLuna.title = 'ابتدا نسخه Luna را بسازید';
+    actions.appendChild(publishLuna);
     actions.appendChild(actionButton('بررسی / ویرایش', 'edit-final'));
     actions.appendChild(actionButton('رد و مسدودکردن', 'reject-block', 'danger'));
     if (item.source_url) {
@@ -362,6 +404,24 @@
     if (!card) return;
     const ready = isMachineReady(item);
     ensureMachinePublishButton(card, ready);
+
+    const source = card.querySelector('.v4-source-badge');
+    if (source && item.source) source.textContent = item.source;
+
+    const storyTime = storyTimeOf(item);
+    let time = card.querySelector('.v4-story-meta time');
+    if (storyTime) {
+      if (!time) {
+        time = document.createElement('time');
+        card.querySelector('.v4-story-meta')?.insertBefore(time, card.querySelector('.v4-state-badge'));
+      }
+      time.dateTime = storyTime;
+      time.dataset.v4RelativeTime = storyTime;
+      time.dataset.v4Exact = '1';
+      time.textContent = V4.storyTime(storyTime);
+      time.title = V4.exactTime(storyTime);
+    }
+
     const title = card.querySelector('[data-v41-publish-title]');
     if (title && item.title) title.textContent = item.title;
     let body = card.querySelector('[data-v41-publish-body]');
@@ -382,24 +442,25 @@
   }
 
   function syncLiveCards(items) {
-    const active = items.filter(item => !terminalPublished.has(String(item.panel_status || '')));
+    const active = items.filter(item => !isTerminal(item));
     if (active.length) feed.querySelector('.v4-empty')?.remove();
+
+    const ordered = document.createDocumentFragment();
     active.forEach(item => {
       const id = String(item.id || item.item_id || '');
       if (!id) return;
       let card = cardForId(id);
-      if (!card) {
-        card = createStoryCard(item);
-        feed.prepend(card);
-      } else {
-        patchStoryCard(card, item);
-      }
+      if (!card) card = createStoryCard(item);
+      else patchStoryCard(card, item);
+      ordered.appendChild(card);
     });
+    feed.appendChild(ordered);
+    V4.refreshTimeNodes(feed);
   }
 
   async function localizePending(items) {
     const ids = items
-      .filter(item => item.needs_localization && !terminalPublished.has(String(item.panel_status || '')))
+      .filter(item => item.needs_localization && !isTerminal(item))
       .map(item => String(item.id || item.item_id || ''))
       .filter(Boolean)
       .slice(0, 12);
@@ -416,28 +477,51 @@
     }
   }
 
-  async function refreshLiveFeed() {
+  function setRefreshState(message) {
+    if (refreshState) refreshState.textContent = message;
+  }
+
+  async function refreshLiveFeed({manual = false} = {}) {
     if (refreshRunning) return;
     refreshRunning = true;
+    refreshButton?.setAttribute('disabled', 'disabled');
+    if (manual) setRefreshState('در حال دریافت تازه‌ترین خبرها…');
+
     try {
       const payload = await V4.requestJSON('/api/live-feed');
       const items = Array.isArray(payload.items) ? payload.items : [];
-      removeTerminalPublishedCards(items);
+      removeTerminalCards(items);
       const freshIds = newStoryIds(items);
       syncLiveCards(items);
-      if (freshIds.length) playNewStoryAlarm();
+
       const localized = await localizePending(items);
-      localized.forEach(item => patchStoryCard(cardForId(item.id || item.item_id), item));
-    } catch (_error) {
-      // Keep the current dashboard usable; the next poll retries naturally.
+      localized.forEach(item => {
+        patchStoryCard(cardForId(item.id || item.item_id), item);
+        const id = String(item.id || item.item_id || '');
+        if (id && !knownStoryIds.has(id) && isMachineReady(item)) freshIds.push(id);
+        if (id && isMachineReady(item)) knownStoryIds.add(id);
+      });
+
+      if (initialSnapshotComplete && freshIds.length) {
+        playNewStoryAlarm();
+        V4.toast(`${freshIds.length.toLocaleString('fa-IR')} خبر تازه رسید.`, 'success');
+      }
+      initialSnapshotComplete = true;
+      const now = new Date();
+      const clock = new Intl.DateTimeFormat('fa-IR', {hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false}).format(now);
+      setRefreshState(`آخرین بروزرسانی: ${clock} · ${items.length.toLocaleString('fa-IR')} ورودی`);
+    } catch (error) {
+      setRefreshState('بروزرسانی ناموفق؛ دوباره تلاش می‌شود');
+      if (manual) V4.toast(error.message || 'دریافت خبرهای جدید ناموفق بود.', 'error');
     } finally {
       refreshRunning = false;
+      refreshButton?.removeAttribute('disabled');
     }
   }
 
   feed.addEventListener('click', event => {
     const target = event.target.closest('[data-v4-action]');
-    if (!target) return;
+    if (!target || target.disabled) return;
     event.preventDefault();
     const card = target.closest('[data-story-id]');
     const action = target.dataset.v4Action;
@@ -448,6 +532,30 @@
     if (action === 'reject-block') void rejectAndBlock(card);
   });
 
-  window.setTimeout(refreshLiveFeed, 700);
-  window.setInterval(refreshLiveFeed, 5000);
+  refreshButton?.addEventListener('click', () => void refreshLiveFeed({manual: true}));
+  soundButton?.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    try { window.localStorage.setItem('bikhabar-news-sound', soundEnabled ? '1' : '0'); } catch (_error) {}
+    updateSoundButton();
+    if (!soundEnabled) {
+      try { window.sessionStorage.removeItem('bikhabar-pending-news-alarm'); } catch (_error) {}
+      V4.toast('صدای خبر خاموش شد.');
+      return;
+    }
+    void unlockNewsroomAudio({playPending: false}).then(unlocked => {
+      if (unlocked) {
+        playNewStoryAlarm();
+        V4.toast('صدای خبر روشن شد.', 'success');
+      } else {
+        V4.toast('مرورگر اجازه پخش صدا نداد.', 'error');
+      }
+    });
+  });
+
+  document.addEventListener('pointerdown', () => { void unlockNewsroomAudio(); }, {once: true});
+  document.addEventListener('keydown', () => { void unlockNewsroomAudio(); }, {once: true});
+
+  updateSoundButton();
+  window.setTimeout(() => void refreshLiveFeed(), 700);
+  window.setInterval(() => void refreshLiveFeed(), 5000);
 })();
