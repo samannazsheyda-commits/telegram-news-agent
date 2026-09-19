@@ -80,7 +80,7 @@ jobs:
           {
             echo '### V4.1 CI failure report'
             echo '```text'
-            tail -n 180 pytest-output.txt
+            grep -E '^(FAILED |ERROR |tests/[^:]+:[0-9]+:|[0-9]+ failed|=+ .*failed.*=+)' pytest-output.txt | tail -n 80 || true
             echo '```'
           } > pytest-comment.md
           gh pr comment "$PR_NUMBER" --body-file pytest-comment.md
