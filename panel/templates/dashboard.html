@@ -70,8 +70,8 @@
 
               <div class="v4-story-actions v41-story-actions">
                 {% if machine_ready %}<button class="v4-button v4-button-primary" type="button" data-v4-action="publish-machine">انتشار مستقیم</button>{% endif %}
-                <button class="v4-button v4-button-secondary" type="button" data-v4-action="translate-luna">{% if final_ready %}ترجمه دوباره{% else %}ترجمه با Luna{% endif %}</button>
-                {% if final_ready %}<button class="v4-button v4-button-primary" type="button" data-v4-action="publish-luna">انتشار نسخه Luna</button>{% endif %}
+                <button class="v4-button v4-button-secondary" type="button" data-v4-action="translate-luna">ترجمه با Luna</button>
+                <button class="v4-button {% if final_ready %}v4-button-primary{% else %}v4-button-secondary{% endif %}" type="button" data-v4-action="publish-luna"{% if not final_ready %} disabled aria-disabled="true"{% endif %}>انتشار نسخه Luna</button>
                 <button class="v4-button v4-button-secondary" type="button" data-v4-action="edit-final">بررسی / ویرایش</button>
                 <button class="v4-button v4-button-danger" type="button" data-v4-action="reject-block">رد و مسدودکردن</button>
                 {% if item.source_url or item.link %}<a class="v4-button v4-button-secondary v41-source-link" href="{{ item.source_url or item.link }}" target="_blank" rel="noopener">اصل خبر</a>{% endif %}
