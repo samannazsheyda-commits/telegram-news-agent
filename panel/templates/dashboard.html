@@ -38,7 +38,7 @@
       <div id="v4RefreshState" class="v4-story-progress" aria-live="polite">بروزرسانی خودکار هر ۵ ثانیه</div>
       <div id="v4LiveFeed" class="v4-story-list v41-story-list">
         {% if live %}
-          {% for item in live[:100] %}
+          {% for item in live[:40] %}
             {% set machine_title = item.persian_title or item.display_title or '' %}
             {% set machine_ready = item.persian_title and machine_title %}
             {% if machine_ready and item.panel_status not in ['auto_published', 'published_auto', 'published_manual', 'reconciled_published', 'rejected_manual', 'rejected', 'blocked', 'superseded'] %}
@@ -47,7 +47,7 @@
             {% set final_title = item.final_persian_title or '' %}
             {% set final_body = item.final_persian_body or '' %}
             {% set final_ready = final_title and item.luna_translation_status == 'passed' %}
-            {% set source_time = item.story_time or item.published_at_source or item.published or item.discovered_at or item.updated_at %}
+            {% set source_time = item.story_time or item.published_at_source or item.published or item.discovered_at %}
             <article class="v4-story-card v41-story-card" data-v4-story-card="1" data-story-id="{{ story_id }}" data-machine-ready="1" data-final-ready="{{ 1 if final_ready else 0 }}">
               <div class="v4-story-meta">
                 <span class="v4-source-badge">{{ item.source_display or item.canonical_source_name or item.source or 'منبع خبری' }}</span>
