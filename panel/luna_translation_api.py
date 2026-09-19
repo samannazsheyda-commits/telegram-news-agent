@@ -47,6 +47,21 @@ def block_story(story_id: str):
     return jsonify(result), (200 if result.get("ok") else 409)
 
 
+@bp.post("/api/panel/luna/publish-machine/<story_id>")
+def publish_machine(story_id: str):
+    result = publish_story(
+        _data(),
+        story_id,
+        enqueue=_enqueue,
+        confirmed=True,
+        copy_mode="machine",
+    )
+    if result.get("ok"):
+        return jsonify(result), 202
+    status = 404 if result.get("error") == "story_not_found" else 409
+    return jsonify(result), status
+
+
 @bp.post("/api/panel/luna/publish-final/<story_id>")
 def publish_final(story_id: str):
     payload = request.get_json(silent=True) or {}
