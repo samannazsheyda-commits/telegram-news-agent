@@ -28,7 +28,8 @@ def _live_rows(count: int = 3) -> list[dict]:
                 "source_url": f"https://example.com/{index}",
                 "original_title": f"Original headline {index}",
                 "original_summary": f"Original summary {index}",
-                "machine_translation": f"ترجمه ماشینی {index}",
+                "persian_title": f"تیتر فارسی {index}",
+                "persian_body": f"متن فارسی {index}",
                 "panel_status": "new",
                 "updated_at": f"2026-09-18T10:{index:02d}:00+00:00",
             }
@@ -78,25 +79,28 @@ def test_dashboard_is_v4_control_center_without_air_traffic():
     assert "ترافیک هوایی" not in html
 
 
-def test_dashboard_binds_initial_intake_to_40_dense_cards():
+def test_dashboard_binds_initial_intake_to_40_dense_persian_cards():
     response = _client(live_count=45).get("/")
     html = response.get_data(as_text=True)
 
     assert html.count('data-v4-story-card="1"') == 40
-    assert ">Original headline 44</h3>" in html
-    assert ">Original headline 5</h3>" in html
-    assert ">Original headline 4</h3>" not in html
+    assert ">تیتر فارسی 44</h3>" in html
+    assert ">تیتر فارسی 5</h3>" in html
+    assert ">تیتر فارسی 4</h3>" not in html
+    assert "Original headline 44" not in html
 
 
-def test_story_uses_guarded_luna_translation_without_machine_preview_or_judgment():
+def test_story_shows_machine_persian_with_optional_guarded_luna_and_human_publish():
     response = _client().get("/")
     html = response.get_data(as_text=True)
 
     assert "ترجمه با Luna" in html
-    assert "ترجمه ماشینی" not in html
+    assert "ترجمه ماشینی" in html
+    assert "تأیید و انتشار با Luna" in html
     assert "اهمیت:" not in html
     assert "PUBLISH" not in html
     assert 'data-action="publish"' not in html
+    assert 'data-v4-action="publish-final"' in html
 
 
 def test_dashboard_keeps_quota_summary_simple():
