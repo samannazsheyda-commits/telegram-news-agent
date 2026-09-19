@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from flask import Blueprint, current_app, jsonify, session
+from flask import Blueprint, current_app, jsonify, request, session
 
 from .command_center import _enqueue
 from .luna_publish import publish_story
@@ -47,13 +47,33 @@ def block_story(story_id: str):
     return jsonify(result), (200 if result.get("ok") else 409)
 
 
-@bp.post("/api/panel/luna/publish-final/<story_id>")
-def publish_final(story_id: str):
+@bp.post("/api/panel/luna/publish-machine/<story_id>")
+def publish_machine(story_id: str):
     result = publish_story(
         _data(),
         story_id,
         enqueue=_enqueue,
         confirmed=True,
+        copy_mode="machine",
+    )
+    if result.get("ok"):
+        return jsonify(result), 202
+    status = 404 if result.get("error") == "story_not_found" else 409
+    return jsonify(result), status
+
+
+@bp.post("/api/panel/luna/publish-final/<story_id>")
+def publish_final(story_id: str):
+    payload = request.get_json(silent=True) or {}
+    copy_mode = str(payload.get("copy_mode") or "visible").strip().lower()
+    if copy_mode not in {"visible", "machine", "luna"}:
+        return jsonify({"ok": False, "error": "invalid_copy_mode", "message": "نوع نسخه انتشار معتبر نیست."}), 400
+    result = publish_story(
+        _data(),
+        story_id,
+        enqueue=_enqueue,
+        confirmed=True,
+        copy_mode=copy_mode,
     )
     if result.get("ok"):
         return jsonify(result), 202

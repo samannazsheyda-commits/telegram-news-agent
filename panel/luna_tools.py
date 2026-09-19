@@ -27,159 +27,19 @@ def _custom_id(kind: str, identity: str) -> str:
 
 
 def tool_schemas() -> list[dict]:
-    """Function tools exposed to the model. All arguments are revalidated server-side."""
-    return [
-        {
-            "type": "function",
-            "name": "search_stories",
-            "description": "جست‌وجوی خبرهای پنل بر اساس متن، منبع یا وضعیت. برای پیدا کردن مرجع دقیق خبر قبل از عملیات استفاده کن.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string"},
-                    "source": {"type": "string"},
-                    "status": {"type": "string"},
-                    "limit": {"type": "integer", "minimum": 1, "maximum": 20},
-                },
-                "additionalProperties": False,
-            },
-        },
-        {
-            "type": "function",
-            "name": "get_story",
-            "description": "دریافت یک خبر مشخص با شناسه دقیق.",
-            "parameters": {
-                "type": "object",
-                "properties": {"story_id": {"type": "string"}},
-                "required": ["story_id"],
-                "additionalProperties": False,
-            },
-        },
-        {
-            "type": "function",
-            "name": "translate_story",
-            "description": "ترجمه و بازنویسی دقیق یک خبر مشخص به فارسی با مسیر کیفیت Luna.",
-            "parameters": {
-                "type": "object",
-                "properties": {"story_id": {"type": "string"}},
-                "required": ["story_id"],
-                "additionalProperties": False,
-            },
-        },
-        {
-            "type": "function",
-            "name": "reject_and_block_story",
-            "description": "رد دائمی یک خبر و جلوگیری از ورود دوباره آن به چرخه انتشار. این عملیات نیاز به تأیید کاربر دارد.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "story_id": {"type": "string"},
-                    "reason": {"type": "string"},
-                },
-                "required": ["story_id"],
-                "additionalProperties": False,
-            },
-        },
-        {
-            "type": "function",
-            "name": "move_story_to_review",
-            "description": "فرستادن یک خبر مشخص به صف بررسی/ویرایش.",
-            "parameters": {
-                "type": "object",
-                "properties": {"story_id": {"type": "string"}},
-                "required": ["story_id"],
-                "additionalProperties": False,
-            },
-        },
-        {
-            "type": "function",
-            "name": "list_recent_published",
-            "description": "نمایش خبرهای منتشرشده اخیر، در صورت نیاز فیلترشده بر اساس منبع.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "limit": {"type": "integer", "minimum": 1, "maximum": 30},
-                    "source": {"type": "string"},
-                },
-                "additionalProperties": False,
-            },
-        },
-        {
-            "type": "function",
-            "name": "diagnose_newsroom",
-            "description": "بررسی وضعیت اتاق خبر، سهمیه، صف‌ها، خطای منابع و انتشار.",
-            "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
-        },
-        {
-            "type": "function",
-            "name": "list_sources",
-            "description": "فهرست منابع خبری پنل. برای پیدا کردن شناسه دقیق منبع قبل از تغییر آن استفاده کن.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "kind": {"type": "string"},
-                    "active": {"type": "boolean"},
-                    "query": {"type": "string"},
-                },
-                "additionalProperties": False,
-            },
-        },
-        {
-            "type": "function",
-            "name": "add_source",
-            "description": "اضافه کردن منبع خبری جدید. نیازمند تأیید کاربر است.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "kind": {"type": "string", "enum": ["telegram", "x", "truth", "website"]},
-                    "identifier": {"type": "string"},
-                    "display_name": {"type": "string"},
-                    "feed_url": {"type": "string"},
-                },
-                "required": ["kind", "identifier"],
-                "additionalProperties": False,
-            },
-        },
-        {
-            "type": "function",
-            "name": "enable_source",
-            "description": "فعال کردن یک منبع مشخص. نیازمند تأیید کاربر است.",
-            "parameters": {
-                "type": "object",
-                "properties": {"source_id": {"type": "string"}, "query": {"type": "string"}},
-                "additionalProperties": False,
-            },
-        },
-        {
-            "type": "function",
-            "name": "disable_source",
-            "description": "غیرفعال کردن یک منبع مشخص. نیازمند تأیید کاربر است.",
-            "parameters": {
-                "type": "object",
-                "properties": {"source_id": {"type": "string"}, "query": {"type": "string"}},
-                "additionalProperties": False,
-            },
-        },
-        {
-            "type": "function",
-            "name": "delete_source",
-            "description": "حذف/مخفی کردن یک منبع مشخص از رصد. نیازمند تأیید کاربر است.",
-            "parameters": {
-                "type": "object",
-                "properties": {"source_id": {"type": "string"}, "query": {"type": "string"}},
-                "additionalProperties": False,
-            },
-        },
-        {
-            "type": "function",
-            "name": "inspect_panel_state",
-            "description": "خلاصه وضعیت پنل، تعداد خبرها و وضعیت سرویس‌های مرتبط با اتاق خبر.",
-            "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
-        },
-    ]
+    """Schemas exposed to Luna come from the single capability registry."""
+    from .luna_capabilities import build_capability_registry
+
+    return build_capability_registry().tool_schemas()
 
 
 class LunaToolbox:
+    """Validated newsroom operations used by the Luna control runtime.
+
+    Legacy handlers stay available for backwards compatibility, but the
+    operator API proposal-gates mutations before calling them confirmed.
+    """
+
     def __init__(self, data, *, block_path: str | Path | None = None) -> None:
         self.data = data
         data_dir = Path(os.environ.get("DATA_DIR", "data"))
@@ -254,13 +114,16 @@ class LunaToolbox:
         rows: list[dict] = []
         for base in system_source_definitions():
             row = dict(base)
-            state = overrides.get(row.get("id"), {})
+            source_id = _text(row.get("id"))
+            state = overrides.get(source_id, {})
             state = state if isinstance(state, dict) else {}
             if state.get("hidden"):
                 continue
             row["active"] = bool(state.get("active", True))
             row["system"] = True
             row["identity"] = _text(row.get("handle") or row.get("query"))
+            row["name"] = _text(state.get("display_name") or row.get("name") or source_id)
+            row["review_only"] = bool(state.get("review_only", row.get("review_only", False)))
             rows.append(row)
         for base in custom:
             if base.get("deleted"):
@@ -268,6 +131,7 @@ class LunaToolbox:
             row = dict(base)
             row["system"] = False
             row.setdefault("active", True)
+            row.setdefault("review_only", False)
             if row.get("kind") == "telegram":
                 row["identity"] = "@" + _text(row.get("channel")).lstrip("@")
             elif row.get("kind") in {"x", "truth"}:
@@ -286,6 +150,7 @@ class LunaToolbox:
             "identity": _text(row.get("identity") or row.get("handle") or row.get("channel") or row.get("website_url")),
             "active": bool(row.get("active", True)),
             "system": bool(row.get("system", False)),
+            "review_only": bool(row.get("review_only", False)),
         }
 
     def _resolve_source(self, args: dict) -> tuple[dict | None, dict | None]:
@@ -424,6 +289,9 @@ class LunaToolbox:
         row = self._find_story(_text(args.get("story_id")))
         if row is None:
             return {"ok": False, "error": "story_not_found", "message": "خبر پیدا نشد."}
+        if not confirmed:
+            public = self._story_public(row)
+            return self._pending("move_story_to_review", {"story_id": public["id"]}, f"خبر «{public['title']}» به صف بررسی منتقل شود؟")
         record = dict(row)
         record["id"] = self._story_id(row)
         record["status"] = "pending"

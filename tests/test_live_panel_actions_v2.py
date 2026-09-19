@@ -96,13 +96,6 @@ def _client(data: FakeData):
     return client
 
 
-def _fake_literal_translation(text: str) -> str:
-    return {
-        "Fresh headline": "تیتر تازه",
-        "Fresh body": "متن تازه",
-    }.get(text, text)
-
-
 def test_live_feed_hides_stale_source_items_even_if_updated_recently():
     data = FakeData()
     payload = _client(data).get("/api/live-feed").get_json()
@@ -111,20 +104,20 @@ def test_live_feed_hides_stale_source_items_even_if_updated_recently():
     assert "old" not in ids
 
 
-def test_localization_is_preview_only_and_never_persisted_as_final_copy(monkeypatch):
-    monkeypatch.setattr("panel.live_api._translate_persian", _fake_literal_translation)
+def test_localization_persists_publishable_machine_persian_without_final_message():
     data = FakeData()
     response = _client(data).post("/api/live-feed/localize", json={"ids": ["fresh"]})
     assert response.status_code == 200
     item = response.get_json()["items"][0]
     assert item["title"] == "تیتر تازه"
     assert item["body"] == "متن تازه"
-    assert item["translation_mode"] == "offline_literal"
+    assert item["translation_mode"] == "machine_persian"
     assert item["final_message"] == ""
 
     row = next(row for row in data.files["data/panel_live_feed.json"] if row["item_id"] == "fresh")
-    assert "persian_title" not in row
-    assert "persian_body" not in row
+    assert row["persian_title"] == "تیتر تازه"
+    assert row["persian_body"] == "متن تازه"
+    assert row["machine_translation_status"] == "passed"
     assert "final_message" not in row
 
 
@@ -149,16 +142,16 @@ def test_reject_live_item_is_immediate_and_recorded():
     assert "fresh-key" in data.files["state.json"]["news_seen"]
 
 
-def test_preview_localization_does_not_authorize_legacy_direct_publish(monkeypatch):
-    monkeypatch.setattr("panel.live_api._translate_persian", _fake_literal_translation)
+def test_persisted_machine_localization_allows_existing_manual_publish_action():
     data = FakeData()
     client = _client(data)
     localized = client.post("/api/live-feed/localize", json={"ids": ["fresh"]})
     assert localized.status_code == 200
     response = client.post("/api/command-center/live/fresh/publish")
-    assert response.status_code == 409
-    assert response.get_json()["error"] == "final_not_ready"
-    assert data.commands == []
+    assert response.status_code == 202
+    assert response.get_json()["status"] == "queued"
+    assert data.commands[-1]["action"] == "publish"
+    assert data.commands[-1]["title"] == "تیتر تازه"
 
 
 def test_hormuz_preview_still_renders_when_precise_count_is_unavailable(monkeypatch):

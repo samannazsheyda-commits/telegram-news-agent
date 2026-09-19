@@ -79,7 +79,7 @@ def test_builder_requires_explicit_confirmation_before_merge_or_deploy():
     assert policy["arbitrary_shell"] is False
 
 
-def test_builder_request_from_chat_creates_pending_confirmation_without_mutating_code():
+def test_builder_request_from_chat_creates_frozen_confirmation_without_mutating_code():
     data = MemoryData()
     client = _client(data)
 
@@ -95,7 +95,8 @@ def test_builder_request_from_chat_creates_pending_confirmation_without_mutating
     assert payload["action_id"]
     pending = data.mapping["data/panel_pending_actions.json"]
     assert len(pending) == 1
-    assert pending[0]["action"] == "builder_prepare"
+    assert pending[0]["capability"] == "builder_prepare"
+    assert pending[0]["payload"]["request"] == "یه ماژول جدید برای گزارش انرژی اضافه کن"
     assert pending[0]["status"] == "pending"
     assert pending[0]["expires_at"]
 
@@ -132,5 +133,7 @@ def test_confirmed_builder_request_invokes_real_builder_boundary_and_returns_dra
     assert payload["pull_request"]["number"] == 999
     assert payload["branch"].startswith("luna/change-")
     factory.assert_called_once_with()
-    assert data.mapping["data/panel_pending_actions.json"][0]["status"] == "completed"
-    assert data.mapping["data/panel_audit_log.json"][0]["action"] == "builder_prepare"
+    assert data.mapping["data/panel_pending_actions.json"][0]["status"] == "success"
+    audit = data.mapping["data/panel_audit_log.json"][0]
+    assert audit["capability"] == "builder_prepare"
+    assert audit["status"] == "success"

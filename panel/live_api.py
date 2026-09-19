@@ -83,7 +83,7 @@ def _cache_put(row: dict, *, title: str, body: str) -> dict:
         "signature": _cache_signature(row),
         "title": title,
         "body": body,
-        "translation_mode": "offline_literal",
+        "translation_mode": "machine_persian",
     }
     _LOCALIZATION_CACHE[row_id] = value
     while len(_LOCALIZATION_CACHE) > _LOCALIZATION_CACHE_LIMIT:
@@ -95,11 +95,7 @@ def _cache_put(row: dict, *, title: str, body: str) -> dict:
 
 
 def _translate_persian(value: str) -> str:
-    """Create a panel-only literal preview with the local Argos model.
-
-    This intentionally never calls a network translator or Luna. The result is
-    for operator comprehension only and is never persisted as final copy.
-    """
+    """Non-authoritative local fallback retained for legacy callers/tests only."""
     text = str(value or "").strip()
     if not text:
         return ""
@@ -113,6 +109,65 @@ def _translate_persian(value: str) -> str:
     return translated if _has_persian(translated) else ""
 
 
+def _machine_translate_persian(value: str, translator) -> tuple[str, str]:
+    text = str(value or "").strip()
+    if not text:
+        return "", "source"
+    if _has_persian(text):
+        return text, "source"
+    if not callable(translator):
+        return "", "unavailable"
+    try:
+        translated = str(translator(text) or "").strip()
+    except Exception as exc:
+        print(f"PANEL_MACHINE_TRANSLATION_FAILED type={type(exc).__name__}", flush=True)
+        return "", "configured_failed"
+    if not _has_persian(translated):
+        return "", "configured_failed"
+    return translated, "configured"
+
+
+def _persist_machine_translation(
+    row_id: str,
+    title_fa: str,
+    body_fa: str,
+    *,
+    provider: str,
+) -> dict | None:
+    data = current_app.extensions["editorial_data"]
+    for attempt in range(3):
+        value, sha = data.read_json("data/panel_live_feed.json", [])
+        rows = [dict(row) for row in value if isinstance(row, dict)] if isinstance(value, list) else []
+        saved = None
+        for row in rows:
+            if _row_id(row) != row_id:
+                continue
+            row["persian_title"] = title_fa
+            row["persian_body"] = body_fa
+            row["machine_translation_status"] = "passed"
+            row["machine_translation_mode"] = "network" if provider == "configured" else provider
+            row["machine_translation_provider"] = provider
+            row["machine_translated_at"] = datetime.now(timezone.utc).isoformat()
+            saved = dict(row)
+            break
+        if saved is None:
+            return None
+        try:
+            data.write_json(
+                "data/panel_live_feed.json",
+                rows,
+                sha,
+                "panel v4.1: persist machine Persian copy",
+            )
+            return saved
+        except Exception as exc:
+            status = getattr(getattr(exc, "response", None), "status_code", None)
+            if attempt < 2 and status in {409, 422}:
+                continue
+            raise
+    return None
+
+
 def _final_message(row: dict) -> str:
     """Return only a final message that was already persisted by a publish/edit path."""
     return str(row.get("final_message") or row.get("telegram_message") or "").strip()
@@ -121,35 +176,42 @@ def _final_message(row: dict) -> str:
 def _public_row(row: dict, queued_ids: set[str]) -> dict:
     row_id = _row_id(row)
     raw_title, raw_body = _raw_fields(row)
-    persisted_title = str(row.get("final_persian_title") or row.get("persian_title") or row.get("display_title") or "").strip()
-    persisted_body = str(row.get("final_persian_body") or row.get("persian_body") or "").strip()
+    machine_title = str(row.get("persian_title") or "").strip()
+    machine_body = str(row.get("persian_body") or "").strip()
+    final_title = str(row.get("final_persian_title") or "").strip()
+    final_body = str(row.get("final_persian_body") or "").strip()
+    luna_ready = str(row.get("luna_translation_status") or "") == "passed" and _has_persian(final_title)
     cached = _cache_get(row)
 
-    if cached and _has_persian(str(cached.get("title") or "")):
-        title_fa = str(cached.get("title") or "")
-        body_fa = str(cached.get("body") or "")
-        translation_mode = "offline_literal"
+    if _has_persian(machine_title):
+        title_fa = machine_title
+        body_fa = machine_body
+        translation_mode = "machine_persian"
         needs_localization = False
     elif _has_persian(raw_title):
         title_fa = raw_title
         body_fa = raw_body
         translation_mode = "source_persian"
         needs_localization = False
-    elif _has_persian(persisted_title):
-        # Existing human/final Persian remains visible when present, but panel
-        # localization never creates or overwrites these persisted fields.
-        title_fa = persisted_title
-        body_fa = persisted_body
-        translation_mode = "persisted_persian"
+    elif luna_ready:
+        title_fa = final_title
+        body_fa = final_body
+        translation_mode = "luna_persian"
         needs_localization = False
+    elif cached and _has_persian(str(cached.get("title") or "")):
+        title_fa = str(cached.get("title") or "")
+        body_fa = str(cached.get("body") or "")
+        translation_mode = "cached_preview"
+        needs_localization = True
     else:
         title_fa = "عنوان فارسی در حال آماده‌سازی"
         body_fa = ""
-        translation_mode = "pending_offline"
+        translation_mode = "pending_machine"
         needs_localization = bool(row_id and raw_title)
 
     status = str(row.get("panel_status") or "new")
     reason = str(row.get("decision_reason") or "")
+    has_publishable_persian = _has_persian(machine_title) or _has_persian(raw_title) or luna_ready
     return {
         "id": row_id,
         "item_id": row_id,
@@ -170,11 +232,12 @@ def _public_row(row: dict, queued_ids: set[str]) -> dict:
         "media_url": str(row.get("video_url") or row.get("media_url") or ""),
         "review_url": f"/review/{row_id}" if row_id in queued_ids else "",
         "can_review": bool(row_id) and status not in _TERMINAL_LIVE_STATUSES,
-        "can_publish": bool(row_id) and status not in _TERMINAL_LIVE_STATUSES,
+        "can_publish": bool(row_id) and status not in _TERMINAL_LIVE_STATUSES and has_publishable_persian,
         "can_reject": bool(row_id) and status not in _TERMINAL_LIVE_STATUSES,
         "final_message": _final_message(row),
         "translation_mode": translation_mode,
         "needs_localization": needs_localization,
+        "machine_translation_status": str(row.get("machine_translation_status") or ""),
     }
 
 
@@ -250,21 +313,48 @@ def localize_live_feed():
     if not ids:
         return jsonify({"ok": True, "items": []})
 
-    rows, queued_ids = _raw_rows(100)
-    by_id = {_row_id(row): row for row in rows if _row_id(row)}
+    translator = current_app.config.get("LIVE_FEED_TRANSLATOR")
+    if not callable(translator):
+        return jsonify({"ok": False, "error": "translator_unavailable"}), 503
+
+    data = current_app.extensions["editorial_data"]
+    value, _ = data.read_json("data/panel_live_feed.json", [])
+    rows = value if isinstance(value, list) else []
+    by_id = {_row_id(row): dict(row) for row in rows if isinstance(row, dict) and _row_id(row)}
+    queue, _ = data.read_json("data/editorial_queue.json", [])
+    queued_ids = {
+        str(r.get("id") or r.get("item_id") or "")
+        for r in (queue if isinstance(queue, list) else [])
+        if isinstance(r, dict)
+    }
+
     localized: list[dict] = []
     for item_id in ids:
         row = by_id.get(item_id)
         if row is None:
             continue
         raw_title, raw_body = _raw_fields(row)
-        title_fa = _translate_persian(raw_title)
+        title_fa, title_mode = _machine_translate_persian(raw_title, translator)
         if not title_fa:
             continue
-        body_fa = _translate_persian(raw_body) if raw_body else ""
-        _cache_put(row, title=title_fa, body=body_fa)
-        localized_row = _public_row(row, queued_ids)
-        localized_row["translation_mode"] = "offline_literal"
+        if raw_body:
+            body_fa, body_mode = _machine_translate_persian(raw_body, translator)
+            if not body_fa:
+                continue
+        else:
+            body_fa, body_mode = "", title_mode
+        provider = "configured" if "configured" in {title_mode, body_mode} else title_mode
+        saved = _persist_machine_translation(
+            item_id,
+            title_fa,
+            body_fa,
+            provider=provider,
+        )
+        if saved is None:
+            continue
+        _cache_put(saved, title=title_fa, body=body_fa)
+        localized_row = _public_row(saved, queued_ids)
+        localized_row["translation_mode"] = "machine_persian"
         localized.append(localized_row)
 
-    return jsonify({"ok": True, "items": localized, "translation_mode": "offline_literal"})
+    return jsonify({"ok": True, "items": localized, "translation_mode": "machine_persian"})

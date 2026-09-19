@@ -2,6 +2,15 @@
   const feed = document.getElementById('v4LiveFeed');
   if (!feed || !window.BikhabarV4) return;
   const V4 = window.BikhabarV4;
+  const terminalPublished = new Set(['auto_published', 'published_auto', 'published_manual', 'reconciled_published']);
+  const knownStoryIds = new Set(
+    Array.from(feed.querySelectorAll('[data-story-id]'))
+      .map(card => String(card.dataset.storyId || ''))
+      .filter(Boolean)
+  );
+  let audioContext = null;
+  let audioUnlocked = false;
+  let refreshRunning = false;
 
   function progress(card, text, kind = '') {
     const node = card?.querySelector('[data-v4-story-progress]');
@@ -13,6 +22,41 @@
 
   function sourceLinkClone(actions) {
     return actions?.querySelector('.v41-source-link')?.cloneNode(true) || null;
+  }
+
+  function actionButton(label, action, kind = 'secondary') {
+    const button = document.createElement('button');
+    button.className = `v4-button v4-button-${kind}`;
+    button.type = 'button';
+    button.dataset.v4Action = action;
+    button.textContent = label;
+    return button;
+  }
+
+  function isMachineReady(item) {
+    const mode = String(item?.translation_mode || '');
+    return item?.machine_translation_status === 'passed' || mode === 'machine_persian' || mode === 'source_persian';
+  }
+
+  function machinePublishButton(actions) {
+    return Array.from(actions?.querySelectorAll('[data-v4-action]') || [])
+      .find(node => node.dataset.v4Action === 'publish-machine') || null;
+  }
+
+  function ensureMachinePublishButton(card, ready) {
+    const actions = card?.querySelector('.v41-story-actions');
+    if (!actions) return;
+    const existing = machinePublishButton(actions);
+    if (!ready) {
+      existing?.remove();
+      card.dataset.machineReady = '0';
+      return;
+    }
+    card.dataset.machineReady = '1';
+    if (existing) return;
+    const button = actionButton('انتشار مستقیم', 'publish-machine', 'primary');
+    const before = actions.querySelector('[data-v4-action="translate-luna"]');
+    actions.insertBefore(button, before || actions.firstChild);
   }
 
   function renderTranslation(card, result) {
@@ -42,38 +86,15 @@
     }
 
     const sourceLink = sourceLinkClone(actions);
+    const machineReady = card.dataset.machineReady === '1';
     actions.replaceChildren();
-
-    const translate = document.createElement('button');
-    translate.className = 'v4-button v4-button-secondary';
-    translate.type = 'button';
-    translate.dataset.v4Action = 'translate-luna';
-    translate.textContent = 'ترجمه دوباره';
-    actions.appendChild(translate);
-
-    const edit = document.createElement('button');
-    edit.className = 'v4-button v4-button-secondary';
-    edit.type = 'button';
-    edit.dataset.v4Action = 'edit-final';
-    edit.textContent = 'بررسی / ویرایش';
-    actions.appendChild(edit);
-
-    const publish = document.createElement('button');
-    publish.className = 'v4-button v4-button-primary';
-    publish.type = 'button';
-    publish.dataset.v4Action = 'publish-final';
-    publish.textContent = 'تأیید و انتشار با Luna';
-    actions.appendChild(publish);
-
-    const reject = document.createElement('button');
-    reject.className = 'v4-button v4-button-danger';
-    reject.type = 'button';
-    reject.dataset.v4Action = 'reject-block';
-    reject.textContent = 'رد و مسدودکردن';
-    actions.appendChild(reject);
+    if (machineReady) actions.appendChild(actionButton('انتشار مستقیم', 'publish-machine', 'primary'));
+    actions.appendChild(actionButton('ترجمه دوباره', 'translate-luna'));
+    actions.appendChild(actionButton('انتشار نسخه Luna', 'publish-luna', 'primary'));
+    actions.appendChild(actionButton('بررسی / ویرایش', 'edit-final'));
+    actions.appendChild(actionButton('رد و مسدودکردن', 'reject-block', 'danger'));
     if (sourceLink) actions.appendChild(sourceLink);
     card.dataset.finalReady = '1';
-    card.dataset.publishReady = '1';
   }
 
   async function poll(commandId, card) {
@@ -124,34 +145,46 @@
     }
   }
 
-  async function publishFinal(card) {
+  function copyPreview(card, mode) {
+    const titleSelector = mode === 'luna' ? '[data-v41-title]' : '[data-v41-publish-title]';
+    const bodySelector = mode === 'luna' ? '[data-v41-body]' : '[data-v41-publish-body]';
+    const title = card.querySelector(titleSelector)?.textContent?.trim() || '';
+    const body = card.querySelector(bodySelector)?.textContent?.trim() || '';
+    return [title, body].filter(Boolean).join('\n\n');
+  }
+
+  async function publishCopy(card, mode) {
     const id = card?.dataset.storyId;
-    if (!id || card.dataset.publishReady !== '1' || card.classList.contains('is-busy')) return;
-    const title = card.querySelector('[data-v41-title]')?.textContent?.trim()
-      || card.querySelector('[data-v41-publish-title]')?.textContent?.trim()
-      || '';
-    const body = card.querySelector('[data-v41-body]')?.textContent?.trim()
-      || card.querySelector('[data-v41-publish-body]')?.textContent?.trim()
-      || '';
-    const preview = [title, body].filter(Boolean).join('\n\n');
+    const ready = mode === 'luna' ? card?.dataset.finalReady === '1' : card?.dataset.machineReady === '1';
+    if (!id || !ready || card.classList.contains('is-busy')) return;
+    const preview = copyPreview(card, mode);
+    const label = mode === 'luna' ? 'نسخه Luna' : 'ترجمه ماشینی';
     const accepted = await V4.confirmAction({
-      title: 'همین نسخه منتشر شود؟',
+      title: `${label} منتشر شود؟`,
       text: preview.length > 700 ? `${preview.slice(0, 700)}…` : preview,
       accept: 'تأیید و انتشار',
     });
     if (!accepted) return;
+
     card.classList.add('is-busy');
     progress(card, 'نسخه‌ای که دیدی در صف امن انتشار قرار می‌گیرد…');
     try {
-      const queued = await V4.requestJSON(`/api/panel/luna/publish-final/${encodeURIComponent(id)}`, {method: 'POST'});
+      const url = mode === 'machine'
+        ? `/api/panel/luna/publish-machine/${encodeURIComponent(id)}`
+        : `/api/panel/luna/publish-final/${encodeURIComponent(id)}`;
+      const options = mode === 'luna'
+        ? {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({copy_mode: 'luna'})}
+        : {method: 'POST'};
+      const queued = await V4.requestJSON(url, options);
       const done = await poll(queued.command_id, card);
       progress(card, done.telegram_message_id ? `منتشر شد · Message ID ${done.telegram_message_id}` : 'منتشر شد', 'success');
       V4.toast('خبر منتشر شد.', 'success');
+      card.remove();
     } catch (error) {
       progress(card, error.message, 'error');
       V4.toast(error.message, 'error');
     } finally {
-      card.classList.remove('is-busy');
+      if (card.isConnected) card.classList.remove('is-busy');
     }
   }
 
@@ -176,6 +209,232 @@
     }
   }
 
+  function playNewStoryAlarm() {
+    if (!audioUnlocked || !audioContext) {
+      try { window.sessionStorage.setItem('bikhabar-pending-news-alarm', '1'); } catch (_error) {}
+      return;
+    }
+    try { window.sessionStorage.removeItem('bikhabar-pending-news-alarm'); } catch (_error) {}
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    oscillator.frequency.value = 880;
+    gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.12, audioContext.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.18);
+    oscillator.connect(gain).connect(audioContext.destination);
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.2);
+  }
+
+  function unlockNewsroomAudio() {
+    if (audioUnlocked) return;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    audioContext = audioContext || new AudioContextClass();
+    Promise.resolve(audioContext.resume()).then(() => {
+      audioUnlocked = true;
+      let pending = false;
+      try { pending = window.sessionStorage.getItem('bikhabar-pending-news-alarm') === '1'; } catch (_error) {}
+      if (pending) playNewStoryAlarm();
+    }).catch(() => {});
+  }
+
+  document.addEventListener('pointerdown', unlockNewsroomAudio, {once: true});
+  document.addEventListener('keydown', unlockNewsroomAudio, {once: true});
+
+  function newStoryIds(items) {
+    const fresh = [];
+    items.forEach(item => {
+      const id = String(item.id || item.item_id || '');
+      if (!id) return;
+      const status = String(item.panel_status || '');
+      if (!knownStoryIds.has(id) && !terminalPublished.has(status)) fresh.push(id);
+      knownStoryIds.add(id);
+    });
+    return fresh;
+  }
+
+  function cardForId(id) {
+    return Array.from(feed.querySelectorAll('[data-story-id]'))
+      .find(node => String(node.dataset.storyId || '') === String(id || '')) || null;
+  }
+
+  function removeTerminalPublishedCards(items) {
+    items.forEach(item => {
+      if (!terminalPublished.has(String(item.panel_status || ''))) return;
+      cardForId(item.id || item.item_id)?.remove();
+    });
+  }
+
+  function makeMeta(item) {
+    const meta = document.createElement('div');
+    meta.className = 'v4-story-meta';
+    const source = document.createElement('span');
+    source.className = 'v4-source-badge';
+    source.textContent = item.source || 'منبع خبری';
+    meta.appendChild(source);
+    if (item.updated_at) {
+      const time = document.createElement('time');
+      time.dateTime = item.updated_at;
+      time.dataset.v4RelativeTime = item.updated_at;
+      time.textContent = V4.relativeTime(item.updated_at);
+      meta.appendChild(time);
+    }
+    const state = document.createElement('span');
+    state.className = 'v4-state-badge';
+    state.textContent = item.panel_status_fa || item.panel_status || 'تازه';
+    meta.appendChild(state);
+    return meta;
+  }
+
+  function createStoryCard(item) {
+    const id = String(item.id || item.item_id || '');
+    const card = document.createElement('article');
+    card.className = 'v4-story-card v41-story-card';
+    card.dataset.v4StoryCard = '1';
+    card.dataset.storyId = id;
+    card.dataset.machineReady = isMachineReady(item) ? '1' : '0';
+    card.dataset.finalReady = '0';
+    card.appendChild(makeMeta(item));
+
+    const original = document.createElement('div');
+    original.className = 'v4-original v41-original';
+    const machineLabel = document.createElement('div');
+    machineLabel.className = 'v41-translation-label';
+    const labelText = document.createElement('span');
+    labelText.textContent = 'ترجمه ماشینی';
+    const labelState = document.createElement('small');
+    labelState.textContent = isMachineReady(item) ? 'آماده بررسی تو' : 'در حال آماده‌سازی';
+    machineLabel.append(labelText, labelState);
+    const title = document.createElement('h3');
+    title.dataset.v41PublishTitle = '1';
+    title.textContent = item.title || 'ترجمه ماشینی در حال آماده‌سازی';
+    original.append(machineLabel, title);
+    if (item.body) {
+      const body = document.createElement('p');
+      body.dataset.v41PublishBody = '1';
+      body.textContent = item.body;
+      original.appendChild(body);
+    }
+    card.appendChild(original);
+
+    const luna = document.createElement('div');
+    luna.className = 'v4-luna v41-translation';
+    luna.dataset.v41Translation = '1';
+    const lunaLabel = document.createElement('div');
+    lunaLabel.className = 'v41-translation-label';
+    const lunaLabelText = document.createElement('span');
+    lunaLabelText.textContent = 'نسخه Luna';
+    const lunaState = document.createElement('small');
+    lunaState.textContent = 'اختیاری';
+    lunaLabel.append(lunaLabelText, lunaState);
+    const lunaHelp = document.createElement('p');
+    lunaHelp.textContent = 'اگر بازنویسی نهایی می‌خواهی، «ترجمه با Luna» را بزن.';
+    luna.append(lunaLabel, lunaHelp);
+    card.appendChild(luna);
+
+    const actions = document.createElement('div');
+    actions.className = 'v4-story-actions v41-story-actions';
+    if (isMachineReady(item)) actions.appendChild(actionButton('انتشار مستقیم', 'publish-machine', 'primary'));
+    actions.appendChild(actionButton('ترجمه با Luna', 'translate-luna'));
+    actions.appendChild(actionButton('بررسی / ویرایش', 'edit-final'));
+    actions.appendChild(actionButton('رد و مسدودکردن', 'reject-block', 'danger'));
+    if (item.source_url) {
+      const link = document.createElement('a');
+      link.className = 'v4-button v4-button-secondary v41-source-link';
+      link.href = item.source_url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = 'اصل خبر';
+      actions.appendChild(link);
+    }
+    card.appendChild(actions);
+
+    const status = document.createElement('div');
+    status.className = 'v4-story-progress';
+    status.dataset.v4StoryProgress = '1';
+    status.hidden = true;
+    card.appendChild(status);
+    return card;
+  }
+
+  function patchStoryCard(card, item) {
+    if (!card) return;
+    const ready = isMachineReady(item);
+    ensureMachinePublishButton(card, ready);
+    const title = card.querySelector('[data-v41-publish-title]');
+    if (title && item.title) title.textContent = item.title;
+    let body = card.querySelector('[data-v41-publish-body]');
+    if (item.body) {
+      if (!body) {
+        body = document.createElement('p');
+        body.dataset.v41PublishBody = '1';
+        card.querySelector('.v41-original')?.appendChild(body);
+      }
+      body.textContent = item.body;
+    } else {
+      body?.remove();
+    }
+    const labelState = card.querySelector('.v41-original .v41-translation-label small');
+    if (labelState) labelState.textContent = ready ? 'آماده بررسی تو' : 'در حال آماده‌سازی';
+    const state = card.querySelector('.v4-state-badge');
+    if (state) state.textContent = item.panel_status_fa || item.panel_status || 'تازه';
+  }
+
+  function syncLiveCards(items) {
+    const active = items.filter(item => !terminalPublished.has(String(item.panel_status || '')));
+    if (active.length) feed.querySelector('.v4-empty')?.remove();
+    active.forEach(item => {
+      const id = String(item.id || item.item_id || '');
+      if (!id) return;
+      let card = cardForId(id);
+      if (!card) {
+        card = createStoryCard(item);
+        feed.prepend(card);
+      } else {
+        patchStoryCard(card, item);
+      }
+    });
+  }
+
+  async function localizePending(items) {
+    const ids = items
+      .filter(item => item.needs_localization && !terminalPublished.has(String(item.panel_status || '')))
+      .map(item => String(item.id || item.item_id || ''))
+      .filter(Boolean)
+      .slice(0, 12);
+    if (!ids.length) return [];
+    try {
+      const payload = await V4.requestJSON('/api/live-feed/localize', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ids}),
+      });
+      return Array.isArray(payload.items) ? payload.items : [];
+    } catch (_error) {
+      return [];
+    }
+  }
+
+  async function refreshLiveFeed() {
+    if (refreshRunning) return;
+    refreshRunning = true;
+    try {
+      const payload = await V4.requestJSON('/api/live-feed');
+      const items = Array.isArray(payload.items) ? payload.items : [];
+      removeTerminalPublishedCards(items);
+      const freshIds = newStoryIds(items);
+      syncLiveCards(items);
+      if (freshIds.length) playNewStoryAlarm();
+      const localized = await localizePending(items);
+      localized.forEach(item => patchStoryCard(cardForId(item.id || item.item_id), item));
+    } catch (_error) {
+      // Keep the current dashboard usable; the next poll retries naturally.
+    } finally {
+      refreshRunning = false;
+    }
+  }
+
   feed.addEventListener('click', event => {
     const target = event.target.closest('[data-v4-action]');
     if (!target) return;
@@ -184,7 +443,11 @@
     const action = target.dataset.v4Action;
     if (action === 'translate-luna') void translateWithLuna(card);
     if (action === 'edit-final') void moveToReview(card);
-    if (action === 'publish-final') void publishFinal(card);
+    if (action === 'publish-machine') void publishCopy(card, 'machine');
+    if (action === 'publish-luna') void publishCopy(card, 'luna');
     if (action === 'reject-block') void rejectAndBlock(card);
   });
+
+  window.setTimeout(refreshLiveFeed, 700);
+  window.setInterval(refreshLiveFeed, 5000);
 })();

@@ -3,18 +3,22 @@ from __future__ import annotations
 import base64
 import json
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
 import requests
 from flask import Blueprint, current_app, jsonify, request, session
 
+from .command_center import _enqueue
 from .github_builder import BuilderError
-from .github_builder_release import configured_builder
+from .github_builder_release import BuilderRelease, configured_builder
 from .luna_builder import is_builder_request
-from .luna_builder_tools import builder_tool_schemas
+from .luna_capabilities import build_capability_registry
+from .luna_context import LunaContextResolver
+from .luna_control_runtime import LunaControlRuntime
 from .luna_conversation import LunaConversationStore
+from .luna_proposals import ProposalStore
 from .luna_tool_runtime import execute_luna_tool
 from .luna_tools import LunaToolbox, tool_schemas
 from .openai_luna import LunaProviderError, get_luna_client
@@ -29,12 +33,13 @@ _PENDING_TTL_MINUTES = 15
 
 _SYSTEM = """تو Luna، دستیار عملیاتی فارسی اتاق خبر بی‌خبر هستی.
 با کاربر طبیعی و روان فارسی حرف بزن و از متن‌های کلیشه‌ای دوری کن.
-برای اطلاعات و عملیات اتاق خبر حتماً از ابزارهای تعریف‌شده استفاده کن و هرگز وانمود نکن کاری انجام شده مگر نتیجه ابزار ok باشد.
-اگر کاربر می‌گوید «این خبر»، «همین منبع» یا مرجع مشابه و هدف از زمینه مکالمه روشن نیست، با ابزار جست‌وجو بررسی کن؛ اگر چند گزینه محتمل بود یک سؤال کوتاه برای رفع ابهام بپرس.
-عملیات حذف/مسدودسازی خبر و تغییر منبع باید به مرحله تأیید برسد؛ نتیجه confirmation_required یعنی هنوز هیچ تغییر حساسی اجرا نشده است.
-ترجمه خبر باید فقط ترجمه/ویرایش خبری باشد، بدون امتیازدهی، نظر سیاسی یا پیشنهاد PUBLISH/REJECT و باید از ابزار translate_story استفاده کند.
-برای تغییر خود پنل، UI، ماژول یا کد، Builder branch/PR می‌سازد. برای وضعیت تغییر از builder_ci_status استفاده کن و فقط با builder_prepare_merge و تأیید کاربر می‌توانی تغییر دارای CI سبز را merge کنی.
-هرگز merge/deploy را موفق اعلام نکن مگر ابزار نتیجه موفق بدهد.
+برای اطلاعات و عملیات اتاق خبر فقط از قابلیت‌های تعریف‌شده استفاده کن و هرگز وانمود نکن کاری انجام شده مگر نتیجه executor موفق باشد.
+خواندن و بررسی را می‌توانی مستقیم انجام بدهی. هر عملیاتی که داده، منبع، خبر، تنظیمات، کد، UI یا وضعیت انتشار را تغییر می‌دهد باید ابتدا proposal دقیق بسازد و منتظر تأیید کاربر بماند.
+اگر کاربر می‌گوید «این خبر»، «همین منبع» یا مرجع مشابه، از context ساختاریافته استفاده کن؛ اگر هدف مبهم بود سؤال کوتاه بپرس و حدس نزن.
+برای تغییر نام منبع از rename_source، برای فقط-بررسی از set_source_review_only و برای صدای خبر جدید از set_newsroom_alarm استفاده کن.
+برای انتشار، copy_mode را مشخص کن: machine برای ترجمه ماشینی، luna برای نسخه Luna.
+ترجمه خبر فقط ترجمه/ویرایش خبری است؛ بدون امتیازدهی و نظر سیاسی.
+برای تغییر خود پنل، UI، ماژول یا کد از builder_prepare استفاده کن؛ Builder روی branch جدا کار می‌کند و merge فقط بعد از CI سبز و تأیید جداگانه ممکن است.
 جواب نهایی را مختصر، دقیق و عملیاتی بنویس."""
 
 
@@ -82,79 +87,28 @@ def _conversation_store() -> LunaConversationStore:
     return LunaConversationStore(path)
 
 
-def _save_pending(
-    tool_name: str,
-    arguments: dict,
-    summary_fa: str,
-    *,
-    action_type: str = "operator_tool",
-) -> str:
-    action_id = uuid4().hex
-    now = datetime.now(timezone.utc)
-    record = {
-        "id": action_id,
-        "action": action_type,
-        "tool_name": str(tool_name),
-        "payload": dict(arguments),
-        "summary_fa": str(summary_fa or "این عملیات اجرا شود؟"),
-        "status": "pending",
-        "created_at": now.isoformat(),
-        "expires_at": (now + timedelta(minutes=_PENDING_TTL_MINUTES)).isoformat(),
-    }
-    _mutate(
-        "data/panel_pending_actions.json",
-        [],
-        lambda rows: ([record] + [dict(row) for row in list(rows or []) if isinstance(row, dict)])[:100],
-        "panel v4.1: Luna pending action",
-    )
-    return action_id
+class _ConfiguredBuilderProxy:
+    """Delay token/config validation until a confirmed Builder action executes."""
+
+    def start_change(self, request_text: str):
+        return configured_builder().start_change(request_text)
 
 
-def _finish_pending(action_id: str, *, status: str, result: dict) -> None:
-    def transform(rows):
-        output = []
-        for raw in list(rows or []):
-            if not isinstance(raw, dict):
-                continue
-            row = dict(raw)
-            if str(row.get("id") or "") == action_id:
-                row["status"] = status
-                row["result"] = dict(result)
-                row["completed_at"] = datetime.now(timezone.utc).isoformat()
-            output.append(row)
-        return output
-    _mutate("data/panel_pending_actions.json", [], transform, "panel v4.1: complete Luna action")
+def _builder_release():
+    return BuilderRelease(configured_builder())
 
 
-def _expired(record: dict) -> bool:
-    raw = str(record.get("expires_at") or "").strip()
-    if not raw:
-        return False
-    try:
-        return datetime.fromisoformat(raw.replace("Z", "+00:00")) <= datetime.now(timezone.utc)
-    except ValueError:
-        return True
-
-
-def _audit(action: str, status: str, summary: str, result: dict | None = None) -> None:
-    record = {
-        "id": uuid4().hex,
-        "at": datetime.now(timezone.utc).isoformat(),
-        "actor": "luna_operator",
-        "action": str(action or ""),
-        "status": str(status or ""),
-        "summary": str(summary or "")[:500],
-        "result": {
-            key: value
-            for key, value in dict(result or {}).items()
-            if key in {"ok", "error", "message", "pr_number", "merge_sha", "rollback_sha"}
-        },
-    }
-    _mutate(
-        "data/panel_audit_log.json",
-        [],
-        lambda rows: ([record] + [dict(row) for row in list(rows or []) if isinstance(row, dict)])[:300],
-        "panel v4.1: Luna audit",
+def _control_runtime(*, provider_client=None) -> LunaControlRuntime:
+    toolbox = LunaToolbox(_data())
+    return LunaControlRuntime(
+        registry=build_capability_registry(),
+        toolbox=toolbox,
+        resolver=LunaContextResolver(toolbox),
+        proposals=ProposalStore(_data(), ttl_minutes=_PENDING_TTL_MINUTES),
+        provider_client=provider_client,
+        enqueue=_enqueue,
+        builder=_ConfiguredBuilderProxy(),
+        builder_release_factory=_builder_release,
     )
 
 
@@ -189,10 +143,62 @@ def _history_input(store: LunaConversationStore, conversation_id: str) -> list[d
     return result
 
 
-def _safe_tool_result(result: dict) -> dict:
-    clean = dict(result)
-    clean.pop("pending_action", None)
-    return clean
+def _update_context_from_result(store: LunaConversationStore, conversation_id: str, result: dict) -> None:
+    values = {}
+    target = result.get("target") if isinstance(result.get("target"), dict) else {}
+    if target.get("type") == "story" and target.get("id"):
+        values["last_story_id"] = str(target["id"])
+    if target.get("type") == "source" and target.get("id") and target.get("id") != "new":
+        values["last_source_id"] = str(target["id"])
+    if result.get("action_id"):
+        values["last_action_id"] = str(result["action_id"])
+    story = result.get("story") if isinstance(result.get("story"), dict) else {}
+    source = result.get("source") if isinstance(result.get("source"), dict) else {}
+    if story.get("id"):
+        values["last_story_id"] = str(story["id"])
+    if source.get("id"):
+        values["last_source_id"] = str(source["id"])
+    if result.get("pr_number"):
+        values["last_builder_pr"] = int(result["pr_number"])
+    if values:
+        store.update_context(conversation_id, **values)
+
+
+def _legacy_finish_pending(action_id: str, *, status: str, result: dict) -> None:
+    def transform(rows):
+        output = []
+        for raw in list(rows or []):
+            if not isinstance(raw, dict):
+                continue
+            row = dict(raw)
+            if str(row.get("id") or "") == action_id:
+                row["status"] = status
+                row["result"] = dict(result)
+                row["completed_at"] = datetime.now(timezone.utc).isoformat()
+            output.append(row)
+        return output
+    _mutate("data/panel_pending_actions.json", [], transform, "panel v4.2: complete legacy Luna action")
+
+
+def _legacy_confirm(record: dict, action_id: str):
+    action_type = str(record.get("action") or "")
+    if action_type == "builder_prepare":
+        request_text = str((record.get("payload") or {}).get("request") or "").strip()
+        try:
+            result = configured_builder().start_change(request_text)
+        except BuilderError as exc:
+            result = {"ok": False, "error": "builder_failed", "message": str(exc)}
+        except LunaProviderError as exc:
+            result = {"ok": False, "error": exc.code, "message": exc.message_fa}
+        _legacy_finish_pending(action_id, status="completed" if result.get("ok") else "failed", result=result)
+        return jsonify(result), (200 if result.get("ok") else 409)
+    if action_type != "operator_tool":
+        return jsonify({"ok": False, "error": "invalid_pending_action", "message": "این عملیات دیگر معتبر نیست."}), 409
+    tool_name = str(record.get("tool_name") or "")
+    arguments = record.get("payload") if isinstance(record.get("payload"), dict) else {}
+    result = execute_luna_tool(LunaToolbox(_data()), tool_name, arguments, confirmed=True)
+    _legacy_finish_pending(action_id, status="completed" if result.get("ok") else "failed", result=result)
+    return jsonify(result), (200 if result.get("ok") else 409)
 
 
 @bp.before_request
@@ -217,27 +223,25 @@ def operator_chat():
     if not message and image is None:
         return jsonify({"ok": False, "error": "empty_message", "message": "پیام یا تصویر لازم است."}), 400
 
-    if is_builder_request(message) and image is None:
-        action_id = _save_pending(
-            "builder_prepare",
-            {"request": message},
-            "Luna این تغییر کدنویسی را روی branch جدا بسازد، تست اضافه کند و Draft PR باز کند؟",
-            action_type="builder_prepare",
-        )
-        return jsonify(
-            {
-                "ok": True,
-                "mode": "builder",
-                "builder_request": message,
-                "confirmation_required": True,
-                "action_id": action_id,
-                "summary_fa": "Luna تغییر را روی branch جدا می‌سازد؛ production مستقیم دستکاری نمی‌شود.",
-                "reply_fa": "این درخواست مربوط به تغییر خود پنل/کد است. آماده‌ام Builder را شروع کنم، تست بنویسم و Draft PR بسازم.",
-            }
-        )
-
     conversation_id = _conversation_id()
     store = _conversation_store()
+    context = store.get_context(conversation_id)
+
+    # Code/UI requests do not need an extra model round just to discover Builder.
+    if is_builder_request(message) and image is None:
+        result = _control_runtime().invoke("builder_prepare", {"request": message}, context)
+        _update_context_from_result(store, conversation_id, result)
+        reply = str(result.get("summary_fa") or result.get("message") or "درخواست Builder آماده بررسی است.")
+        store.append(conversation_id, "user", message)
+        store.append(conversation_id, "assistant", reply)
+        return jsonify({
+            "ok": bool(result.get("ok")),
+            "mode": "builder",
+            "reply_fa": reply,
+            "confirmation_required": bool(result.get("confirmation_required")),
+            **{key: result[key] for key in ("action_id", "summary_fa", "target", "before", "after") if key in result},
+        })
+
     content = [{"type": "input_text", "text": message or "این تصویر را بررسی کن."}]
     if image is not None:
         content.append(image)
@@ -245,10 +249,11 @@ def operator_chat():
     input_items.append({"role": "user", "content": content})
 
     client = get_luna_client()
-    toolbox = LunaToolbox(_data())
-    tools = tool_schemas() + builder_tool_schemas()
+    runtime = _control_runtime(provider_client=client)
+    tools = tool_schemas()
     pending = None
     events = []
+    reply = ""
     try:
         response = client.create_response(
             input_items=input_items,
@@ -260,41 +265,39 @@ def operator_chat():
         response_output = response.get("output") if isinstance(response, dict) else []
         if isinstance(response_output, list):
             continuation_input.extend(response_output)
+
         for _ in range(_MAX_TOOL_ROUNDS):
             calls = client.function_calls(response)
             if not calls:
+                reply = client.output_text(response).strip()
                 break
             outputs = []
             for call in calls:
-                result = execute_luna_tool(
-                    toolbox,
-                    call["name"],
-                    call["arguments"],
-                    provider_client=client,
-                )
-                event = {"tool": call["name"], "ok": bool(result.get("ok")), "message": str(result.get("message") or "")}
-                if result.get("confirmation_required") and isinstance(result.get("pending_action"), dict):
-                    proposal = result["pending_action"]
-                    action_id = _save_pending(
-                        str(proposal.get("action") or call["name"]),
-                        dict(proposal.get("payload") or {}),
-                        str(proposal.get("summary_fa") or "این عملیات اجرا شود؟"),
-                    )
+                result = runtime.invoke(call["name"], call["arguments"], context)
+                _update_context_from_result(store, conversation_id, result)
+                event = {
+                    "tool": call["name"],
+                    "ok": bool(result.get("ok")),
+                    "message": str(result.get("message") or result.get("summary_fa") or ""),
+                }
+                if result.get("confirmation_required"):
                     pending = {
-                        "action_id": action_id,
+                        "action_id": str(result.get("action_id") or ""),
                         "tool": call["name"],
-                        "summary_fa": str(proposal.get("summary_fa") or "این عملیات اجرا شود؟"),
+                        "summary_fa": str(result.get("summary_fa") or "این عملیات اجرا شود؟"),
                     }
-                    result = {**_safe_tool_result(result), "action_id": action_id, "summary_fa": pending["summary_fa"]}
                     event["confirmation_required"] = True
+                    events.append(event)
+                    reply = pending["summary_fa"]
+                    break
                 events.append(event)
-                outputs.append(
-                    {
-                        "type": "function_call_output",
-                        "call_id": call["call_id"],
-                        "output": json.dumps(result, ensure_ascii=False),
-                    }
-                )
+                outputs.append({
+                    "type": "function_call_output",
+                    "call_id": call["call_id"],
+                    "output": json.dumps(result, ensure_ascii=False),
+                })
+            if pending:
+                break
             continuation_input.extend(outputs)
             response = client.create_response(
                 input_items=continuation_input,
@@ -305,12 +308,18 @@ def operator_chat():
             response_output = response.get("output") if isinstance(response, dict) else []
             if isinstance(response_output, list):
                 continuation_input.extend(response_output)
-        reply = client.output_text(response).strip()
+        if not reply and not pending:
+            reply = client.output_text(response).strip()
     except LunaProviderError as exc:
         return _provider_error(exc)
 
     if not reply:
-        reply = pending["summary_fa"] if pending else "انجام شد."
+        if pending:
+            reply = pending["summary_fa"]
+        elif events and events[-1].get("ok"):
+            reply = events[-1].get("message") or "عملیات با موفقیت اجرا شد."
+        else:
+            reply = "نتیجه قابل تأییدی نگرفتم؛ کوتاه‌تر بگو چه کاری انجام بدهم."
     if message:
         store.append(conversation_id, "user", message)
     store.append(conversation_id, "assistant", reply)
@@ -328,45 +337,39 @@ def operator_chat():
 
 @bp.post("/api/panel/luna/operator-confirm/<action_id>")
 def operator_confirm(action_id: str):
-    record = next(
-        (
-            row
-            for row in _rows("data/panel_pending_actions.json")
-            if str(row.get("id") or "") == action_id and str(row.get("status") or "") == "pending"
-        ),
-        None,
-    )
-    if record is None:
+    store = ProposalStore(_data(), ttl_minutes=_PENDING_TTL_MINUTES)
+    record = store.get_pending(action_id)
+    if record.get("status") == "missing":
         return jsonify({"ok": False, "error": "pending_action_not_found", "message": "این تأیید دیگر معتبر نیست."}), 404
-    if _expired(record):
-        result = {"ok": False, "error": "confirmation_expired", "message": "زمان این تأیید تمام شده؛ درخواست را دوباره به Luna بگو."}
-        _finish_pending(action_id, status="expired", result=result)
-        return jsonify(result), 410
 
-    action_type = str(record.get("action") or "")
-    if action_type == "builder_prepare":
-        request_text = str((record.get("payload") or {}).get("request") or "").strip()
+    # Existing pre-v4.2 pending records remain confirmable during rollout.
+    if not record.get("capability"):
+        if record.get("status") != "pending":
+            return jsonify({"ok": False, "error": "pending_action_not_found", "message": "این تأیید دیگر معتبر نیست."}), 404
+        return _legacy_confirm(record, action_id)
+
+    if record.get("status") == "expired":
+        return jsonify({"ok": False, "error": "confirmation_expired", "message": "زمان این تأیید تمام شده؛ درخواست را دوباره به Luna بگو."}), 410
+    if record.get("status") != "pending":
+        return jsonify({"ok": False, "error": "proposal_not_pending", "message": "این تأیید قبلاً مصرف شده یا دیگر معتبر نیست."}), 409
+
+    provider_client = None
+    if str(record.get("capability") or "") == "translate_story":
         try:
-            result = configured_builder().start_change(request_text)
-        except BuilderError as exc:
-            result = {"ok": False, "error": "builder_failed", "message": str(exc)}
+            provider_client = get_luna_client()
         except LunaProviderError as exc:
-            result = {"ok": False, "error": exc.code, "message": exc.message_fa}
-        _finish_pending(action_id, status="completed" if result.get("ok") else "failed", result=result)
-        _audit("builder_prepare", "completed" if result.get("ok") else "failed", request_text, result)
-        return jsonify(result), (200 if result.get("ok") else 409)
+            return _provider_error(exc)
+    try:
+        result = _control_runtime(provider_client=provider_client).confirm(action_id)
+    except BuilderError as exc:
+        result = {"ok": False, "error": "builder_failed", "message": str(exc)}
+    except LunaProviderError as exc:
+        return _provider_error(exc)
 
-    if action_type != "operator_tool":
-        return jsonify({"ok": False, "error": "invalid_pending_action", "message": "این عملیات دیگر معتبر نیست."}), 409
-
-    tool_name = str(record.get("tool_name") or "")
-    arguments = record.get("payload") if isinstance(record.get("payload"), dict) else {}
-    result = execute_luna_tool(
-        LunaToolbox(_data()),
-        tool_name,
-        arguments,
-        confirmed=True,
-    )
-    _finish_pending(action_id, status="completed" if result.get("ok") else "failed", result=result)
-    _audit(tool_name, "completed" if result.get("ok") else "failed", str(record.get("summary_fa") or tool_name), result)
-    return jsonify(result), (200 if result.get("ok") else 409)
+    conversation_id = _conversation_id()
+    _update_context_from_result(_conversation_store(), conversation_id, result)
+    if result.get("ok"):
+        return jsonify(result), 200
+    error = str(result.get("error") or "")
+    status = 410 if error in {"proposal_expired", "confirmation_expired"} else 409
+    return jsonify(result), status

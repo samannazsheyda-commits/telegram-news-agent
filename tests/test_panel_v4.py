@@ -96,11 +96,11 @@ def test_story_shows_machine_persian_with_optional_guarded_luna_and_human_publis
 
     assert "ترجمه با Luna" in html
     assert "ترجمه ماشینی" in html
-    assert "تأیید و انتشار با Luna" in html
+    assert "انتشار مستقیم" in html
     assert "اهمیت:" not in html
     assert "PUBLISH" not in html
     assert 'data-action="publish"' not in html
-    assert 'data-v4-action="publish-final"' in html
+    assert 'data-v4-action="publish-machine"' in html
 
 
 def test_dashboard_keeps_quota_summary_simple():
