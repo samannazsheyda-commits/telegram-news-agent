@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any, Callable
 
 from .newsroom_v5_db import transaction
@@ -64,14 +65,21 @@ def prepare_publication(
     return store.get_publication(publication["id"]) or publication
 
 
-def _mark_published(store: NewsroomV5Store, publication: dict, message_id: Any) -> dict:
+def _emit(event_sink, event_type: str, payload: dict) -> None:
+    if event_sink is None:
+        return
+    event_sink(event_type, payload)
+
+
+def _mark_published(store: NewsroomV5Store, publication: dict, message_id: Any, *, event_sink=None) -> dict:
+    published_at = datetime.now(timezone.utc).isoformat()
     with transaction(store.conn):
         updated = store.update_publication(
             publication["id"],
             status="published",
             telegram_message_id=str(message_id),
             last_error=None,
-            published_at=None,
+            published_at=published_at,
         ) or publication
         store.transition_story(str(publication["story_id"]), {"publishing", "editorial_ready", "review"}, "published")
         store.append_audit(
@@ -80,6 +88,14 @@ def _mark_published(store: NewsroomV5Store, publication: dict, message_id: Any) 
             entity_id=publication["id"],
             detail={"story_id": publication["story_id"], "telegram_message_id": str(message_id)},
         )
+    payload = {
+        "story_id": str(publication["story_id"]),
+        "publication_id": str(publication["id"]),
+        "telegram_message_id": str(message_id),
+        "published_at": published_at,
+    }
+    _emit(event_sink, "story_published", payload)
+    _emit(event_sink, "counts_changed", {"reason": "story_published", "story_id": str(publication["story_id"])})
     result = dict(updated)
     result["status"] = "published"
     return result
@@ -91,6 +107,7 @@ def process_publication(
     *,
     sender: Callable[[str, str], Any],
     reconciler: Callable[[dict], dict | None] | None = None,
+    event_sink: Callable[[str, dict], Any] | None = None,
 ) -> dict:
     publication = store.get_publication(publication_id)
     if publication is None:
@@ -104,7 +121,12 @@ def process_publication(
         except Exception as exc:
             reconciliation = {"found": False, "error": str(exc)}
         if reconciliation.get("found") and reconciliation.get("telegram_message_id") is not None:
-            return _mark_published(store, publication, reconciliation["telegram_message_id"])
+            return _mark_published(
+                store,
+                publication,
+                reconciliation["telegram_message_id"],
+                event_sink=event_sink,
+            )
         enqueue_once(
             store,
             "reconcile_publication",
@@ -145,4 +167,4 @@ def process_publication(
         result["status"] = "retry"
         return result
 
-    return _mark_published(store, publication, message_id)
+    return _mark_published(store, publication, message_id, event_sink=event_sink)
