@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   verify:
@@ -65,4 +66,21 @@ jobs:
           print('SHADOW_FEED_RECORDS', len(rows))
           PY
       - name: Run full regression suite
-        run: python -m pytest -q
+        id: pytest
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m pytest -q 2>&1 | tee pytest-output.txt
+      - name: Report V4.1 pytest failures on PR
+        if: failure() && github.event.pull_request.number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          {
+            echo '### V4.1 CI failure report'
+            echo '```text'
+            tail -n 220 pytest-output.txt
+            echo '```'
+          } > pytest-comment.md
+          gh pr comment "$PR_NUMBER" --body-file pytest-comment.md
