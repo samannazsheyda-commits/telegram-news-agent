@@ -37,7 +37,7 @@ class MemoryData:
         return {"sha": "next"}
 
 
-def _client(data: MemoryData):
+def _client(data: MemoryData, translator=None):
     app = create_app(
         {
             "TESTING": True,
@@ -45,10 +45,11 @@ def _client(data: MemoryData):
             "SECRET_KEY": "test",
             "PANEL_PASSWORD_HASH": "x",
             "DATA_BACKEND": data,
-            "LIVE_FEED_TRANSLATOR": lambda text: {
+            "LIVE_FEED_TRANSLATOR": translator
+            or (lambda text: {
                 "New English headline": "تیتر فارسی تازه",
                 "English summary for the new story.": "خلاصه فارسی خبر تازه.",
-            }.get(text, text),
+            }.get(text, text)),
         }
     )
     app.register_blueprint(live_api_bp)
@@ -68,6 +69,23 @@ def test_machine_localization_persists_persian_copy_for_dashboard_and_publish():
     row = data.mapping["data/panel_live_feed.json"][0]
     assert row["persian_title"] == "تیتر فارسی تازه"
     assert row["persian_body"] == "خلاصه فارسی خبر تازه."
+    assert row["machine_translation_status"] == "passed"
+
+
+def test_failed_machine_translation_keeps_story_pending_and_not_publishable():
+    data = MemoryData()
+    client = _client(data, translator=lambda _text: "")
+
+    response = client.post("/api/live-feed/localize", json={"ids": ["story-1"]})
+
+    assert response.status_code == 200
+    assert response.get_json()["items"] == []
+    item = client.get("/api/live-feed").get_json()["items"][0]
+    assert item["needs_localization"] is True
+    assert item["can_publish"] is False
+    row = data.mapping["data/panel_live_feed.json"][0]
+    assert "persian_title" not in row
+    assert "machine_translation_status" not in row
 
 
 def test_publish_mode_machine_uses_machine_copy_even_when_luna_copy_exists():
