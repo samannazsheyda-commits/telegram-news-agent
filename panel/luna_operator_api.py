@@ -3,15 +3,19 @@ from __future__ import annotations
 import base64
 import json
 import os
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
 
 import requests
 from flask import Blueprint, current_app, jsonify, request, session
 
-from .github_builder import BuilderError, GitHubBuilder
+from .github_builder import BuilderError
+from .github_builder_release import configured_builder
 from .luna_builder import is_builder_request
+from .luna_builder_tools import builder_tool_schemas
 from .luna_conversation import LunaConversationStore
+from .luna_tool_runtime import execute_luna_tool
 from .luna_tools import LunaToolbox, tool_schemas
 from .openai_luna import LunaProviderError, get_luna_client
 
@@ -21,14 +25,16 @@ _IMAGE_MIMES = {"image/jpeg", "image/png", "image/webp"}
 _IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 _MAX_IMAGE_BYTES = 8 * 1024 * 1024
 _MAX_TOOL_ROUNDS = 4
+_PENDING_TTL_MINUTES = 15
 
 _SYSTEM = """تو Luna، دستیار عملیاتی فارسی اتاق خبر بی‌خبر هستی.
 با کاربر طبیعی و روان فارسی حرف بزن و از متن‌های کلیشه‌ای دوری کن.
 برای اطلاعات و عملیات اتاق خبر حتماً از ابزارهای تعریف‌شده استفاده کن و هرگز وانمود نکن کاری انجام شده مگر نتیجه ابزار ok باشد.
 اگر کاربر می‌گوید «این خبر»، «همین منبع» یا مرجع مشابه و هدف از زمینه مکالمه روشن نیست، با ابزار جست‌وجو بررسی کن؛ اگر چند گزینه محتمل بود یک سؤال کوتاه برای رفع ابهام بپرس.
 عملیات حذف/مسدودسازی خبر و تغییر منبع باید به مرحله تأیید برسد؛ نتیجه confirmation_required یعنی هنوز هیچ تغییر حساسی اجرا نشده است.
-ترجمه خبر باید فقط ترجمه/ویرایش خبری باشد، بدون امتیازدهی، نظر سیاسی یا پیشنهاد PUBLISH/REJECT.
-اگر درخواست کاربر تغییر خود پنل، UI، ماژول یا کد است، این درخواست در Builder انجام می‌شود و مستقیم production دستکاری نمی‌شود.
+ترجمه خبر باید فقط ترجمه/ویرایش خبری باشد، بدون امتیازدهی، نظر سیاسی یا پیشنهاد PUBLISH/REJECT و باید از ابزار translate_story استفاده کند.
+برای تغییر خود پنل، UI، ماژول یا کد، Builder branch/PR می‌سازد. برای وضعیت تغییر از builder_ci_status استفاده کن و فقط با builder_prepare_merge و تأیید کاربر می‌توانی تغییر دارای CI سبز را merge کنی.
+هرگز merge/deploy را موفق اعلام نکن مگر ابزار نتیجه موفق بدهد.
 جواب نهایی را مختصر، دقیق و عملیاتی بنویس."""
 
 
@@ -84,6 +90,7 @@ def _save_pending(
     action_type: str = "operator_tool",
 ) -> str:
     action_id = uuid4().hex
+    now = datetime.now(timezone.utc)
     record = {
         "id": action_id,
         "action": action_type,
@@ -91,6 +98,8 @@ def _save_pending(
         "payload": dict(arguments),
         "summary_fa": str(summary_fa or "این عملیات اجرا شود؟"),
         "status": "pending",
+        "created_at": now.isoformat(),
+        "expires_at": (now + timedelta(minutes=_PENDING_TTL_MINUTES)).isoformat(),
     }
     _mutate(
         "data/panel_pending_actions.json",
@@ -111,9 +120,42 @@ def _finish_pending(action_id: str, *, status: str, result: dict) -> None:
             if str(row.get("id") or "") == action_id:
                 row["status"] = status
                 row["result"] = dict(result)
+                row["completed_at"] = datetime.now(timezone.utc).isoformat()
             output.append(row)
         return output
     _mutate("data/panel_pending_actions.json", [], transform, "panel v4.1: complete Luna action")
+
+
+def _expired(record: dict) -> bool:
+    raw = str(record.get("expires_at") or "").strip()
+    if not raw:
+        return False
+    try:
+        return datetime.fromisoformat(raw.replace("Z", "+00:00")) <= datetime.now(timezone.utc)
+    except ValueError:
+        return True
+
+
+def _audit(action: str, status: str, summary: str, result: dict | None = None) -> None:
+    record = {
+        "id": uuid4().hex,
+        "at": datetime.now(timezone.utc).isoformat(),
+        "actor": "luna_operator",
+        "action": str(action or ""),
+        "status": str(status or ""),
+        "summary": str(summary or "")[:500],
+        "result": {
+            key: value
+            for key, value in dict(result or {}).items()
+            if key in {"ok", "error", "message", "pr_number", "merge_sha", "rollback_sha"}
+        },
+    }
+    _mutate(
+        "data/panel_audit_log.json",
+        [],
+        lambda rows: ([record] + [dict(row) for row in list(rows or []) if isinstance(row, dict)])[:300],
+        "panel v4.1: Luna audit",
+    )
 
 
 def _provider_error(exc: LunaProviderError):
@@ -204,12 +246,13 @@ def operator_chat():
 
     client = get_luna_client()
     toolbox = LunaToolbox(_data())
+    tools = tool_schemas() + builder_tool_schemas()
     pending = None
     events = []
     try:
         response = client.create_response(
             input_items=input_items,
-            tools=tool_schemas(),
+            tools=tools,
             model=client.fast_model,
             instructions=_SYSTEM,
         )
@@ -219,7 +262,12 @@ def operator_chat():
                 break
             outputs = []
             for call in calls:
-                result = toolbox.execute(call["name"], call["arguments"])
+                result = execute_luna_tool(
+                    toolbox,
+                    call["name"],
+                    call["arguments"],
+                    provider_client=client,
+                )
                 event = {"tool": call["name"], "ok": bool(result.get("ok")), "message": str(result.get("message") or "")}
                 if result.get("confirmation_required") and isinstance(result.get("pending_action"), dict):
                     proposal = result["pending_action"]
@@ -245,7 +293,7 @@ def operator_chat():
                 )
             response = client.create_response(
                 input_items=outputs,
-                tools=tool_schemas(),
+                tools=tools,
                 model=client.fast_model,
                 instructions=_SYSTEM,
                 previous_response_id=str(response.get("id") or "") or None,
@@ -283,17 +331,22 @@ def operator_confirm(action_id: str):
     )
     if record is None:
         return jsonify({"ok": False, "error": "pending_action_not_found", "message": "این تأیید دیگر معتبر نیست."}), 404
+    if _expired(record):
+        result = {"ok": False, "error": "confirmation_expired", "message": "زمان این تأیید تمام شده؛ درخواست را دوباره به Luna بگو."}
+        _finish_pending(action_id, status="expired", result=result)
+        return jsonify(result), 410
 
     action_type = str(record.get("action") or "")
     if action_type == "builder_prepare":
         request_text = str((record.get("payload") or {}).get("request") or "").strip()
         try:
-            result = GitHubBuilder.from_env().start_change(request_text)
+            result = configured_builder().start_change(request_text)
         except BuilderError as exc:
             result = {"ok": False, "error": "builder_failed", "message": str(exc)}
         except LunaProviderError as exc:
             result = {"ok": False, "error": exc.code, "message": exc.message_fa}
         _finish_pending(action_id, status="completed" if result.get("ok") else "failed", result=result)
+        _audit("builder_prepare", "completed" if result.get("ok") else "failed", request_text, result)
         return jsonify(result), (200 if result.get("ok") else 409)
 
     if action_type != "operator_tool":
@@ -301,6 +354,12 @@ def operator_confirm(action_id: str):
 
     tool_name = str(record.get("tool_name") or "")
     arguments = record.get("payload") if isinstance(record.get("payload"), dict) else {}
-    result = LunaToolbox(_data()).execute(tool_name, arguments, confirmed=True)
+    result = execute_luna_tool(
+        LunaToolbox(_data()),
+        tool_name,
+        arguments,
+        confirmed=True,
+    )
     _finish_pending(action_id, status="completed" if result.get("ok") else "failed", result=result)
+    _audit(tool_name, "completed" if result.get("ok") else "failed", str(record.get("summary_fa") or tool_name), result)
     return jsonify(result), (200 if result.get("ok") else 409)
