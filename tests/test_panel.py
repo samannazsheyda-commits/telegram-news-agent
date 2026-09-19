@@ -91,7 +91,7 @@ def test_authenticated_dashboard_is_a_real_persian_newsroom():
     assert "Newsroom V4" in text
     assert "خبرها" in text
     assert "ورودی خبرها" in text
-    assert "ترجمه ماشینی" not in text
+    assert "ترجمه ماشینی" in text
     assert "Luna" in text
     assert "سلامت سیستم" in text
     assert "هواشناسی" in text
@@ -145,7 +145,7 @@ def test_pwa_assets_exist_and_do_not_cache_api_routes():
     assert "bikhabar-newsroom-v4-1" in worker
 
 
-def test_dashboard_shows_original_but_never_translates_during_get():
+def test_dashboard_never_translates_during_get_and_hides_raw_english_when_persian_is_missing():
     data = FakeData()
     data.files["data/panel_live_feed.json"] = [
         {
@@ -172,10 +172,11 @@ def test_dashboard_shows_original_but_never_translates_during_get():
     text = response.get_data(as_text=True)
     assert response.status_code == 200
     assert text.count('data-v4-story-card="1"') == 5
-    assert "Live story 0" in text
+    assert "Live story 0" not in text
+    assert "عنوان فارسی در حال آماده‌سازی" in text
     assert "ترجمه با Luna" in text
-    assert "ترجمه ماشینی" not in text
-    assert 'data-action="publish"' not in text
+    assert "ترجمه ماشینی" in text
+    assert 'data-v4-action="publish-final"' not in text
     assert "خبر زنده صفر" not in text
 
 
