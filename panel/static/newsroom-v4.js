@@ -50,9 +50,15 @@
     });
   }
 
+  function stampOf(value) {
+    if (!value) return NaN;
+    const stamp = Date.parse(value);
+    return Number.isFinite(stamp) ? stamp : NaN;
+  }
+
   function relativeTime(value) {
     if (!value) return '—';
-    const stamp = Date.parse(value);
+    const stamp = stampOf(value);
     if (!Number.isFinite(stamp)) return value;
     const seconds = Math.max(0, Math.floor((Date.now() - stamp) / 1000));
     if (seconds < 60) return 'همین الان';
@@ -62,6 +68,42 @@
     if (hours < 24) return `${hours.toLocaleString('fa-IR')} ساعت قبل`;
     const days = Math.floor(hours / 24);
     return `${days.toLocaleString('fa-IR')} روز قبل`;
+  }
+
+  function exactTime(value) {
+    const stamp = stampOf(value);
+    if (!Number.isFinite(stamp)) return value || '—';
+    const date = new Date(stamp);
+    return new Intl.DateTimeFormat('fa-IR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    }).format(date);
+  }
+
+  function storyTime(value) {
+    if (!value) return '—';
+    const stamp = stampOf(value);
+    if (!Number.isFinite(stamp)) return value;
+    const clock = new Intl.DateTimeFormat('fa-IR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    }).format(new Date(stamp));
+    return `${clock} · ${relativeTime(value)}`;
+  }
+
+  function refreshTimeNodes(root = document) {
+    root.querySelectorAll?.('[data-v4-relative-time]').forEach(node => {
+      const value = node.getAttribute('datetime') || node.dataset.v4RelativeTime;
+      node.textContent = node.dataset.v4Exact === '1' ? storyTime(value) : relativeTime(value);
+      if (value && node.dataset.v4Exact === '1') node.title = exactTime(value);
+    });
   }
 
   document.addEventListener('click', event => {
@@ -79,9 +121,17 @@
     });
   });
 
-  document.querySelectorAll('[data-v4-relative-time]').forEach(node => {
-    node.textContent = relativeTime(node.getAttribute('datetime') || node.dataset.v4RelativeTime);
-  });
+  refreshTimeNodes();
+  window.setInterval(() => refreshTimeNodes(), 30000);
 
-  window.BikhabarV4 = {requestJSON, toast, confirmAction, relativeTime, headers};
+  window.BikhabarV4 = {
+    requestJSON,
+    toast,
+    confirmAction,
+    relativeTime,
+    exactTime,
+    storyTime,
+    refreshTimeNodes,
+    headers,
+  };
 })();
