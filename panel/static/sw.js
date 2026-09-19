@@ -1,6 +1,7 @@
-const CACHE = 'bikhabar-newsroom-v4-1';
+const CACHE = 'bikhabar-newsroom-v4-1-1';
 const SHELL = [
   '/static/newsroom-v4.css',
+  '/static/newsroom-v4-polish.css',
   '/static/newsroom-v4.js',
   '/static/newsroom-v4-dashboard.js',
   '/static/newsroom-v4-luna.css',
