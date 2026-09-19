@@ -34,14 +34,15 @@
       <div id="v4LiveFeed" class="v4-story-list v41-story-list">
         {% if live %}
           {% for item in live[:40] %}
+            {% if item.panel_status not in ['auto_published', 'published_auto', 'published_manual', 'reconciled_published', 'rejected_manual', 'blocked', 'superseded'] %}
             {% set story_id = item.id or item.item_id or item.news_key %}
-            {% set machine_title = item.persian_title or item.display_title or '' %}
+            {% set machine_title = item.persian_title or item.display_title or 'عنوان فارسی در حال آماده‌سازی' %}
             {% set machine_body = item.persian_body or '' %}
             {% set machine_ready = item.persian_title %}
             {% set final_title = item.final_persian_title or '' %}
             {% set final_body = item.final_persian_body or '' %}
             {% set final_ready = final_title and item.luna_translation_status == 'passed' %}
-            <article class="v4-story-card v41-story-card" data-v4-story-card="1" data-story-id="{{ story_id }}" data-machine-ready="{{ 1 if machine_ready else 0 }}" data-final-ready="{{ 1 if final_ready else 0 }}">
+            <article class="v4-story-card v41-story-card" data-v4-story-card="1" data-story-id="{{ story_id }}" data-machine-ready="{{ 1 if machine_ready else 0 }}" data-final-ready="{{ 1 if final_ready else 0 }}"{% if not machine_ready %} hidden{% endif %}>
               <div class="v4-story-meta">
                 <span class="v4-source-badge">{{ item.source_display or item.canonical_source_name or item.source or 'منبع خبری' }}</span>
                 {% if item.updated_at or item.discovered_at %}<time datetime="{{ item.updated_at or item.discovered_at }}" data-v4-relative-time>{{ item.updated_at or item.discovered_at }}</time>{% endif %}
@@ -49,7 +50,7 @@
               </div>
 
               <div class="v4-original v41-original">
-                <div class="v41-translation-label"><span>ترجمه ماشینی</span><small>آماده بررسی تو</small></div>
+                <div class="v41-translation-label"><span>ترجمه ماشینی</span><small>{% if machine_ready %}آماده بررسی تو{% else %}در حال آماده‌سازی{% endif %}</small></div>
                 <h3 data-v41-publish-title>{{ machine_title }}</h3>
                 {% if machine_body %}<p data-v41-publish-body>{{ machine_body }}</p>{% endif %}
               </div>
@@ -78,6 +79,7 @@
               </div>
               <div class="v4-story-progress" data-v4-story-progress hidden></div>
             </article>
+            {% endif %}
           {% endfor %}
         {% else %}<div class="v4-empty"><strong>فعلاً خبر تازه‌ای نیست</strong><span>ورودی زنده به‌صورت خودکار به‌روز می‌شود</span></div>{% endif %}
       </div>
