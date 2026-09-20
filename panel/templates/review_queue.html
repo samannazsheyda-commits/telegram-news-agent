@@ -2,7 +2,7 @@
 {% block title %}بررسی | مرکز کنترل بی‌خبر{% endblock %}
 {% block content %}
 <section class="v4-page-head">
-  <div><h1>نیازمند بررسی</h1><p>فقط خبرهایی که واقعاً تصمیم انسانی می‌خواهند</p></div>
+  <div><h1>نیازمند بررسی</h1><p>فقط خبرهایی که ترجمه فارسی‌شان آماده است و واقعاً تصمیم انسانی می‌خواهند</p></div>
   <div class="v4-live-pill"><i></i>{{ items|length }} مورد</div>
 </section>
 
@@ -18,7 +18,7 @@
         <span class="v4-state-badge">منتظر تصمیم</span>
       </div>
       <div class="v4-original">
-        <h3>{{ persian_title or 'ترجمه فارسی در حال آماده‌سازی' }}</h3>
+        <h3>{{ persian_title }}</h3>
         {% if persian_body %}<p>{{ persian_body }}</p>{% endif %}
       </div>
       <div class="v4-story-actions">
@@ -27,7 +27,7 @@
       </div>
     </article>
   {% else %}
-    <div class="v4-empty"><strong>صف بررسی خالی است</strong><span>فعلاً تصمیم دستی لازم نیست</span></div>
+    <div class="v4-empty"><strong>فعلاً خبر فارسیِ آماده بررسی نداریم</strong><span>خبرهای جدید بعد از آماده‌شدن ترجمه ماشینی اینجا ظاهر می‌شوند</span></div>
   {% endfor %}
   </div>
 </section>

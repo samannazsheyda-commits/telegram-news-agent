@@ -26,6 +26,10 @@ from .forms import LoginForm, ReviewEditForm, WebsiteSourceForm, XSourceForm
 
 TEHRAN = ZoneInfo("Asia/Tehran")
 TERMINAL_STATUSES = {"published_manual", "published_auto", "rejected_manual", "superseded"}
+REVIEW_PLACEHOLDERS = {
+    "ترجمه فارسی در حال آماده‌سازی",
+    "عنوان فارسی در حال آماده‌سازی",
+}
 REASON_FA = {
     "article_or_commentary": "تحلیل / یادداشت سردبیری",
     "low_signal": "اهمیت خبری پایین",
@@ -121,6 +125,88 @@ def _has_persian(value: str) -> bool:
     return bool(re.search(r"[\u0600-\u06ff]", str(value or "")))
 
 
+def _usable_persian(value: str) -> str:
+    text = str(value or "").strip()
+    if not text or text in REVIEW_PLACEHOLDERS or not _has_persian(text):
+        return ""
+    return text
+
+
+def _review_copy(record: dict) -> tuple[str, str]:
+    title = _usable_persian(record.get("final_persian_title") or record.get("persian_title"))
+    body = _usable_persian(record.get("final_persian_body") or record.get("persian_body"))
+    return title, body
+
+
+def _review_ready(record: dict) -> bool:
+    title, body = _review_copy(record)
+    original_body = str(record.get("original_summary") or record.get("summary") or record.get("body") or "").strip()
+    return bool(title and (body or not original_body))
+
+
+def _translate_review_record(record: dict, translator) -> tuple[dict, bool]:
+    updated = dict(record)
+    title_fa, body_fa = _review_copy(updated)
+    original_title = str(updated.get("original_title") or updated.get("title") or "").strip()
+    original_body = str(updated.get("original_summary") or updated.get("summary") or updated.get("body") or "").strip()
+
+    def translated(value: str) -> str:
+        if not value:
+            return ""
+        if _has_persian(value) and value not in REVIEW_PLACEHOLDERS:
+            return value
+        try:
+            candidate = str(translator(value) or "").strip()
+        except Exception:
+            return ""
+        return _usable_persian(candidate)
+
+    changed = False
+    if not title_fa:
+        candidate = translated(original_title)
+        if candidate:
+            updated["persian_title"] = candidate
+            title_fa = candidate
+            changed = True
+    if original_body and not body_fa:
+        candidate = translated(original_body)
+        if candidate:
+            updated["persian_body"] = candidate
+            body_fa = candidate
+            changed = True
+    if changed:
+        updated["updated_at"] = _now_iso()
+    return updated, changed
+
+
+def _prepare_review_queue(data, translator, batch_limit: int) -> list[dict]:
+    items = _effective_queue(data)
+    ready: list[dict] = []
+    updates: dict[str, dict] = {}
+    attempts = 0
+    limit = max(1, min(12, int(batch_limit)))
+
+    for item in items:
+        if _review_ready(item):
+            ready.append(item)
+            continue
+        if attempts >= limit:
+            continue
+        attempts += 1
+        translated, changed = _translate_review_record(item, translator)
+        if changed and translated.get("id"):
+            updates[str(translated["id"])] = translated
+        if _review_ready(translated):
+            ready.append(translated)
+
+    if updates:
+        def transform(records):
+            return [updates.get(str(record.get("id") or ""), record) for record in records]
+        _write_latest_list(data, "data/editorial_queue.json", transform, "panel: prepare Persian Review drafts")
+
+    return ready
+
+
 def _live_feed(data) -> list[dict]:
     rows = sorted(
         _read_list(data, "data/panel_live_feed.json"),
@@ -201,6 +287,7 @@ def create_app(config: dict | None = None):
         TELEGRAM_BOT_TOKEN=os.environ.get("TELEGRAM_BOT_TOKEN", ""), TELEGRAM_CHAT_ID=os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"),
         GITHUB_DATA_TOKEN=os.environ.get("GITHUB_DATA_TOKEN", ""), GITHUB_REPOSITORY=os.environ.get("GITHUB_REPOSITORY", "samannazsheyda-commits/telegram-news-agent"),
         GITHUB_BRANCH=os.environ.get("GITHUB_BRANCH", "main"), LIVE_FEED_TRANSLATOR=translate_to_fa,
+        REVIEW_TRANSLATION_BATCH=os.environ.get("REVIEW_TRANSLATION_BATCH", "4"),
         SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax", SESSION_COOKIE_SECURE=True, MAX_CONTENT_LENGTH=64 * 1024,
     )
     if config: app.config.update(config)
@@ -245,7 +332,13 @@ def create_app(config: dict | None = None):
 
     @app.get("/review")
     @login_required
-    def review_queue(): return render_template("review_queue.html", items=_effective_queue(data))
+    def review_queue():
+        try:
+            batch_limit = int(app.config.get("REVIEW_TRANSLATION_BATCH", 4))
+        except (TypeError, ValueError):
+            batch_limit = 4
+        items = _prepare_review_queue(data, app.config["LIVE_FEED_TRANSLATOR"], batch_limit)
+        return render_template("review_queue.html", items=items)
 
     @app.route("/review/<item_id>", methods=["GET", "POST"])
     @login_required
@@ -256,7 +349,18 @@ def create_app(config: dict | None = None):
         record = next((r for r in _effective_queue(data) if r.get("id") == item_id), None)
         if record is None: abort(404)
         form = ReviewEditForm()
-        if request.method == "GET": form.title_fa.data = str(record.get("persian_title") or ""); form.body_fa.data = str(record.get("persian_body") or "")
+        if request.method == "GET":
+            if not _review_ready(record):
+                translated, changed = _translate_review_record(record, app.config["LIVE_FEED_TRANSLATOR"])
+                if changed:
+                    _upsert_record(data, "data/editorial_queue.json", translated, "panel: prepare Persian Review draft")
+                    record = translated
+                if not _review_ready(record):
+                    flash("ترجمه ماشینی فارسی این خبر هنوز آماده نشده.", "info")
+                    return redirect(url_for("review_queue"))
+            title_fa, body_fa = _review_copy(record)
+            form.title_fa.data = title_fa
+            form.body_fa.data = body_fa
         if form.validate_on_submit():
             if form.reject.data:
                 now = _now_iso(); final = dict(record); final.update(status="rejected_manual", decision_at=now, updated_at=now)
