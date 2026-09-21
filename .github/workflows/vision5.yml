@@ -1,0 +1,54 @@
+name: Vision 5 Integration
+
+on:
+  pull_request:
+    paths:
+      - 'bikhabar_v5/**'
+      - 'tests/test_vision5_*.py'
+      - 'requirements*.txt'
+      - '.github/workflows/vision5.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: bikhabar
+          POSTGRES_PASSWORD: bikhabar_test
+          POSTGRES_DB: bikhabar_v5
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U bikhabar -d bikhabar_v5"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      BIKHABAR_V5_INTEGRATION: '1'
+      BIKHABAR_V5_DATABASE_URL: postgresql://bikhabar:bikhabar_test@127.0.0.1:5432/bikhabar_v5
+      BIKHABAR_V5_REDIS_URL: redis://127.0.0.1:6379/5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Run Vision 5 integration tests
+        run: python -m pytest -q tests/test_vision5_production_foundation.py tests/test_vision5_core_contract.py tests/test_vision5_postgres_redis_integration.py
