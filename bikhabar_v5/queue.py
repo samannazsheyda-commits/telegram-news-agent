@@ -70,16 +70,39 @@ class RedisJobQueue:
         result: list[dict] = []
         for _stream, messages in rows or []:
             for message_id, fields in messages:
-                raw_payload = fields.get("payload") or "{}"
-                result.append(
-                    {
-                        "message_id": message_id,
-                        "job_id": fields.get("job_id") or "",
-                        "payload": json.loads(raw_payload),
-                        "created_at": fields.get("created_at") or "",
-                    }
-                )
+                result.append(self._decode(message_id, fields))
         return result
+
+    def reclaim(
+        self,
+        kind: str,
+        *,
+        group: str,
+        consumer: str,
+        min_idle_ms: int = 60_000,
+        count: int = 10,
+    ) -> list[dict]:
+        self.ensure_group(kind, group)
+        response = self._redis().xautoclaim(
+            self.key(kind),
+            group,
+            consumer,
+            min_idle_time=max(1000, int(min_idle_ms)),
+            start_id="0-0",
+            count=max(1, min(int(count), 100)),
+        )
+        messages = response[1] if response and len(response) > 1 else []
+        return [self._decode(message_id, fields) for message_id, fields in messages]
+
+    @staticmethod
+    def _decode(message_id: str, fields: dict[str, str]) -> dict:
+        raw_payload = fields.get("payload") or "{}"
+        return {
+            "message_id": message_id,
+            "job_id": fields.get("job_id") or "",
+            "payload": json.loads(raw_payload),
+            "created_at": fields.get("created_at") or "",
+        }
 
     def ack(self, kind: str, *, group: str, message_id: str) -> int:
         return int(self._redis().xack(self.key(kind), group, message_id))

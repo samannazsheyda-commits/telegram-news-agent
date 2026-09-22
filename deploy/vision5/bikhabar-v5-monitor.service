@@ -1,0 +1,16 @@
+[Unit]
+Description=Bikhabar Vision 5 health monitor
+After=network-online.target postgresql.service redis-server.service
+
+[Service]
+Type=oneshot
+User=bikhabar-v5
+Group=bikhabar-v5
+WorkingDirectory=/opt/bikhabar-vision5/current
+EnvironmentFile=/etc/bikhabar/v5.env
+ExecStart=/opt/bikhabar-vision5/venv/bin/python -m bikhabar_v5.runtime monitor
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/bikhabar/vision5 /var/log/bikhabar/vision5

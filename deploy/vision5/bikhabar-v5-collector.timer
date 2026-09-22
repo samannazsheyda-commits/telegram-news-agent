@@ -1,0 +1,12 @@
+[Unit]
+Description=Run Bikhabar Vision 5 collectors every two minutes
+
+[Timer]
+OnBootSec=45s
+OnUnitActiveSec=2min
+AccuracySec=15s
+Persistent=true
+Unit=bikhabar-v5-collector.service
+
+[Install]
+WantedBy=timers.target

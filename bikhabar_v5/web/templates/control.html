@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}کنترل | بی‌خبر V5{% endblock %}
+{% block content %}
+<section class="page-head"><div><h1>مرکز کنترل</h1><p>وضعیت عملیاتی V5 و دسترسی مستقیم به تنظیمات واقعی.</p></div></section>
+<section class="metrics"><article><span>آماده بررسی</span><strong>{{ metrics.review_ready }}</strong></article><article><span>منتشرشده امروز</span><strong>{{ metrics.published_today }}</strong></article><article><span>خطای انتشار</span><strong>{{ metrics.publish_failed }}</strong></article><article><span>منابع</span><strong>{{ metrics.sources_total }}</strong></article></section>
+<section class="control-grid"><a href="{{ url_for('sources') }}"><strong>منابع</strong><span>افزودن و خاموش/روشن‌کردن</span></a><a href="{{ url_for('settings') }}"><strong>تنظیمات</strong><span>freshness، سهمیه و انتشار خودکار</span></a><a href="{{ url_for('system_status') }}"><strong>سلامت سیستم</strong><span>سرویس‌ها و audit</span></a></section>
+{% endblock %}

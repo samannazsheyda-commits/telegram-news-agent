@@ -1,0 +1,12 @@
+[Unit]
+Description=Monitor Bikhabar Vision 5 health
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=2min
+AccuracySec=15s
+Persistent=true
+Unit=bikhabar-v5-monitor.service
+
+[Install]
+WantedBy=timers.target

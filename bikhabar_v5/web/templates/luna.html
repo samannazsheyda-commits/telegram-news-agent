@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Luna | بی‌خبر V5{% endblock %}
+{% block content %}
+<section class="page-head"><div><span class="live"><i></i> متصل</span><h1>Luna</h1><p>دستیار سردبیری با حافظه، قواعد اتاق خبر و کنترل‌های مجوزدار.</p></div></section>
+<section class="editor luna-shell">
+  <div id="lunaMessages" class="luna-messages" aria-live="polite"></div>
+  <form id="lunaForm" class="stack">
+    <label>شناسه خبر اختیاری<input id="lunaStoryId" placeholder="UUID خبر"></label>
+    <label>پیام<textarea id="lunaMessage" rows="5" required placeholder="از Luna بخواه خبر را بررسی یا بازنویسی کند"></textarea></label>
+    <div class="actions"><button class="primary" type="submit">ارسال</button><button class="secondary" type="button" id="lunaVoice">پیام صوتی</button></div>
+  </form>
+  {% if config.BUILDER_ENABLED %}<details class="builder-box"><summary>Builder</summary><p>تغییر کد در شاخه جدا، با تست و پیش‌نمایش ساخته می‌شود؛ deploy فقط پس از تأیید صریح انجام می‌شود.</p></details>{% endif %}
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='luna.js') }}" defer></script>{% endblock %}

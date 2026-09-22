@@ -126,6 +126,8 @@ CREATE TABLE IF NOT EXISTS luna_conversations (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE UNIQUE INDEX IF NOT EXISTS luna_conversations_user_unique
+    ON luna_conversations(user_id);
 
 CREATE TABLE IF NOT EXISTS publish_attempts (
     id UUID PRIMARY KEY,

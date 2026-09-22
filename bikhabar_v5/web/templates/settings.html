@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}تنظیمات | بی‌خبر V5{% endblock %}
+{% block content %}
+<section class="page-head"><div><h1>تنظیمات اجرایی</h1><p>این مقادیر مستقیماً توسط runtime مستقل V5 خوانده می‌شوند.</p></div></section>
+<section class="editor"><form method="post" class="stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>حداکثر سن خبر (ساعت)<input type="number" min="1" max="72" name="freshness_hours" value="{{ settings.freshness_hours }}" required></label><label>سقف انتشار روزانه<input type="number" min="0" max="500" name="daily_limit" value="{{ settings.daily_limit }}" required></label><label class="check"><input type="checkbox" name="auto_publish" value="true" {% if settings.auto_publish %}checked{% endif %}> انتشار خودکار پس از تأیید</label><button class="primary">ذخیره تنظیمات</button></form></section>
+{% endblock %}

@@ -1,0 +1,12 @@
+[Unit]
+Description=Record hourly Bikhabar Vision 5 observation evidence
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=1h
+AccuracySec=2min
+Persistent=true
+Unit=bikhabar-v5-observation.service
+
+[Install]
+WantedBy=timers.target
