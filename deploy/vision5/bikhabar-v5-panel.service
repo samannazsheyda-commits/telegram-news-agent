@@ -1,0 +1,22 @@
+[Unit]
+Description=Bikhabar Vision 5 panel
+After=network-online.target postgresql.service redis-server.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=bikhabar-v5
+Group=bikhabar-v5
+WorkingDirectory=/opt/bikhabar-vision5/current
+EnvironmentFile=/etc/bikhabar/v5.env
+ExecStart=/opt/bikhabar-vision5/venv/bin/gunicorn --workers 2 --bind 127.0.0.1:8505 --access-logfile - --error-logfile - bikhabar_v5.wsgi:app
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/bikhabar/vision5 /var/log/bikhabar/vision5
+
+[Install]
+WantedBy=multi-user.target

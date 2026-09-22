@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}خبرها | بی‌خبر V5{% endblock %}
+{% block content %}
+<section class="page-head"><div><span class="live"><i></i> زنده</span><h1>خبرهای آماده بررسی</h1><p>نسخه گوگل را ببین، ویرایش کن یا برای نسخه جایگزین سراغ Luna برو.</p></div><strong class="count">{{ result.total }}</strong></section>
+<form class="filters" method="get">
+  <input name="q" value="{{ filters.query }}" placeholder="جست‌وجوی تیتر یا متن">
+  <input name="source" value="{{ filters.source }}" placeholder="منبع">
+  <select name="status"><option value="">آماده بررسی</option><option value="READY_FOR_REVIEW">Google آماده</option><option value="LUNA_TRANSLATED">Luna آماده</option></select>
+  <button class="secondary" type="submit">اعمال فیلتر</button>
+</form>
+<section class="story-list" id="storyList" data-api="{{ url_for('stories_api') }}">
+{% for story in result['items'] %}
+  <article class="story-card" data-story-id="{{ story.id }}">
+    <div class="meta"><span>{{ story.source }}</span><b>{{ 'نسخه Luna' if story.status == 'LUNA_TRANSLATED' else 'ترجمه Google' }}</b></div>
+    <h2>{{ story.final_title or (story.luna_title if story.status == 'LUNA_TRANSLATED' else story.google_title) or story.original_title }}</h2>
+    <p>{{ story.final_body or (story.luna_body if story.status == 'LUNA_TRANSLATED' else story.google_body) or story.original_text }}</p>
+    <footer><a class="primary" href="{{ url_for('review_story', story_id=story.id) }}">بازکردن و تصمیم</a>{% if story.source_url %}<a class="ghost" href="{{ story.source_url }}" target="_blank" rel="noopener noreferrer">منبع اصلی</a>{% endif %}</footer>
+  </article>
+{% else %}<div class="empty">فعلاً خبری منتظر بررسی نیست.</div>{% endfor %}
+</section>
+<nav class="pagination">{% if result.page > 1 %}<a href="?page={{ result.page - 1 }}&q={{ filters.query }}&source={{ filters.source }}">قبلی</a>{% endif %}<span>صفحه {{ result.page }}</span>{% if result.page * result.page_size < result.total %}<a href="?page={{ result.page + 1 }}&q={{ filters.query }}&source={{ filters.source }}">بعدی</a>{% endif %}</nav>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='panel.js') }}" defer></script>{% endblock %}

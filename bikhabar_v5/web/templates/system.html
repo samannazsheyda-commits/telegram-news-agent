@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}سلامت سیستم | بی‌خبر V5{% endblock %}
+{% block content %}
+<section class="page-head"><div><h1>سلامت سیستم</h1><p>آخرین نتیجه probeها و رویدادهای قابل حسابرسی.</p></div></section>
+<div class="review-grid"><section class="story-list">{% for item in health %}<article class="story-card"><div class="meta"><span>{{ item.service_name }}</span><b>{{ item.status }}</b></div><p>{{ item.detail_json }}</p><small>{{ item.checked_at }}</small></article>{% else %}<div class="empty">هنوز probe ثبت نشده است.</div>{% endfor %}</section><aside class="editor"><h2>Audit</h2><div class="audit-list">{% for item in audit %}<p><strong>{{ item.actor }}</strong> · {{ item.action }} · {{ item.status }}<br><small>{{ item.created_at }}</small></p>{% else %}<p>رویدادی ثبت نشده است.</p>{% endfor %}</div></aside></div>
+{% endblock %}

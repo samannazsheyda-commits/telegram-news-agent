@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}ورود | بی‌خبر V5{% endblock %}
+{% block content %}
+<section class="login-card">
+  <h1>ورود به اتاق خبر</h1><p>پنل مستقل بی‌خبر Vision 5</p>
+  <form method="post" class="stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>نام کاربری<input name="username" autocomplete="username" required autofocus></label>
+    <label>رمز عبور<input type="password" name="password" autocomplete="current-password" required></label>
+    <button class="primary" type="submit">ورود امن</button>
+  </form>
+</section>
+{% endblock %}

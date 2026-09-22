@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}بررسی خبر | بی‌خبر V5{% endblock %}
+{% block content %}
+<section class="page-head"><div><h1>تصمیم سردبیری</h1><p>{{ story.source }} · {{ story.published_at_source or 'زمان منبع ثبت نشده' }}</p></div>{% if story.source_url %}<a class="ghost" href="{{ story.source_url }}" target="_blank" rel="noopener noreferrer">منبع اصلی</a>{% endif %}</section>
+<div class="review-grid">
+  <aside class="original"><span>نسخه اصلی</span><h2>{{ story.original_title }}</h2><p>{{ story.original_text }}</p></aside>
+  <section class="editor">
+    <div class="copy-tabs">
+      <button type="button" data-copy="google" data-title="{{ story.google_title or '' }}" data-body="{{ story.google_body or '' }}">Google</button>
+      <button type="button" data-copy="luna" data-title="{{ story.luna_title or '' }}" data-body="{{ story.luna_body or '' }}" {% if not story.luna_title %}disabled{% endif %}>Luna</button>
+    </div>
+    {% if config.LUNA_ENABLED and not story.luna_title %}<form method="post" action="{{ url_for('luna_translation', story_id=story.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="secondary" type="submit">ساخت نسخه جایگزین با Luna</button></form>{% endif %}
+    <form method="post" action="{{ url_for('submit_review', story_id=story.id) }}" class="stack" id="reviewForm">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="copy_mode" id="copyMode" value="edited">
+      <label>تیتر نهایی<input name="title" id="finalTitle" required value="{{ story.final_title or story.luna_title or story.google_title or '' }}"></label>
+      <label>متن نهایی<textarea name="body" id="finalBody" rows="12">{{ story.final_body or story.luna_body or story.google_body or '' }}</textarea></label>
+      <div class="actions"><button class="secondary" name="action" value="save" type="submit">ذخیره پیش‌نویس</button><button class="primary" name="action" value="approve" type="submit">تأیید برای انتشار</button></div>
+      <label>دلیل رد نهایی<input name="reject_reason" placeholder="مثلاً تکراری یا غیرقابل اتکا"></label>
+      <button class="danger" name="action" value="reject" type="submit" data-confirm="این خبر برای همیشه رد شود؟">رد برای همیشه</button>
+    </form>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='panel.js') }}" defer></script>{% endblock %}

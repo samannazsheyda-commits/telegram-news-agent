@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Bikhabar Vision 5 PostgreSQL backup
+
+[Timer]
+OnCalendar=*-*-* 03:25:00 UTC
+RandomizedDelaySec=10min
+Persistent=true
+Unit=bikhabar-v5-backup.service
+
+[Install]
+WantedBy=timers.target

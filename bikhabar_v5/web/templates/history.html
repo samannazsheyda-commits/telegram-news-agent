@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}منتشرشده | بی‌خبر V5{% endblock %}
+{% block content %}
+<section class="page-head"><div><h1>تاریخچه انتشار</h1><p>نسخه نهایی و شناسه پیام تلگرام هر خبر.</p></div><strong class="count">{{ result.total }}</strong></section>
+<form class="filters" method="get"><input name="q" value="{{ filters.query }}" placeholder="جست‌وجو"><input name="source" value="{{ filters.source }}" placeholder="منبع"><button class="secondary">جست‌وجو</button></form>
+<section class="story-list">{% for story in result['items'] %}<article class="story-card"><div class="meta"><span>{{ story.source }}</span><b>پیام {{ story.telegram_message_id or '—' }}</b></div><h2>{{ story.final_title }}</h2><p>{{ story.final_body }}</p></article>{% else %}<div class="empty">هنوز خبری منتشر نشده است.</div>{% endfor %}</section>
+{% endblock %}
