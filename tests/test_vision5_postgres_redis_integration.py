@@ -65,7 +65,7 @@ def test_postgres_core_ingest_transition_audit_and_permanent_reject():
         }
     )
     assert inserted_again is False
-    assert duplicate["id"] == story_id
+    assert duplicate["id"] == uuid.UUID(story_id)
 
     transitioned = core.transition_story(story_id, "GOOGLE_TRANSLATING", actor="collector")
     assert transitioned["status"] == "GOOGLE_TRANSLATING"
@@ -160,7 +160,7 @@ def test_postgres_panel_query_review_and_history_contract():
         statuses=("READY_FOR_REVIEW",), query="فارسی", source="Panel", page=1, page_size=25
     )
     assert result["total"] == 1
-    assert result["items"][0]["id"] == story_id
+    assert result["items"][0]["id"] == uuid.UUID(story_id)
     assert core.get_story(story_id)["published_at_source"].isoformat().startswith("2026-09-22T09:00:00")
 
     approved = core.save_review(
