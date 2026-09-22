@@ -260,15 +260,21 @@ class PostgresCore:
                 ),
             ).fetchone()
             if row is None:
+                identity_clauses = ["id = %s"]
+                identity_parameters: list[Any] = [story_id]
+                if source_url is not None:
+                    identity_clauses.append("source_url = %s")
+                    identity_parameters.append(source_url)
+                if fingerprint is not None:
+                    identity_clauses.append("fingerprint = %s")
+                    identity_parameters.append(fingerprint)
                 existing = self.connection.execute(
-                    """
+                    f"""
                     SELECT * FROM stories
-                    WHERE id = %s
-                       OR (%s IS NOT NULL AND source_url = %s)
-                       OR (%s IS NOT NULL AND fingerprint = %s)
+                    WHERE {' OR '.join(identity_clauses)}
                     LIMIT 1
                     """,
-                    (story_id, source_url, source_url, fingerprint, fingerprint),
+                    tuple(identity_parameters),
                 ).fetchone()
                 if existing is None:
                     raise RuntimeError("legacy story conflicted without an existing row")
@@ -1003,15 +1009,24 @@ class PostgresCore:
         fingerprint: str | None,
         source_url: str | None,
     ) -> dict[str, Any] | None:
+        clauses: list[str] = []
+        parameters: list[str] = []
+        if fingerprint is not None:
+            clauses.append("fingerprint = %s")
+            parameters.append(fingerprint)
+        if source_url is not None:
+            clauses.append("source_url = %s")
+            parameters.append(source_url)
+        if not clauses:
+            return None
         row = self.connection.execute(
-            """
+            f"""
             SELECT * FROM stories
-            WHERE (%s IS NOT NULL AND fingerprint = %s)
-               OR (%s IS NOT NULL AND source_url = %s)
+            WHERE {' OR '.join(clauses)}
             ORDER BY created_at ASC
             LIMIT 1
             """,
-            (fingerprint, fingerprint, source_url, source_url),
+            tuple(parameters),
         ).fetchone()
         return dict(row) if row is not None else None
 
@@ -1021,19 +1036,26 @@ class PostgresCore:
         fingerprint: str | None,
         source_url: str | None,
     ) -> dict[str, Any] | None:
-        if fingerprint is None and source_url is None:
+        clauses: list[str] = []
+        parameters: list[str] = []
+        if fingerprint is not None:
+            clauses.append("reject_blocklist.fingerprint = %s")
+            parameters.append(fingerprint)
+        if source_url is not None:
+            clauses.append("reject_blocklist.source_url = %s")
+            parameters.append(source_url)
+        if not clauses:
             return None
         row = self.connection.execute(
-            """
+            f"""
             SELECT stories.*
             FROM reject_blocklist
             JOIN stories ON stories.id = reject_blocklist.story_id
-            WHERE (%s IS NOT NULL AND reject_blocklist.fingerprint = %s)
-               OR (%s IS NOT NULL AND reject_blocklist.source_url = %s)
+            WHERE {' OR '.join(clauses)}
             ORDER BY reject_blocklist.id ASC
             LIMIT 1
             """,
-            (fingerprint, fingerprint, source_url, source_url),
+            tuple(parameters),
         ).fetchone()
         return dict(row) if row is not None else None
 
