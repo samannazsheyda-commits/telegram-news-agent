@@ -83,16 +83,47 @@ class RedisJobQueue:
         count: int = 10,
     ) -> list[dict]:
         self.ensure_group(kind, group)
-        response = self._redis().xautoclaim(
-            self.key(kind),
-            group,
-            consumer,
-            min_idle_time=max(1000, int(min_idle_ms)),
-            start_id="0-0",
-            count=max(1, min(int(count), 100)),
-        )
-        messages = response[1] if response and len(response) > 1 else []
+        client = self._redis()
+        stream = self.key(kind)
+        idle = max(1000, int(min_idle_ms))
+        limit = max(1, min(int(count), 100))
+        try:
+            response = client.xautoclaim(
+                stream,
+                group,
+                consumer,
+                min_idle_time=idle,
+                start_id="0-0",
+                count=limit,
+            )
+            messages = response[1] if response and len(response) > 1 else []
+        except Exception as exc:
+            message = str(exc).lower()
+            if "unknown command" not in message or "xautoclaim" not in message:
+                raise
+            messages = self._reclaim_redis5(
+                client,
+                stream=stream,
+                group=group,
+                consumer=consumer,
+                min_idle_ms=idle,
+                count=limit,
+            )
         return [self._decode(message_id, fields) for message_id, fields in messages]
+
+    @staticmethod
+    def _reclaim_redis5(client, *, stream: str, group: str, consumer: str, min_idle_ms: int, count: int):
+        scan_count = max(1000, min(10_000, count * 20))
+        pending = client.xpending_range(stream, group, min="-", max="+", count=scan_count)
+        message_ids = [
+            str(row.get("message_id") or "")
+            for row in pending or []
+            if int(row.get("time_since_delivered") or 0) >= min_idle_ms
+        ][:count]
+        message_ids = [message_id for message_id in message_ids if message_id]
+        if not message_ids:
+            return []
+        return client.xclaim(stream, group, consumer, min_idle_ms, message_ids)
 
     @staticmethod
     def _decode(message_id: str, fields: dict[str, str]) -> dict:
