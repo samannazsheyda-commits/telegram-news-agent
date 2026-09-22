@@ -117,7 +117,6 @@ def _builder(values: Mapping[str, str], environment: RuntimeEnvironment):
 def create_production_panel(environ: Mapping[str, str] | None = None):
     values = environ or os.environ
     environment, parts = _components(values)
-    parts["store"].initialize()
     luna = LunaOperator(store=parts["store"], model=parts["model"])
     transcriber = OpenAIAudioTranscriber(api_key=environment.openai_api_key)
     return create_app(
@@ -177,9 +176,9 @@ def main(argv: list[str] | None = None, environ: Mapping[str, str] | None = None
     values = environ or os.environ
     environment, parts = _components(values)
     store = parts["store"]
-    store.initialize()
 
     if args.command == "init-db":
+        store.initialize()
         return 0
     if args.command == "collect":
         result = CollectorRuntime(
