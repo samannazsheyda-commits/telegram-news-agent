@@ -7,7 +7,7 @@ def test_saildrone_explorer_is_never_translated_as_aircraft(monkeypatch):
     def bad_google(text, session=None):
         return "نیروی دریایی سپاه از حمله به یک فروند هواپیمای شناسایی دریایی Saildrone Explorer آمریکایی در ورودی تنگه هرمز خبر داد"
 
-    monkeypatch.setattr(services, "_google_translate", bad_google)
+    monkeypatch.setattr(services, "_google_clients5_translate", bad_google)
     result = services.translate_to_fa(source)
 
     assert "هواپیما" not in result

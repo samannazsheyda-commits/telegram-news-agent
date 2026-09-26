@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import time
 from pathlib import Path
@@ -98,6 +99,26 @@ def has_persian(text: str) -> bool:
     return bool(PERSIAN_RE.search(text or ""))
 
 
+def _google_clients5_translate(text: str, session=requests) -> str:
+    # The public gtx endpoints are frequently rate limited (HTTP 429) from
+    # server IPs, which can silently starve the whole publishing pipeline. The
+    # chrome-extension endpoint answers under the same conditions, so it is kept
+    # as the primary Google backend.
+    response = session.get(
+        "https://clients5.google.com/translate_a/t",
+        params={"client": "dict-chrome-ex", "sl": "auto", "tl": "fa", "q": text},
+        headers={"User-Agent": USER_AGENT}, timeout=20,
+    )
+    response.raise_for_status()
+    payload = response.json()
+    if isinstance(payload, list) and payload:
+        first = payload[0]
+        if isinstance(first, list) and first:
+            return str(first[0] or "").strip()
+        return "".join(part for part in payload if isinstance(part, str)).strip()
+    return ""
+
+
 def _google_translate(text: str, session=requests) -> str:
     response = session.get(
         "https://translate.googleapis.com/translate_a/single",
@@ -122,9 +143,16 @@ def _google_mobile_translate(text: str, session=requests) -> str:
 
 
 def _mymemory_translate(text: str, session=requests) -> str:
+    params = {"q": text, "langpair": "en|fa"}
+    # An email raises MyMemory's anonymous daily word quota (~5k) to ~50k, which
+    # matters because it is the last surviving free backend when Google is rate
+    # limited. It stays optional so nothing breaks when the env var is unset.
+    email = str(os.environ.get("MYMEMORY_EMAIL", "") or "").strip()
+    if email:
+        params["de"] = email
     response = session.get(
         "https://api.mymemory.translated.net/get",
-        params={"q": text, "langpair": "en|fa"}, headers={"User-Agent": USER_AGENT}, timeout=20,
+        params=params, headers={"User-Agent": USER_AGENT}, timeout=20,
     )
     response.raise_for_status()
     payload = response.json()
@@ -275,7 +303,12 @@ def translate_to_fa(text: str, session=requests) -> str:
         return ""
     if has_persian(text):
         return _polish_fa(text)
-    for translator in (_google_translate, _google_mobile_translate, _mymemory_translate):
+    for translator in (
+        _google_clients5_translate,
+        _google_translate,
+        _google_mobile_translate,
+        _mymemory_translate,
+    ):
         try:
             translated = _polish_fa(translator(text, session=session))
             translated = _repair_news_idioms(text, translated)
