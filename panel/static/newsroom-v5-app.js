@@ -16,6 +16,7 @@
   let pollingTimer = null;
   let reconnectTimer = null;
   let review = null;
+  let lunaMessenger = null;
 
   function toast(message, kind = 'info') {
     const node = document.getElementById('v5Toast');
@@ -209,17 +210,27 @@
     pollingTimer = null;
   }
 
+  function bootLuna() {
+    const mount = document.getElementById('v5LunaMount');
+    if (!mount || !window.NewsroomV5Luna?.mount) return;
+    lunaMessenger = window.NewsroomV5Luna.mount(mount, {
+      toast,
+      onActivity(kind) {
+        if (kind === 'confirmed') {
+          review?.refreshTop();
+          fetchCounts();
+        }
+      },
+    });
+  }
+
   function handleLunaStory(event) {
     const story = event.detail?.story;
     if (!story?.id) return;
     storage.setItem(keys.selectedStory, story.id);
     storage.setItem(keys.lunaContextMarker, JSON.stringify({ id: story.id, title: story.title_fa || '' }));
-    const mount = document.getElementById('v5LunaMount');
-    if (mount) {
-      mount.querySelector('strong').textContent = `زمینه Luna: ${story.title_fa}`;
-      mount.querySelector('p').textContent = 'این خبر به‌عنوان زمینه ساختاریافته گفت‌وگو انتخاب شد.';
-    }
     selectTab('luna');
+    if (lunaMessenger?.setStoryContext) void lunaMessenger.setStoryContext(story);
   }
 
   function bindShell() {
@@ -229,7 +240,6 @@
     window.addEventListener('beforeunload', () => {
       if (currentTab() === 'news') storage.setItem(keys.reviewScroll, String(window.scrollY || 0));
     });
-    document.getElementById('v5OpenLegacyLuna')?.addEventListener('click', () => window.open('/luna', '_blank', 'noopener'));
     selectTab(currentTab(), { push: false });
   }
 
@@ -248,6 +258,7 @@
 
   function boot() {
     bindShell();
+    bootLuna();
     review = new window.NewsroomV5Review.ReviewController({ onToast: toast, onCountsChanged: fetchCounts });
     review.start();
     fetchCounts();

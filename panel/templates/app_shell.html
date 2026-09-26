@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&amp;display=swap">
   <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-v5-app.css', v=v5_asset_version) }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-v5-luna.css', v=v5_asset_version) }}">
 </head>
 <body class="v5-body">
   <div id="v5App" class="v5-app" data-active-tab="news">
@@ -42,10 +43,29 @@
         <div class="v5-view-head">
           <div><h1>Luna</h1><p>دستیار سردبیری و اپراتور</p></div>
         </div>
-        <div id="v5LunaMount" class="v5-placeholder-panel">
-          <strong>Luna آماده اتصال به گفت‌وگوی V5 است.</strong>
-          <p>زمینه خبر انتخاب‌شده و پیش‌نویس پیام هنگام جابه‌جایی تب حفظ می‌شود.</p>
-          <button type="button" class="v5-primary" id="v5OpenLegacyLuna">باز کردن Luna فعلی</button>
+        <div id="v5LunaMount" class="v5-luna">
+          <div class="v5-luna-story-chip" data-luna="story-chip" hidden>
+            <b>خبر</b>
+            <span data-luna="story-title"></span>
+            <button type="button" class="v5-luna-chip-remove" data-luna="story-clear" aria-label="حذف زمینه خبر">×</button>
+          </div>
+          <div class="v5-luna-messages" data-luna="messages" aria-live="polite"></div>
+          <div class="v5-luna-attachment" data-luna="image-preview" hidden></div>
+          <div class="v5-luna-voice" data-luna="voice" data-state="idle" hidden>
+            <span class="v5-luna-voice-level" data-luna="voice-level" aria-hidden="true"></span>
+            <span class="v5-luna-voice-timer" data-luna="voice-timer" hidden>۰:۰۰</span>
+            <span class="v5-luna-voice-status" data-luna="voice-status"></span>
+            <button type="button" class="v5-luna-voice-cancel" data-luna="voice-cancel" hidden>لغو ضبط</button>
+          </div>
+          <form class="v5-luna-composer" data-luna="composer" autocomplete="off">
+            <label class="v5-luna-icon" aria-label="ارسال عکس">＋
+              <input data-luna="image" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+            </label>
+            <button type="button" class="v5-luna-icon" data-luna="mic" aria-label="ضبط صدا">●</button>
+            <input data-luna="audio" type="file" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/wav,audio/webm" hidden>
+            <textarea data-luna="input" rows="1" maxlength="5000" placeholder="به Luna بگو چه کاری انجام بده…" aria-label="پیام به Luna"></textarea>
+            <button type="submit" class="v5-luna-send" data-luna="send" aria-label="ارسال پیام">ارسال</button>
+          </form>
         </div>
       </section>
 
@@ -106,6 +126,7 @@
     <button id="v5ReloadVersion" type="button">بارگذاری نسخه جدید</button>
   </div>
 
+  <script src="{{ url_for('static', filename='newsroom-v5-luna.js', v=v5_asset_version) }}" defer></script>
   <script src="{{ url_for('static', filename='newsroom-v5-review.js', v=v5_asset_version) }}" defer></script>
   <script src="{{ url_for('static', filename='newsroom-v5-app.js', v=v5_asset_version) }}" defer></script>
 </body>

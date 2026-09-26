@@ -6,6 +6,8 @@ const CACHE = CACHE_PREFIX + VERSION;
 const LEGACY_CACHE = 'bikhabar-newsroom-v4-1';
 const STATIC_SHELL = [
   `/static/newsroom-v5-app.css?v=${VERSION}`,
+  `/static/newsroom-v5-luna.css?v=${VERSION}`,
+  `/static/newsroom-v5-luna.js?v=${VERSION}`,
   `/static/newsroom-v5-review.js?v=${VERSION}`,
   `/static/newsroom-v5-app.js?v=${VERSION}`,
   '/static/manifest.webmanifest',
