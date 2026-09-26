@@ -2,6 +2,7 @@
 {% block title %}Luna | مرکز کنترل بی‌خبر{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-v4-luna.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='newsroom-v5-luna.css') }}">
 {% endblock %}
 {% block content %}
 <section class="v41-luna" aria-label="گفت‌وگو با Luna">
@@ -19,28 +20,38 @@
     </div>
   </header>
 
-  <div id="v4LunaMessages" class="v41-luna-messages" aria-live="polite" aria-relevant="additions text">
-    <article class="v41-msg v41-msg-luna">
-      <div class="v41-msg-avatar" aria-hidden="true">L</div>
-      <div class="v41-msg-body">
-        <p>من Luna هستم. طبیعی حرف بزن؛ خبر و منبع رو مدیریت می‌کنم، عکس رو بررسی می‌کنم، ویست رو متن می‌کنم و برای تغییر خود پنل وارد Builder می‌شم.</p>
-      </div>
-    </article>
+  <div class="v5-luna">
+    <div class="v5-luna-story-chip" data-luna="story-chip" hidden>
+      <b>خبر</b>
+      <span data-luna="story-title"></span>
+      <button type="button" class="v5-luna-chip-remove" data-luna="story-clear" aria-label="حذف زمینه خبر">×</button>
+    </div>
+
+    <div id="v4LunaMessages" class="v5-luna-messages" data-luna="messages" aria-live="polite" aria-relevant="additions text"></div>
+    <div id="v4LunaAttachmentPreview" class="v5-luna-attachment" data-luna="image-preview" hidden></div>
+
+    <div class="v5-luna-voice" data-luna="voice" data-state="idle" hidden>
+      <span class="v5-luna-voice-level" data-luna="voice-level" aria-hidden="true"></span>
+      <span class="v5-luna-voice-timer" data-luna="voice-timer" hidden>۰:۰۰</span>
+      <span class="v5-luna-voice-status" data-luna="voice-status"></span>
+      <button type="button" class="v5-luna-voice-cancel" data-luna="voice-cancel" hidden>لغو ضبط</button>
+    </div>
+
+    <form id="v4LunaComposer" class="v5-luna-composer" data-luna="composer" autocomplete="off">
+      <label class="v5-luna-icon" for="v4LunaImage" title="ارسال عکس" aria-label="ارسال عکس"><span aria-hidden="true">＋</span></label>
+      <input id="v4LunaImage" data-luna="image" name="image" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+
+      <button id="v4LunaMic" class="v5-luna-icon" data-luna="mic" type="button" title="صحبت با Luna" aria-label="ضبط صدا"><span aria-hidden="true">●</span></button>
+      <input id="v4LunaAudio" data-luna="audio" name="audio" type="file" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/wav,audio/webm" capture="user" hidden>
+
+      <textarea id="v4LunaInput" data-luna="input" name="message" rows="1" maxlength="5000" placeholder="به Luna بگو چه کاری انجام بده…" aria-label="پیام به Luna"></textarea>
+      <button id="v4LunaSend" class="v5-luna-send" data-luna="send" type="submit" aria-label="ارسال پیام">ارسال</button>
+    </form>
   </div>
-
-  <div id="v4LunaAttachmentPreview" class="v41-attachment-preview" hidden></div>
-
-  <form id="v4LunaComposer" class="v41-luna-composer" autocomplete="off">
-    <label class="v41-icon-button" for="v4LunaImage" title="ارسال عکس" aria-label="ارسال عکس"><span aria-hidden="true">＋</span></label>
-    <input id="v4LunaImage" name="image" type="file" accept="image/jpeg,image/png,image/webp" hidden>
-
-    <button id="v4LunaMic" class="v41-icon-button" type="button" title="صحبت با Luna" aria-label="صحبت با Luna"><span aria-hidden="true">●</span></button>
-    <input id="v4LunaAudio" name="audio" type="file" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/wav,audio/webm" capture="user" hidden>
-
-    <textarea id="v4LunaInput" name="message" rows="1" maxlength="5000" placeholder="به Luna بگو چه کاری انجام بده…" aria-label="پیام به Luna"></textarea>
-    <button id="v4LunaSend" class="v41-send-button" type="submit" aria-label="ارسال پیام">ارسال</button>
-  </form>
   <div id="v4LunaComposerHint" class="v41-composer-hint">Enter برای ارسال · Shift+Enter برای خط جدید · میکروفون برای ویس</div>
 </section>
 {% endblock %}
-{% block scripts %}<script src="{{ url_for('static', filename='luna-assistant.js') }}" defer></script>{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='newsroom-v5-luna.js') }}" defer></script>
+<script src="{{ url_for('static', filename='luna-assistant.js') }}" defer></script>
+{% endblock %}

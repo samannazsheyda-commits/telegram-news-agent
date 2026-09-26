@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 _CONTEXT_ROLE = "__context__"
-_ALLOWED_CONTEXT = {"last_story_id", "last_source_id", "last_action_id", "last_builder_pr"}
+_ALLOWED_CONTEXT = {"last_story_id", "last_source_id", "last_action_id", "pending_action_id", "last_builder_pr"}
 
 
 class LunaConversationStore:
@@ -125,11 +125,7 @@ class LunaConversationStore:
         key = str(conversation_id or "").strip()
         if not key:
             return {}
-        clean = {
-            name: value
-            for name, value in values.items()
-            if name in _ALLOWED_CONTEXT and value not in (None, "")
-        }
+        clean = {name: value for name, value in values.items() if name in _ALLOWED_CONTEXT}
         data = self._prune(self._read())
         rows = list(data.get(key, []))
         current = {}
@@ -141,7 +137,11 @@ class LunaConversationStore:
                     if name in _ALLOWED_CONTEXT and value not in (None, "")
                 }
                 break
-        current.update(clean)
+        for name, value in clean.items():
+            if value in (None, ""):
+                current.pop(name, None)
+            else:
+                current[name] = value
         rows = [row for row in rows if str(row.get("role") or "") != _CONTEXT_ROLE]
         rows.append(
             {
@@ -152,6 +152,107 @@ class LunaConversationStore:
         )
         data[key] = self._bounded_rows(rows)
         self._write(data)
+        return dict(current)
+
+
+class LunaSqliteConversationStore:
+    """Conversation messages and structured context in the V5 `luna_conversations` table.
+
+    Same interface as the legacy file store. Context lives in one row per
+    conversation (role `__context__`), so it never counts against the message window.
+    """
+
+    _KEEP_ROWS = 200
+
+    def __init__(self, store, *, max_messages: int = 12, ttl_hours: int = 24) -> None:
+        self.store = store
+        self.max_messages = max(2, min(40, int(max_messages)))
+        self.ttl = timedelta(hours=max(1, min(168, int(ttl_hours))))
+
+    def _cutoff(self) -> str:
+        return (datetime.now(timezone.utc) - self.ttl).isoformat()
+
+    def recent(self, conversation_id: str) -> list[dict]:
+        key = str(conversation_id or "").strip()
+        if not key:
+            return []
+        rows = self.store.conn.execute(
+            """
+            SELECT role, content, created_at FROM (
+                SELECT role, content, created_at, id FROM luna_conversations
+                WHERE conversation_id=? AND role IN ('user','assistant') AND created_at>=?
+                ORDER BY created_at DESC, id DESC LIMIT ?
+            ) ORDER BY created_at, id
+            """,
+            (key, self._cutoff(), self.max_messages),
+        ).fetchall()
+        return [{"role": row[0], "content": row[1], "at": row[2]} for row in rows]
+
+    def append(self, conversation_id: str, role: str, content: str) -> None:
+        key = str(conversation_id or "").strip()
+        text = str(content or "").strip()
+        resolved_role = str(role or "").strip().lower()
+        if not key or not text or resolved_role not in {"user", "assistant"}:
+            return
+        self.store.append_luna_message(key, role=resolved_role, content=text[:12000])
+        self.store.conn.execute(
+            """
+            DELETE FROM luna_conversations
+            WHERE conversation_id=? AND role IN ('user','assistant') AND id NOT IN (
+                SELECT id FROM luna_conversations WHERE conversation_id=? AND role IN ('user','assistant')
+                ORDER BY created_at DESC, id DESC LIMIT ?
+            )
+            """,
+            (key, key, self._KEEP_ROWS),
+        )
+
+    def _context_row(self, key: str) -> dict:
+        row = self.store.conn.execute(
+            "SELECT context_json, created_at FROM luna_conversations WHERE id=?",
+            (f"ctx:{key}",),
+        ).fetchone()
+        if row is None or str(row[1] or "") < self._cutoff():
+            return {}
+        try:
+            value = json.loads(row[0] or "{}")
+        except (TypeError, ValueError):
+            return {}
+        return value if isinstance(value, dict) else {}
+
+    def get_context(self, conversation_id: str) -> dict:
+        key = str(conversation_id or "").strip()
+        if not key:
+            return {}
+        value = self._context_row(key)
+        return {name: value[name] for name in _ALLOWED_CONTEXT if value.get(name) not in (None, "")}
+
+    def update_context(self, conversation_id: str, **values) -> dict:
+        key = str(conversation_id or "").strip()
+        if not key:
+            return {}
+        current = self.get_context(key)
+        for name, value in values.items():
+            if name not in _ALLOWED_CONTEXT:
+                continue
+            if value in (None, ""):
+                current.pop(name, None)
+            else:
+                current[name] = value
+        self.store.conn.execute(
+            """
+            INSERT INTO luna_conversations(id,conversation_id,role,content,context_json,created_at)
+            VALUES(?,?,?,?,?,?)
+            ON CONFLICT(id) DO UPDATE SET context_json=excluded.context_json, created_at=excluded.created_at
+            """,
+            (
+                f"ctx:{key}",
+                key,
+                _CONTEXT_ROLE,
+                "",
+                json.dumps(current, ensure_ascii=False, sort_keys=True),
+                datetime.now(timezone.utc).isoformat(),
+            ),
+        )
         return dict(current)
 
 

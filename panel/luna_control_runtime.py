@@ -6,6 +6,11 @@ from uuid import uuid4
 
 import requests
 
+from src.newsroom_v5_identity import reject_story as reject_v5_story
+from src.newsroom_v5_jobs import enqueue_once
+from src.newsroom_v5_publish import prepare_publication
+from src.services import has_persian
+
 from .luna_proposals import proposal_fingerprint
 from .luna_publish import publish_story
 from .luna_translation import translate_story_in_repository
@@ -35,7 +40,9 @@ class LunaControlRuntime:
         "publish_story",
         "reject_and_block_story",
         "move_story_to_review",
+        "edit_story_copy",
     }
+    V5_EDITABLE_STATES = {"review", "editorial_ready"}
 
     def __init__(
         self,
@@ -48,7 +55,9 @@ class LunaControlRuntime:
         enqueue=None,
         builder=None,
         builder_release_factory=None,
+        events=None,
     ) -> None:
+        self.events = events
         self.registry = registry
         self.toolbox = toolbox
         self.resolver = resolver
@@ -159,6 +168,8 @@ class LunaControlRuntime:
             row = dict(resolved["row"])
             before = self._story_snapshot(row)
             title = _text(row.get("final_persian_title") or row.get("persian_title") or row.get("original_title") or row.get("title"))
+            if name == "edit_story_copy":
+                return self._edit_copy_preview(row, before, args)
             if name == "publish_story":
                 mode = _text(args.get("copy_mode")) or "machine"
                 args["copy_mode"] = mode
@@ -214,6 +225,32 @@ class LunaControlRuntime:
                 "target_fingerprint": proposal_fingerprint({}),
             }
         raise ValueError(f"unsupported_mutation:{name}")
+
+    def _edit_copy_preview(self, row: dict, before: dict, args: dict) -> dict:
+        if not row.get("_v5"):
+            raise ValueError("ویرایش تیتر و متن فقط برای خبرهای اتاق خبر V5 در دسترس است.")
+        if _text(row.get("status")) not in self.V5_EDITABLE_STATES:
+            raise ValueError("این خبر دیگر در صف بررسی نیست و قابل ویرایش نیست.")
+        new_title = _text(args.get("title_fa"))
+        if not new_title or not has_persian(new_title):
+            raise ValueError("تیتر فارسی جدید لازم است.")
+        payload = {"story_id": before["id"], "title_fa": new_title}
+        after = dict(before)
+        after["persian_title"] = new_title
+        if "body_fa" in args:
+            payload["body_fa"] = _text(args.get("body_fa"))
+            after["persian_body"] = payload["body_fa"]
+        summary = f"تیتر خبر به «{new_title}» تغییر کند؟"
+        if "body_fa" in payload:
+            summary = f"تیتر به «{new_title}» و متن خبر به نسخه جدید تغییر کند؟"
+        return {
+            "target": {"type": "story", "id": before["id"]},
+            "payload": payload,
+            "summary_fa": summary,
+            "before": before,
+            "after": after,
+            "target_fingerprint": proposal_fingerprint(before),
+        }
 
     def invoke(self, name: str, args: dict | None = None, context: dict | None = None) -> dict:
         try:
@@ -276,13 +313,102 @@ class LunaControlRuntime:
             self.proposals.complete(action_id, "failed", result)
             self._audit(proposal, result, "failed")
             return result
-        result = self._execute(_text(proposal.get("capability")), dict(proposal.get("payload") or {}), confirmed=True)
+        if not self.proposals.claim(action_id):
+            return {"ok": False, "error": "proposal_not_pending", "message": "این تأیید قبلاً مصرف شده یا دیگر معتبر نیست."}
+        try:
+            result = self._execute(
+                _text(proposal.get("capability")),
+                dict(proposal.get("payload") or {}),
+                confirmed=True,
+                action_id=action_id,
+            )
+        except Exception as exc:
+            result = {"ok": False, "error": "execution_failed", "message": f"اجرای عملیات ناموفق بود: {type(exc).__name__}"}
+            self.proposals.complete(action_id, "failed", result)
+            self._audit(proposal, result, "failed")
+            raise
         status = "success" if result.get("ok") else "failed"
         self.proposals.complete(action_id, status, result)
         self._audit(proposal, result, status)
         return result
 
-    def _execute(self, name: str, args: dict, *, confirmed: bool) -> dict:
+    def _v5_story(self, args: dict) -> dict | None:
+        store = getattr(self.toolbox, "v5_store", None)
+        if store is None or not _text(args.get("story_id")):
+            return None
+        return store.get_story(_text(args.get("story_id")))
+
+    def _emit(self, event_type: str, payload: dict) -> None:
+        if self.events is None:
+            return
+        try:
+            self.events.publish(event_type, payload)
+        except Exception:
+            pass
+
+    def _emit_story_change(self, story_id: str, state: str) -> None:
+        store = self.toolbox.v5_store
+        self._emit("story_updated", {"story_id": story_id, "state": state})
+        rows = store.conn.execute("SELECT state, COUNT(*) FROM stories GROUP BY state").fetchall()
+        counts = {str(row[0]): int(row[1]) for row in rows}
+        self._emit("counts_changed", {
+            key: counts.get(key, 0) for key in ("review", "publishing", "published", "rejected", "failed")
+        })
+
+    def _execute_v5(self, name: str, story: dict, args: dict, action_id: str) -> dict | None:
+        store = self.toolbox.v5_store
+        story_id = _text(story.get("id"))
+        title = _text(story.get("title_fa") or story.get("original_title"))
+        if name == "edit_story_copy":
+            if _text(story.get("state")) not in self.V5_EDITABLE_STATES:
+                return {"ok": False, "error": "story_not_editable", "message": "این خبر دیگر در صف بررسی نیست و قابل ویرایش نیست."}
+            new_title = _text(args.get("title_fa"))
+            if not new_title or not has_persian(new_title):
+                return {"ok": False, "error": "persian_title_required", "message": "تیتر فارسی جدید لازم است."}
+            body = _text(args.get("body_fa")) if "body_fa" in args else _text(story.get("body_fa"))
+            store.set_translation(story_id, title_fa=new_title, body_fa=body, backend="luna", quality_passed=True, last_error=None)
+            store.append_audit("story_copy_edited", actor="luna_operator", entity_type="story", entity_id=story_id,
+                               detail={"copy_mode": "luna", "action_id": action_id})
+            self._emit_story_change(story_id, _text(story.get("state")))
+            return {"ok": True, "message": "تیتر خبر به‌روزرسانی شد.", "story": {"id": story_id, "title": new_title}}
+        if name == "publish_story":
+            mode = _text(args.get("copy_mode")) or "machine"
+            try:
+                publication = prepare_publication(store, story_id, idempotency_key=f"luna:{action_id}", copy_mode=mode)
+            except (KeyError, ValueError) as exc:
+                return {"ok": False, "error": "story_not_publishable", "message": f"این خبر قابل انتشار نیست: {exc}"}
+            self._emit_story_change(story_id, "publishing")
+            return {"ok": True, "message": "خبر در صف امن انتشار قرار گرفت.", "publication_id": publication["id"],
+                    "story": {"id": story_id, "title": title}}
+        if name == "reject_and_block_story":
+            if _text(story.get("state")) == "rejected":
+                return {"ok": True, "message": "این خبر قبلاً رد شده بود.", "story": {"id": story_id, "title": title}}
+            try:
+                reject_v5_story(store, story_id, actor="luna_operator")
+            except (KeyError, ValueError) as exc:
+                return {"ok": False, "error": "story_not_rejectable", "message": f"رد این خبر ممکن نشد: {exc}"}
+            self._emit("story_rejected", {"story_id": story_id})
+            self._emit_story_change(story_id, "rejected")
+            return {"ok": True, "message": "خبر رد شد و دوباره برنمی‌گردد.", "story": {"id": story_id, "title": title}}
+        if name == "move_story_to_review":
+            if not store.transition_story(story_id, {"editorial_ready", "failed"}, "review"):
+                return {"ok": False, "error": "story_not_movable", "message": "این خبر در وضعیتی نیست که به صف بررسی برگردد."}
+            self._emit_story_change(story_id, "review")
+            return {"ok": True, "message": "خبر به صف بررسی منتقل شد.", "story": {"id": story_id, "title": title}}
+        if name == "translate_story":
+            enqueue_once(store, "translate_story", story_id=story_id, key=f"luna-translate:{action_id}")
+            return {"ok": True, "message": "ترجمه این خبر در صف قرار گرفت.", "story": {"id": story_id, "title": title}}
+        return None
+
+    def _execute(self, name: str, args: dict, *, confirmed: bool, action_id: str = "") -> dict:
+        if name in self.STORY_CAPABILITIES and name != "get_story":
+            story = self._v5_story(args)
+            if story is not None:
+                result = self._execute_v5(name, story, args, action_id or uuid4().hex)
+                if result is not None:
+                    return result
+            elif name == "edit_story_copy":
+                return {"ok": False, "error": "story_not_found", "message": "خبر پیدا نشد."}
         if name == "rename_source":
             resolved = self.resolver.resolve_source({"source_id": args.get("source_id")}, {})
             if not resolved.get("ok"):

@@ -114,6 +114,26 @@ class ProposalStore:
         record["completed_at"] = expired_at
         return record
 
+    def claim(self, action_id: str) -> bool:
+        """Atomically move one pending proposal to executing; only one caller can win."""
+        wanted = str(action_id or "")
+        claimed_at = self._now().isoformat()
+        won = {"value": False}
+
+        def transform(rows: list[dict]) -> list[dict]:
+            won["value"] = False
+            output = []
+            for row in rows:
+                if str(row.get("id") or "") == wanted and str(row.get("status") or "") == "pending":
+                    row["status"] = "executing"
+                    row["claimed_at"] = claimed_at
+                    won["value"] = True
+                output.append(row)
+            return output
+
+        self._mutate(transform, "panel v5: claim Luna proposal")
+        return won["value"]
+
     def complete(self, action_id: str, status: str, result: dict) -> None:
         completed_at = self._now().isoformat()
         wanted = str(action_id or "")
@@ -123,7 +143,7 @@ class ProposalStore:
         def transform(rows: list[dict]) -> list[dict]:
             output = []
             for row in rows:
-                if str(row.get("id") or "") == wanted and str(row.get("status") or "") == "pending":
+                if str(row.get("id") or "") == wanted and str(row.get("status") or "") in {"pending", "executing"}:
                     row["status"] = final_status
                     row["result"] = deepcopy(safe_result)
                     row["completed_at"] = completed_at

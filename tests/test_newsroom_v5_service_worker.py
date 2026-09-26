@@ -9,6 +9,8 @@ SW = (Path(__file__).resolve().parents[1] / "panel/static/newsroom-v5-sw.js").re
 def test_v5_service_worker_versions_shell_cache_and_claims_clients():
     assert "bikhabar-newsroom-v5" in SW
     assert "newsroom-v5-app.js" in SW
+    assert "newsroom-v5-luna.js" in SW
+    assert "newsroom-v5-luna.css" in SW
     assert "newsroom-v5-review.js" in SW
     assert "newsroom-v5-app.css" in SW
     assert "self.clients.claim()" in SW
@@ -49,6 +51,8 @@ def test_service_worker_is_served_with_deploy_version_and_scope_covering_the_she
         session["admin"] = True
     shell = client.get("/v5").get_data(as_text=True)
     assert f"newsroom-v5-app.js?v={version}" in shell
+    assert f"newsroom-v5-luna.js?v={version}" in shell
+    assert f"newsroom-v5-luna.css?v={version}" in shell
     assert f"newsroom-v5-review.js?v={version}" in shell
     assert f"newsroom-v5-app.css?v={version}" in shell
     app_js = (Path(__file__).resolve().parents[1] / "panel/static/newsroom-v5-app.js").read_text(encoding="utf-8")

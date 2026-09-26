@@ -40,11 +40,45 @@ class LunaToolbox:
     operator API proposal-gates mutations before calling them confirmed.
     """
 
-    def __init__(self, data, *, block_path: str | Path | None = None) -> None:
+    def __init__(self, data, *, block_path: str | Path | None = None, v5_store=None) -> None:
         self.data = data
+        self.v5_store = v5_store
         data_dir = Path(os.environ.get("DATA_DIR", "data"))
         self.block_path = Path(block_path) if block_path is not None else data_dir / "operator_blocks.json"
         self.v3_store_path = data_dir / "newsroom_v3.sqlite3"
+
+    @staticmethod
+    def _v5_row(story: dict) -> dict:
+        """Map a V5 store story onto the legacy row shape used by snapshots and public views."""
+        return {
+            "id": _text(story.get("id")),
+            "source": _text(story.get("source_name") or story.get("source_id")),
+            "source_url": _text(story.get("source_url")),
+            "original_title": _text(story.get("original_title")),
+            "original_summary": _text(story.get("original_body")),
+            "persian_title": _text(story.get("title_fa")),
+            "persian_body": _text(story.get("body_fa")),
+            "status": _text(story.get("state")),
+            "published_at_source": _text(story.get("published_at_source")),
+            "_location": "v5",
+            "_v5": True,
+        }
+
+    def _v5_story_rows(self, limit: int = 300) -> list[dict]:
+        if self.v5_store is None:
+            return []
+        ids = [
+            row[0]
+            for row in self.v5_store.conn.execute(
+                "SELECT id FROM stories ORDER BY published_at_source DESC, id DESC LIMIT ?", (int(limit),)
+            ).fetchall()
+        ]
+        rows = []
+        for story_id in ids:
+            story = self.v5_store.get_story(story_id)
+            if story is not None:
+                rows.append(self._v5_row(story))
+        return rows
 
     def _read(self, path: str, default):
         value, _ = self.data.read_json(path, default)
@@ -69,6 +103,9 @@ class LunaToolbox:
         return [dict(row) for row in value if isinstance(row, dict)] if isinstance(value, list) else []
 
     def _story_rows(self) -> list[dict]:
+        return self._v5_story_rows() + self._legacy_story_rows()
+
+    def _legacy_story_rows(self) -> list[dict]:
         rows: list[dict] = []
         for location, path in (
             ("live", "data/panel_live_feed.json"),
@@ -102,7 +139,11 @@ class LunaToolbox:
         wanted = _text(story_id)
         if not wanted:
             return None
-        for row in self._story_rows():
+        if self.v5_store is not None:
+            story = self.v5_store.get_story(wanted)
+            if story is not None:
+                return self._v5_row(story)
+        for row in self._legacy_story_rows():
             if self._story_id(row) == wanted:
                 return row
         return None
@@ -308,6 +349,12 @@ class LunaToolbox:
         limit = max(1, min(30, int(args.get("limit") or 10)))
         source = _text(args.get("source")).casefold()
         rows = []
+        if self.v5_store is not None:
+            for story in self.v5_store.list_published(limit=limit)["items"]:
+                public = self._story_public(self._v5_row(dict(story)))
+                if source and source not in public["source"].casefold():
+                    continue
+                rows.append(public)
         for row in self._list("data/editorial_history.json"):
             if _text(row.get("status")) not in {"published_auto", "published_manual"}:
                 continue
@@ -351,6 +398,8 @@ class LunaToolbox:
                 if query not in haystack:
                     continue
             rows.append(public)
+        # Operator-added sources first: there are more system sources than the response cap.
+        rows.sort(key=lambda row: row["system"])
         return {"ok": True, "sources": rows[:50], "count": len(rows)}
 
     def _build_source(self, args: dict) -> dict:

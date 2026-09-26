@@ -66,14 +66,17 @@ def _cap(
     )
 
 
-def _story_id_params(*, copy_mode: bool = False) -> dict:
-    properties: dict = {"story_id": {"type": "string"}}
+_STORY_ID_DESCRIPTION = "شناسه دقیق خبر؛ اگر کاربر به خبر جاری اشاره می‌کند («همین خبر»، «تیترش») خالی بگذار تا از context استفاده شود."
+
+
+def _story_id_params(*, copy_mode: bool = False, extra: dict | None = None) -> dict:
+    properties: dict = {"story_id": {"type": "string", "description": _STORY_ID_DESCRIPTION}}
     if copy_mode:
         properties["copy_mode"] = {"type": "string", "enum": ["visible", "machine", "luna"]}
+    properties.update(extra or {})
     return {
         "type": "object",
         "properties": properties,
-        "required": ["story_id"],
         "additionalProperties": False,
     }
 
@@ -128,15 +131,17 @@ def build_capability_registry() -> CapabilityRegistry:
             "reject_and_block_story",
             "stories",
             "رد دائمی یک خبر و جلوگیری از ورود دوباره آن به چرخه انتشار.",
-            {
-                "type": "object",
-                "properties": {
-                    "story_id": {"type": "string"},
-                    "reason": {"type": "string"},
-                },
-                "required": ["story_id"],
-                "additionalProperties": False,
-            },
+            _story_id_params(extra={"reason": {"type": "string"}}),
+            mutates=True,
+        ),
+        _cap(
+            "edit_story_copy",
+            "stories",
+            "ویرایش تیتر یا متن فارسی یک خبر در صف بررسی (مثلاً کوتاه‌کردن تیتر)؛ متن جدید را خودت بنویس. قبل از ذخیره تأیید لازم است.",
+            _story_id_params(extra={
+                "title_fa": {"type": "string", "minLength": 1, "maxLength": 300},
+                "body_fa": {"type": "string", "maxLength": 4000},
+            }),
             mutates=True,
         ),
         _cap(
