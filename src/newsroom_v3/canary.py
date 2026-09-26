@@ -89,6 +89,38 @@ def _still_fresh(story: StoryRecord, *, now: datetime) -> bool:
     return _fresh_enough(published, now)
 
 
+def iter_publishable_stories(store: NewsroomV3Store, *, max_rows: int = 2000):
+    """Walk ready stories past the first page so stale backlog cannot hide fresh news."""
+    offset = 0
+    page = 100
+    limit = max(1, int(max_rows))
+    while offset < limit:
+        batch = store.list_publishable(limit=min(page, limit - offset), offset=offset)
+        if not batch:
+            break
+        yield from batch
+        offset += len(batch)
+        if len(batch) < page:
+            break
+
+
+def list_safe_candidates(
+    store: NewsroomV3Store,
+    ledger: EventLedger,
+    *,
+    now: datetime,
+) -> list[StoryRecord]:
+    return sorted(
+        (
+            story
+            for story in iter_publishable_stories(store)
+            if not _published_by_v2(story, ledger) and _still_fresh(story, now=now)
+        ),
+        key=_published_time,
+        reverse=True,
+    )
+
+
 def _safe_candidate(
     store: NewsroomV3Store,
     ledger: EventLedger,
@@ -96,14 +128,8 @@ def _safe_candidate(
     now: datetime | None = None,
 ) -> StoryRecord | None:
     resolved_now = now or datetime.now(timezone.utc)
-    candidates = [
-        story
-        for story in store.list_publishable(limit=100)
-        if not _published_by_v2(story, ledger) and _still_fresh(story, now=resolved_now)
-    ]
-    if not candidates:
-        return None
-    return max(candidates, key=_published_time)
+    candidates = list_safe_candidates(store, ledger, now=resolved_now)
+    return candidates[0] if candidates else None
 
 
 def canary_preflight(*, data_dir: str | Path) -> dict:

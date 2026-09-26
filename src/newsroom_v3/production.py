@@ -12,10 +12,9 @@ from ..newsroom_raw_intake import build_raw_fetchers
 from .canary import (
     CANARY_MARKER,
     V2_LEDGER,
-    _published_by_v2,
     _published_time,
-    _still_fresh,
     build_production_publisher,
+    list_safe_candidates,
 )
 from .final_gate import FinalGateDecision, LunaFinalPublishGate
 from .outbox import AMBIGUOUS_ERROR_PREFIX, NewsroomV3PublisherWorker
@@ -116,12 +115,7 @@ def _safe_candidates(
     *,
     now: datetime,
 ) -> list[StoryRecord]:
-    candidates = [
-        story
-        for story in store.list_publishable(limit=100)
-        if not _published_by_v2(story, ledger) and _still_fresh(story, now=now)
-    ]
-    return sorted(candidates, key=_published_time, reverse=True)
+    return list_safe_candidates(store, ledger, now=now)
 
 
 def _candidate_for_publish(
