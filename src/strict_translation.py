@@ -50,6 +50,7 @@ def translate_to_fa_strict(text: str, session=None) -> str:
         return services._polish_fa(raw)
     resolved_session = session or services.requests
     for translator in (
+        services._google_clients5_translate,
         services._google_translate,
         services._google_mobile_translate,
         services._mymemory_translate,

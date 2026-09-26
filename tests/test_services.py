@@ -44,7 +44,8 @@ def test_has_persian_detects_persian_text():
 def test_translation_uses_fallback_and_returns_persian():
     session = FallbackSession()
     assert translate_to_fa("Iran and Hormuz", session=session) == "ایران و تنگه هرمز"
-    assert session.calls == 3
+    # clients5 (empty for this payload) -> googleapis (down) -> mobile (empty) -> mymemory (Persian)
+    assert session.calls == 4
 
 
 def test_mixed_english_headline_with_persian_source_suffix_is_still_translated():
