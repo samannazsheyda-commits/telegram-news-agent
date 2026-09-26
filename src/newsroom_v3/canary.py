@@ -58,23 +58,43 @@ def _shadow_is_healthy(status: dict) -> bool:
     )
 
 
-def _published_by_v2(story: StoryRecord, ledger: EventLedger) -> bool:
-    source_url = str(story.source_url or "").strip()
-    source_item_id = str(story.source_item_id or "").strip()
-    fingerprint = str(story.fingerprint or "").strip()
+def _v2_published_index(ledger: EventLedger) -> tuple[set[str], set[str], set[str]]:
+    urls: set[str] = set()
+    item_ids: set[str] = set()
+    fingerprints: set[str] = set()
     for record in ledger.records():
         if not list(record.published_message_ids or []):
             continue
-        variants = {str(value or "").strip() for value in (record.source_variants or [])}
+        for value in record.source_variants or []:
+            url = str(value or "").strip()
+            if url:
+                urls.add(url)
         data = record.fingerprint_data or {}
-        old_source_item_id = str(data.get("source_item_id") or "").strip()
-        if source_url and source_url in variants:
-            return True
-        if source_item_id and old_source_item_id and source_item_id == old_source_item_id:
-            return True
-        if fingerprint and str(record.fingerprint or "").strip() == fingerprint:
-            return True
+        item_id = str(data.get("source_item_id") or "").strip()
+        if item_id:
+            item_ids.add(item_id)
+        fingerprint = str(record.fingerprint or "").strip()
+        if fingerprint:
+            fingerprints.add(fingerprint)
+    return urls, item_ids, fingerprints
+
+
+def _published_by_index(story: StoryRecord, index: tuple[set[str], set[str], set[str]]) -> bool:
+    urls, item_ids, fingerprints = index
+    source_url = str(story.source_url or "").strip()
+    source_item_id = str(story.source_item_id or "").strip()
+    fingerprint = str(story.fingerprint or "").strip()
+    if source_url and source_url in urls:
+        return True
+    if source_item_id and source_item_id in item_ids:
+        return True
+    if fingerprint and fingerprint in fingerprints:
+        return True
     return False
+
+
+def _published_by_v2(story: StoryRecord, ledger: EventLedger) -> bool:
+    return _published_by_index(story, _v2_published_index(ledger))
 
 
 def _published_time(story: StoryRecord) -> datetime:
@@ -110,15 +130,17 @@ def list_safe_candidates(
     *,
     now: datetime,
 ) -> list[StoryRecord]:
-    return sorted(
-        (
-            story
-            for story in iter_publishable_stories(store)
-            if not _published_by_v2(story, ledger) and _still_fresh(story, now=now)
-        ),
-        key=_published_time,
-        reverse=True,
-    )
+    published = _v2_published_index(ledger)
+    found: list[StoryRecord] = []
+    for story in iter_publishable_stories(store, max_rows=400):
+        if _published_by_index(story, published):
+            continue
+        if not _still_fresh(story, now=now):
+            continue
+        found.append(story)
+        if len(found) >= 8:
+            break
+    return sorted(found, key=_published_time, reverse=True)
 
 
 def _safe_candidate(
