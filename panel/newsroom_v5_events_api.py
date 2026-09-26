@@ -19,10 +19,13 @@ def events():
         last_event_id = max(0, int(raw_last))
     except ValueError:
         last_event_id = 0
-    response = Response(
-        stream_with_context(broker.stream(last_event_id)),
-        mimetype="text/event-stream",
-    )
+    def body():
+        # Headers only leave gunicorn with the first body chunk; without an
+        # immediate preamble EventSource "open" waits for the next event/heartbeat.
+        yield "retry: 3000\n: connected\n\n"
+        yield from broker.stream(last_event_id)
+
+    response = Response(stream_with_context(body()), mimetype="text/event-stream")
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
     response.headers["X-Accel-Buffering"] = "no"
     response.headers["Connection"] = "keep-alive"
