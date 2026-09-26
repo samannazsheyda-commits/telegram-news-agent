@@ -8,14 +8,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
 
-from ..ai_newsroom import AIConfig, AIServiceError
 from ..event_ledger import EventLedger
-from ..groq_newsroom_ai import GroqConfig, LocalFirstGroqNewsAI
-from ..local_semantic_ai import LocalFirstNewsAI
+from ..newsroom_channel_publisher import build_channel_copy_publisher
 from ..newsroom_eligibility import _fresh_enough, _parse_published
-from ..one_x_ai_newsroom import OneXAIConfig, LocalFirstOneXAINewsAI
-from ..openrouter_newsroom_ai import OpenRouterConfig, LocalFirstOpenRouterNewsAI
-from ..strict_translation import StrictTelegramNewsroomPublisher
 from .outbox import NewsroomV3PublisherWorker
 from .publisher_adapter import V3TelegramPublisherAdapter
 from .store import NewsroomV3Store, StoryRecord
@@ -139,86 +134,9 @@ def canary_preflight(*, data_dir: str | Path) -> dict:
         store.close()
 
 
-class _ProviderFailoverNewsAI:
-    """Keep V3 translation/editing alive when a configured remote AI provider fails.
-
-    Providers are tried in priority order. Once a later provider succeeds, it
-    becomes sticky for the rest of the process so a quota-exhausted provider is
-    not retried immediately during the matching Persian edit call.
-    """
-
-    def __init__(self, providers: list[tuple[str, object]]):
-        self._providers = list(providers)
-        self._active_index = 0
-
-    @property
-    def available(self) -> bool:
-        return any(
-            bool(getattr(provider, "available", True))
-            for _, provider in self._providers[self._active_index :]
-        )
-
-    def _call(self, method: str, *args):
-        last_error: AIServiceError | None = None
-        for index in range(self._active_index, len(self._providers)):
-            name, provider = self._providers[index]
-            if not bool(getattr(provider, "available", True)):
-                self._active_index = index + 1
-                continue
-            try:
-                result = getattr(provider, method)(*args)
-            except AIServiceError as exc:
-                last_error = exc
-                self._active_index = index + 1
-                print(
-                    f"AI_PROVIDER_FAILOVER method={method} provider={name} error={exc}",
-                    flush=True,
-                )
-                continue
-            self._active_index = index
-            return result
-
-        if last_error is not None:
-            raise last_error
-        raise AIServiceError("no_ai_provider_available")
-
-    def translate_to_fa(self, source_text: str):
-        return self._call("translate_to_fa", source_text)
-
-    def edit_persian(self, source_text: str, draft_text: str):
-        return self._call("edit_persian", source_text, draft_text)
-
-
 def build_production_publisher() -> V3TelegramPublisherAdapter:
-    """Build the guarded V3 publisher with ordered remote-AI failover."""
-    one_x_config = OneXAIConfig.from_env()
-    hf_config = AIConfig.from_env()
-    groq_config = GroqConfig.from_env()
-    openrouter_config = OpenRouterConfig.from_env()
-
-    ai_mode = one_x_config.mode
-    providers: list[tuple[str, object]] = []
-    if ai_mode != "off" and one_x_config.api_key:
-        providers.append(("1xai", LocalFirstOneXAINewsAI(one_x_config)))
-    if openrouter_config.mode != "off" and openrouter_config.api_key:
-        providers.append(("openrouter", LocalFirstOpenRouterNewsAI(openrouter_config)))
-    if groq_config.mode != "off" and groq_config.api_key:
-        providers.append(("groq", LocalFirstGroqNewsAI(groq_config)))
-    if hf_config.mode != "off" and hf_config.token:
-        providers.append(("huggingface", LocalFirstNewsAI(hf_config)))
-
-    ai = _ProviderFailoverNewsAI(providers) if providers else None
-
-    offline_raw = str(os.environ.get("OFFLINE_TRANSLATION_ENABLED", "0") or "0").strip().lower()
-    offline_enabled = offline_raw not in {"0", "false", "no", "off"}
-    strict = StrictTelegramNewsroomPublisher(
-        os.environ.get("TELEGRAM_BOT_TOKEN", ""),
-        os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"),
-        ai=ai,
-        ai_mode=ai_mode,
-        offline_translation_enabled=offline_enabled,
-    )
-    return V3TelegramPublisherAdapter(strict)
+    """Wrap the shared Luna-required channel publisher for V3 outbox writes."""
+    return V3TelegramPublisherAdapter(build_channel_copy_publisher())
 
 
 def run_one_shot_canary(

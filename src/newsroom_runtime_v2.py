@@ -12,30 +12,25 @@ from .editorial_store import LocalEditorialStore
 from .event_ledger import EventLedger
 from .groq_newsroom_ai import GroqConfig, LocalFirstGroqNewsAI
 from .local_semantic_ai import LocalFirstNewsAI
+from .newsroom_channel_publisher import (
+    _offline_translation_enabled,
+    build_channel_copy_publisher,
+)
 from .newsroom_raw_intake import build_raw_fetchers
 from .newsroom_v2 import run_cycle
 from .openrouter_newsroom_ai import OpenRouterConfig, LocalFirstOpenRouterNewsAI
 from .panel_live_feed import LiveFeedStore
-from .strict_translation import StrictTelegramNewsroomPublisher
 
 
 def _decision_ai_for_newsroom(ai, ai_mode: str):
     """Use scarce remote AI for newsroom decisions only in required mode.
 
     In optional mode the deterministic newsroom still handles freshness,
-    eligibility, structural deduplication and rate limits. Keeping the remote
-    provider out of those pre-publish steps preserves its limited quota for the
-    Persian translation/editor stage in StrictTelegramNewsroomPublisher.
+    eligibility, structural deduplication and rate limits. Channel copy still
+    goes through the shared Luna-required publisher; this helper only keeps
+    pre-publish scoring off the scarce remote quota.
     """
     return ai if str(ai_mode or "").strip().lower() == "required" else None
-
-
-def _offline_translation_enabled() -> bool:
-    # Local Argos inference is opt-in only. The production VPS is deliberately
-    # tiny and a synchronous local translation can be OOM-killed before the
-    # network fallback chain gets a chance to publish the story.
-    raw = str(os.environ.get("OFFLINE_TRANSLATION_ENABLED", "0") or "0").strip().lower()
-    return raw not in {"0", "false", "no", "off"}
 
 
 def run_once(
@@ -75,13 +70,7 @@ def run_once(
         ai_provider = "huggingface"
 
     if publisher is None:
-        publisher = StrictTelegramNewsroomPublisher(
-            os.environ.get("TELEGRAM_BOT_TOKEN", ""),
-            os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"),
-            ai=ai,
-            ai_mode=ai_mode,
-            offline_translation_enabled=_offline_translation_enabled(),
-        )
+        publisher = build_channel_copy_publisher()
     effective_settings = {
         "auto_publish": True,
         "freshness_hours": int(os.environ.get("NEWSROOM_V2_PANEL_FRESHNESS_HOURS", "12")),

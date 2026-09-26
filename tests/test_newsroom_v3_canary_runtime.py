@@ -23,7 +23,7 @@ def test_default_canary_publisher_uses_existing_strict_guarded_publisher(monkeyp
 
     assert isinstance(publisher, V3TelegramPublisherAdapter)
     assert isinstance(publisher.publisher, StrictTelegramNewsroomPublisher)
-    assert publisher.publisher.ai_mode == "optional"
+    assert publisher.publisher.ai_mode == "required"
     assert publisher.publisher.offline_translation_enabled is False
 
 

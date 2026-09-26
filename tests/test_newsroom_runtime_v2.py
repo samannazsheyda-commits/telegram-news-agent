@@ -78,18 +78,21 @@ def test_runtime_prefers_openrouter_over_groq_and_hf(tmp_path, monkeypatch):
     assert result["ai_newsroom_mode"] == "required"
 
 
-def test_runtime_disables_offline_translation_fallback_by_default(tmp_path, monkeypatch):
+def test_runtime_uses_luna_required_channel_publisher_by_default(tmp_path, monkeypatch):
     captured = {}
 
-    class CapturingPublisher:
-        def __init__(self, *args, **kwargs):
-            captured.update(kwargs)
+    def fake_builder():
+        captured["used"] = True
 
-        def __call__(self, item):
-            return {"ok": True, "message_id": 1}
+        class Publisher:
+            def __call__(self, item):
+                return {"ok": True, "message_id": 1}
 
-    monkeypatch.setattr(newsroom_runtime_v2, "StrictTelegramNewsroomPublisher", CapturingPublisher)
+        return Publisher()
+
+    monkeypatch.setattr(newsroom_runtime_v2, "build_channel_copy_publisher", fake_builder)
     monkeypatch.delenv("OFFLINE_TRANSLATION_ENABLED", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
     monkeypatch.delenv("HF_TOKEN", raising=False)
@@ -102,4 +105,4 @@ def test_runtime_disables_offline_translation_fallback_by_default(tmp_path, monk
         now=datetime(2026, 9, 7, 21, 30, tzinfo=timezone.utc),
     )
 
-    assert captured["offline_translation_enabled"] is False
+    assert captured["used"] is True
