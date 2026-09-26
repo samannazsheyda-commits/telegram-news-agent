@@ -235,7 +235,7 @@
 
   function registerServiceWorker() {
     if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('/static/sw.js').catch(() => {});
+    navigator.serviceWorker.register('/sw.js', { scope: '/v5' }).catch(() => {});
     navigator.serviceWorker.addEventListener('message', event => {
       if (event.data?.type !== 'NEW_VERSION_AVAILABLE') return;
       const banner = document.getElementById('v5VersionBanner');

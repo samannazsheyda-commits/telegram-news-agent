@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import os
+from pathlib import Path
 
-from flask import abort, render_template
+from flask import Response, abort, render_template
 
 from panel.app import create_app as create_legacy_app, login_required
 from panel.newsroom_v5_api import bp as newsroom_v5_bp
@@ -28,6 +30,21 @@ class _NullDataBackend:
 
     def mark_news_seen(self, _news_key: str) -> None:
         return None
+
+
+_STATIC = Path(__file__).resolve().parent / "static"
+
+
+def _asset_paths() -> list[Path]:
+    return sorted([_STATIC / "manifest.webmanifest", *_STATIC.glob("newsroom-v5-*")])
+
+
+def compute_asset_version() -> str:
+    digest = hashlib.sha256()
+    for path in _asset_paths():
+        digest.update(path.name.encode("utf-8"))
+        digest.update(path.read_bytes())
+    return digest.hexdigest()[:12]
 
 
 def _enabled(value) -> bool:
@@ -73,6 +90,16 @@ def create_app(config: dict | None = None):
 
     app.register_blueprint(newsroom_v5_bp)
     app.register_blueprint(newsroom_v5_events_bp)
+    app.config["V5_ASSET_VERSION"] = compute_asset_version()
+    service_worker = (_STATIC / "newsroom-v5-sw.js").read_text(encoding="utf-8").replace(
+        "__V5_ASSET_VERSION__", app.config["V5_ASSET_VERSION"]
+    )
+
+    @app.get("/sw.js")
+    def newsroom_v5_service_worker():
+        response = Response(service_worker, mimetype="application/javascript")
+        response.headers["Cache-Control"] = "no-cache"
+        return response
 
     @app.get("/v5")
     @login_required
@@ -84,6 +111,7 @@ def create_app(config: dict | None = None):
         return render_template(
             "app_shell.html",
             newsroom_v5=True,
+            v5_asset_version=app.config["V5_ASSET_VERSION"],
             auto_publish_enabled=app.config.get("NEWSROOM_AUTO_PUBLISH_ENABLED", False),
         )
 

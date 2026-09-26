@@ -26,7 +26,8 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))
+      // Hash-versioned caches belong to the /v5 app-shell worker (newsroom-v5-sw.js).
+      .then(keys => Promise.all(keys.filter(key => key !== CACHE && !/^bikhabar-newsroom-v5-[0-9a-f]{12}$/.test(key)).map(key => caches.delete(key))))
       .then(() => self.clients.claim())
       .then(() => self.clients.matchAll({ type: 'window', includeUncontrolled: true }))
       .then(clients => Promise.all(clients.map(client => client.postMessage({ type: 'NEW_VERSION_AVAILABLE', cache: CACHE, replaced: LEGACY_CACHE }))))
