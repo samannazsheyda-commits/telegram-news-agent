@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import sqlite3
+import threading
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS schema_meta (
@@ -137,14 +138,50 @@ CREATE TABLE IF NOT EXISTS audit_log (
 );
 CREATE INDEX IF NOT EXISTS idx_audit_entity_time
     ON audit_log(entity_type, entity_id, created_at);
+
+CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    type TEXT NOT NULL,
+    payload_json TEXT NOT NULL DEFAULT '{}',
+    created_at TEXT NOT NULL
+);
 """
+
+_UPGRADABLE_VERSIONS = {1}
+
+
+class LockedConnection(sqlite3.Connection):
+    """One connection is shared by panel request threads.
+
+    Every statement and every explicit transaction holds the same re-entrant
+    lock, so a statement from another thread can never run inside (and be
+    committed or rolled back with) a transaction it does not own.
+    """
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.lock = threading.RLock()
+
+    def execute(self, *args, **kwargs):
+        with self.lock:
+            return super().execute(*args, **kwargs)
+
+    def executemany(self, *args, **kwargs):
+        with self.lock:
+            return super().executemany(*args, **kwargs)
+
+    def executescript(self, *args, **kwargs):
+        with self.lock:
+            return super().executescript(*args, **kwargs)
 
 
 def connect(path: str | Path) -> sqlite3.Connection:
     raw = str(path)
     if raw != ":memory:":
         Path(raw).expanduser().resolve().parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(raw, timeout=5.0, isolation_level=None, check_same_thread=False)
+    conn = sqlite3.connect(
+        raw, timeout=5.0, isolation_level=None, check_same_thread=False, factory=LockedConnection
+    )
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys=ON")
     conn.execute("PRAGMA busy_timeout=5000")
@@ -159,12 +196,27 @@ def initialize(conn: sqlite3.Connection) -> None:
     row = conn.execute("SELECT version FROM schema_meta LIMIT 1").fetchone()
     if row is None:
         conn.execute("INSERT INTO schema_meta(version) VALUES (?)", (SCHEMA_VERSION,))
+    elif int(row[0]) in _UPGRADABLE_VERSIONS:
+        # Upgrades are additive (CREATE ... IF NOT EXISTS above), so only the marker moves.
+        conn.execute("UPDATE schema_meta SET version=?", (SCHEMA_VERSION,))
     elif int(row[0]) != SCHEMA_VERSION:
         raise RuntimeError(f"unsupported newsroom schema version: {row[0]}")
 
 
 @contextmanager
 def transaction(conn: sqlite3.Connection, *, immediate: bool = True) -> Iterator[sqlite3.Connection]:
+    lock = getattr(conn, "lock", None)
+    if lock is None:
+        with _transaction(conn, immediate=immediate) as active:
+            yield active
+        return
+    with lock:
+        with _transaction(conn, immediate=immediate) as active:
+            yield active
+
+
+@contextmanager
+def _transaction(conn: sqlite3.Connection, *, immediate: bool) -> Iterator[sqlite3.Connection]:
     if conn.in_transaction:
         savepoint = f"sp_{id(conn)}"
         conn.execute(f"SAVEPOINT {savepoint}")

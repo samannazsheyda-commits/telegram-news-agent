@@ -8,7 +8,7 @@ from panel.app import create_app as create_legacy_app, login_required
 from panel.newsroom_v5_api import bp as newsroom_v5_bp
 from panel.newsroom_v5_events_api import bp as newsroom_v5_events_bp
 from src.newsroom_store_factory import create_runtime_store, selected_backend
-from src.newsroom_v5_events import NewsroomEventBroker
+from src.newsroom_v5_events import NewsroomEventBroker, SqliteEventLog
 
 
 class _NullDataBackend:
@@ -54,7 +54,10 @@ def create_app(config: dict | None = None):
     else:
         store = None
 
-    broker = config.get("NEWSROOM_V5_EVENTS") or NewsroomEventBroker(max_events=512)
+    broker = config.get("NEWSROOM_V5_EVENTS")
+    if broker is None:
+        file_backed = store is not None and str(getattr(store, "path", ":memory:")) != ":memory:"
+        broker = SqliteEventLog(store) if file_backed else NewsroomEventBroker(max_events=512)
     app.extensions["newsroom_v5_store"] = store
     app.extensions["newsroom_v5_events"] = broker
     app.config["NEWSROOM_STORE_BACKEND"] = selected_backend(backend)
