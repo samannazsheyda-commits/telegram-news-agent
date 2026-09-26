@@ -46,4 +46,15 @@ def test_stale_ready_backlog_does_not_hide_fresh_candidate(tmp_path):
     assert reason == "safe_candidate"
     assert story is not None
     assert story.story_id == "fresh-today"
+
+    no_ledger, no_ledger_reason = _candidate_for_publish(
+        store,
+        None,
+        now=NOW,
+        retry_cooldown_seconds=300,
+        max_attempts=3,
+    )
+    assert no_ledger_reason == "safe_candidate"
+    assert no_ledger is not None
+    assert no_ledger.story_id == "fresh-today"
     store.close()

@@ -126,14 +126,18 @@ def iter_publishable_stories(store: NewsroomV3Store, *, max_rows: int = 2000):
 
 def list_safe_candidates(
     store: NewsroomV3Store,
-    ledger: EventLedger,
+    ledger: EventLedger | None,
     *,
     now: datetime,
 ) -> list[StoryRecord]:
-    published = _v2_published_index(ledger)
+    published = (
+        _v2_published_index(ledger)
+        if ledger is not None
+        else (set(), set(), set())
+    )
     found: list[StoryRecord] = []
     for story in iter_publishable_stories(store, max_rows=400):
-        if _published_by_index(story, published):
+        if ledger is not None and _published_by_index(story, published):
             continue
         if not _still_fresh(story, now=now):
             continue
