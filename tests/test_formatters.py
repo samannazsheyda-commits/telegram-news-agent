@@ -100,6 +100,45 @@ def test_news_time_has_only_date_and_time_without_tehran_phrase():
     assert "به وقت ایران" not in text
 
 
+def test_cnbc_headline_drops_unrelated_simultaneous_clause():
+    item = NewsItem(
+        "cnbc",
+        "CNBC",
+        "Trump rejects Iran ceasefire as Saudi coalition intercepts projectiles",
+        "",
+        "https://example.com/cnbc",
+        "Sat, 26 Sep 2026 12:39:09 GMT",
+    )
+    text = format_news(
+        item,
+        "به گزارش وال‌استریت ژورنال، ترامپ پیشنهاد آتش‌بس مشروط ایران را رد کرد؛ هم‌زمان، ائتلاف سعودی پرتابه‌ها را رهگیری کرد.",
+        "",
+        marker_override="⚪️",
+    )
+    first_line = text.splitlines()[0]
+    assert first_line.startswith("⚪️ <b>سی‌ان‌بی‌سی: ")
+    assert "ترامپ پیشنهاد آتش‌بس مشروط ایران را رد کرد." in first_line
+    assert "ائتلاف سعودی" not in text
+    assert "پرتابه‌ها" not in text
+
+
+def test_al_arabiya_english_x_label_is_only_persian():
+    item = NewsItem(
+        "aa",
+        "Al Arabiya English / X",
+        "US contacted 50 countries",
+        "",
+        "https://example.com/aa",
+        "Sat, 26 Sep 2026 10:48:18 +0000",
+    )
+    text = format_news(item, "آمریکا با بیش از ۵۰ کشور برای تشدید تحریم ایران تماس گرفته است", "", marker_override="⚪️")
+    first_line = text.splitlines()[0]
+    assert first_line.startswith("⚪️ <b>العربیه")
+    assert "انگلیسی" not in first_line
+    assert "English" not in text
+    assert "Al Arabiya" not in text
+
+
 def test_realtime_telegram_and_x_source_labels_are_fully_persian():
     expected = {
         "RN Intel / Telegram": "آر‌اِن اینتل / تلگرام",

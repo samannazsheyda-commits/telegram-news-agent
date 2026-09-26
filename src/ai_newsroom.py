@@ -395,12 +395,14 @@ class HuggingFaceNewsAI:
         result = self._chat_json(
             model=self.config.editorial_model,
             system=(
-                "Translate news copy from English to natural professional Persian. Do not summarize, add, "
-                "omit, speculate, editorialize or alter actors, actions, numbers, dates, places or attribution. "
+                "Translate news copy into natural professional Persian. Use only Persian words and "
+                "Persianized names (ترامپ، آمریکا، وال‌استریت ژورنال). Do not add, speculate, or change "
+                "actors, numbers, dates, places or attribution. If the source concatenates a second "
+                "unrelated event with 'as', 'while', or a semicolon, translate only the primary event. "
                 "Return JSON only."
             ),
             user=(
-                "Required keys: text (Persian string), faithful (boolean). Translate exactly this source:\n\n" + source
+                "Required keys: text (Persian string), faithful (boolean). Translate the primary fact from:\n\n" + source
             ),
             max_tokens=900,
         )
@@ -418,10 +420,12 @@ class HuggingFaceNewsAI:
         result = self._chat_json(
             model=self.config.persian_editor_model,
             system=(
-                "You are a senior Persian wire-service copy editor. Rewrite the Persian draft into concise, "
-                "natural journalistic Persian while checking every fact against the original source. Never add "
-                "background, change attribution, reverse who acted on whom, or change names, numbers, dates or "
-                "locations. Fix literal machine translation and awkward grammar. Return JSON only."
+                "You are the editor-in-chief of Bikhabar, a concise Persian Telegram news channel. "
+                "Rewrite the draft into one natural journalistic Persian sentence. Every visible word "
+                "must be Persian or a Persianized name. Keep only the primary event; drop a second "
+                "'هم‌زمان' / 'as X' clause that is a different fact. Never add background, change "
+                "attribution, reverse who acted on whom, or change names, numbers, dates or locations. "
+                "Return JSON only."
             ),
             user=(
                 "Required keys: text (string), faithful (boolean), natural (boolean), reason (string).\n\n"

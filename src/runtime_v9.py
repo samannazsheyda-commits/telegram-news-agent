@@ -28,8 +28,8 @@ _CAR_PERSIAN_PAGE_STATE_KEY = "car_persian_page_republish_date"
 _SOURCE_OVERRIDES = {
     "Mark Dubowitz / X": "مارک دوبوویتز / ایکس",
     "John Bolton / X": "جان بولتون / ایکس",
-    "Al Jazeera English / X": "الجزیره انگلیسی / ایکس",
-    "Al Arabiya English / X": "العربیه انگلیسی / ایکس",
+    "Al Jazeera English / X": "الجزیره / ایکس",
+    "Al Arabiya English / X": "العربیه / ایکس",
     "Clash Report / Telegram": "کلش ریپورت / تلگرام",
 }
 

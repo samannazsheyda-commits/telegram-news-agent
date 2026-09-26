@@ -15,7 +15,7 @@ def _item(source: str) -> NewsItem:
 
 def test_al_jazeera_x_source_is_fully_persian():
     item = _persian_source_item(_item("Al Jazeera English / X"))
-    assert item.source == "الجزیره انگلیسی / ایکس"
+    assert item.source == "الجزیره / ایکس"
 
 
 def test_mark_dubowitz_x_source_is_fully_persian():

@@ -11,11 +11,8 @@ from ..event_ledger import EventLedger
 from ..newsroom_raw_intake import build_raw_fetchers
 from .canary import (
     CANARY_MARKER,
-    V2_LEDGER,
-    _published_by_v2,
-    _published_time,
-    _still_fresh,
     build_production_publisher,
+    list_safe_candidates,
 )
 from .final_gate import FinalGateDecision, LunaFinalPublishGate
 from .outbox import AMBIGUOUS_ERROR_PREFIX, NewsroomV3PublisherWorker
@@ -112,21 +109,16 @@ def _collect(fetchers) -> tuple[list, int, int]:
 
 def _safe_candidates(
     store: NewsroomV3Store,
-    ledger: EventLedger,
+    ledger: EventLedger | None,
     *,
     now: datetime,
 ) -> list[StoryRecord]:
-    candidates = [
-        story
-        for story in store.list_publishable(limit=100)
-        if not _published_by_v2(story, ledger) and _still_fresh(story, now=now)
-    ]
-    return sorted(candidates, key=_published_time, reverse=True)
+    return list_safe_candidates(store, ledger, now=now)
 
 
 def _candidate_for_publish(
     store: NewsroomV3Store,
-    ledger: EventLedger,
+    ledger: EventLedger | None,
     *,
     now: datetime,
     retry_cooldown_seconds: int,
@@ -205,6 +197,7 @@ def run_once(
     retry_cooldown_seconds: int | None = None,
     max_attempts: int | None = None,
     daily_limit: int | None = None,
+    forced_story_id: str | None = None,
 ) -> dict:
     """Run one guarded V3 production cycle with at most one Telegram write."""
     current_time = now or datetime.now(timezone.utc)
@@ -275,20 +268,33 @@ def run_once(
         if daily_published >= resolved_daily_limit:
             return _persist_result(status_path, prior_status, {**base, "reason": "daily_limit"})
 
-        if _within_publish_interval(
+        if not str(forced_story_id or "").strip() and _within_publish_interval(
             prior_status,
             now=current_time,
             min_publish_interval_seconds=interval,
         ):
             return _persist_result(status_path, prior_status, {**base, "reason": "publish_interval"})
 
-        story, reason = _candidate_for_publish(
-            store,
-            EventLedger(directory / V2_LEDGER),
-            now=current_time,
-            retry_cooldown_seconds=cooldown,
-            max_attempts=attempts_limit,
-        )
+        forced_id = str(forced_story_id or "").strip()
+        if forced_id:
+            story = store.get_story(forced_id)
+            if story is None:
+                return _persist_result(
+                    status_path,
+                    prior_status,
+                    {**base, "story_id": forced_id, "reason": "story_missing"},
+                )
+            reason = "forced_story"
+        else:
+            # V3 store is authoritative after cutover. Scanning the V2 ledger
+            # blocked live cycles while today's ready stories sat unpublished.
+            story, reason = _candidate_for_publish(
+                store,
+                None,
+                now=current_time,
+                retry_cooldown_seconds=cooldown,
+                max_attempts=attempts_limit,
+            )
         if story is None:
             return _persist_result(status_path, prior_status, {**base, "reason": reason})
 
@@ -387,3 +393,25 @@ def run_once(
         return _persist_result(status_path, prior_status, result)
     finally:
         store.close()
+
+
+def publish_ready_story(
+    *,
+    data_dir: str | Path = "data",
+    story_id: str,
+    publisher: Callable[[StoryRecord], object] | None = None,
+    final_gate: Callable[[StoryRecord, list[StoryRecord]], FinalGateDecision] | None = None,
+    now: datetime | None = None,
+) -> dict:
+    """Publish one already-ready story without fetching sources or scanning the V2 ledger."""
+    return run_once(
+        data_dir=data_dir,
+        fetchers=[],
+        publisher=publisher,
+        final_gate=final_gate,
+        now=now,
+        publish_enabled=True,
+        min_publish_interval_seconds=0,
+        retry_cooldown_seconds=0,
+        forced_story_id=story_id,
+    )

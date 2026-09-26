@@ -219,6 +219,7 @@ def test_canary_requires_explicit_publisher_and_never_uses_shadow_cli_implicitly
 def test_production_publisher_fails_over_from_openrouter_daily_quota_to_groq(monkeypatch):
     from types import SimpleNamespace
 
+    import src.newsroom_channel_publisher as channel_publisher
     import src.newsroom_v3.canary as canary_module
     from src.ai_newsroom import AIServiceError
 
@@ -271,9 +272,9 @@ def test_production_publisher_fails_over_from_openrouter_daily_quota_to_groq(mon
     monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-test")
     monkeypatch.setenv("GROQ_API_KEY", "groq-test")
     monkeypatch.setenv("HF_TOKEN", "hf-test")
-    monkeypatch.setattr(canary_module, "LocalFirstOpenRouterNewsAI", FakeOpenRouter)
-    monkeypatch.setattr(canary_module, "LocalFirstGroqNewsAI", FakeGroq)
-    monkeypatch.setattr(canary_module, "LocalFirstNewsAI", FakeHF)
+    monkeypatch.setattr(channel_publisher, "LocalFirstOpenRouterNewsAI", FakeOpenRouter)
+    monkeypatch.setattr(channel_publisher, "LocalFirstGroqNewsAI", FakeGroq)
+    monkeypatch.setattr(channel_publisher, "LocalFirstNewsAI", FakeHF)
 
     publisher = canary_module.build_production_publisher().publisher
     draft = publisher.ai.translate_to_fa("Iran launched two missiles")
@@ -287,6 +288,7 @@ def test_production_publisher_fails_over_from_openrouter_daily_quota_to_groq(mon
 def test_production_publisher_fails_over_from_groq_to_hf_when_needed(monkeypatch):
     from types import SimpleNamespace
 
+    import src.newsroom_channel_publisher as channel_publisher
     import src.newsroom_v3.canary as canary_module
     from src.ai_newsroom import AIServiceError
 
@@ -329,9 +331,9 @@ def test_production_publisher_fails_over_from_groq_to_hf_when_needed(monkeypatch
     monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-test")
     monkeypatch.setenv("GROQ_API_KEY", "groq-test")
     monkeypatch.setenv("HF_TOKEN", "hf-test")
-    monkeypatch.setattr(canary_module, "LocalFirstOpenRouterNewsAI", FakeOpenRouter)
-    monkeypatch.setattr(canary_module, "LocalFirstGroqNewsAI", FakeGroq)
-    monkeypatch.setattr(canary_module, "LocalFirstNewsAI", FakeHF)
+    monkeypatch.setattr(channel_publisher, "LocalFirstOpenRouterNewsAI", FakeOpenRouter)
+    monkeypatch.setattr(channel_publisher, "LocalFirstGroqNewsAI", FakeGroq)
+    monkeypatch.setattr(channel_publisher, "LocalFirstNewsAI", FakeHF)
 
     publisher = canary_module.build_production_publisher().publisher
     draft = publisher.ai.translate_to_fa("Iran launched two missiles")

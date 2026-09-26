@@ -83,3 +83,44 @@ def test_real_production_path_never_calls_publisher_when_default_luna_gate_fails
     assert result["reason"] == "final_gate_error"
     assert result["telegram_writes"] == 0
     assert publisher_built == []
+
+
+def test_forced_story_skips_interval_and_does_not_open_v2_ledger(monkeypatch, tmp_path):
+    data = tmp_path / "data"
+    data.mkdir()
+    now = datetime.now(timezone.utc)
+    store = NewsroomV3Store(data / "newsroom_v3.sqlite3")
+    _ready_story(store, "288d316dea5b", now)
+    store.close()
+    (data / "newsroom_v3_production_status.json").write_text(
+        '{"last_publish_attempt_at": "2099-01-01T00:00:00+00:00"}',
+        encoding="utf-8",
+    )
+
+    events = []
+
+    class Gate:
+        def __call__(self, story, recent):
+            events.append(("gate", story.story_id))
+            return FinalGateDecision(True, "factual_unique_event")
+
+    def boom(*_args, **_kwargs):
+        raise AssertionError("V2 ledger must not be opened for a forced publish")
+
+    monkeypatch.setattr(production, "LunaFinalPublishGate", lambda: Gate())
+    monkeypatch.setattr(production, "EventLedger", boom)
+    monkeypatch.setattr(
+        production,
+        "_production_publisher",
+        lambda: (lambda story: events.append(("telegram", story.story_id)) or {"ok": True, "message_id": 777}),
+    )
+
+    result = production.publish_ready_story(
+        data_dir=data,
+        story_id="288d316dea5b",
+        now=now,
+    )
+
+    assert result["reason"] == "published"
+    assert result["telegram_message_id"] == 777
+    assert events == [("gate", "288d316dea5b"), ("telegram", "288d316dea5b")]

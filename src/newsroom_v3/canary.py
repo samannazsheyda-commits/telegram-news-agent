@@ -8,14 +8,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
 
-from ..ai_newsroom import AIConfig, AIServiceError
 from ..event_ledger import EventLedger
-from ..groq_newsroom_ai import GroqConfig, LocalFirstGroqNewsAI
-from ..local_semantic_ai import LocalFirstNewsAI
+from ..newsroom_channel_publisher import build_channel_copy_publisher
 from ..newsroom_eligibility import _fresh_enough, _parse_published
-from ..one_x_ai_newsroom import OneXAIConfig, LocalFirstOneXAINewsAI
-from ..openrouter_newsroom_ai import OpenRouterConfig, LocalFirstOpenRouterNewsAI
-from ..strict_translation import StrictTelegramNewsroomPublisher
 from .outbox import NewsroomV3PublisherWorker
 from .publisher_adapter import V3TelegramPublisherAdapter
 from .store import NewsroomV3Store, StoryRecord
@@ -63,23 +58,43 @@ def _shadow_is_healthy(status: dict) -> bool:
     )
 
 
-def _published_by_v2(story: StoryRecord, ledger: EventLedger) -> bool:
-    source_url = str(story.source_url or "").strip()
-    source_item_id = str(story.source_item_id or "").strip()
-    fingerprint = str(story.fingerprint or "").strip()
+def _v2_published_index(ledger: EventLedger) -> tuple[set[str], set[str], set[str]]:
+    urls: set[str] = set()
+    item_ids: set[str] = set()
+    fingerprints: set[str] = set()
     for record in ledger.records():
         if not list(record.published_message_ids or []):
             continue
-        variants = {str(value or "").strip() for value in (record.source_variants or [])}
+        for value in record.source_variants or []:
+            url = str(value or "").strip()
+            if url:
+                urls.add(url)
         data = record.fingerprint_data or {}
-        old_source_item_id = str(data.get("source_item_id") or "").strip()
-        if source_url and source_url in variants:
-            return True
-        if source_item_id and old_source_item_id and source_item_id == old_source_item_id:
-            return True
-        if fingerprint and str(record.fingerprint or "").strip() == fingerprint:
-            return True
+        item_id = str(data.get("source_item_id") or "").strip()
+        if item_id:
+            item_ids.add(item_id)
+        fingerprint = str(record.fingerprint or "").strip()
+        if fingerprint:
+            fingerprints.add(fingerprint)
+    return urls, item_ids, fingerprints
+
+
+def _published_by_index(story: StoryRecord, index: tuple[set[str], set[str], set[str]]) -> bool:
+    urls, item_ids, fingerprints = index
+    source_url = str(story.source_url or "").strip()
+    source_item_id = str(story.source_item_id or "").strip()
+    fingerprint = str(story.fingerprint or "").strip()
+    if source_url and source_url in urls:
+        return True
+    if source_item_id and source_item_id in item_ids:
+        return True
+    if fingerprint and fingerprint in fingerprints:
+        return True
     return False
+
+
+def _published_by_v2(story: StoryRecord, ledger: EventLedger) -> bool:
+    return _published_by_index(story, _v2_published_index(ledger))
 
 
 def _published_time(story: StoryRecord) -> datetime:
@@ -94,6 +109,44 @@ def _still_fresh(story: StoryRecord, *, now: datetime) -> bool:
     return _fresh_enough(published, now)
 
 
+def iter_publishable_stories(store: NewsroomV3Store, *, max_rows: int = 2000):
+    """Walk ready stories past the first page so stale backlog cannot hide fresh news."""
+    offset = 0
+    page = 100
+    limit = max(1, int(max_rows))
+    while offset < limit:
+        batch = store.list_publishable(limit=min(page, limit - offset), offset=offset)
+        if not batch:
+            break
+        yield from batch
+        offset += len(batch)
+        if len(batch) < page:
+            break
+
+
+def list_safe_candidates(
+    store: NewsroomV3Store,
+    ledger: EventLedger | None,
+    *,
+    now: datetime,
+) -> list[StoryRecord]:
+    published = (
+        _v2_published_index(ledger)
+        if ledger is not None
+        else (set(), set(), set())
+    )
+    found: list[StoryRecord] = []
+    for story in iter_publishable_stories(store, max_rows=400):
+        if ledger is not None and _published_by_index(story, published):
+            continue
+        if not _still_fresh(story, now=now):
+            continue
+        found.append(story)
+        if len(found) >= 8:
+            break
+    return sorted(found, key=_published_time, reverse=True)
+
+
 def _safe_candidate(
     store: NewsroomV3Store,
     ledger: EventLedger,
@@ -101,14 +154,8 @@ def _safe_candidate(
     now: datetime | None = None,
 ) -> StoryRecord | None:
     resolved_now = now or datetime.now(timezone.utc)
-    candidates = [
-        story
-        for story in store.list_publishable(limit=100)
-        if not _published_by_v2(story, ledger) and _still_fresh(story, now=resolved_now)
-    ]
-    if not candidates:
-        return None
-    return max(candidates, key=_published_time)
+    candidates = list_safe_candidates(store, ledger, now=resolved_now)
+    return candidates[0] if candidates else None
 
 
 def canary_preflight(*, data_dir: str | Path) -> dict:
@@ -139,86 +186,9 @@ def canary_preflight(*, data_dir: str | Path) -> dict:
         store.close()
 
 
-class _ProviderFailoverNewsAI:
-    """Keep V3 translation/editing alive when a configured remote AI provider fails.
-
-    Providers are tried in priority order. Once a later provider succeeds, it
-    becomes sticky for the rest of the process so a quota-exhausted provider is
-    not retried immediately during the matching Persian edit call.
-    """
-
-    def __init__(self, providers: list[tuple[str, object]]):
-        self._providers = list(providers)
-        self._active_index = 0
-
-    @property
-    def available(self) -> bool:
-        return any(
-            bool(getattr(provider, "available", True))
-            for _, provider in self._providers[self._active_index :]
-        )
-
-    def _call(self, method: str, *args):
-        last_error: AIServiceError | None = None
-        for index in range(self._active_index, len(self._providers)):
-            name, provider = self._providers[index]
-            if not bool(getattr(provider, "available", True)):
-                self._active_index = index + 1
-                continue
-            try:
-                result = getattr(provider, method)(*args)
-            except AIServiceError as exc:
-                last_error = exc
-                self._active_index = index + 1
-                print(
-                    f"AI_PROVIDER_FAILOVER method={method} provider={name} error={exc}",
-                    flush=True,
-                )
-                continue
-            self._active_index = index
-            return result
-
-        if last_error is not None:
-            raise last_error
-        raise AIServiceError("no_ai_provider_available")
-
-    def translate_to_fa(self, source_text: str):
-        return self._call("translate_to_fa", source_text)
-
-    def edit_persian(self, source_text: str, draft_text: str):
-        return self._call("edit_persian", source_text, draft_text)
-
-
 def build_production_publisher() -> V3TelegramPublisherAdapter:
-    """Build the guarded V3 publisher with ordered remote-AI failover."""
-    one_x_config = OneXAIConfig.from_env()
-    hf_config = AIConfig.from_env()
-    groq_config = GroqConfig.from_env()
-    openrouter_config = OpenRouterConfig.from_env()
-
-    ai_mode = one_x_config.mode
-    providers: list[tuple[str, object]] = []
-    if ai_mode != "off" and one_x_config.api_key:
-        providers.append(("1xai", LocalFirstOneXAINewsAI(one_x_config)))
-    if openrouter_config.mode != "off" and openrouter_config.api_key:
-        providers.append(("openrouter", LocalFirstOpenRouterNewsAI(openrouter_config)))
-    if groq_config.mode != "off" and groq_config.api_key:
-        providers.append(("groq", LocalFirstGroqNewsAI(groq_config)))
-    if hf_config.mode != "off" and hf_config.token:
-        providers.append(("huggingface", LocalFirstNewsAI(hf_config)))
-
-    ai = _ProviderFailoverNewsAI(providers) if providers else None
-
-    offline_raw = str(os.environ.get("OFFLINE_TRANSLATION_ENABLED", "0") or "0").strip().lower()
-    offline_enabled = offline_raw not in {"0", "false", "no", "off"}
-    strict = StrictTelegramNewsroomPublisher(
-        os.environ.get("TELEGRAM_BOT_TOKEN", ""),
-        os.environ.get("TELEGRAM_CHAT_ID", "@bikhabaar"),
-        ai=ai,
-        ai_mode=ai_mode,
-        offline_translation_enabled=offline_enabled,
-    )
-    return V3TelegramPublisherAdapter(strict)
+    """Wrap the shared Luna-required channel publisher for V3 outbox writes."""
+    return V3TelegramPublisherAdapter(build_channel_copy_publisher())
 
 
 def run_one_shot_canary(

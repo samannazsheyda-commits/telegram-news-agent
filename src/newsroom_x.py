@@ -44,7 +44,7 @@ _BUILTIN_X_NEWSROOMS = (
 _PERSIAN_SOURCE_NAMES = {
     "Reuters": "رویترز", "Associated Press": "آسوشیتدپرس", "AFP": "خبرگزاری فرانسه",
     "BBC World": "بی‌بی‌سی ورلد", "CNN": "سی‌ان‌ان", "France 24": "فرانس ۲۴",
-    "Al Jazeera English": "الجزیره انگلیسی", "Al Arabiya English": "العربیه انگلیسی",
+    "Al Jazeera English": "الجزیره", "Al Arabiya English": "العربیه",
     "The New York Times": "نیویورک تایمز", "NYT World": "نیویورک تایمز جهان",
     "Bloomberg": "بلومبرگ", "Financial Times": "فایننشال تایمز", "Sky News": "اسکای نیوز",
     "NBC News": "ان‌بی‌سی نیوز", "CBS News": "سی‌بی‌اس نیوز", "ABC News": "ای‌بی‌سی نیوز",

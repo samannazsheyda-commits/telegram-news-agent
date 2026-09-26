@@ -64,7 +64,8 @@ def test_official_x_source_name_is_rendered_in_persian():
         "Fri, 04 Sep 2026 23:45:00 GMT",
     )
     rendered = format_news(item, "تازه‌ترین خبر درباره ایران", "")
-    assert "الجزیره انگلیسی / ایکس" in rendered
+    assert "الجزیره / ایکس" in rendered
+    assert "انگلیسی" not in rendered
     assert "Al Jazeera English / X" not in rendered
 
 

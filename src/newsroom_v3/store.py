@@ -292,8 +292,9 @@ class NewsroomV3Store:
         ).fetchone()
         return self._story_from_row(row) if row is not None else None
 
-    def list_publishable(self, *, limit: int = 10) -> list[StoryRecord]:
+    def list_publishable(self, *, limit: int = 10, offset: int = 0) -> list[StoryRecord]:
         bounded = max(1, min(100, int(limit)))
+        skip = max(0, int(offset))
         rows = self._conn.execute(
             """
             SELECT *
@@ -302,13 +303,10 @@ class NewsroomV3Store:
               AND publish_state IN ('not_attempted', 'failed')
               AND telegram_message_id IS NULL
               AND lower(trim(COALESCE(last_publish_error, ''))) <> 'duplicate_event'
-            ORDER BY
-                CASE WHEN publish_state='failed' THEN 0 ELSE 1 END,
-                created_at ASC,
-                story_id ASC
-            LIMIT ?
+            ORDER BY created_at DESC, story_id DESC
+            LIMIT ? OFFSET ?
             """,
-            (bounded,),
+            (bounded, skip),
         ).fetchall()
         return [self._story_from_row(row) for row in rows]
 
