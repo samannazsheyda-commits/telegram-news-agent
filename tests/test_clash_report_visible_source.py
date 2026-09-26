@@ -23,5 +23,7 @@ def test_clashreport_telegram_source_is_visible_as_clash_report_not_generic_sour
     )
 
     first_line = message.splitlines()[0]
-    assert first_line.startswith("⚪️ <b>Clash Report:")
+    assert first_line.startswith("⚪️ <b>کلش ریپورت:")
+    assert "Clash Report" not in first_line
+    assert "ClashReport" not in first_line
     assert "⚪️ <b>منبع:" not in first_line

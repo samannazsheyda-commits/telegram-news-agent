@@ -60,6 +60,7 @@ def test_channel_publisher_is_luna_required_even_when_env_says_optional(monkeypa
 
     assert isinstance(publisher, StrictTelegramNewsroomPublisher)
     assert publisher.ai_mode == "required"
+    assert publisher.send_still_photos is False
     assert publisher.ai is not None
     assert publisher.ai.available is True
 

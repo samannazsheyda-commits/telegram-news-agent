@@ -126,6 +126,8 @@ def _lingva_translate(text: str, session=requests) -> str:
 
 
 class TelegramNewsroomPublisher:
+    send_still_photos = True
+
     def __init__(self, bot_token: str, chat_id: str, *, session=requests, translator=translate_to_fa):
         self.bot_token = str(bot_token or "").strip()
         self.chat_id = str(chat_id or "").strip()
@@ -315,7 +317,7 @@ class TelegramNewsroomPublisher:
             return {"ok": False, "error": "translation_or_format_failed"}
 
         video = _first_video(item)
-        photo = _first_image(item)
+        photo = _first_image(item) if self.send_still_photos else ""
         if video:
             result = self._post(
                 "sendVideo",

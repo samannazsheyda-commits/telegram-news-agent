@@ -30,6 +30,12 @@ SOURCE_FA = {
     "Jerusalem Post / X": "جروزالم پست / ایکس",
     "Middle East Spectator / Telegram": "میدل ایست اسپکتیتور / تلگرام",
     "Clash Report / Telegram": "کلش ریپورت / تلگرام",
+    "ClashReport / Telegram": "کلش ریپورت / تلگرام",
+    "Clash Report": "کلش ریپورت",
+    "ClashReport": "کلش ریپورت",
+    "Al Arabiya English / X": "العربیه",
+    "Al Arabiya English": "العربیه",
+    "Al Arabiya / X": "العربیه",
     "GeoPWatch / Telegram": "ژئوپی‌واچ / تلگرام",
     "Tabz Live / Telegram": "تبز لایو / تلگرام",
     "The Cradle / Telegram": "دِ کرِیدل / تلگرام",
@@ -84,8 +90,19 @@ def _strip_source_suffix(value: str) -> str:
     return re.sub(rf"\s*[-–—|:]\s*(?:{suffixes})\s*$", "", text, flags=re.IGNORECASE).strip()
 
 
+def _primary_headline(value: str) -> str:
+    """Keep only the first news fact. Drop a spliced second event after ؛ or هم‌زمان."""
+    text = re.sub(r"\s+", " ", str(value or "")).strip()
+    if not text:
+        return ""
+    text = re.split(r"\s*؛\s*", text, maxsplit=1)[0]
+    text = re.split(r"\s*هم[\u200c]?زمان،?\s*", text, maxsplit=1)[0]
+    return text.strip(" -–—،,؛;")
+
+
 def _clean_persian_output_text(value: str) -> str:
     text = unescape(value or "").replace("\r", " ").replace("\n", " ").strip()
+    text = re.sub(r"(?i)^NEW:\s*", "", text)
     text = re.sub(r"(?i)\bBREAKING\b", "فوری", text)
     text = re.sub(r"(?i)\bURGENT\b", "فوری", text)
     text = re.sub(r"(?i)\bALERT\b", "هشدار", text)
@@ -213,10 +230,16 @@ def _detail_marker(marker: str) -> str:
 
 
 def _source_label(source: str) -> str:
-    label = SOURCE_FA.get(source)
+    raw = re.sub(r"\s+", " ", str(source or "")).strip()
+    label = SOURCE_FA.get(raw) or SOURCE_FA.get(source)
     if label:
         return label
-    label = re.sub(r"\s*/\s*Telegram\s*$", " / تلگرام", source or "", flags=re.IGNORECASE)
+    compact = re.sub(r"[\s_]+", "", raw).lower()
+    if compact.startswith("clashreport"):
+        return "کلش ریپورت / تلگرام"
+    if compact.startswith("alarabiya"):
+        return "العربیه"
+    label = re.sub(r"\s*/\s*Telegram\s*$", " / تلگرام", raw, flags=re.IGNORECASE)
     label = re.sub(r"\s*/\s*X\s*$", " / ایکس", label, flags=re.IGNORECASE)
     return label.strip()
 
@@ -290,7 +313,9 @@ def format_truth(post: TruthPost, persian_text: str) -> str:
 
 
 def format_news(item: NewsItem, title_fa: str, summary_fa: str, marker_override: str | None = None) -> str:
-    title_fa = _strip_promotional_tail(_clean_persian_output_text(_strip_source_suffix(title_fa)))
+    title_fa = _primary_headline(
+        _strip_promotional_tail(_clean_persian_output_text(_strip_source_suffix(title_fa)))
+    )
     if _blocked_final_title(title_fa):
         return ""
     title_fa = _ensure_period(title_fa)

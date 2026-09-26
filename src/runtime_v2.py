@@ -28,7 +28,7 @@ _X_SOURCE_FA = {
     "Reuters / X": "رویترز / ایکس", "Associated Press / X": "آسوشیتدپرس / ایکس",
     "AFP / X": "خبرگزاری فرانسه / ایکس", "BBC World / X": "بی‌بی‌سی ورلد / ایکس",
     "CNN / X": "سی‌ان‌ان / ایکس", "France 24 / X": "فرانس ۲۴ / ایکس",
-    "Al Jazeera English / X": "الجزیره انگلیسی / ایکس", "Al Arabiya English / X": "العربیه انگلیسی / ایکس",
+    "Al Jazeera English / X": "الجزیره / ایکس", "Al Arabiya English / X": "العربیه / ایکس",
     "The New York Times / X": "نیویورک تایمز / ایکس", "NYT World / X": "نیویورک تایمز جهان / ایکس",
     "Bloomberg / X": "بلومبرگ / ایکس", "Financial Times / X": "فایننشال تایمز / ایکس",
     "Sky News / X": "اسکای نیوز / ایکس", "NBC News / X": "ان‌بی‌سی نیوز / ایکس",

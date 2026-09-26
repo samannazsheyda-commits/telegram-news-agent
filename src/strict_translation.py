@@ -159,6 +159,8 @@ def _natural_persian_copy(source: str, value: str) -> str:
 class StrictTelegramNewsroomPublisher(TelegramNewsroomPublisher):
     """Production publisher with guarded network/AI translation and opt-in local MT."""
 
+    send_still_photos = False
+
     def __init__(
         self,
         bot_token: str,
