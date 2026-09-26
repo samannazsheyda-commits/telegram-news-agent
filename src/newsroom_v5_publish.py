@@ -115,11 +115,15 @@ def process_publication(
     if publication.get("status") == "published":
         return publication
 
-    if publication.get("status") == "reconcile" and reconciler is not None:
-        try:
-            reconciliation = reconciler(dict(publication)) or {}
-        except Exception as exc:
-            reconciliation = {"found": False, "error": str(exc)}
+    if publication.get("status") == "reconcile":
+        # Telegram may already hold this post. Only an explicit reconciliation
+        # answer may lead to a send; without one the post waits for an operator.
+        reconciliation: dict = {}
+        if reconciler is not None:
+            try:
+                reconciliation = reconciler(dict(publication)) or {}
+            except Exception as exc:
+                reconciliation = {"found": False, "error": str(exc)}
         if reconciliation.get("found") and reconciliation.get("telegram_message_id") is not None:
             return _mark_published(
                 store,
@@ -127,6 +131,19 @@ def process_publication(
                 reconciliation["telegram_message_id"],
                 event_sink=event_sink,
             )
+        if reconciliation.get("confirmed_absent"):
+            attempts = int(publication.get("attempt_count") or 0) + 1
+            store.update_publication(publication_id, status="retry", attempt_count=attempts, last_error="confirmed_absent")
+            enqueue_once(
+                store,
+                "publish_story",
+                story_id=str(publication["story_id"]),
+                payload={"publication_id": publication_id},
+                key=f"publish:{publication_id}:resend:{attempts}",
+            )
+            result = dict(store.get_publication(publication_id) or publication)
+            result["status"] = "retry"
+            return result
         enqueue_once(
             store,
             "reconcile_publication",

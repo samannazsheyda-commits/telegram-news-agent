@@ -1,0 +1,23 @@
+[Unit]
+Description=Bikhabar Newsroom V5 background worker (translation, editorial routing, publication outbox)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=bikhabar
+Group=bikhabar
+WorkingDirectory=/opt/bikhabar/app
+EnvironmentFile=/etc/bikhabar/agent.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/bikhabar/venv/bin/python -m src.newsroom_v5_worker --interval 2
+Restart=on-failure
+RestartSec=5
+# Exit status 2 means NEWSROOM_STORE_BACKEND is not sqlite: stay stopped instead of flapping.
+RestartPreventExitStatus=2
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
