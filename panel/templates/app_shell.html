@@ -65,6 +65,18 @@
           <a href="/system" class="v5-control-card"><strong>سلامت سیستم</strong><span>وضعیت سرویس‌ها و پردازش</span></a>
           <div class="v5-control-card is-static"><strong>انتشار خودکار</strong><span>{{ 'روشن' if auto_publish_enabled else 'خاموش' }}</span></div>
         </div>
+        <section class="v5-health" id="v5Health" aria-live="polite">
+          <h2>وضعیت پردازش</h2>
+          <dl class="v5-health-grid">
+            <div><dt>در انتظار ترجمه</dt><dd data-health="awaiting_translation">…</dd></div>
+            <div><dt>صف بررسی سردبیری</dt><dd data-health="editorial_pending">…</dd></div>
+            <div><dt>صف انتشار</dt><dd data-health="outbox">…</dd></div>
+            <div><dt>نیازمند تطبیق تلگرام</dt><dd data-health="reconcile">…</dd></div>
+            <div><dt>کارهای ناموفق</dt><dd data-health="failed_jobs">…</dd></div>
+            <div><dt>آخرین ترجمه</dt><dd data-health="last_translation">…</dd></div>
+          </dl>
+          <p class="v5-health-alert" id="v5HealthAlert" hidden>موردی نیاز به بررسی فنی دارد.</p>
+        </section>
       </section>
     </main>
 

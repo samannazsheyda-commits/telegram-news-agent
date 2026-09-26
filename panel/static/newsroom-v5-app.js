@@ -67,7 +67,36 @@
       requestAnimationFrame(() => window.scrollTo({ top: Number(storage.getItem(keys.reviewScroll) || 0), behavior: 'instant' }));
     } else if (tab === 'published') {
       loadPublished();
+    } else if (tab === 'control') {
+      loadHealth();
     }
+  }
+
+  async function loadHealth() {
+    const mount = document.getElementById('v5Health');
+    if (!mount) return;
+    try {
+      const response = await fetch('/api/v5/health', { cache: 'no-store', headers: { Accept: 'application/json' } });
+      if (!response.ok) return;
+      const data = await response.json();
+      const fmt = value => new Intl.NumberFormat('fa-IR').format(value || 0);
+      const jobs = data.jobs || {};
+      const failed = Object.values(jobs).reduce((sum, job) => sum + (job.failed || 0), 0);
+      const values = {
+        awaiting_translation: fmt(data.stories?.awaiting_translation),
+        editorial_pending: fmt(jobs.editorial_story?.pending),
+        outbox: fmt((data.publications?.pending || 0) + (data.publications?.retry || 0)),
+        reconcile: fmt(data.publications?.reconcile),
+        failed_jobs: fmt(failed),
+        last_translation: data.last?.translation ? formatTime(data.last.translation) : '—',
+      };
+      for (const [key, value] of Object.entries(values)) {
+        const node = mount.querySelector(`[data-health="${key}"]`);
+        if (node) node.textContent = value;
+      }
+      const alert = document.getElementById('v5HealthAlert');
+      if (alert) alert.hidden = !data.attention_required;
+    } catch (_) {}
   }
 
   async function fetchCounts() {
@@ -125,6 +154,7 @@
     review?.onRealtime(type, payload);
     if (type === 'counts_changed' || type === 'story_added' || type === 'story_published' || type === 'story_rejected') fetchCounts();
     if (type === 'story_published' && currentTab() === 'published') loadPublished();
+    if ((type === 'job_health_changed' || type === 'counts_changed') && currentTab() === 'control') loadHealth();
   }
 
   function connectEvents() {

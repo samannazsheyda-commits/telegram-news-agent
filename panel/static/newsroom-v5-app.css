@@ -94,3 +94,10 @@ button:disabled { opacity: .5; cursor: progress; }
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
 }
+.v5-health { margin-top: 18px; padding: 16px; border: 1px solid var(--v5-line); border-radius: var(--v5-radius); background: var(--v5-panel); }
+.v5-health h2 { margin: 0 0 12px; font-size: 15px; }
+.v5-health-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 0; }
+.v5-health-grid div { padding: 10px 12px; border-radius: 12px; background: var(--v5-panel-2); }
+.v5-health-grid dt { color: var(--v5-muted); font-size: 12px; }
+.v5-health-grid dd { margin: 4px 0 0; font-weight: 800; font-size: 18px; }
+.v5-health-alert { margin: 12px 0 0; color: var(--v5-warning); font-size: 13px; }
