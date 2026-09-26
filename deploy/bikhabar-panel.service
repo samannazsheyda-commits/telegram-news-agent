@@ -13,7 +13,7 @@ Environment=PYTHONUNBUFFERED=1
 Environment=BIKHABAR_RUNTIME_ROOT=/var/lib/bikhabar/runtime
 Environment=PANEL_LOCAL_ROOT=/var/lib/bikhabar/runtime
 Environment=PANEL_COMMAND_DIR=/var/lib/bikhabar/runtime/panel_commands
-ExecStart=/opt/bikhabar/venv/bin/gunicorn --workers 2 --threads 2 --timeout 45 --bind 0.0.0.0:80 panel.wsgi:app
+ExecStart=/opt/bikhabar/venv/bin/gunicorn --workers 2 --threads 8 --timeout 45 --bind 0.0.0.0:80 panel.wsgi:app
 Restart=always
 RestartSec=5
 NoNewPrivileges=true

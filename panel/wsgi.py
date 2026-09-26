@@ -3,7 +3,7 @@ import os
 from src.local_json_repository import LocalJsonRepository
 from src.services import translate_to_fa
 
-from .app import create_app
+from .app_v5 import create_app
 from .command_center import bp as command_center_bp
 from .live_api import bp as live_api_bp
 from .luna_assistant import bp as luna_assistant_bp

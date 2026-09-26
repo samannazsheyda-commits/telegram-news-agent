@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&amp;display=swap">
-  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-v5-app.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='newsroom-v5-app.css', v=v5_asset_version) }}">
 </head>
 <body class="v5-body">
   <div id="v5App" class="v5-app" data-active-tab="news">
@@ -65,6 +65,18 @@
           <a href="/system" class="v5-control-card"><strong>سلامت سیستم</strong><span>وضعیت سرویس‌ها و پردازش</span></a>
           <div class="v5-control-card is-static"><strong>انتشار خودکار</strong><span>{{ 'روشن' if auto_publish_enabled else 'خاموش' }}</span></div>
         </div>
+        <section class="v5-health" id="v5Health" aria-live="polite">
+          <h2>وضعیت پردازش</h2>
+          <dl class="v5-health-grid">
+            <div><dt>در انتظار ترجمه</dt><dd data-health="awaiting_translation">…</dd></div>
+            <div><dt>صف بررسی سردبیری</dt><dd data-health="editorial_pending">…</dd></div>
+            <div><dt>صف انتشار</dt><dd data-health="outbox">…</dd></div>
+            <div><dt>نیازمند تطبیق تلگرام</dt><dd data-health="reconcile">…</dd></div>
+            <div><dt>کارهای ناموفق</dt><dd data-health="failed_jobs">…</dd></div>
+            <div><dt>آخرین ترجمه</dt><dd data-health="last_translation">…</dd></div>
+          </dl>
+          <p class="v5-health-alert" id="v5HealthAlert" hidden>موردی نیاز به بررسی فنی دارد.</p>
+        </section>
       </section>
     </main>
 
@@ -94,7 +106,7 @@
     <button id="v5ReloadVersion" type="button">بارگذاری نسخه جدید</button>
   </div>
 
-  <script src="{{ url_for('static', filename='newsroom-v5-review.js') }}" defer></script>
-  <script src="{{ url_for('static', filename='newsroom-v5-app.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='newsroom-v5-review.js', v=v5_asset_version) }}" defer></script>
+  <script src="{{ url_for('static', filename='newsroom-v5-app.js', v=v5_asset_version) }}" defer></script>
 </body>
 </html>

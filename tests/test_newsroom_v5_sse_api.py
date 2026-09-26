@@ -24,6 +24,15 @@ def _login(client):
         session["admin"] = True
 
 
+def _first_event_chunk(response) -> str:
+    for raw in response.response:
+        chunk = raw.decode("utf-8")
+        if chunk.startswith(":") or chunk.startswith("retry:"):
+            continue
+        return chunk
+    return ""
+
+
 def test_sse_requires_authentication(tmp_path):
     app, _ = _app(tmp_path)
     response = app.test_client().get("/api/v5/events")
@@ -43,7 +52,7 @@ def test_sse_replays_event_after_last_event_id(tmp_path):
     )
     assert response.status_code == 200
     assert response.mimetype == "text/event-stream"
-    chunk = next(response.response).decode("utf-8")
+    chunk = _first_event_chunk(response)
     assert "event: story_updated" in chunk
     assert '"story_id":"a"' in chunk
     response.close()
@@ -57,6 +66,16 @@ def test_replay_gap_emits_refetch_instruction(tmp_path):
     broker.publish("story_added", {"story_id": "c"})
     client = app.test_client(); _login(client)
     response = client.get("/api/v5/events", headers={"Last-Event-ID": "0"}, buffered=False)
-    chunk = next(response.response).decode("utf-8")
+    chunk = _first_event_chunk(response)
     assert "event: refetch_required" in chunk
+    response.close()
+
+
+def test_stream_opens_immediately_without_waiting_for_an_event(tmp_path):
+    app, _ = _app(tmp_path)
+    client = app.test_client(); _login(client)
+    response = client.get("/api/v5/events", buffered=False)
+    first = next(response.response).decode("utf-8")
+    assert first.startswith("retry: ")
+    assert ": connected" in first
     response.close()

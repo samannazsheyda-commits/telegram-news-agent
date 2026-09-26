@@ -204,6 +204,61 @@ def counts():
     return jsonify(_counts(_store()))
 
 
+@bp.get("/health")
+@login_required
+def health():
+    store = _store()
+    conn = store.conn
+    now = datetime.now(timezone.utc)
+    jobs: dict[str, dict] = {}
+    for kind in ("translate_story", "editorial_story", "publish_story", "reconcile_publication"):
+        rows = conn.execute("SELECT status, COUNT(*) FROM jobs WHERE kind=? GROUP BY status", (kind,)).fetchall()
+        by_status = {str(row[0]): int(row[1]) for row in rows}
+        oldest = conn.execute(
+            "SELECT MIN(created_at) FROM jobs WHERE kind=? AND status IN ('pending','running')", (kind,)
+        ).fetchone()[0]
+        jobs[kind] = {
+            "pending": by_status.get("pending", 0),
+            "running": by_status.get("running", 0),
+            "failed": by_status.get("failed", 0),
+            "oldest_pending_age_seconds": _age_seconds(oldest),
+        }
+    publications = {
+        str(row[0]): int(row[1])
+        for row in conn.execute("SELECT status, COUNT(*) FROM publications GROUP BY status").fetchall()
+    }
+    states = _counts(store)
+    received = conn.execute("SELECT COUNT(*) FROM stories WHERE state='received'").fetchone()[0]
+    last = {
+        "story_discovered": conn.execute("SELECT MAX(created_at) FROM stories").fetchone()[0],
+        "translation": conn.execute("SELECT MAX(translated_at) FROM translations WHERE quality_passed=1").fetchone()[0],
+        "editorial": conn.execute("SELECT MAX(decided_at) FROM editorial_decisions").fetchone()[0],
+        "publication": conn.execute("SELECT MAX(published_at) FROM publications WHERE status='published'").fetchone()[0],
+    }
+    attention = bool(
+        publications.get("reconcile", 0)
+        or any(item["failed"] for item in jobs.values())
+        or states.get("failed", 0)
+    )
+    schema = conn.execute("SELECT version FROM schema_meta LIMIT 1").fetchone()
+    return jsonify({
+        "checked_at": now.isoformat(),
+        "schema_version": int(schema[0]) if schema else None,
+        "store_backend": current_app.config.get("NEWSROOM_STORE_BACKEND"),
+        "auto_publish_enabled": bool(current_app.config.get("NEWSROOM_AUTO_PUBLISH_ENABLED")),
+        "stories": {**states, "awaiting_translation": int(received)},
+        "jobs": jobs,
+        "publications": {
+            "pending": publications.get("pending", 0),
+            "retry": publications.get("retry", 0),
+            "reconcile": publications.get("reconcile", 0),
+            "published": publications.get("published", 0),
+        },
+        "last": last,
+        "attention_required": attention,
+    })
+
+
 @bp.get("/published")
 @login_required
 def published_list():
